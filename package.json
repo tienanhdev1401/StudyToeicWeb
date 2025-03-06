@@ -1,0 +1,33 @@
+{
+  "name": "studytoeicweb",
+  "version": "1.0.0",
+  "description": "TOEIC Learning Web Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cd client && npm run build",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "server": "node server/app.js",
+    "client": "npm start --prefix client",
+    "start": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuidicodequang/StudyToeicWeb.git"
+  },
+  "keywords": [
+    "toeic",
+    "learning",
+    "nodejs",
+    "react"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tuidicodequang/StudyToeicWeb/issues"
+  },
+  "homepage": "https://github.com/tuidicodequang/StudyToeicWeb#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
