@@ -1,7 +1,6 @@
 # Hướng dẫn chạy từ STUDYTOEICWEB mà không cần vào từng folder
 
-
-|      col1      | col2                                             |
+|     Lệnh     | Chức năng                                      |
 | :------------: | ------------------------------------------------ |
 |   npm start   | Chạy cả backend & frontend.                    |
 | npm run server | Chạy backend (Node.js).                         |
