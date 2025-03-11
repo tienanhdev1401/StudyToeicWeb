@@ -1,0 +1,187 @@
+import React, { useState } from 'react';
+import '../styles/stm-quizzes.css';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
+function Stmquizzes() {
+  const [showSelectPart, setShowSelectPart] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(true);
+
+  const toggleSelectPart = () => {
+    setShowSelectPart(!showSelectPart);
+  };
+
+  return (
+    <div className="app">
+      <header className="header">
+        <h1>HỆ THỐNG THI TRỰC TUYẾN</h1>
+        <div className="header-right">
+          <span>Guest (khách)</span>
+          <button className="grid-button">
+            <i className="fas fa-th"></i>
+          </button>
+        </div>
+      </header>
+
+      <main className="main-content">
+        <section className="test-section">
+          <h2>TEST ĐẦU VÀO (3)</h2>
+          <p>Thời gian làm bài thi: <strong>2 giờ</strong></p>
+          <p>Cấu trúc đề thi</p>
+
+          <div className="checkbox-group">
+            <label>
+              <input
+                type="checkbox"
+                onChange={toggleSelectPart}
+              />
+              <span>Chọn từng part</span>
+            </label>
+          </div>
+
+          <div className={`time-selector ${showSelectPart ? '' : 'hidden'}`}>
+            <label>Chọn thời gian làm bài:</label>
+            <select>
+              <option value="120">2 giờ</option>
+              <option value="5">5 phút</option>
+              <option value="10">10 phút</option>
+              <option value="15">15 phút</option>
+              <option value="20">20 phút</option>
+              <option value="25">25 phút</option>
+              <option value="30">30 phút</option>
+              <option value="35">35 phút</option>
+              <option value="40">40 phút</option>
+              <option value="45">45 phút</option>
+              <option value="50">50 phút</option>
+              <option value="55">55 phút</option>
+              <option value="60">60 phút</option>
+              <option value="65">65 phút</option>
+              <option value="70">70 phút</option>
+              <option value="75">75 phút</option>
+              <option value="80">80 phút</option>
+              <option value="85">85 phút</option>
+              <option value="90">90 phút</option>
+              <option value="95">95 phút</option>
+              <option value="100">100 phút</option>
+              <option value="105">105 phút</option>
+              <option value="110">110 phút</option>
+              <option value="115">115 phút</option>
+            </select>
+          </div>
+
+          <div className="parts-container">
+            {/* Component cho Listening và Reading */}
+            <TestSection
+              title="LISTENING"
+              parts={[
+                { number: 1, name: 'Part 1', questions: 6 },
+                { number: 2, name: 'Part 2', questions: 25 },
+                { number: 3, name: 'Part 3', questions: 39 },
+                { number: 4, name: 'Part 4', questions: 30 },
+              ]}
+              showCheckboxes={showSelectPart}
+            />
+
+            <TestSection
+              title="READING"
+              parts={[
+                { number: 1, name: 'Part 5', questions: 30 },
+                { number: 2, name: 'Part 6', questions: 16 },
+                { number: 3, name: 'Part 7', questions: 54 },
+              ]}
+              showCheckboxes={showSelectPart}
+            />
+          </div>
+
+          <div className="start-button-container">
+            <button className="start-button">BẮT ĐẦU</button>
+          </div>
+        </section>
+
+        {showLoginPopup && <LoginPopup onClose={() => setShowLoginPopup(false)} />}
+      </main>
+     <Footer></Footer>
+    </div>
+    
+  );
+}
+
+const TestSection = ({ title, parts, showCheckboxes }) => (
+  <div className="test-part">
+    <h3>{title}</h3>
+    <table>
+      <tbody>
+        {parts.map((part, index) => (
+          <tr key={index}>
+            <td className={`part-number ${showCheckboxes ? 'hidden' : ''}`}>{part.number}</td>
+            <td className={showCheckboxes ? '' : 'hidden'}>
+              <input
+                type="checkbox"
+                className={`part-checkbox ${showCheckboxes ? '' : 'hidden'}`}
+              />
+            </td>
+            <td>{part.name}</td>
+            <td>{part.questions} câu</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  
+);
+
+const LoginPopup = ({ onClose }) => (
+  <div className="login-popup">
+    <div className="popup-content">
+      <div className="popup-sections">
+        <div className="login-section">
+          <div className="auth-tabs">
+            <button className="auth-tab active">Đăng nhập</button>
+            <button className="auth-tab">Đăng ký</button>
+          </div>
+
+          <div className="form-group">
+            <label>Tên đăng nhập</label>
+            <input
+              type="text"
+              placeholder="Nhập tên đăng nhập"
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Mật khẩu</label>
+            <input
+              type="password"
+              placeholder="Nhập mật khẩu"
+              className="form-input"
+            />
+          </div>
+        </div>
+        <div className="login-section">
+          <div className="remember-group">
+            <label className="checkbox-label">
+              <input type="checkbox" className="remember-checkbox" />
+              <span>Ghi nhớ đăng nhập</span>
+            </label>
+          </div>
+
+          <div className="action-buttons">
+            <button className="login-button">Đăng nhập</button>
+            <a href="#" className="forgot-password">Quên mật khẩu?</a>
+          </div>
+        </div>
+        <div className="guest-section">
+          <button
+            className="guest-button"
+            onClick={onClose}
+          >
+            Tiếp tục với tư cách khách
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+export default Stmquizzes;

@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import Elements from './pages/Elements';
 import TestOnlineNew from './pages/test-online-new';
+import StmQuizzes from './pages/Stm_Quizzes';
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
 
 function App() {
@@ -65,6 +66,8 @@ function App() {
           <Route path="/elements" element={<Elements />} />
           <Route path="/register" element={<Register />} />
           <Route path="/test-online-new" element={<TestOnlineNew/>} />
+          <Route path="/Stm_Quizzes/:testId" element={<StmQuizzes />} />
+
 
         </Routes>
       </BrowserRouter>

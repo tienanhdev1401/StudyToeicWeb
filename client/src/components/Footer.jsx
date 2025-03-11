@@ -14,7 +14,7 @@ const Footer = () => {
                                     <div class="single-footer-caption mb-30">
                                         {/* logo */}
                                         <div class="footer-logo mb-25">
-                                            <a href="/"><img src="assets/img/logo/logo2_footer.png" alt=""/></a>
+                                            <a href="/"><img alt="" src={`${process.env.PUBLIC_URL}/assets/img/logo/logo2_footer.png`} /></a>
                                         </div>
                                         <div class="footer-tittle">
                                             <div class="footer-pera">
@@ -82,9 +82,9 @@ const Footer = () => {
                             <div class="row d-flex align-items-center">
                                 <div class="col-xl-12 ">
                                     <div class="footer-copy-right text-center">
-                                        <p>{/* Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. */}
+                                        <p>
                                         Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                                        {/* Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. */}</p>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
