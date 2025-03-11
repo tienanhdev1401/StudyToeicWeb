@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import '../styles/stm-quizzes.css';
-import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 function Stmquizzes() {
@@ -14,6 +13,11 @@ function Stmquizzes() {
   return (
     <div className="app">
       <header className="header">
+        <div className="col-xl-2 col-lg-2">
+          <div className="logo">
+            <a href="/"><img alt="" src={`${process.env.PUBLIC_URL}/assets/img/logo/logo2_footer.png`} /></a>
+          </div>
+        </div>
         <h1>HỆ THỐNG THI TRỰC TUYẾN</h1>
         <div className="header-right">
           <span>Guest (khách)</span>
@@ -100,9 +104,9 @@ function Stmquizzes() {
 
         {showLoginPopup && <LoginPopup onClose={() => setShowLoginPopup(false)} />}
       </main>
-     <Footer></Footer>
+      <Footer></Footer>
     </div>
-    
+
   );
 }
 
@@ -127,7 +131,7 @@ const TestSection = ({ title, parts, showCheckboxes }) => (
       </tbody>
     </table>
   </div>
-  
+
 );
 
 const LoginPopup = ({ onClose }) => (

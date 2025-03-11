@@ -9,16 +9,18 @@
   color: white;
   padding: 1rem 2rem;
   display: flex;
+  padding-bottom: 25px;
+  padding-top: 25px;
   justify-content: space-between;
   align-items: center;
 }
 
 .header h1 {
-  font-size: 1.5rem;
+  font-size: 3rem;
   margin: 0;
+  color: white;
   font-weight: bold;
 }
-
 .header-right {
   display: flex;
   align-items: center;
@@ -56,7 +58,12 @@
 }
 
 .checkbox-group label {
-  font-size: 1.1rem;
+  font-size: 1.75rem;
+}
+.checkbox-group span{
+  padding-left: 10px;
+  padding-right: 10px;
+ 
 }
 
 .time-selector {
@@ -64,7 +71,7 @@
 }
 
 .time-selector label {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   margin-right: 1rem;
 }
 
@@ -73,7 +80,7 @@
   border-radius: 4px;
   border: 1px solid #cbd5e0;
   width: 200px;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
 }
 
 .parts-container {
@@ -91,7 +98,7 @@
   margin-bottom: 1rem;
   font-weight: 600;
   border-left: 5px solid #f8b156;
-  margin-left: 300px;
+  margin-left: 250px;
   padding-left: 10px;
 }
 
@@ -116,7 +123,7 @@ tr:nth-child(even) td {
 td {
   padding: 1rem;
   border: 1px solid #f8d3a8; 
-  font-size: 1.1rem;
+  font-size: 1.5rem;
 }
 
 .part-number {
@@ -240,7 +247,7 @@ td:last-child {
   display: block;
   margin-bottom: 10px;
   color: #2d3748;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 500;
 }
 
@@ -249,7 +256,7 @@ td:last-child {
   padding: 12px 15px;
   border: 1px solid #cbd5e0;
   border-radius: 6px;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   transition: border-color 0.2s;
   box-sizing: border-box;
 }
@@ -270,7 +277,6 @@ td:last-child {
 .remember-group {
   display: flex;
   align-items: center;
-  margin: 15px 0;
 }
 
 .checkbox-label {
@@ -278,7 +284,7 @@ td:last-child {
   align-items: center;
   gap: 10px;
   color: #4a5568;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
 }
 
 .forgot-password {

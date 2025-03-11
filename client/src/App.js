@@ -39,22 +39,8 @@ function App() {
 
   return (
     <div className="App">
-      {/* <header className="App-header">
-        {loading ? (
-          <p>Connecting to server...</p>
-        ) : error ? (
-          <div>
-            <p style={{ color: 'red' }}>{error}</p>
-            <p>Make sure server is running on port 5000</p>
-          </div>
-        ) : (
-          <div>
-            <h1>{message}</h1>
-            <p>Server connection successful!</p>
-          </div>
-        )}
-      </header> */}
-      <BrowserRouter>
+    
+      <BrowserRouter basename="/">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

@@ -4,35 +4,35 @@ const Footer = () => {
     return (
         <div>
             <footer>
-            <div class="footer-wrappper footer-bg">
+            <div className="footer-wrappper footer-bg">
                 {/* Footer Start*/}
-                <div class="footer-area footer-padding">
-                    <div class="container">
-                        <div class="row justify-content-between">
-                            <div class="col-xl-4 col-lg-5 col-md-4 col-sm-6">
-                                <div class="single-footer-caption mb-50">
-                                    <div class="single-footer-caption mb-30">
+                <div className="footer-area footer-padding">
+                    <div className="container">
+                        <div className="row justify-content-between">
+                            <div className="col-xl-4 col-lg-5 col-md-4 col-sm-6">
+                                <div className="single-footer-caption mb-50">
+                                    <div className="single-footer-caption mb-30">
                                         {/* logo */}
-                                        <div class="footer-logo mb-25">
+                                        <div className="footer-logo mb-25">
                                             <a href="/"><img alt="" src={`${process.env.PUBLIC_URL}/assets/img/logo/logo2_footer.png`} /></a>
                                         </div>
-                                        <div class="footer-tittle">
-                                            <div class="footer-pera">
+                                        <div className="footer-tittle">
+                                            <div className="footer-pera">
                                                 <p>The automated process starts as soon as your clothes go into the machine.</p>
                                             </div>
                                         </div>
                                         {/* social */}
-                                        <div class="footer-social">
-                                            <a href="#"><i class="fab fa-twitter"></i></a>
-                                            <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
-                                            <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                                        <div className="footer-social">
+                                            <a href="#"><i className="fab fa-twitter"></i></a>
+                                            <a href="https://bit.ly/sai4ull"><i className="fab fa-facebook-f"></i></a>
+                                            <a href="#"><i className="fab fa-pinterest-p"></i></a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-5">
-                                <div class="single-footer-caption mb-50">
-                                    <div class="footer-tittle">
+                            <div className="col-xl-2 col-lg-3 col-md-4 col-sm-5">
+                                <div className="single-footer-caption mb-50">
+                                    <div className="footer-tittle">
                                         <h4>Our solutions</h4>
                                         <ul>
                                             <li><a href="#">Design & creatives</a></li>
@@ -44,9 +44,9 @@ const Footer = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6">
-                                <div class="single-footer-caption mb-50">
-                                    <div class="footer-tittle">
+                            <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                                <div className="single-footer-caption mb-50">
+                                    <div className="footer-tittle">
                                         <h4>Support</h4>
                                         <ul>
                                             <li><a href="#">Design & creatives</a></li>
@@ -58,9 +58,9 @@ const Footer = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-                                <div class="single-footer-caption mb-50">
-                                    <div class="footer-tittle">
+                            <div className="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                                <div className="single-footer-caption mb-50">
+                                    <div className="footer-tittle">
                                         <h4>Company</h4>
                                         <ul>
                                             <li><a href="#">Design & creatives</a></li>
@@ -76,14 +76,14 @@ const Footer = () => {
                     </div>
                 </div>
                 {/* footer-bottom area */}
-                <div class="footer-bottom-area">
-                    <div class="container">
-                        <div class="footer-border">
-                            <div class="row d-flex align-items-center">
-                                <div class="col-xl-12 ">
-                                    <div class="footer-copy-right text-center">
+                <div className="footer-bottom-area">
+                    <div className="container">
+                        <div className="footer-border">
+                            <div className="row d-flex align-items-center">
+                                <div className="col-xl-12 ">
+                                    <div className="footer-copy-right text-center">
                                         <p>
-                                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i className="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
                                         </p>
                                     </div>
                                 </div>
