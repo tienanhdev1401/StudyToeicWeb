@@ -1,10 +1,32 @@
 import React, { useState } from 'react';
 import '../styles/stm-quizzes.css';
 import Footer from '../components/Footer';
+import { useNavigate } from 'react-router-dom';
+
 
 function Stmquizzes() {
   const [showSelectPart, setShowSelectPart] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(true);
+
+  const [selectedParts, setSelectedParts] = useState([]);
+
+  const handlePartToggle = (partNumber, isChecked) => {
+    setSelectedParts(prev =>
+      isChecked
+        ? [...prev, partNumber]
+        : prev.filter(p => p !== partNumber)
+    );
+  };
+  const navigate = useNavigate(); // Khởi tạo navigate
+  const handleStartTest = () => { // Khởi tạo dữ liệu ảo
+    navigate(`/Dotest/test1`, {
+      state: {
+        selectedParts: selectedParts
+      }
+    });
+  };
+
+
 
   const toggleSelectPart = () => {
     setShowSelectPart(!showSelectPart);
@@ -84,21 +106,30 @@ function Stmquizzes() {
                 { number: 4, name: 'Part 4', questions: 30 },
               ]}
               showCheckboxes={showSelectPart}
+              selectedParts={selectedParts}
+              onPartToggle={handlePartToggle}
             />
 
             <TestSection
               title="READING"
               parts={[
-                { number: 1, name: 'Part 5', questions: 30 },
-                { number: 2, name: 'Part 6', questions: 16 },
-                { number: 3, name: 'Part 7', questions: 54 },
+                { number: 5, name: 'Part 5', questions: 30 },
+                { number: 6, name: 'Part 6', questions: 16 },
+                { number: 7, name: 'Part 7', questions: 54 },
               ]}
               showCheckboxes={showSelectPart}
+              selectedParts={selectedParts}
+              onPartToggle={handlePartToggle}
             />
           </div>
 
           <div className="start-button-container">
-            <button className="start-button">BẮT ĐẦU</button>
+            <button
+              className="start-button"
+              onClick={handleStartTest}
+            >
+              BẮT ĐẦU
+            </button>
           </div>
         </section>
 
@@ -110,18 +141,18 @@ function Stmquizzes() {
   );
 }
 
-const TestSection = ({ title, parts, showCheckboxes }) => (
+const TestSection = ({ title, parts, showCheckboxes, selectedParts, onPartToggle }) => (
   <div className="test-part">
     <h3>{title}</h3>
     <table>
       <tbody>
         {parts.map((part, index) => (
           <tr key={index}>
-            <td className={`part-number ${showCheckboxes ? 'hidden' : ''}`}>{part.number}</td>
             <td className={showCheckboxes ? '' : 'hidden'}>
               <input
                 type="checkbox"
-                className={`part-checkbox ${showCheckboxes ? '' : 'hidden'}`}
+                checked={selectedParts.includes(part.number)}
+                onChange={(e) => onPartToggle(part.number, e.target.checked)}
               />
             </td>
             <td>{part.name}</td>
@@ -131,7 +162,6 @@ const TestSection = ({ title, parts, showCheckboxes }) => (
       </tbody>
     </table>
   </div>
-
 );
 
 const LoginPopup = ({ onClose }) => (
