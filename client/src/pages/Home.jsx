@@ -5,14 +5,14 @@ import Footer from '../components/Footer';
 const Home = () => {
     return (
         <div>
-            
+
             {/* ? Preloader Start */}
             <div id="preloader-active">
-                <div class="preloader d-flex align-items-center justify-content-center">
-                    <div class="preloader-inner position-relative">
-                        <div class="preloader-circle"></div>
-                        <div class="preloader-img pere-text">
-                            <img src="assets/img/logo/loder.png" alt=""/>
+                <div className="preloader d-flex align-items-center justify-content-center">
+                    <div className="preloader-inner position-relative">
+                        <div className="preloader-circle"></div>
+                        <div className="preloader-img pere-text">
+                            <img src="assets/img/logo/loder.png" alt="" />
                         </div>
                     </div>
                 </div>
@@ -20,59 +20,59 @@ const Home = () => {
             {/* Preloader Start */}
 
             <Header></Header>
-            
+
             <main>
                 {/*? slider Area Start*/}
-                <section class="slider-area ">
-                    <div class="slider-active">
+                <section className="slider-area ">
+                    <div className="slider-active">
                         {/* Single Slider */}
-                        <div class="single-slider slider-height d-flex align-items-center">
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-xl-6 col-lg-7 col-md-12">
-                                        <div class="hero__caption">
-                                            <h1 data-animation="fadeInLeft" data-delay="0.2s">Online learning<br/> platform</h1>
+                        <div className="single-slider slider-height d-flex align-items-center">
+                            <div className="container">
+                                <div className="row">
+                                    <div className="col-xl-6 col-lg-7 col-md-12">
+                                        <div className="hero__caption">
+                                            <h1 data-animation="fadeInLeft" data-delay="0.2s">Online learning<br /> platform</h1>
                                             <p data-animation="fadeInLeft" data-delay="0.4s">Build skills with courses, certificates, and degrees online from world-class universities and companies</p>
-                                            <a href="#" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.7s">Join for Free</a>
+                                            <a href="#" className="btn hero-btn" data-animation="fadeInLeft" data-delay="0.7s">Join for Free</a>
                                         </div>
                                     </div>
                                 </div>
-                            </div>          
+                            </div>
                         </div>
                     </div>
                 </section>
                 {/* ? services-area */}
-                <div class="services-area">
-                    <div class="container">
-                        <div class="row justify-content-sm-center">
-                            <div class="col-lg-4 col-md-6 col-sm-8">
-                                <div class="single-services mb-30">
-                                    <div class="features-icon">
-                                        <img src="assets/img/icon/icon1.svg" alt=""/>
+                <div className="services-area">
+                    <div className="container">
+                        <div className="row justify-content-sm-center">
+                            <div className="col-lg-4 col-md-6 col-sm-8">
+                                <div className="single-services mb-30">
+                                    <div className="features-icon">
+                                        <img src="assets/img/icon/icon1.svg" alt="" />
                                     </div>
-                                    <div class="features-caption">
+                                    <div className="features-caption">
                                         <h3>60+ UX courses</h3>
                                         <p>The automated process all your website tasks.</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4 col-md-6 col-sm-8">
-                                <div class="single-services mb-30">
-                                    <div class="features-icon">
-                                        <img src="assets/img/icon/icon2.svg" alt=""/>
+                            <div className="col-lg-4 col-md-6 col-sm-8">
+                                <div className="single-services mb-30">
+                                    <div className="features-icon">
+                                        <img src="assets/img/icon/icon2.svg" alt="" />
                                     </div>
-                                    <div class="features-caption">
+                                    <div className="features-caption">
                                         <h3>Expert instructors</h3>
                                         <p>The automated process all your website tasks.</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4 col-md-6 col-sm-8">
-                                <div class="single-services mb-30">
-                                    <div class="features-icon">
-                                        <img src="assets/img/icon/icon3.svg" alt=""/>
+                            <div className="col-lg-4 col-md-6 col-sm-8">
+                                <div className="single-services mb-30">
+                                    <div className="features-icon">
+                                        <img src="assets/img/icon/icon3.svg" alt="" />
                                     </div>
-                                    <div class="features-caption">
+                                    <div className="features-caption">
                                         <h3>Life time access</h3>
                                         <p>The automated process all your website tasks.</p>
                                     </div>
@@ -82,199 +82,128 @@ const Home = () => {
                     </div>
                 </div>
                 {/* Courses area start */}
-                <div class="courses-area section-padding40 fix">
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-xl-7 col-lg-8">
-                                <div class="section-tittle text-center mb-55">
+                <div className="courses-area section-padding40 fix">
+                    <div className="container">
+                        <div className="row justify-content-center">
+                            <div className="col-xl-7 col-lg-8">
+                                <div className="section-tittle text-center mb-55">
                                     <h2>Our featured courses</h2>
                                 </div>
                             </div>
                         </div>
-                        <div class="courses-actives">
-                            {/* Single */}
-                            <div class="properties pb-20">
-                                <div class="properties__card">
-                                    <div class="properties__img overlay1">
-                                        <a href="#"><img src="assets/img/gallery/featured1.png" alt=""/></a>
-                                    </div>
-                                    <div class="properties__caption">
-                                        <p>User Experience</p>
-                                        <h3><a href="#">Fundamental of UX for Application design</a></h3>
-                                        <p>The automated process all your website tasks. Discover tools and techniques to engage effectively with vulnerable children and young people.
-
-                                        </p>
-                                        <div class="properties__footer d-flex justify-content-between align-items-center">
-                                            <div class="restaurant-name">
-                                                <div class="rating">
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star-half"></i>
-                                                </div>
-                                                <p><span>(4.5)</span> based on 120</p>
+                        <div className="row">
+                            {[
+                                {
+                                    id: 1,
+                                    title: "Learn Vocabulary",
+                                    image: "assets/img/gallery/topic1.png",
+                                    pageLink: "/learn-vocabulary"
+                                },
+                                {
+                                    id: 2,
+                                    title: "Learn Grammar",
+                                    image: "assets/img/gallery/topic2.png",
+                                    pageLink: "/learn-grammar"
+                                },
+                                {
+                                    id: 3,
+                                    title: "Practice Exercises",
+                                    image: "assets/img/gallery/topic3.png",
+                                    pageLink: "/do-exercise"
+                                }
+                            ].map((course) => (
+                                <div className="col-lg-4 col-md-6" key={course.id}>
+                                    <div className="properties pb-20">
+                                        <div className="properties__card">
+                                            <div className="properties__img overlay1" style={{ height: "200px", overflow: "hidden" }}>
+                                                <a href={course.pageLink}>
+                                                    <img
+                                                        src={course.image}
+                                                        alt={course.title}
+                                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                    />
+                                                </a>
                                             </div>
-                                            <div class="price">
-                                                <span>$135</span>
+                                            <div className="properties__caption">
+                                                <h3><a href={course.pageLink}>{course.title}</a></h3>
+                                                <p>
+                                                    {course.id === 1 && "Expand your word knowledge with interactive lessons and daily practice sessions."}
+                                                    {course.id === 2 && "Master grammar rules through comprehensive guides and real-world examples."}
+                                                    {course.id === 3 && "Master grammar rules through comprehensive guides and real-world examples."}
+                                                </p>
+                                                <div className="properties__footer d-flex justify-content-between align-items-center">
+                                                    <div className="progress-info" style={{ width: "100%" }}>
+                                                        <span className="badge">Daily Goal</span>
+                                                        <div className="progress">
+                                                            <div
+                                                                className="progress-bar"
+                                                                role="progressbar"
+                                                                style={{ width: `${Math.random() * 70 + 30}%` }}
+                                                            ></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <a href={course.pageLink} className="border-btn border-btn2 mt-3">
+                                                    Start Learning
+                                                </a>
                                             </div>
                                         </div>
-                                        <a href="#" class="border-btn border-btn2">Find out more</a>
-                                    </div>
-
-                                </div>
-                            </div>
-                            {/* Single */}
-                            {/* Single */}
-                            <div class="properties pb-20">
-                                <div class="properties__card">
-                                    <div class="properties__img overlay1">
-                                        <a href="#"><img src="assets/img/gallery/featured2.png" alt=""/></a>
-                                    </div>
-                                    <div class="properties__caption">
-                                        <p>User Experience</p>
-                                        <h3><a href="#">Fundamental of UX for Application design</a></h3>
-                                        <p>The automated process all your website tasks. Discover tools and techniques to engage effectively with vulnerable children and young people.
-                                        </p>
-                                        <div class="properties__footer d-flex justify-content-between align-items-center">
-                                            <div class="restaurant-name">
-                                                <div class="rating">
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star-half"></i>
-                                                </div>
-                                                <p><span>(4.5)</span> based on 120</p>
-                                            </div>
-                                            <div class="price">
-                                                <span>$135</span>
-                                            </div>
-                                        </div>
-                                        <a href="#" class="border-btn border-btn2">Find out more</a>
                                     </div>
                                 </div>
-                            </div>
-                            {/* Single */}
-                            {/* Single */}
-                            <div class="properties pb-20">
-                                <div class="properties__card">
-                                    <div class="properties__img overlay1">
-                                        <a href="#"><img src="assets/img/gallery/featured3.png" alt=""/></a>
-                                    </div>
-                                    <div class="properties__caption">
-                                        <p>User Experience</p>
-                                        <h3><a href="#">Fundamental of UX for Application design</a></h3>
-                                        <p>The automated process all your website tasks. Discover tools and techniques to engage effectively with vulnerable children and young people.
-
-                                        </p>
-                                        <div class="properties__footer d-flex justify-content-between align-items-center">
-                                            <div class="restaurant-name">
-                                                <div class="rating">
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star-half"></i>
-                                                </div>
-                                                <p><span>(4.5)</span> based on 120</p>
-                                            </div>
-                                            <div class="price">
-                                                <span>$135</span>
-                                            </div>
-                                        </div>
-                                        <a href="#" class="border-btn border-btn2">Find out more</a>
-                                    </div>
-
-                                </div>
-                            </div>
-                            {/* Single */}
-                            {/* Single */}
-                            <div class="properties pb-20">
-                                <div class="properties__card">
-                                    <div class="properties__img overlay1">
-                                        <a href="#"><img src="assets/img/gallery/featured2.png" alt=""/></a>
-                                    </div>
-                                    <div class="properties__caption">
-                                        <p>User Experience</p>
-                                        <h3><a href="#">Fundamental of UX for Application design</a></h3>
-                                        <p>The automated process all your website tasks. Discover tools and techniques to engage effectively with vulnerable children and young people.
-
-                                        </p>
-                                        <div class="properties__footer d-flex justify-content-between align-items-center">
-                                            <div class="restaurant-name">
-                                                <div class="rating">
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star-half"></i>
-                                                </div>
-                                                <p><span>(4.5)</span> based on 120</p>
-                                            </div>
-                                            <div class="price">
-                                                <span>$135</span>
-                                            </div>
-                                        </div>
-                                        <a href="#" class="border-btn border-btn2">Find out more</a>
-                                    </div>
-
-                                </div>
-                            </div>
-                            {/* Single */}
+                            ))}
                         </div>
                     </div>
                 </div>
                 {/* Courses area End */}
                 {/*? About Area-1 Start */}
-                <section class="about-area1 fix pt-10">
-                    <div class="support-wrapper align-items-center">
-                        <div class="left-content1">
-                            <div class="about-icon">
-                                <img src="assets/img/icon/about.svg" alt=""/>
+                <section className="about-area1 fix pt-10">
+                    <div className="support-wrapper align-items-center">
+                        <div className="left-content1">
+                            <div className="about-icon">
+                                <img src="assets/img/icon/about.svg" alt="" />
                             </div>
                             {/* section tittle */}
-                            <div class="section-tittle section-tittle2 mb-55">
-                                <div class="front-text">
-                                    <h2 class="">Learn new skills online with top educators</h2>
-                                    <p>The automated process all your website tasks. Discover tools and 
-                                        techniques to engage effectively with vulnerable children and young 
-                                    people.</p>
+                            <div className="section-tittle section-tittle2 mb-55">
+                                <div className="front-text">
+                                    <h2 className="">Learn new skills online with top educators</h2>
+                                    <p>The automated process all your website tasks. Discover tools and
+                                        techniques to engage effectively with vulnerable children and young
+                                        people.</p>
                                 </div>
                             </div>
-                            <div class="single-features">
-                                <div class="features-icon">
-                                    <img src="assets/img/icon/right-icon.svg" alt=""/>
+                            <div className="single-features">
+                                <div className="features-icon">
+                                    <img src="assets/img/icon/right-icon.svg" alt="" />
                                 </div>
-                                <div class="features-caption">
+                                <div className="features-caption">
                                     <p>Techniques to engage effectively with vulnerable children and young people.</p>
                                 </div>
                             </div>
-                            <div class="single-features">
-                                <div class="features-icon">
-                                    <img src="assets/img/icon/right-icon.svg" alt=""/>
+                            <div className="single-features">
+                                <div className="features-icon">
+                                    <img src="assets/img/icon/right-icon.svg" alt="" />
                                 </div>
-                                <div class="features-caption">
+                                <div className="features-caption">
                                     <p>Join millions of people from around the world  learning together.</p>
                                 </div>
                             </div>
 
-                            <div class="single-features">
-                                <div class="features-icon">
-                                    <img src="assets/img/icon/right-icon.svg" alt=""/>
+                            <div className="single-features">
+                                <div className="features-icon">
+                                    <img src="assets/img/icon/right-icon.svg" alt="" />
                                 </div>
-                                <div class="features-caption">
+                                <div className="features-caption">
                                     <p>Join millions of people from around the world learning together. Online learning is as easy and natural.</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="right-content1">
+                        <div className="right-content1">
                             {/* img */}
-                            <div class="right-img">
-                                <img src="assets/img/gallery/about.png" alt=""/>
+                            <div className="right-img">
+                                <img src="assets/img/gallery/about.png" alt="" />
 
-                                <div class="video-icon" >
-                                    <a class="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i class="fas fa-play"></i></a>
+                                <div className="video-icon" >
+                                    <a className="popup-video btn-icon" href="https://www.youtube.com/watch?v=up68UAfH0d0"><i className="fas fa-play"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -282,106 +211,106 @@ const Home = () => {
                 </section>
                 {/* About Area End */}
                 {/*? top subjects Area Start */}
-                <div class="topic-area section-padding40">
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-xl-7 col-lg-8">
-                                <div class="section-tittle text-center mb-55">
+                <div className="topic-area section-padding40">
+                    <div className="container">
+                        <div className="row justify-content-center">
+                            <div className="col-xl-7 col-lg-8">
+                                <div className="section-tittle text-center mb-55">
                                     <h2>Explore top subjects</h2>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-3 col-md-4 col-sm-6">
-                                <div class="single-topic text-center mb-30">
-                                    <div class="topic-img">
-                                        <img src="assets/img/gallery/topic1.png" alt=""/>
-                                        <div class="topic-content-box">
-                                            <div class="topic-content">
+                        <div className="row">
+                            <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="single-topic text-center mb-30">
+                                    <div className="topic-img">
+                                        <img src="assets/img/gallery/topic1.png" alt="" />
+                                        <div className="topic-content-box">
+                                            <div className="topic-content">
                                                 <h3><a href="#">Programing</a></h3>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-4 col-sm-6">
-                                <div class="single-topic text-center mb-30">
-                                    <div class="topic-img">
-                                        <img src="assets/img/gallery/topic2.png" alt=""/>
-                                        <div class="topic-content-box">
-                                            <div class="topic-content">
+                            <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="single-topic text-center mb-30">
+                                    <div className="topic-img">
+                                        <img src="assets/img/gallery/topic2.png" alt="" />
+                                        <div className="topic-content-box">
+                                            <div className="topic-content">
                                                 <h3><a href="#">Programing</a></h3>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-4 col-sm-6">
-                                <div class="single-topic text-center mb-30">
-                                    <div class="topic-img">
-                                        <img src="assets/img/gallery/topic3.png" alt=""/>
-                                        <div class="topic-content-box">
-                                            <div class="topic-content">
+                            <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="single-topic text-center mb-30">
+                                    <div className="topic-img">
+                                        <img src="assets/img/gallery/topic3.png" alt="" />
+                                        <div className="topic-content-box">
+                                            <div className="topic-content">
                                                 <h3><a href="#">Programing</a></h3>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-4 col-sm-6">
-                                <div class="single-topic text-center mb-30">
-                                    <div class="topic-img">
-                                        <img src="assets/img/gallery/topic4.png" alt=""/>
-                                        <div class="topic-content-box">
-                                            <div class="topic-content">
+                            <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="single-topic text-center mb-30">
+                                    <div className="topic-img">
+                                        <img src="assets/img/gallery/topic4.png" alt="" />
+                                        <div className="topic-content-box">
+                                            <div className="topic-content">
                                                 <h3><a href="#">Programing</a></h3>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-4 col-sm-6">
-                                <div class="single-topic text-center mb-30">
-                                    <div class="topic-img">
-                                        <img src="assets/img/gallery/topic5.png" alt=""/>
-                                        <div class="topic-content-box">
-                                            <div class="topic-content">
+                            <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="single-topic text-center mb-30">
+                                    <div className="topic-img">
+                                        <img src="assets/img/gallery/topic5.png" alt="" />
+                                        <div className="topic-content-box">
+                                            <div className="topic-content">
                                                 <h3><a href="#">Programing</a></h3>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-4 col-sm-6">
-                                <div class="single-topic text-center mb-30">
-                                    <div class="topic-img">
-                                        <img src="assets/img/gallery/topic6.png" alt=""/>
-                                        <div class="topic-content-box">
-                                            <div class="topic-content">
+                            <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="single-topic text-center mb-30">
+                                    <div className="topic-img">
+                                        <img src="assets/img/gallery/topic6.png" alt="" />
+                                        <div className="topic-content-box">
+                                            <div className="topic-content">
                                                 <h3><a href="#">Programing</a></h3>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-4 col-sm-6">
-                                <div class="single-topic text-center mb-30">
-                                    <div class="topic-img">
-                                        <img src="assets/img/gallery/topic7.png" alt=""/>
-                                        <div class="topic-content-box">
-                                            <div class="topic-content">
+                            <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="single-topic text-center mb-30">
+                                    <div className="topic-img">
+                                        <img src="assets/img/gallery/topic7.png" alt="" />
+                                        <div className="topic-content-box">
+                                            <div className="topic-content">
                                                 <h3><a href="#">Programing</a></h3>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-4 col-sm-6">
-                                <div class="single-topic text-center mb-30">
-                                    <div class="topic-img">
-                                        <img src="assets/img/gallery/topic8.png" alt=""/>
-                                        <div class="topic-content-box">
-                                            <div class="topic-content">
+                            <div className="col-lg-3 col-md-4 col-sm-6">
+                                <div className="single-topic text-center mb-30">
+                                    <div className="topic-img">
+                                        <img src="assets/img/gallery/topic8.png" alt="" />
+                                        <div className="topic-content-box">
+                                            <div className="topic-content">
                                                 <h3><a href="#">Programing</a></h3>
                                             </div>
                                         </div>
@@ -389,10 +318,10 @@ const Home = () => {
                                 </div>
                             </div>
                         </div>
-                        <div class="row justify-content-center">
-                            <div class="col-xl-12">
-                                <div class="section-tittle text-center mt-20">
-                                    <a href="/courses" class="border-btn">View More Subjects</a>
+                        <div className="row justify-content-center">
+                            <div className="col-xl-12">
+                                <div className="section-tittle text-center mt-20">
+                                    <a href="/courses" className="border-btn">View More Subjects</a>
                                 </div>
                             </div>
                         </div>
@@ -400,45 +329,45 @@ const Home = () => {
                 </div>
                 {/* top subjects End */}
                 {/*? About Area-3 Start */}
-                <section class="about-area3 fix">
-                    <div class="support-wrapper align-items-center">
-                        <div class="right-content3">
+                <section className="about-area3 fix">
+                    <div className="support-wrapper align-items-center">
+                        <div className="right-content3">
                             {/* img */}
-                            <div class="right-img">
-                                <img src="assets/img/gallery/about3.png" alt=""/>
+                            <div className="right-img">
+                                <img src="assets/img/gallery/about3.png" alt="" />
                             </div>
                         </div>
-                        <div class="left-content3">
+                        <div className="left-content3">
                             {/* section tittle */}
-                            <div class="section-tittle section-tittle2 mb-20">
-                                <div class="front-text">
-                                    <h2 class="">Learner outcomes on courses you will take</h2>
+                            <div className="section-tittle section-tittle2 mb-20">
+                                <div className="front-text">
+                                    <h2 className="">Learner outcomes on courses you will take</h2>
                                 </div>
                             </div>
-                            <div class="single-features">
-                                <div class="features-icon">
-                                    <img src="assets/img/icon/right-icon.svg" alt=""/>
+                            <div className="single-features">
+                                <div className="features-icon">
+                                    <img src="assets/img/icon/right-icon.svg" alt="" />
                                 </div>
-                                <div class="features-caption">
+                                <div className="features-caption">
                                     <p>Techniques to engage effectively with vulnerable children and young people.</p>
                                 </div>
                             </div>
-                            <div class="single-features">
-                                <div class="features-icon">
-                                    <img src="assets/img/icon/right-icon.svg" alt=""/>
+                            <div className="single-features">
+                                <div className="features-icon">
+                                    <img src="assets/img/icon/right-icon.svg" alt="" />
                                 </div>
-                                <div class="features-caption">
+                                <div className="features-caption">
                                     <p>Join millions of people from around the world
-                                    learning together.</p>
+                                        learning together.</p>
                                 </div>
                             </div>
-                            <div class="single-features">
-                                <div class="features-icon">
-                                    <img src="assets/img/icon/right-icon.svg" alt=""/>
+                            <div className="single-features">
+                                <div className="features-icon">
+                                    <img src="assets/img/icon/right-icon.svg" alt="" />
                                 </div>
-                                <div class="features-caption">
+                                <div className="features-caption">
                                     <p>Join millions of people from around the world learning together.
-                                    Online learning is as easy and natural.</p>
+                                        Online learning is as easy and natural.</p>
                                 </div>
                             </div>
                         </div>
@@ -446,59 +375,62 @@ const Home = () => {
                 </section>
                 {/* About Area End */}
                 {/*? Team */}
-                <section class="team-area section-padding40 fix">
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-xl-7 col-lg-8">
-                                <div class="section-tittle text-center mb-55">
-                                    <h2>Community experts</h2>
+                <section className="team-area section-padding40 fix">
+                    <div className="container">
+                        <div className="row justify-content-center">
+                            <div className="col-xl-7 col-lg-8">
+                                <div className="section-tittle text-center mb-55">
+                                    <h2>Đội Phát Triển</h2>
                                 </div>
                             </div>
                         </div>
-                        <div class="team-active">
-                            <div class="single-cat text-center">
-                                <div class="cat-icon">
-                                    <img src="assets/img/gallery/team1.png" alt=""/>
-                                </div>
-                                <div class="cat-cap">
-                                    <h5><a href="services.html">Mr. Urela</a></h5>
-                                    <p>The automated process all your website tasks.</p>
-                                </div>
-                            </div>
-                            <div class="single-cat text-center">
-                                <div class="cat-icon">
-                                    <img src="assets/img/gallery/team2.png" alt=""/>
-                                </div>
-                                <div class="cat-cap">
-                                    <h5><a href="services.html">Mr. Uttom</a></h5>
-                                    <p>The automated process all your website tasks.</p>
+                        <div className="row">
+                            {/* First team member */}
+                            <div className="col-lg-3 col-md-6">
+                                <div className="single-cat text-center">
+                                    <div className="cat-icon">
+                                        <img src="assets/img/gallery/team1.png" alt="" />
+                                    </div>
+                                    <div className="cat-cap">
+                                        <h5><a href="services.html">Mr. TienAnh</a></h5>
+                                        <p>Anh trai người Lào.</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="single-cat text-center">
-                                <div class="cat-icon">
-                                    <img src="assets/img/gallery/team3.png" alt=""/>
-                                </div>
-                                <div class="cat-cap">
-                                    <h5><a href="services.html">Mr. Shakil</a></h5>
-                                    <p>The automated process all your website tasks.</p>
-                                </div>
-                            </div>
-                            <div class="single-cat text-center">
-                                <div class="cat-icon">
-                                    <img src="assets/img/gallery/team4.png" alt=""/>
-                                </div>
-                                <div class="cat-cap">
-                                    <h5><a href="services.html">Mr. Arafat</a></h5>
-                                    <p>The automated process all your website tasks.</p>
+                            {/* Second team member */}
+                            <div className="col-lg-3 col-md-6">
+                                <div className="single-cat text-center">
+                                    <div className="cat-icon">
+                                        <img src="assets/img/gallery/team2.png" alt="" />
+                                    </div>
+                                    <div className="cat-cap">
+                                        <h5><a href="services.html">Mr. HungAnh</a></h5>
+                                        <p>Code cũng cũng....</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="single-cat text-center">
-                                <div class="cat-icon">
-                                    <img src="assets/img/gallery/team3.png" alt=""/>
+                            {/* Third team member */}
+                            <div className="col-lg-3 col-md-6">
+                                <div className="single-cat text-center">
+                                    <div className="cat-icon">
+                                        <img src="assets/img/gallery/team3.png" alt="" />
+                                    </div>
+                                    <div className="cat-cap">
+                                        <h5><a href="services.html">Mr. KimTri</a></h5>
+                                        <p>Ăn nhiều hơn code.</p>
+                                    </div>
                                 </div>
-                                <div class="cat-cap">
-                                    <h5><a href="services.html">Mr. saiful</a></h5>
-                                    <p>The automated process all your website tasks.</p>
+                            </div>
+                            {/* Fourth team member */}
+                            <div className="col-lg-3 col-md-6">
+                                <div className="single-cat text-center">
+                                    <div className="cat-icon">
+                                        <img src="assets/img/gallery/team4.png" alt="" />
+                                    </div>
+                                    <div className="cat-cap">
+                                        <h5><a href="services.html">Mr. HieuNghia</a></h5>
+                                        <p>Thấy code mà không thấy xong.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -506,24 +438,24 @@ const Home = () => {
                 </section>
                 {/* Services End */}
                 {/*? About Area-2 Start */}
-                <section class="about-area2 fix pb-padding">
-                    <div class="support-wrapper align-items-center">
-                        <div class="right-content2">
+                <section className="about-area2 fix pb-padding">
+                    <div className="support-wrapper align-items-center">
+                        <div className="right-content2">
                             {/* img */}
-                            <div class="right-img">
-                                <img src="assets/img/gallery/about2.png" alt=""/>
+                            <div className="right-img">
+                                <img src="assets/img/gallery/about2.png" alt="" />
                             </div>
                         </div>
-                        <div class="left-content2">
+                        <div className="left-content2">
                             {/* section tittle */}
-                            <div class="section-tittle section-tittle2 mb-20">
-                                <div class="front-text">
-                                    <h2 class="">Take the next step
+                            <div className="section-tittle section-tittle2 mb-20">
+                                <div className="front-text">
+                                    <h2 className="">Take the next step
                                         toward your personal
                                         and professional goals
-                                    with us.</h2>
+                                        with us.</h2>
                                     <p>The automated process all your website tasks. Discover tools and techniques to engage effectively with vulnerable children and young people.</p>
-                                    <a href="#" class="btn">Join now for Free</a>
+                                    <a href="#" className="btn">Join now for Free</a>
                                 </div>
                             </div>
                         </div>
@@ -532,14 +464,14 @@ const Home = () => {
                 {/* About Area End */}
             </main>
 
-            {/* Fopter */}
+            {/* Footer */}
             <Footer></Footer>
-            
-        {/* Scroll Up */}
-        <div id="back-top" >
-            <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
-        </div>
-            
+
+            {/* Scroll Up */}
+            <div id="back-top" >
+                <a title="Go to Top" href="#"> <i className="fas fa-level-up-alt"></i></a>
+            </div>
+
         </div>
     );
 }

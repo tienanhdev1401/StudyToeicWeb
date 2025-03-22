@@ -1,0 +1,312 @@
+/* TopicDetail.css */
+.td-layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding-top: 100px;
+}
+
+.td-main-content {
+  flex: 1;
+  padding: 2rem 1rem;
+  margin-top: 20px;
+}
+
+.td-content-container {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.td-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.td-main-title {
+  font-size: 2rem;
+  color: #2d3436;
+  max-width: 60%;
+  line-height: 1.3;
+}
+
+.td-action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.td-action-btn {
+  padding: 0.8rem 1.2rem;
+  background: #e9ecef;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.td-action-btn:hover {
+  background: #dee2e6;
+}
+
+/* Features Grid */
+.td-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.td-feature-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.td-feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.td-feature-icon {
+  font-size: 2rem;
+  color: #0984e3;
+  margin-bottom: 1rem;
+}
+
+/* Flip Card */
+.td-flip-card {
+  background: white;
+  border-radius: 16px;
+  height: 400px;
+  perspective: 1000px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin: 3rem 0;
+}
+
+.td-flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.td-flipped .td-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.td-flip-front,
+.td-flip-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border-radius: 16px;
+}
+
+.td-flip-back {
+  transform: rotateY(180deg);
+  background: #f8f9fa;
+}
+
+/* Navigation & Controls */
+.td-card-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.td-nav-btn {
+  background: transparent;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  color: #2d3436;
+  transition: all 0.2s ease;
+}
+
+.td-nav-btn:hover {
+  background: #0984e3;
+  color: white;
+  border-color: #0984e3;
+}
+
+.td-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Content Sections */
+.td-section {
+  margin: 4rem 0;
+  position: relative;
+}
+
+.td-section-title {
+  font-size: 1.5rem;
+  color: #2d3436;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  padding-left: 0.5rem;
+  border-left: 4px solid #0984e3;
+}
+
+/* Study Cards */
+.td-card-carousel {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 1rem 0;
+  scrollbar-width: none;
+}
+
+.td-card-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.td-study-card {
+  flex: 0 0 280px;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Terms Grid */
+.td-terms-grid {
+  display: grid;
+  gap: 1.5rem;
+  padding: 0 2rem;
+}
+
+.td-term-card {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #0984e3;
+  transition: transform 0.2s ease;
+}
+
+.td-term-card:hover {
+  transform: translateX(8px);
+  background: #f1f3f5;
+}
+
+/* Scroll Controls */
+.td-scroll-wrapper {
+  position: relative;
+  padding: 0 2.5rem;
+}
+
+/* ========== Scroll Buttons Fix ========== */
+.td-scroll-wrapper {
+  position: relative;
+  padding: 0 2.5rem;
+}
+
+.td-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.td-left-scroll {
+  left: -20px;
+}
+
+.td-right-scroll {
+  right: -20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .td-header-section {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .td-main-title {
+    max-width: 100%;
+    font-size: 1.75rem;
+  }
+  
+  .td-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .td-flip-card {
+    height: 300px;
+  }
+  
+  .td-card-navigation {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .td-terms-grid {
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+  }
+  
+  .td-scroll-wrapper {
+    padding: 0 1.5rem;
+  }
+  
+  .td-scroll-btn {
+    width: 35px;
+    height: 35px;
+  }
+}
+.td-flip-section {
+  position: relative;
+  margin: 3rem 0;
+}
+
+.td-favorite-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  color: #cccccc;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px;
+  line-height: 1;
+}
+
+.td-favorite-btn.active {
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(255,215,0,0.3);
+}
+
+.td-favorite-btn:hover {
+  transform: scale(1.15);
+  color: #ffd700;
+}

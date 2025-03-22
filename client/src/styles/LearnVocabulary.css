@@ -1,0 +1,113 @@
+/* LearnVocabulary.css */
+.vocab-page-title {
+    text-align: center;
+    margin: 40px 0;
+    font-size: 2.5rem;
+    color: #2d3436;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.topic-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.topic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.topic-card img {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 15px 15px 0 0;
+}
+
+.topic-card .card-body {
+    padding: 1.5rem;
+    background: #f8f9fa;
+}
+
+.topic-card h3 {
+    color: #2d3436;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 2.3rem;
+}
+
+.topic-card .word-count {
+    color: #636e72;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topic-card .word-count i {
+    color: #0984e3;
+}
+
+.btn-detail {
+    background: #0984e3;
+    color: white !important;
+    padding: 8px 20px;
+    border-radius: 25px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-detail:hover {
+    background: #0873c4;
+    transform: scale(1.05);
+}
+.pagination-wrapper {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    gap: 10px;
+}
+
+.page-item {
+    list-style: none;
+}
+
+.page-link {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    color: #0984e3;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: white;
+}
+
+.page-link:hover {
+    background: #0984e3;
+    color: white;
+    border-color: #0984e3;
+}
+
+.page-link.active {
+    background: #0984e3;
+    color: white;
+    border-color: #0984e3;
+}
+
+.page-link.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
