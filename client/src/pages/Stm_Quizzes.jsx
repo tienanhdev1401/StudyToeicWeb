@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/stm-quizzes.css';
+import '../styles/Stm_quizzes.css';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 

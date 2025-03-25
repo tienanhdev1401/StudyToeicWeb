@@ -9,7 +9,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import Elements from './pages/Elements';
-import TestOnlineNew from './pages/test-online-new';
+import TestOnlineNew from './pages/Test_online_new';
 import StmQuizzes from './pages/Stm_Quizzes';
 import Dotest from './pages/DoTest';
 import LearnVocabulary from './pages/LearnVocabulary';
