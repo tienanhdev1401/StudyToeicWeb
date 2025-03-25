@@ -15,34 +15,14 @@ import Dotest from './pages/DoTest';
 import LearnVocabulary from './pages/LearnVocabulary';
 import LearnGrammary from './pages/LearnGrammar';
 import TopicDetail from './pages/TopicDetail';
+import Admin from './pages/Admin/AdminPage';
 import ExerciseList from './pages/ExerciseList';
 import DoExercise from './pages/DoExercise';
+import ProfilePage from './pages/Profile';
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
 
+
 function App() {
-  // const [message, setMessage] = useState('');
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
-
-  // useEffect(() => {
-  //   // Fetch hello message from the server
-  //   fetch('/api/hello')
-  //     .then(response => {
-  //       if (!response.ok) {
-  //         throw new Error('Network response was not ok');
-  //       }
-  //       return response.json();
-  //     })
-  //     .then(data => {
-  //       setMessage(data.message);
-  //       setLoading(false);
-  //     })
-  //     .catch(error => {
-  //       setError('Could not connect to server: ' + error.message);
-  //       setLoading(false);
-  //     });
-  // }, []);
-
   return (
     <div className="App">
     
@@ -65,6 +45,9 @@ function App() {
           <Route path="/toeic-exercise" element={<ExerciseList/>} />
           <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
           <Route path="/Dotest/:testID" element={<Dotest />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin" element={<Admin />} />
+
 
 
         </Routes>

@@ -1,37 +1,57 @@
+// Login.jsx
 import React, { useState } from 'react';
-import '../styles/Register.css'; // Sử dụng cùng file CSS
+import { mockUser } from '../data/mockUser';
+import { useNavigate } from 'react-router-dom';
+import '../styles/Register.css';
 
 const Login = () => {
-    
   const [showPassword, setShowPassword] = useState(false);
-  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
   const togglePassword = () => {
     setShowPassword(!showPassword);
   };
 
-  return (
-    
-        
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
+    setTimeout(() => {
+      if (email === mockUser.emailAddress && password === mockUser.password) {
+        navigate('/profile', { state: { user: mockUser } }); // Thêm dòng này
+      } else {
+        setError("Invalid email or password");
+      }
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  return (
     <div className="register-container">
-        <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="preloader-circle"></div>
-                <div class="preloader-img pere-text">
-                    <img src="assets/img/logo/loder.png" alt=""/>
-                </div>
+      <div id="preloader-active">
+        <div className="preloader d-flex align-items-center justify-content-center">
+          <div className="preloader-inner position-relative">
+            <div className="preloader-circle"></div>
+            <div className="preloader-img pere-text">
+              <img src="assets/img/logo/loder.png" alt=""/>
             </div>
+          </div>
         </div>
-        </div>
+      </div>
+      
       <div className="bg-overlay"></div>
       
       <div className="floating-card">
-        {/* Left content section - Giữ nguyên như Register */}
+        {/* Left content section */}
         <div className="content-section">
           <div className="content-inner">
-          <h1>TOEIC ONLINE</h1>
-          <p>Join our learning platform today and get access to thousands of lesson. Start your learning journey with us!</p>
+            <h1>TOEIC ONLINE</h1>
+            <p>Join our learning platform today and get access to thousands of lesson. Start your learning journey with us!</p>
             <div className="illustration">
               <img src="/assets/img/education-illustration.png" alt="Education" />
             </div>
@@ -42,13 +62,15 @@ const Login = () => {
           <div className="deco-circle blue"></div>
         </div>
         
-        {/* Right form section - Điều chỉnh cho Login */}
+        {/* Right form section */}
         <div className="form-section">
           <h2>USER LOGIN</h2>
           <p className="subtitle">Welcome to the website</p>
           
-          <form>
-            {/* Email/Username field */}
+          {error && <div className="error-message">{error}</div>}
+          
+          <form onSubmit={handleSubmit}>
+            {/* Email field */}
             <div className="form-group">
               <div className="input-wrapper">
                 <span className="input-icon">
@@ -57,7 +79,10 @@ const Login = () => {
                 <input 
                   type="email" 
                   className="custom-input" 
-                  placeholder="Email Address" 
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
             </div>
@@ -71,7 +96,10 @@ const Login = () => {
                 <input 
                   type={showPassword ? "text" : "password"} 
                   className="custom-input" 
-                  placeholder="Password" 
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
                 <span className="input-toggle" onClick={togglePassword}>
                   <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
@@ -79,10 +107,8 @@ const Login = () => {
               </div>
             </div>
             
-           {/* Remember me & Forgot password */}
-          
-          {/* Remember me & Forgot password */}
-          <div className="form-group flex justify-between items-center">
+            {/* Remember me & Forgot password */}
+            <div className="form-group flex justify-between items-center">
               <label className="terms-group">
                 <input type="checkbox" />
                 <span>Remember me</span>
@@ -92,8 +118,13 @@ const Login = () => {
               </a>
             </div>
 
-
-            <button type="submit" className="submit-btn">LOGIN</button>
+            <button 
+              type="submit" 
+              className="submit-btn"
+              disabled={isLoading}
+            >
+              {isLoading ? 'LOGGING IN...' : 'LOGIN'}
+            </button>
             
             <div className="login-link">
               Don't have an account? <a href="/register">Create Account</a>
