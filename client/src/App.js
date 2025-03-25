@@ -15,12 +15,6 @@ import Dotest from './pages/DoTest';
 import LearnVocabulary from './pages/LearnVocabulary';
 import LearnGrammary from './pages/LearnGrammar';
 import TopicDetail from './pages/TopicDetail';
-<<<<<<< HEAD
-import ExerciseList from './pages/ExerciseList';
-import DoExercise from './pages/DoExercise';
-=======
-import ProfilePage from './pages/Profile';
->>>>>>> 2095b1e (add ProfilePage)
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
 
 function App() {
@@ -69,8 +63,7 @@ function App() {
           <Route path="/toeic-exercise" element={<ExerciseList/>} />
           <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
           <Route path="/Dotest/:testID" element={<Dotest />} />
-          <Route path="/profile" element={<ProfilePage />} />
-
+          <Route path="/admin" element={<Admin />} />
 
         </Routes>
       </BrowserRouter>
