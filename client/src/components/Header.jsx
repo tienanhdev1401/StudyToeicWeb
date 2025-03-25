@@ -1,5 +1,4 @@
 import React from 'react';
-import { FaUser } from 'react-icons/fa';
 
 const Header = ({ style, className }) => {
     return (
@@ -36,8 +35,6 @@ const Header = ({ style, className }) => {
                                                     {/* Button */}
                                                     <li className="button-header margin-left "><a href="/test-online-new" className="btn">Join</a></li>
                                                     <li className="button-header"><a href="/login" className="btn btn3">Log in</a></li>
-                                                    <li className="user-icon-wrapper" style={{ marginLeft: '30px' }} ><a href="/profile" className="user-icon"><FaUser /></a>
-                                                    </li>
                                                 </ul>
                                             </nav>
                                         </div>
