@@ -14,6 +14,7 @@ import StmQuizzes from './pages/Stm_Quizzes';
 import Dotest from './pages/DoTest';
 import LearnVocabulary from './pages/LearnVocabulary';
 import TopicDetail from './pages/TopicDetail';
+import Admin from './pages/Admin/AdminPage';
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
 
 function App() {
@@ -59,7 +60,7 @@ function App() {
           <Route path="/Stm_Quizzes/:testId" element={<StmQuizzes />} />
           <Route path="/learn-vocabulary/:topicSlug" element={<TopicDetail />} />
           <Route path="/Dotest/:testID" element={<Dotest />} />
-
+          <Route path="/admin" element={<Admin />} />
 
         </Routes>
       </BrowserRouter>
