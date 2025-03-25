@@ -103,13 +103,13 @@ const Home = () => {
                                     id: 2,
                                     title: "Learn Grammar",
                                     image: "assets/img/gallery/topic2.png",
-                                    pageLink: "/learn-grammar"
+                                    pageLink: "/learn-grammary"
                                 },
                                 {
                                     id: 3,
                                     title: "Practice Exercises",
                                     image: "assets/img/gallery/topic3.png",
-                                    pageLink: "/do-exercise"
+                                    pageLink: "/toeic-exercise"
                                 }
                             ].map((course) => (
                                 <div className="col-lg-4 col-md-6" key={course.id}>
