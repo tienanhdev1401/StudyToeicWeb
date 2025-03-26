@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Header from '../../components/AdminHeader';
 import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/AdminPage.module.css';
+import Dashboard from './Dashboard';
 
 const AdminPage = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -11,29 +12,34 @@ const AdminPage = () => {
       case 'dashboard':
         return (
           <div className={styles.contentArea}>
-            <h1>Dashboard</h1>
-            <p>Welcome to the admin dashboard</p>
+            <Dashboard />
           </div>
         );
-      case 'calendar':
-        return (
-          <div className={styles.contentArea}>
-            <h1>Calendar</h1>
-            <p>View and manage your schedule</p>
-          </div>
-        );
-      case 'profile':
-        return (
-          <div className={styles.contentArea}>
-            <h1>User Profile</h1>
-            <p>Manage your profile settings</p>
-          </div>
-        );
+        case 'vocabulary':
+          return (
+            <div className={styles.contentArea}>
+              <h1>Vocabulary Management</h1>
+              {/* Thêm component quản lý từ vựng ở đây */}
+            </div>
+          );
+        case 'grammar':
+          return (
+            <div className={styles.contentArea}>
+              <h1>Grammar Management</h1>
+              {/* Thêm component quản lý ngữ pháp ở đây */}
+            </div>
+          );
+        case 'exercise':
+          return (
+            <div className={styles.contentArea}>
+              <h1>Exercise Management</h1>
+              {/* Thêm component quản lý bài tập ở đây */}
+            </div>
+          );
       default:
         return (
           <div className={styles.contentArea}>
-            <h1>Dashboard</h1>
-            <p>Welcome to the admin dashboard</p>
+            <Dashboard />
           </div>
         );
     }

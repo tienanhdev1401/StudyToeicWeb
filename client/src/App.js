@@ -16,7 +16,9 @@ import LearnVocabulary from './pages/LearnVocabulary';
 import LearnGrammary from './pages/LearnGrammar';
 import TopicDetail from './pages/TopicDetail';
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
-
+import Admin from './pages/Admin/AdminPage';
+import ExerciseList from './pages/ExerciseList';
+import DoExercise from './pages/DoExercise';
 function App() {
   // const [message, setMessage] = useState('');
   // const [loading, setLoading] = useState(true);

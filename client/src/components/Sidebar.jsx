@@ -3,7 +3,7 @@ import styles from '../styles/Sidebar.module.css';
 const Sidebar = ({ onMenuClick }) => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [openSubmenus, setOpenSubmenus] = useState({
-    task: false,
+    content: false,
     users: false,
     tables: false,
     pages: false
@@ -18,7 +18,9 @@ const Sidebar = ({ onMenuClick }) => {
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
-    onMenuClick && onMenuClick(menu);
+    onMenuClick?.(menu); // Sử dụng optional chaining để an toàn
+    // Tự động đóng submenu khi chọn mục con (tuỳ chọn)
+    //setOpenSubmenus(prev => ({...prev, content: false}));
   };
 
   return (
@@ -45,7 +47,9 @@ const Sidebar = ({ onMenuClick }) => {
           </li>
 
           <li className={styles.menuItem}>
-            <button onClick={() => handleMenuClick('calendar')} className={styles.menuButton}>
+            <button onClick={() => handleMenuClick('calendar')}
+              className={`${styles.menuButton} ${activeMenu === 'calendar' ? styles.active : ''}`}
+            >
               <i className="fas fa-calendar mr-2"></i>
               Calendar
             </button>
@@ -54,21 +58,41 @@ const Sidebar = ({ onMenuClick }) => {
           
           <li className={styles.menuItem}>
             <button 
-              onClick={() => toggleSubmenu('task')}
-              className={`${styles.menuButton} ${activeMenu === 'task' ? styles.active : ''}`}
+              onClick={() => toggleSubmenu('content')}
+              className={`${styles.menuButton} ${['vocabulary', 'grammar', 'exercise', 'test', 'question'].includes(activeMenu)  ? styles.active : ''}`}
             >
               <i className="fas fa-tasks mr-2"></i>
               Content
-              <i className={`fas fa-chevron-${openSubmenus.task ? 'down' : 'right'} ml-auto`}></i>
+              <i className={`fas fa-chevron-${openSubmenus.content ? 'down' : 'right'} ml-auto`}></i>
             </button>
-            {openSubmenus.task && (
+            {openSubmenus.content && (
               <ul className={styles.subMenu}>
-                <li><button>Vocabulary</button></li>
-                <li><button>Grammar</button></li>
-                <li><button>Exercise</button></li>
-                <li><button>Test</button></li>
-                <li><button>Question</button></li>
-
+                <li>
+                  <button onClick={() => handleMenuClick('vocabulary')}
+                    className={`${styles.menuButton} ${activeMenu === 'vocabulary' ? styles.active : ''}`}
+                    >Vocabulary</button>
+                  
+                </li>
+                <li>
+                  <button onClick={() => handleMenuClick('grammar')}
+                    className={`${styles.menuButton} ${activeMenu === 'grammar' ? styles.active : ''}`}
+                    >Grammar</button>
+                </li>
+                <li>
+                  <button onClick={() => handleMenuClick('exercise')}
+                    className={`${styles.menuButton} ${activeMenu === 'exercise' ? styles.active : ''}`}
+                    >Exercise</button>
+                </li>
+                <li>
+                  <button onClick={() => handleMenuClick('test')}
+                    className={`${styles.menuButton} ${activeMenu === 'test' ? styles.active : ''}`}
+                    >Test</button>
+                </li>
+                <li>
+                  <button onClick={() => handleMenuClick('question')}
+                    className={`${styles.menuButton} ${activeMenu === 'question' ? styles.active : ''}`}
+                    >Question</button>
+                </li>
               </ul>
             )}
           </li>
@@ -84,8 +108,17 @@ const Sidebar = ({ onMenuClick }) => {
             </button>
             {openSubmenus.users && (
               <ul className={styles.subMenu}>
-                <li><button>Learner</button></li>
-                <li><button>Staff</button></li>
+                <li>
+                  <button onClick={() => handleMenuClick('learner')}
+                    className={`${styles.menuButton} ${activeMenu === 'learner' ? styles.active : ''}`}
+                    >Learner</button>
+                </li>
+                <li>
+                  <button onClick={() => handleMenuClick('staff')}
+                    className={`${styles.menuButton} ${activeMenu === 'staff' ? styles.active : ''}`}
+                    >Staff</button>
+                </li>
+               
               </ul>
             )}
           </li>
@@ -114,7 +147,9 @@ const Sidebar = ({ onMenuClick }) => {
           
           <li className={styles.menuItem}>
             <div className={styles.supportSection}>SUPPORT</div>
-            <button onClick={() => handleMenuClick('chat')} className={styles.menuButton}>
+            <button onClick={() => handleMenuClick('chat')}
+              className={`${styles.menuButton} ${activeMenu === 'chat' ? styles.active : ''}`}
+            >
               <i className="fas fa-comment-dots mr-2"></i>
               Chat
             </button>
