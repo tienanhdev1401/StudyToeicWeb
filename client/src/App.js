@@ -19,6 +19,7 @@ import Admin from './pages/Admin/AdminPage';
 import ExerciseList from './pages/ExerciseList';
 import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
+import GrammarDetail from './pages/GrammarDetail';
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
 
 
@@ -40,6 +41,7 @@ function App() {
           <Route path="/test-online-new" element={<TestOnlineNew/>} />
           <Route path="/learn-vocabulary" element={<LearnVocabulary/>} />
           <Route path="/learn-grammary" element={<LearnGrammary/>} />
+          <Route path="/learn-grammar/:topicSlug" element={<GrammarDetail/>} />
           <Route path="/Stm_Quizzes/:testId" element={<StmQuizzes />} />
           <Route path="/learn-vocabulary/:topicSlug" element={<TopicDetail />} />
           <Route path="/toeic-exercise" element={<ExerciseList/>} />

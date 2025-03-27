@@ -1,6 +1,6 @@
 // Login.jsx
 import React, { useState } from 'react';
-import { mockUser } from '../data/mockUser';
+import { mockUsers } from '../data/mockUser';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Register.css';
 
@@ -22,8 +22,14 @@ const Login = () => {
     setError("");
 
     setTimeout(() => {
-      if (email === mockUser.emailAddress && password === mockUser.password) {
-        navigate('/profile', { state: { user: mockUser } }); // Thêm dòng này
+      // if (email === mockUsers.emailAddress && password === mockUsers.password) {
+      //   navigate('/profile', { state: { user: mockUser } }); // Thêm dòng này
+      // } else {
+      //   setError("Invalid email or password");
+      // }
+      const user = mockUsers.find(u => u.emailAddress === email && u.password === password);
+      if (user) {
+        navigate('/profile', { state: { user } });
       } else {
         setError("Invalid email or password");
       }

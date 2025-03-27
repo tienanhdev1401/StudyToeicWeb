@@ -1,5 +1,6 @@
 // mockUser.js
-export const mockUser = {
+export const mockUsers = [
+  {
     id: 1,
     fullName: "Phan Hung Anh",
     emailAddress: "123@gmail.com",
@@ -15,4 +16,5 @@ export const mockUser = {
     joinAt: "2022-03-10T08:30:00Z",
     password: "123456",
     status: "ACTIVE"
-  };
+  },
+];
