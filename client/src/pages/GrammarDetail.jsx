@@ -33,4 +33,5 @@ const GrammarDetail = () => {
         
     );
 };
+
 export default GrammarDetail;
