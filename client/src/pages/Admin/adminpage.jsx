@@ -3,7 +3,7 @@ import Header from '../../components/AdminHeader';
 import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/AdminPage.module.css';
 import Dashboard from './Dashboard';
-
+import ManageVocabularyTopic from './ManageVocabularyTopic';
 const AdminPage = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
 
@@ -18,8 +18,7 @@ const AdminPage = () => {
         case 'vocabulary':
           return (
             <div className={styles.contentArea}>
-              <h1>Vocabulary Management</h1>
-              {/* Thêm component quản lý từ vựng ở đây */}
+              <ManageVocabularyTopic />
             </div>
           );
         case 'grammar':
