@@ -8,7 +8,6 @@ import { mockUsers } from '../data/mockUser';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/authService';
 import '../styles/Register.css';
-import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
