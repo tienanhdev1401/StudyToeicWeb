@@ -1,0 +1,383 @@
+.dashboard {
+    padding: 2rem;
+    background-color: #f8fafc;
+    min-height: 100vh;
+    display: grid;
+    gap: 2rem;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  /* Trong file Dashboard.module.css */
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .radioLabel {
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    background-color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-transform: capitalize;
+  }
+  
+  .radioLabel:hover {
+    background-color: #cbd5e1;
+  }
+  
+  .radioLabel.active {
+    background-color: #6366f1;
+    color: white;
+  }
+  
+  .radioInput {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+  
+
+.topCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.statsCard {
+  background: white;
+  padding: 2rem; /* Tăng padding */
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  min-height: 200px; /* Thêm chiều cao tối thiểu */
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.statsCard h3 {
+  color: #64748b;
+  margin-bottom: 0.5rem;
+  font-size: 2rem; /* Tăng kích thước tiêu đề */
+  font-weight: 600;
+}
+
+.statsValue {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statsValue span:first-child {
+  font-size: 3rem; /* Tăng kích thước số liệu */
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.statsValue span:last-child {
+  font-size: 1.5rem; /* Tăng kích thước phần trăm */
+}
+
+.targetCard {
+  background: white;
+  padding: 2rem; /* Tăng padding */
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  min-height: 150px; /* Thêm chiều cao tối thiểu */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.targetHeader h3 {
+  font-size: 2rem; /* Tăng kích thước tiêu đề */
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.targetPercentage span:first-child {
+  font-size: 1.5rem; /* Tăng kích thước phần trăm */
+  font-weight: 700;
+}
+
+.progressBar {
+  height: 10px; /* Tăng chiều cao progress bar */
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.adminDashboard {
+    padding: 2rem;
+    background: #f8fafc;
+    min-height: 100vh;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .timeFilters {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .timeFilter {
+    padding: 0.5rem 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    color: #344054;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .timeFilter.active {
+    background: #3B82F6;
+    color: white;
+    border-color: #3B82F6;
+  }
+  
+  .metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .metricCard {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .metricHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .metricIcon {
+    font-size: 1.5rem;
+    color: #3B82F6;
+  }
+  
+  .metricValue {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  
+  .positiveTrend {
+    color: #10B981;
+    font-size: 0.875rem;
+    margin-left: 0.5rem;
+  }
+  
+  .negativeTrend {
+    color: #EF4444;
+    font-size: 0.875rem;
+    margin-left: 0.5rem;
+  }
+  
+  .mainContent {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+  
+  .chartContainer {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .sidebarSection {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .pieChart {
+    height: 250px;
+    margin-top: 1rem;
+  }
+
+  /* Thêm các style cho bảng */
+.tableContainer {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-top: 2rem;
+  }
+  
+  .statsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .statsTable th {
+    text-align: left;
+    padding: 1rem;
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  
+  .statsTable td {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .categoryBadge {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+  }
+  .scoreWrapper {
+    position: relative;
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    min-width: 120px; /* Thêm min-width */
+  }
+  
+  .scoreBar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: #dbeafe;
+    z-index: -1;
+    border-radius: 4px;
+    opacity: 0.6;
+    transition: width 0.3s ease; /* Thêm hiệu ứng mượt */
+  }
+  
+
+/* Thêm media query cho mobile */
+@media (max-width: 768px) {
+  .topCards {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .statsCard, .targetCard {
+    padding: 1.5rem;
+    min-height: 130px;
+  }
+  
+  .statsValue span:first-child {
+    font-size: 1.8rem;
+  }
+
+  
+  .targetCard {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  }
+  
+  .targetHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .targetPercentage {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .progressBar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progressFill {
+    height: 100%;
+    background: #6366f1;
+    transition: width 0.3s ease;
+  }
+  
+  .chartContainer {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  }
+  
+  .additionalInfo {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  }
+  
+  .metricRow {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+  }
+  
+  .metricItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .positive {
+    color: #10b981;
+    font-weight: 500;
+  }
+  
+  .negative {
+    color: #ef4444;
+    font-weight: 500;
+  }
+  .statsTable {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .statsTable th,
+  .statsTable td {
+    min-width: 150px;
+  }
+}
