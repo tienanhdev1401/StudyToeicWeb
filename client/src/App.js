@@ -20,6 +20,10 @@ import ExerciseList from './pages/ExerciseList';
 import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
 import GrammarDetail from './pages/GrammarDetail';
+import { AuthProvider } from './context/AuthContext';
+
+// Gọi hàm này khi ứng dụng khởi động
+
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
 
 
@@ -28,7 +32,9 @@ function App() {
     <div className="App">
     
       <BrowserRouter basename="/">
+      <AuthProvider>
         <Routes>
+          
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/blog" element={<Blog />} />
@@ -49,10 +55,9 @@ function App() {
           <Route path="/Dotest/:testID" element={<Dotest />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<Admin />} />
-
-
-
+        
         </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </div>
   );

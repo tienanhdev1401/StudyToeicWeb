@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { mockUsers } from '../data/mockUser';
 import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../services/authService';
 import '../styles/Register.css';
 
 const Login = () => {
@@ -11,30 +12,29 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  //const { login } = useAuth(); // Lấy hàm login từ AuthContext
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
-    setTimeout(() => {
-      // if (email === mockUsers.emailAddress && password === mockUsers.password) {
-      //   navigate('/profile', { state: { user: mockUser } }); // Thêm dòng này
-      // } else {
-      //   setError("Invalid email or password");
-      // }
-      const user = mockUsers.find(u => u.emailAddress === email && u.password === password);
-      if (user) {
-        navigate('/profile', { state: { user } });
-      } else {
-        setError("Invalid email or password");
-      }
+  
+    try {
+      // Gọi service đăng nhập
+      const userData = await loginUser(email, password);
+      
+      // Nếu đăng nhập thành công
+      navigate('/'); // Điều hướng đến trang chính
+    } catch (err) {
+      // Xử lý lỗi đăng nhập
+      setError(err.message || "Đăng nhập thất bại");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -44,14 +44,14 @@ const Login = () => {
           <div className="preloader-inner position-relative">
             <div className="preloader-circle"></div>
             <div className="preloader-img pere-text">
-              <img src="assets/img/logo/loder.png" alt=""/>
+              <img src="assets/img/logo/loder.png" alt="" />
             </div>
           </div>
         </div>
       </div>
-      
+
       <div className="bg-overlay"></div>
-      
+
       <div className="floating-card">
         {/* Left content section */}
         <div className="content-section">
@@ -62,19 +62,19 @@ const Login = () => {
               <img src="/assets/img/education-illustration.png" alt="Education" />
             </div>
           </div>
-          
+
           <div className="deco-circle pink"></div>
           <div className="deco-circle yellow"></div>
           <div className="deco-circle blue"></div>
         </div>
-        
+
         {/* Right form section */}
         <div className="form-section">
           <h2>USER LOGIN</h2>
           <p className="subtitle">Welcome to the website</p>
-          
+
           {error && <div className="error-message">{error}</div>}
-          
+
           <form onSubmit={handleSubmit}>
             {/* Email field */}
             <div className="form-group">
@@ -82,9 +82,9 @@ const Login = () => {
                 <span className="input-icon">
                   <i className="fas fa-envelope"></i>
                 </span>
-                <input 
-                  type="email" 
-                  className="custom-input" 
+                <input
+                  type="email"
+                  className="custom-input"
                   placeholder="Email Address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -92,16 +92,16 @@ const Login = () => {
                 />
               </div>
             </div>
-            
+
             {/* Password field */}
             <div className="form-group">
               <div className="input-wrapper">
                 <span className="input-icon">
                   <i className="fas fa-lock"></i>
                 </span>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  className="custom-input" 
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="custom-input"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -112,7 +112,7 @@ const Login = () => {
                 </span>
               </div>
             </div>
-            
+
             {/* Remember me & Forgot password */}
             <div className="form-group flex justify-between items-center">
               <label className="terms-group">
@@ -124,14 +124,18 @@ const Login = () => {
               </a>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="submit-btn"
               disabled={isLoading}
             >
-              {isLoading ? 'LOGGING IN...' : 'LOGIN'}
+              {isLoading ? (
+                <div className="spinner-border text-light" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              ) : 'LOGIN'}
             </button>
-            
+
             <div className="login-link">
               Don't have an account? <a href="/register">Create Account</a>
             </div>
