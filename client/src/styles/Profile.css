@@ -1,0 +1,205 @@
+.containerprofile {
+    max-width: 1200px;
+    margin: 120px auto 50px auto; 
+    padding: 1rem;
+    background-color: #f7fafc;
+}
+  
+  /* Breadcrumb */
+  .breadcrumb {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+  }
+  
+  .breadcrumb-nav {
+    color: #718096;
+    font-size: 0.875rem;
+  }
+  
+  .breadcrumb-link {
+    color: #3182ce;
+    text-decoration: none;
+  }
+  
+  /* Grid Layout */
+  .grid-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .grid-container {
+      grid-template-columns: 1fr 2fr;
+    }
+  }
+  
+  /* Profile Card */
+  .profile-card {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-content {
+    text-align: center;
+  }
+  
+  .profile-image {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 9999px;
+    margin: 0 auto 1rem;
+    display: block;
+  }
+  
+  .profile-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+  }
+  
+  .profile-title, .profile-location {
+    color: #718096;
+    margin: 0.25rem 0;
+  }
+  
+  .profile-buttons {
+    margin-top: 1rem;
+  }
+  
+  .btn-primary {
+    background-color: #3182ce;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    margin-right: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .btn-secondary {
+    background-color: white;
+    color: #3182ce;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #3182ce;
+    cursor: pointer;
+  }
+  
+  /* Contact Information */
+  .contact-info {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .contact-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .contact-item {
+    margin-bottom: 0.5rem;
+  }
+  
+  .contact-label {
+    color: #718096;
+    margin: 0;
+  }
+  
+  .contact-value {
+    color: #2d3748;
+    margin: 0;
+  }
+  
+  /* Social Links */
+  .social-links {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .social-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .social-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .social-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+  }
+  
+  .social-link {
+    color: #2d3748;
+    text-decoration: none;
+  }
+  
+  /* Project Status */
+  .project-status {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .status-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .status-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .status-title {
+    color: #718096;
+    margin-bottom: 0.5rem;
+  }
+  
+  .progress-item {
+    margin-bottom: 1rem;
+  }
+  
+  .progress-label {
+    color: #2d3748;
+    margin: 0 0 0.25rem 0;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    background-color: #e2e8f0;
+    border-radius: 9999px;
+    height: 0.625rem;
+  }
+  
+  .progress-fill {
+    background-color: #3182ce;
+    height: 100%;
+    border-radius: 9999px;
+  }

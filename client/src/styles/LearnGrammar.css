@@ -1,0 +1,78 @@
+.grammarcontainer {
+    max-width: 90rem;
+    margin: 120px auto 50px auto; 
+    padding: 1rem;
+    background-color: #f3f4f6;
+  }
+  
+  .card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1rem;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #1e3a8a;
+  }
+  
+  .counter {
+    color: #6b7280;
+  }
+  
+  .test-list {
+    margin-top: 1rem;
+  }
+  
+  .test-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .item-content {
+    display: flex;
+    align-items: center;
+  }
+  
+  .item-number {
+    background-color: #f97316;
+    color: white;
+    border-radius: 9999px;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+  }
+  
+  .item-icon {
+    color: #374151;
+    margin-right: 0.5rem;
+  }
+  
+  .item-title {
+    font-weight: bold;
+    color: #1f2937;
+  }
+  
+  .item-score {
+    margin-left: auto;
+    color: #6b7280;
+  }
+
+  .item-title:hover {
+    color: #f97316; /* Màu cam khi hover */
+  }
