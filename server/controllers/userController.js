@@ -2,7 +2,9 @@ const bcrypt = require('bcrypt');
 const util = require('util');
 const mysql = require('mysql2'); 
 const jwt = require('jsonwebtoken');
-const {query} = require('../config/db');
+const db = require('../config/db');
+
+const query = util.promisify(db.query).bind(db);
 
 exports.getUser = async (req, res) => {
     try {
@@ -19,7 +21,7 @@ exports.getUser = async (req, res) => {
         }
 
         // Truy vấn thông tin người dùng
-        const results = await query('SELECT id, emailAddress, role FROM Users WHERE id = ? LIMIT 1', [decoded.id]);
+        const results = await query('SELECT * FROM Users WHERE id = ? LIMIT 1', [decoded.id]);
         if (results.length === 0) {
             return res.status(404).json({ error: 'Người dùng không tồn tại' });
         }

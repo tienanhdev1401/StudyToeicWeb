@@ -1,10 +1,6 @@
 // Login.jsx
 import React, { useState } from 'react';
-<<<<<<< HEAD
 import { useAuth } from '../context/AuthContext';
-=======
-import { mockUsers } from '../data/mockUser';
->>>>>>> dc5a72ec1026166610e0df754aa97615f5e4c536
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/authService';
 import '../styles/Register.css';
