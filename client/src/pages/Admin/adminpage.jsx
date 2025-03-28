@@ -46,11 +46,12 @@ const AdminPage = () => {
 
   return (
     <div className={styles.dashboard}>
-      <div>
+      <div className={styles.Sidebar}>
         <Sidebar onMenuClick={setCurrentPage} />
       </div>
+      
       <div className={styles.mainContent}>
-        <div>
+        <div className={styles.Header}>
           <Header />
         </div>
         {renderPage()}
