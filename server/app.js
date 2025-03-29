@@ -41,7 +41,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-
+app.use('/api/user', require('./routes/userRouter'));
 app.use('/api/auth', require('./routes/authRoutes'));
 // Start server
 app.listen(PORT, () => {

@@ -1,23 +1,43 @@
+/* AdminPage.module.css */
 .dashboard {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f4f5f7;
-  overflow: hidden;
+  position: relative;
 }
 
-
+.Sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 100;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
 
 .mainContent {
+  margin-left: 290px; /* Bằng chiều rộng sidebar */
   flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
+.Header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 280px; /* Bằng chiều rộng sidebar */
+  height: 60px;
+  background: #ffffff;
+  z-index: 9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+}
 
 .contentArea {
-  flex-grow: 1;
+  margin-top: 60px; /* Bằng chiều cao header */
   padding: 1.5rem;
+  min-height: calc(100vh - 60px);
   overflow-y: auto;
-  background-color: #f4f5f7;
 }
