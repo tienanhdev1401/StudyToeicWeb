@@ -36,6 +36,7 @@
   width: 300px;
 }
 
+
 .searchContainer i {
   color: #9ca3af;
   margin-right: 0.75rem;
@@ -94,6 +95,8 @@
   padding: 0.125rem 0.375rem;
   border-radius: 9999px;
 }
+
+
 
 .userAvatar {
   width: 4rem;

@@ -21,6 +21,7 @@ import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
 import GrammarDetail from './pages/GrammarDetail';
 import { AuthProvider } from './context/AuthContext';
+import VocabularyTopic from './pages/Admin/ManageVocabularyTopic';
 
 // Gọi hàm này khi ứng dụng khởi động
 
@@ -53,8 +54,9 @@ function App() {
           <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
           <Route path="/Dotest/:testID" element={<Dotest />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/admin" element={<Admin />} />
-        
+          <Route path="/admin/*" element={<Admin />} />
+
+          
         </Routes>
         </AuthProvider>
       </BrowserRouter>
