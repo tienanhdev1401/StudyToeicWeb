@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import  '../../styles/ManageVocabularyTopic.css';
 
 
@@ -41,6 +41,67 @@ const ManageVocabularyTopic = () => {
       { id: 10, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
       { id: 11, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
       { id: 12, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 13, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 14, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 15, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 16, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 17, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 18, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 19, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 20, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 21, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 22, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 23, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 24, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 25, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 26, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 27, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 28, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 29, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 30, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 31, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 32, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 33, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 34, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 35, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 36, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 37, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 38, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 39, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 40, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 41, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 42, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 43, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 44, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 45, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 46, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 47, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 48, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 49, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 50, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 51, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 52, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 53, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 54, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 55, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 56, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 57, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 58, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 59, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 60, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 61, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 62, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 63, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 64, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 65, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 66, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 67, word: 'Computer', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 68, word: 'Develop', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      { id: 69, word: 'Efficient', type: '100', definition: '100', status: 'In Review', date: '2025-03-28' },
+      { id: 70, word: 'Strategy', type: '100', definition: '100', status: 'Approved', date: '2025-03-28' },
+      { id: 71, word: 'Implement', type: '100', definition: '100', status: 'Rejected', date: '2025-03-28' },
+      { id: 72, word: 'Innovative', type: '100', definition: '100', status: 'Pending', date: '2025-03-28' },
+      
     ]);
   
     // Xử lý tìm kiếm
@@ -48,13 +109,33 @@ const ManageVocabularyTopic = () => {
       item.word.toLowerCase().includes(searchTerm.toLowerCase())
     );
   
-    // Tính toán phân trang
+    // Đầu tiên sort data
+    const sortedData = [...filteredData].sort((a, b) => {
+      if (sortDirection === 'asc') {
+        return a[sortField] > b[sortField] ? 1 : -1;
+      } else {
+        return a[sortField] < b[sortField] ? 1 : -1;
+      }
+    });
+  
+    // Sau đó mới tính toán phân trang
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   
-    // Add this sorting function
+    // Thêm useEffect để reset về trang 1 khi thay đổi itemsPerPage hoặc searchTerm
+    useEffect(() => {
+      setCurrentPage(1);
+    }, [itemsPerPage, searchTerm]);
+  
+    // Đảm bảo currentPage không vượt quá totalPages
+    useEffect(() => {
+      if (currentPage > totalPages) {
+        setCurrentPage(totalPages || 1);
+      }
+    }, [currentPage, totalPages]);
+  
     const handleSort = (field) => {
       if (sortField === field) {
         setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -63,15 +144,6 @@ const ManageVocabularyTopic = () => {
         setSortDirection('asc');
       }
     };
-  
-    // Add this function to sort the data
-    const sortedData = [...filteredData].sort((a, b) => {
-      if (sortDirection === 'asc') {
-        return a[sortField] > b[sortField] ? 1 : -1;
-      } else {
-        return a[sortField] < b[sortField] ? 1 : -1;
-      }
-    });
   
     const handleSelectAll = (e) => {
       if (e.target.checked) {
@@ -129,6 +201,39 @@ const ManageVocabularyTopic = () => {
       );
     };
 
+    // Thêm hàm tạo mảng số trang với dấu ...
+    const getPageNumbers = (currentPage, totalPages) => {
+      const delta = 1; // Số trang hiển thị ở hai bên trang hiện tại
+      const range = [];
+      const rangeWithDots = [];
+
+      // Luôn hiển thị trang đầu
+      range.push(1);
+
+      for (let i = currentPage - delta; i <= currentPage + delta; i++) {
+        if (i > 1 && i < totalPages) {
+          range.push(i);
+        }
+      }
+
+      // Luôn hiển thị trang cuối nếu không phải trang 1
+      if (totalPages > 1) {
+        range.push(totalPages);
+      }
+
+      // Thêm dấu ... vào các khoảng trống
+      let prev = 0;
+      for (const i of range) {
+        if (prev + 1 < i) {
+          rangeWithDots.push('...');
+        }
+        rangeWithDots.push(i);
+        prev = i;
+      }
+
+      return rangeWithDots;
+    };
+
     return (
         <div className="vocabulary-container">
           <h1>Manage Vocabulary Topic</h1>
@@ -179,43 +284,35 @@ const ManageVocabularyTopic = () => {
         <table className="vocabulary-table">
           <thead>
             <tr>
-              <th onClick={() => handleSort('id')} className="sortable id-column">
+              <th className="id-column">
                 <div className="id-header">
                   <input
                     type="checkbox"
                     onChange={handleSelectAll}
-                    onClick={handleCheckboxClick}
                     checked={selectedItems.length === sortedData.length}
+                    onClick={handleCheckboxClick}
                   />
-                  <span>STT</span>
-                  <span className="sort-icons">
+                  <span onClick={() => handleSort('id')} className="sortable">
+                    STT
                     <i className={`fas ${sortField === 'id' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
                   </span>
                 </div>
               </th>
               <th onClick={() => handleSort('word')} className="sortable">
                 Topic name
-                <span className="sort-icons">
-                  <i className={`fas ${sortField === 'word' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
-                </span>
+                <i className={`fas ${sortField === 'word' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
               <th onClick={() => handleSort('type')} className="sortable">
                 Number of words
-                <span className="sort-icons">
-                  <i className={`fas ${sortField === 'type' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
-                </span>
+                <i className={`fas ${sortField === 'type' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
               <th onClick={() => handleSort('definition')} className="sortable">
                 Number of questions
-                <span className="sort-icons">
-                  <i className={`fas ${sortField === 'definition' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
-                </span>
+                <i className={`fas ${sortField === 'definition' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
               <th onClick={() => handleSort('date')} className="sortable">
                 Date created
-                <span className="sort-icons">
-                  <i className={`fas ${sortField === 'date' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
-                </span>
+                <i className={`fas ${sortField === 'date' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
               <th>Action</th>
             </tr>
@@ -268,25 +365,33 @@ const ManageVocabularyTopic = () => {
           <span>
             Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
           </span>
-          <div>
+          <div className="pagination-buttons">
             <button 
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
+              className="page-btn"
             >
               Previous
             </button>
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentPage(index + 1)}
-                className={currentPage === index + 1 ? 'active' : ''}
-              >
-                {index + 1}
-              </button>
+            
+            {getPageNumbers(currentPage, totalPages).map((item, index) => (
+              item === '...' ? (
+                <span key={`dots-${index}`} className="page-dots">...</span>
+              ) : (
+                <button
+                  key={item}
+                  onClick={() => setCurrentPage(item)}
+                  className={`page-btn ${currentPage === item ? 'active' : ''}`}
+                >
+                  {item}
+                </button>
+              )
             ))}
+
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
+              className="page-btn"
             >
               Next
             </button>
