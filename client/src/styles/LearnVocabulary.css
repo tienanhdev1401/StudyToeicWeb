@@ -170,3 +170,12 @@
       margin-bottom: 0;
     }
   }
+  .scroll-top-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: inherit; 
+    font-size: inherit; 
+  }
+  

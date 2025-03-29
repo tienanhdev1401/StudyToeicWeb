@@ -51,7 +51,7 @@ const LearnVocabulary = () => {
     return (
         <div>
             <Header />
-            <main className="courses-area section-padding">
+            <main >
                 <div className="container">
                     <div className="header-container">
                         <div className="search-box">
@@ -79,7 +79,7 @@ const LearnVocabulary = () => {
                                                 <i className="fa-solid fa-book-open"></i>
                                                 <span>{topic.wordCount} từ</span>
                                             </div>
-                                            <button 
+                                            <button
                                                 className="btn-detail"
                                                 onClick={() => handleViewDetail(topic)}
                                             >
@@ -105,7 +105,7 @@ const LearnVocabulary = () => {
                                         &laquo;
                                     </button>
                                 </li>
-                                
+
                                 {[...Array(totalPages).keys()].map((page) => (
                                     <li key={page + 1} className="page-item">
                                         <button
@@ -133,8 +133,16 @@ const LearnVocabulary = () => {
             <Footer />
 
             {/* Scroll Up */}
+            {/* Scroll Up */}
             <div id="back-top">
-                <a title="Go to Top" href="#"> <i className="fas fa-level-up-alt"></i></a>
+                <button
+                    className="scroll-top-btn"
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    aria-label="Scroll to top"
+                    title="Go to Top"
+                >
+                    <i className="fas fa-level-up-alt"></i>
+                </button>
             </div>
         </div>
     );

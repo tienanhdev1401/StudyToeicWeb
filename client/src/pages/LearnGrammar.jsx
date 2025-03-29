@@ -6,7 +6,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { mockGrammars } from '../data/mockGrammars';
 import { isGrammarCompleted } from '../data/mockLearningProcess';
-import { useAuth } from '../context/AuthContext'; // Assuming you have auth context
+import { useAuth } from '../context/AuthContext';
 
 const LearnGrammar = () => {
     const navigate = useNavigate();

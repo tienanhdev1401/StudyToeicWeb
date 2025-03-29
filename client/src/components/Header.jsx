@@ -37,7 +37,11 @@ const Header = ({ style, className }) => {
                                                     <li className="button-header margin-left ">
                                                         <a href="/test-online-new" className="btn">Join</a>
                                                     </li>
-                                                    
+                                                    {!isLoggedIn && (
+                                                        <li className="button-header margin-left ">
+                                                            <Link to="/login" className="btn">Login</Link>
+                                                        </li>
+                                                    )}
                                                     {isLoggedIn && (
                                                         <li 
                                                             className="user-icon-wrapper" 
