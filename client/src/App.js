@@ -22,8 +22,11 @@ import ProfilePage from './pages/Profile';
 import GrammarDetail from './pages/GrammarDetail';
 import { AuthProvider } from './context/AuthContext';
 import VocabularyTopic from './pages/Admin/ManageVocabularyTopic';
+<<<<<<< HEAD
 
-// Gọi hàm này khi ứng dụng khởi động
+=======
+>>>>>>> 102cabb1ae6314eb75c5cb0b8f11a5702a452064
+
 
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
 
