@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
 const ProfilePage = () => {
-    const { isLoggedIn, user, logout } = useAuth();
+    const { isLoggedIn, logout } = useAuth();
     const navigate = useNavigate();
     const [profileData, setProfileData] = useState(null);
 
@@ -41,7 +41,7 @@ const ProfilePage = () => {
 
     const handleLogout = () => {
         logout();
-        navigate('/login');
+        navigate('/');
     };
 
     if (!profileData) return <div>Đang tải...</div>;
@@ -61,9 +61,6 @@ const ProfilePage = () => {
                             />
                             <h2 className="profile-name">{profileData.fullName}</h2>
                             <p className="profile-title">TOEIC Learner</p>
-                            <p className="profile-location">
-                                {profileData.city}, {profileData.country}
-                            </p>
                             <div className="profile-buttons">
                                 <button className="btn-primary">EDIT PROFILE</button>
                                 <button
@@ -76,7 +73,7 @@ const ProfilePage = () => {
                         </div>
                     </div>
 
-                    {/* Contact Information - các phần còn lại giữ nguyên */}
+                    {/* Contact Information */}
                     <div className="contact-info">
                         <div className="contact-grid">
                             <div className="contact-item">
@@ -88,19 +85,19 @@ const ProfilePage = () => {
                                 <p className="contact-value">{profileData.email}</p>
                             </div>
                             <div className="contact-item">
-                                <p className="contact-label">Phone</p>
-                                <p className="contact-value">{user.phoneNumber}</p>
+                                <p className="contact-label">Phone Number</p>
+                                <p className="contact-value">{profileData.phoneNumber}</p>
+                            </div>
+                            <div className="contact-item">
+                                <p className="contact-label">Gender</p>
+                                <p className="contact-value">{profileData.gender}</p>
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Date of Birth</p>
                                 <p className="contact-value">
-                                    {new Date(user.dateOfBirth).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Address</p>
-                                <p className="contact-value">
-                                    {user.address.street}, {user.address.city}, {user.address.country}
+                                    {profileData.dateOfBirth ? 
+                                        new Date(profileData.dateOfBirth).toLocaleDateString() : 
+                                        'Not provided'}
                                 </p>
                             </div>
                         </div>
@@ -143,23 +140,24 @@ const ProfilePage = () => {
                         <h3 className="section-title">Account Details</h3>
                         <div className="info-grid">
                             <div className="info-item">
-                                <p className="info-label">Member Since</p>
+                                <p className="info-label">Member Since:</p>
                                 <p className="info-value">
-                                    {new Date(user.joinAt).toLocaleDateString()}
+                                • {new Date(profileData.joinAt).toLocaleDateString()}
                                 </p>
                             </div>
                             <div className="info-item">
-                                <p className="info-label">Account Status</p>
-                                <p className="info-value badge">{user.status}</p>
+                                <p className="info-label">Account Status:</p>
+                                •<p className="info-value badge">{profileData.status}</p>
                             </div>
                             <div className="info-item">
-                                <p className="info-label">User ID</p>
-                                <p className="info-value">{user.id}</p>
+                                <p className="info-label">Last Updated:</p>
+                                <p className="info-value">
+                                • {new Date(profileData.updatedAt).toLocaleDateString()}
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <Footer />
         </>

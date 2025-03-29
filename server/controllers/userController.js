@@ -31,7 +31,7 @@ exports.getUser = async (req, res) => {
         res.status(200).json({ 
             id: user.id, 
             fullName: user.fullname,
-            email: user.email, 
+            email: user.emailAddress, 
             phoneNumber: user.phoneNumber,
             dateOfBirth: user.dateOfBirth,
             gender: user.gender,
