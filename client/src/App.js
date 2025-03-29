@@ -21,6 +21,8 @@ import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
 import GrammarDetail from './pages/GrammarDetail';
 import { AuthProvider } from './context/AuthContext';
+import DoGrammarExercise from './pages/DoGrammarExercise'
+import DoVocabularyExercise from './pages/DoVocabularyExercise'
 
 // Gọi hàm này khi ứng dụng khởi động
 
@@ -54,6 +56,9 @@ function App() {
           <Route path="/Dotest/:testID" element={<Dotest />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/learn-grammar/:topicSlug/do-grammar-exercise" element={<DoGrammarExercise />} />
+          <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} />
+
         
         </Routes>
         </AuthProvider>

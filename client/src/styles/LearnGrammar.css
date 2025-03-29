@@ -1,78 +1,207 @@
+/* LearnGrammar.css - Enhanced Version */
+
+/* Main Container */
 .grammarcontainer {
-    max-width: 90rem;
-    margin: 120px auto 50px auto; 
-    padding: 1rem;
-    background-color: #f3f4f6;
+  max-width: 100rem;
+  margin: 0 auto 2rem auto;
+  padding: 1.5rem 2rem;
+  background-color: #f8f9fa;
+}
+
+/* Header Section */
+.header-container {
+  margin-top: 150px;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  margin-left: 320px;
+  margin-bottom: 2rem;
+}
+
+/* Card Styles */
+.card {
+  background-color: white;
+  border-radius: 0.8rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  margin-top: 1.5rem;
+}
+
+/* Search Box */
+.search-box {
+  position: relative;
+  width: 400px;
+  flex-shrink: 0;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 1.5rem; /* Larger icon */
+}
+
+.search-input {
+  padding: 1.2rem 1.8rem 1.2rem 4.2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 2rem;
+  width: 100%;
+  font-size: 1.1rem;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+/* Title Styles */
+.vocab-page-title {
+  font-size: 2.2rem; /* Larger title */
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0;
+}
+
+/* Card Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.8rem; /* Larger card title */
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.counter {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* Test Items - Enlarged */
+.test-list {
+  margin-top: 1rem;
+}
+
+.test-item {
+  display: flex;
+  align-items: center;
+  padding: 1.2rem 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.item-content {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem; /* More spacing */
+}
+
+/* Enlarged Number Circle */
+.item-number {
+  background-color: #f97316;
+  color: white;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Larger Book Icon */
+.item-icon {
+  color: #4b5563;
+  font-size: 1.8rem; /* Significantly larger */
+  margin-right: 0.8rem;
+}
+
+/* Bigger Title Text */
+.item-title {
+  font-size: 1.4rem; /* Larger text */
+  font-weight: 600;
+  color: #1f2937;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.item-title:hover {
+  color: #f97316;
+}
+
+.item-score {
+  margin-left: auto;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* Completed Items - Prominent */
+.test-item.completed {
+  background-color: #f0fff4;
+  border-left: 5px solid #4CAF50;
+  padding-left: 1rem;
+}
+
+/* Larger Checkmark Icon */
+.completed-icon {
+  color: #4CAF50;
+  margin-left: 1rem;
+  font-size: 1.8rem; /* Much larger */
+}
+
+.test-item.completed:hover {
+  background-color: #e0ffe8;
+  transform: translateX(5px);
+  transition: all 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .header-container {
+    margin-left: 0;
+    padding: 0 2rem;
+  }
+  
+  .search-box {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    margin-top: 6rem;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .vocab-page-title {
+    font-size: 1.8rem;
   }
   
   .card {
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 1rem;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 0.5rem;
+    padding: 1.5rem;
   }
   
   .title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #1e3a8a;
-  }
-  
-  .counter {
-    color: #6b7280;
-  }
-  
-  .test-list {
-    margin-top: 1rem;
-  }
-  
-  .test-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem 0;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  
-  .item-content {
-    display: flex;
-    align-items: center;
-  }
-  
-  .item-number {
-    background-color: #f97316;
-    color: white;
-    border-radius: 9999px;
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
+    font-size: 1.5rem;
   }
   
   .item-icon {
-    color: #374151;
-    margin-right: 0.5rem;
+    font-size: 1.5rem;
   }
   
   .item-title {
-    font-weight: bold;
-    color: #1f2937;
+    font-size: 1.2rem;
   }
   
-  .item-score {
-    margin-left: auto;
-    color: #6b7280;
+  .completed-icon {
+    font-size: 1.5rem;
   }
-
-  .item-title:hover {
-    color: #f97316; /* Màu cam khi hover */
-  }
+}
