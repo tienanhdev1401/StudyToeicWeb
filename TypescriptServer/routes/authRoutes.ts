@@ -18,4 +18,4 @@ router.get('/me', authenticate, (req: any, res) => {
   res.status(200).json({ user: req.user });
 });
 
-export default router;
+ export default router;

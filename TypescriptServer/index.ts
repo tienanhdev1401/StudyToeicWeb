@@ -13,10 +13,19 @@ const PORT = process.env.PORT || 5000;
 
 // Kết nối đến cơ sở dữ liệu
 import './config/db';
-import './routes/index'
+
+// Cấu hình CORS
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Sử dụng bodyParser để phân tích dữ liệu JSON
 app.use(bodyParser.json());
+app.use(express.json());    
+app.use(express.urlencoded({ extended: true }));
 
 // Cấu hình session và flash
 app.use(session({
@@ -33,20 +42,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Cấu hình CORS
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// Phục vụ static files
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-// Middleware xử lý JSON và URL-encoded
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Import router (cần dùng ES6 import trong các file TS kia luôn)
-
+// Import và đăng ký routes
+import route from './routes/index';
+route(app);
 
 // Start server
 app.listen(PORT, () => {

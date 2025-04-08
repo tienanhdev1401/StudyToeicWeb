@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cd client && npm run build",
-    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
-    "server": "node typescript/index.ts",
-    "client": "npm start --prefix client",
-    "start": "concurrently \"npm run server\" \"npm run client\""
+    "install-all": "npm install && cd client && npm install && cd ../TypescriptServer && npm install",
+    "client": "cd client && npm start",
+    "server": "cd TypescriptServer && npm run dev",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd client && npm run build && cd ../TypescriptServer && npm run build:start"
+
   },
   "repository": {
     "type": "git",
