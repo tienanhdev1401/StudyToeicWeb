@@ -28,11 +28,50 @@ export const loginUser = async (email, password) => {
   }
 };
 
-// Hàm đăng xuất
-export const logoutUser = () => {
-  localStorage.removeItem('user');
-  localStorage.removeItem('token');
+// Cập nhật hàm logoutUser
+export const logoutUser = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    
+    // Gọi API logout backend
+    await API.post('/auth/logout', null, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    
+  } catch (error) {
+    console.error('Lỗi đăng xuất:', error);
+    throw error;
+  } finally {
+    // Luôn xóa dữ liệu local dù API thành công hay thất bại
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+  }
 };
+
+// Thêm interceptor cho axios để xử lý token hết hạn
+API.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Tự động đăng xuất nếu nhận 401
+      logoutUser();
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Hàm kiểm tra đăng nhập
 export const isAuthenticated = () => {

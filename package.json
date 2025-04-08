@@ -28,7 +28,10 @@
   },
   "homepage": "https://github.com/tuidicodequang/StudyToeicWeb#readme",
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "@types/node": "^22.14.0",
+    "concurrently": "^9.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "axios": "^1.8.4",

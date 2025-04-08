@@ -3,8 +3,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../styles/LearnVocabulary.css';
 import { useNavigate } from 'react-router-dom';
+import { FaSearch } from 'react-icons/fa';
 
-// Sample data - bạn có thể thay thế bằng dữ liệu thực từ API
 const sampleTopics = [
     { id: 1, name: 'Du lịch', wordCount: 45, image: 'assets/img/gallery/testtopic.jpg' },
     { id: 2, name: 'Ẩm thực', wordCount: 32, image: 'assets/img/gallery/testtopic.jpg' },
@@ -23,20 +23,17 @@ const sampleTopics = [
 const ITEMS_PER_PAGE = 9;
 
 const LearnVocabulary = () => {
-  const navigate = useNavigate();
-
-    const handleViewDetail = (topic) => {
-        // Chuyển tên chủ đề thành dạng URL-friendly
-        const topicSlug = topic.name
-            .toLowerCase()
-            .replace(/ /g, '-')
-            .replace(/[^\w-]+/g, '');
-        
-        navigate(`/learn-vocabulary/${topicSlug}`);
-    };
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(sampleTopics.length / ITEMS_PER_PAGE);
-    const currentTopics = sampleTopics.slice(
+
+    // Lọc danh sách dựa trên từ khóa tìm kiếm
+    const filteredTopics = sampleTopics
+        .filter(topic => topic.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        .sort((a, b) => a.name.localeCompare(b.name)); // Sắp xếp theo thứ tự bảng chữ cái
+
+    const totalPages = Math.ceil(filteredTopics.length / ITEMS_PER_PAGE);
+    const currentTopics = filteredTopics.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
@@ -46,85 +43,106 @@ const LearnVocabulary = () => {
         setCurrentPage(newPage);
     };
 
+    const handleViewDetail = (topic) => {
+        const topicSlug = topic.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        navigate(`/learn-vocabulary/${topicSlug}`);
+    };
+
     return (
         <div>
-          
-            
-
             <Header />
-
-            <main className="courses-area section-padding">
-        <div className="container">
-          <h1 className="vocab-page-title">Từ vựng theo chủ đề</h1>
-          <div className="row">
-            {currentTopics.map((topic) => (
-              <div key={topic.id} className="col-xl-4 col-lg-4 col-md-6">
-                <div className="topic-card">
-                  <img src={topic.image} className="card-img-top" alt={topic.name} />
-                  <div className="card-body">
-                    <h3>{topic.name}</h3>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="word-count">
-                      <i className="fa-solid fa-book-open"></i>
-                        <span>{topic.wordCount} từ</span>
-                      </div>
-                      <button 
-                        className="btn-detail"
-                        onClick={() => handleViewDetail(topic)}
-                      >
-                        <i className="fas fa-eye"></i>
-                        Xem chi tiết
-                      </button>
+            <main >
+                <div className="container">
+                    <div className="header-container">
+                        <div className="search-box">
+                            <FaSearch className="search-icon" />
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm chủ đề..."
+                                className="search-input"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <h1 className="vocab-page-title">TỪ VỰNG THEO CHỦ ĐỀ</h1>
                     </div>
-                  </div>
+
+                    <div className="row">
+                        {currentTopics.map((topic) => (
+                            <div key={topic.id} className="col-xl-4 col-lg-4 col-md-6">
+                                <div className="topic-card">
+                                    <img src={topic.image} className="card-img-top" alt={topic.name} />
+                                    <div className="card-body">
+                                        <h3>{topic.name}</h3>
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <div className="word-count">
+                                                <i className="fa-solid fa-book-open"></i>
+                                                <span>{topic.wordCount} từ</span>
+                                            </div>
+                                            <button
+                                                className="btn-detail"
+                                                onClick={() => handleViewDetail(topic)}
+                                            >
+                                                <i className="fas fa-eye"></i>
+                                                Xem chi tiết
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Phân trang */}
+                    {totalPages > 1 && (
+                        <div className="pagination-wrapper">
+                            <ul className="pagination">
+                                <li className="page-item">
+                                    <button
+                                        className={`page-link ${currentPage === 1 ? 'disabled' : ''}`}
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                    >
+                                        &laquo;
+                                    </button>
+                                </li>
+
+                                {[...Array(totalPages).keys()].map((page) => (
+                                    <li key={page + 1} className="page-item">
+                                        <button
+                                            className={`page-link ${currentPage === page + 1 ? 'active' : ''}`}
+                                            onClick={() => handlePageChange(page + 1)}
+                                        >
+                                            {page + 1}
+                                        </button>
+                                    </li>
+                                ))}
+
+                                <li className="page-item">
+                                    <button
+                                        className={`page-link ${currentPage === totalPages ? 'disabled' : ''}`}
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                    >
+                                        &raquo;
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    )}
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Phân trang */}
-          {totalPages > 1 && (
-            <div className="pagination-wrapper">
-              <ul className="pagination">
-                <li className="page-item">
-                  <button
-                    className={`page-link ${currentPage === 1 ? 'disabled' : ''}`}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                  >
-                    &laquo;
-                  </button>
-                </li>
-                
-                {[...Array(totalPages).keys()].map((page) => (
-                  <li key={page + 1} className="page-item">
-                    <button
-                      className={`page-link ${currentPage === page + 1 ? 'active' : ''}`}
-                      onClick={() => handlePageChange(page + 1)}
-                    >
-                      {page + 1}
-                    </button>
-                  </li>
-                ))}
-
-                <li className="page-item">
-                  <button
-                    className={`page-link ${currentPage === totalPages ? 'disabled' : ''}`}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                  >
-                    &raquo;
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
-        </div>
-      </main>
-
+            </main>
             <Footer />
 
             {/* Scroll Up */}
+            {/* Scroll Up */}
             <div id="back-top">
-                <a title="Go to Top" href="#"> <i className="fas fa-level-up-alt"></i></a>
+                <button
+                    className="scroll-top-btn"
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    aria-label="Scroll to top"
+                    title="Go to Top"
+                >
+                    <i className="fas fa-level-up-alt"></i>
+                </button>
             </div>
         </div>
     );
