@@ -2,7 +2,7 @@
 
 |       Lệnh       | Chức năng                                      |
 | :----------------: | ------------------------------------------------ |
-|     npm start     | Chạy cả backend & frontend.                    |
+|     npm run start     | Chạy cả backend & frontend.                    |
 |   npm run server   | Chạy backend (Node.js).                         |
 |   npm run client   | Chạy frontend (React).                          |
 |    npm run dev    | Chạy cả backend & frontend trong chế độ dev |
