@@ -1,21 +1,21 @@
-import express, { Request, Response } from 'express';
-import { register, login, logout } from '../controllers/authController';
-import authMiddleware from '../middleware/authMiddleware';
+import { Router } from 'express';
+import authController from '../controllers/authController';
+import { authenticate } from '../middleware/auth';
 
-const router = express.Router();
+const router = Router();
 
 // Route đăng ký
-router.post('/register', register);
+router.post('/register', (req, res) => authController.register(req, res));
 
 // Route đăng nhập
-router.post('/login', login);
+router.post('/login', (req, res) => authController.login(req, res));
 
 // Route đăng xuất (yêu cầu xác thực)
-router.post('/logout', authMiddleware, logout);
+router.post('/logout', authenticate, (req, res) => authController.logout(req, res));
 
 // Route kiểm tra trạng thái xác thực
-router.get('/me', authMiddleware, (req: Request, res: Response) => {
-  res.status(200).json({ user: (req as any).user }); // hoặc định nghĩa `user` trong interface Request nếu muốn rõ ràng hơn
+router.get('/me', authenticate, (req: any, res) => {
+  res.status(200).json({ user: req.user });
 });
 
 export default router;

@@ -1,11 +1,10 @@
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
-import { Connection } from 'mysql2';
 
 dotenv.config({ path: './.env' });
 
 class Database {
-  private connection: Connection;
+  private connection: any;
 
   constructor() {
     this.connection = mysql.createConnection({
@@ -16,11 +15,7 @@ class Database {
       insecureAuth: true
     });
 
-    this.connect();
-  }
-
-  private connect(): void {
-    this.connection.connect((err) => {
+    this.connection.connect((err: any) => {
       if (err) {
         console.error('Lỗi kết nối đến cơ sở dữ liệu:', err.stack);
         return;
@@ -29,13 +24,9 @@ class Database {
     });
   }
 
-  public getConnection(): Connection {
-    return this.connection;
-  }
-
-  public query(sql: string, values?: any): Promise<any> {
+  query(sql: string, values?: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.connection.query(sql, values, (error, results) => {
+      this.connection.query(sql, values, (error: any, results: any) => {
         if (error) {
           return reject(error);
         }
@@ -45,5 +36,4 @@ class Database {
   }
 }
 
-const database = new Database();
-export default database;
+export default new Database();
