@@ -1,20 +1,21 @@
-// const express = require('express');
-// const router = express.Router();
-// const { register, login, logout } = require('../controllers/authController');
-// const authMiddleware = require('../middleware/authMiddleware');
+import { Router } from 'express';
+import authController from '../controllers/authController';
+import { authenticate } from '../middleware/auth';
 
-// // Route đăng ký
-// router.post('/register', register);
+const router = Router();
 
-// // Route đăng nhập
-// router.post('/login', login);
+// Route đăng ký
+router.post('/register', (req, res) => authController.register(req, res));
 
-// // Route đăng xuất (yêu cầu xác thực)
-// router.post('/logout', authMiddleware, logout);
+// Route đăng nhập
+router.post('/login', (req, res) => authController.login(req, res));
 
-// // Route kiểm tra trạng thái xác thực
-// router.get('/me', authMiddleware, (req, res) => {
-//   res.status(200).json({ user: req.user });
-// });
+// Route đăng xuất (yêu cầu xác thực)
+router.post('/logout', authenticate, (req, res) => authController.logout(req, res));
 
-// module.exports = router;
+// Route kiểm tra trạng thái xác thực
+router.get('/me', authenticate, (req: any, res) => {
+  res.status(200).json({ user: req.user });
+});
+
+export default router;

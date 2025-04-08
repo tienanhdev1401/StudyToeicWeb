@@ -1,88 +1,87 @@
-// const bcrypt = require('bcrypt');
-// const util = require('util');
-// const mysql = require('mysql2'); 
-// const jwt = require('jsonwebtoken');
-// const db = require('../config/db');
+import { Request, Response } from 'express';
+import { User } from '../models/User';
+import { UserRepository } from '../repositories/userRepository';
+import jwt from 'jsonwebtoken';
 
-// const query = util.promisify(db.query).bind(db);
+export class AuthController {
+  // Đăng ký người dùng mới
+  async register(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, password } = req.body;
 
-// exports.register = async (req, res) => {
-//     try {
-//         const { email, password } = req.body;
+      if (!email || !password) {
+        res.status(400).json({ error: 'Email và mật khẩu là bắt buộc' });
+        return;
+      }
 
-//         if (!email || !password) {
-//             return res.status(400).json({ error: 'Email và mật khẩu là bắt buộc' });
-//         }
+      // Kiểm tra email đã tồn tại chưa
+      const existingUser = await UserRepository.findByEmail(email);
+      if (existingUser) {
+        res.status(400).json({ message: 'Email đã được đăng ký' });
+        return;
+      }
 
-//         // Kiểm tra email đã tồn tại chưa
-//         const existingUsers = await query('SELECT id FROM users WHERE emailAddress = ? LIMIT 1', [email]);
+      // Tạo người dùng mới
+      const hashedPassword = await UserRepository.hashPassword(password);
+      const newUser = new User(email, hashedPassword);
+      await UserRepository.save(newUser);
 
-//         if (existingUsers.length > 0) {
-//             return res.status(400).json({ message: 'Email đã được đăng ký' });
-//         }
+      res.status(201).json({ message: 'Đăng ký thành công' });
+    } catch (error) {
+      console.error('Lỗi đăng ký:', error);
+      res.status(500).json({ message: 'Lỗi máy chủ' });
+    }
+  }
 
-//         // Mã hóa mật khẩu
-//         const hashedPassword = await bcrypt.hash(password, 10);
+  // Đăng nhập
+  async login(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        res.status(400).json({ error: 'Email và mật khẩu là bắt buộc' });
+        return;
+      }
+      
+      // Tìm người dùng
+      const user = await UserRepository.findByEmail(email);
+      if (!user) {
+        res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
+        return;
+      }
+      
+      // Kiểm tra mật khẩu
+      if (!user.checkPassword(password)) {
+        res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
+        return;
+      }
+      
+      // Tạo JWT token
+      const token = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        process.env.JWT_SECRET || 'default_secret',
+        { expiresIn: '5h' } 
+      );
 
-//         // Thêm người dùng mới
-//         await query('INSERT INTO users (emailAddress, password) VALUES (?, ?)', [email, hashedPassword]);
+      // Trả về token và thông tin người dùng
+      res.status(200).json({ 
+        token, 
+        user: { 
+          id: user.id, 
+          email: user.email, 
+          role: user.role 
+        } 
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ message: 'Lỗi máy chủ' });
+    }
+  }
 
-//         res.status(201).json({ message: 'Đăng ký thành công' });
-//     } catch (error) {
-//         console.error('Lỗi đăng ký:', error);
-//         res.status(500).json({ message: 'Lỗi máy chủ' });
-//     }
-// };
+  // Đăng xuất
+  logout(_req: Request, res: Response): void {
+    res.status(200).json({ message: 'Đăng xuất thành công' });
+  }
+}
 
-// exports.login = async (req, res) => {
-//     try {
-//         const { email, password } = req.body;
-//         // Kiểm tra email và password
-//         if (!email || !password) {
-//             return res.status(400).json({ error: 'Email và mật khẩu là bắt buộc' });
-//         }
-//         const results = await query('SELECT id, emailAddress, password, role FROM Users WHERE emailAddress = ? LIMIT 1', [email]);
-//         if (results.length === 0) {
-//             return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
-//         }
-//         const user = results[0];
-//         // Kiểm tra mật khẩu
-//         // const passwordValid = await bcrypt.compare(password, user.password);
-//         // if (!passwordValid) {
-//         //     return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
-//         // }
-//          if (password!=user.password) {
-//             return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
-//         }
-
-//         // Tạo JWT token
-//         const token = jwt.sign(
-//             { 
-//                 id: user.id, 
-//                 email: user.emailAddress, 
-//                 role: user.role 
-//             },
-//             process.env.JWT_SECRET,
-//             { expiresIn: '5h' } 
-//         );
-
-//         // Trả về token và thông tin người dùng
-//         res.status(200).json({ 
-//             token, 
-//             user: { 
-//                 id: user.id, 
-//                 email: user.email, 
-//                 role: user.role 
-//             } 
-//         });
-
-//     } catch (error) {
-//         console.error('Login error:', error);
-//         res.status(500).json({ message: 'Lỗi máy chủ' });
-//     }
-// };
-
-// // Đăng xuất (phía máy khách)
-// exports.logout = (req, res) => {
-//     res.status(200).json({ message: 'Đăng xuất thành công' });
-//   };
+export default new AuthController();
