@@ -232,58 +232,73 @@
 
   /* Thêm các style cho bảng */
 .tableContainer {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    margin-top: 2rem;
-  }
+  width: 100%;
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  margin-top: 2rem;
+  border: 1px solid #e5e7eb;
+  grid-column: 1 / -1;
+}
   
-  .statsTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-  }
+.statsTable {
+  width: 100%;
+  min-width: 1000px;
+  background-color: white !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
   
-  .statsTable th {
-    text-align: left;
-    padding: 1rem;
-    background-color: #f8fafc;
-    color: #64748b;
-    font-weight: 600;
-    border-bottom: 2px solid #e2e8f0;
-  }
+.statsTable th {
+  text-align: left;
+  padding: 1.5rem 2rem;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  border: 1px solid #e5e7eb;
+}
   
-  .statsTable td {
-    padding: 1rem;
-    border-bottom: 1px solid #f1f5f9;
-  }
+.statsTable td {
+  padding: 1.5rem 2rem;
+  background-color: white !important; 
+  border: 1px solid #e5e7eb;
+}
   
-  .categoryBadge {
-    background: #e0f2fe;
-    color: #0369a1;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.875rem;
-  }
-  .scoreWrapper {
-    position: relative;
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    min-width: 120px; /* Thêm min-width */
-  }
+.statsTable tr:hover td {
+  background-color: #e1f0ff !important;
+}
   
-  .scoreBar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    background: #dbeafe;
-    z-index: -1;
-    border-radius: 4px;
-    opacity: 0.6;
-    transition: width 0.3s ease; /* Thêm hiệu ứng mượt */
-  }
+.categoryBadge {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 0.5rem 2rem;
+  border-radius: 20px;
+  font-size: 1.5rem;
+  display: inline-block;
+}
+.scoreWrapper {
+  position: relative;
+  display: inline-block;
+  padding: 0.5rem 0;
+  min-width: 150px;
+}
+  
+.scoreBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #dbeafe;
+  z-index: -1;
+  border-radius: 4px;
+  opacity: 0.6;
+  transition: width 0.3s ease; /* Thêm hiệu ứng mượt */
+}
   
 
 /* Thêm media query cho mobile */
@@ -380,4 +395,34 @@
   .statsTable td {
     min-width: 150px;
   }
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.viewDetailBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 1rem 1.5rem;
+  background-color: white;
+  color: black;
+  border: 1px solid #cecfd1;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.viewDetailBtn:hover {
+  background-color: #d1dfff;
+}
+
+.viewDetailBtn i {
+  font-size: 1rem;
 }
