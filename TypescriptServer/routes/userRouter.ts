@@ -1,14 +1,15 @@
-// const express = require('express');
-// const router = express.Router();
-// const { getUser } = require('../controllers/userController');
-// const authMiddleware = require('../middleware/authMiddleware');
+import express, { Request, Response } from 'express';
 
-// // Route lấy thông tin người dùng
-// router.get('/profile', getUser);
+const router = express.Router();
+import { getUser } from'../controllers/userController';
+import authMiddleware from '../middleware/authMiddleware';
 
-// // Route kiểm tra trạng thái xác thực
-// router.get('/me', authMiddleware, (req, res) => {
-//   res.status(200).json({ user: req.user });
-// });
+// Route lấy thông tin người dùng
+router.get('/profile', getUser);
 
-// module.exports = router;
+// Route kiểm tra trạng thái xác thực
+router.get('/me', authMiddleware, (req: Request, res: Response) => {
+  res.status(200).json({ user: (req as any).user }); // hoặc định nghĩa `user` trong interface Request nếu muốn rõ ràng hơn
+});
+
+export default router;

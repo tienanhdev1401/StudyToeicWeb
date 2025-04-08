@@ -1,88 +1,104 @@
-// const bcrypt = require('bcrypt');
-// const util = require('util');
-// const mysql = require('mysql2'); 
-// const jwt = require('jsonwebtoken');
-// const db = require('../config/db');
+import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import util from 'util';
+import jwt from 'jsonwebtoken';
+import db from '../config/db';
 
-// const query = util.promisify(db.query).bind(db);
+// Tạo hàm query async từ db.query
+const query = util.promisify(db.query).bind(db) as (sql: string, values?: any[]) => Promise<any>;
 
-// exports.register = async (req, res) => {
-//     try {
-//         const { email, password } = req.body;
+// Giao diện người dùng (có thể mở rộng sau)
+interface User {
+  id: number;
+  emailAddress: string;
+  password: string;
+  role: string;
+}
 
-//         if (!email || !password) {
-//             return res.status(400).json({ error: 'Email và mật khẩu là bắt buộc' });
-//         }
+// Đăng ký
+export const register = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
 
-//         // Kiểm tra email đã tồn tại chưa
-//         const existingUsers = await query('SELECT id FROM users WHERE emailAddress = ? LIMIT 1', [email]);
+    if (!email || !password) {
+      res.status(400).json({ error: 'Email và mật khẩu là bắt buộc' });
+      return;
+    }
 
-//         if (existingUsers.length > 0) {
-//             return res.status(400).json({ message: 'Email đã được đăng ký' });
-//         }
+    const existingUsers: User[] = await query('SELECT id FROM users WHERE emailAddress = ? LIMIT 1', [email]);
 
-//         // Mã hóa mật khẩu
-//         const hashedPassword = await bcrypt.hash(password, 10);
+    if (existingUsers.length > 0) {
+      res.status(400).json({ message: 'Email đã được đăng ký' });
+      return;
+    }
 
-//         // Thêm người dùng mới
-//         await query('INSERT INTO users (emailAddress, password) VALUES (?, ?)', [email, hashedPassword]);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-//         res.status(201).json({ message: 'Đăng ký thành công' });
-//     } catch (error) {
-//         console.error('Lỗi đăng ký:', error);
-//         res.status(500).json({ message: 'Lỗi máy chủ' });
-//     }
-// };
+    await query('INSERT INTO users (emailAddress, password) VALUES (?, ?)', [email, hashedPassword]);
 
-// exports.login = async (req, res) => {
-//     try {
-//         const { email, password } = req.body;
-//         // Kiểm tra email và password
-//         if (!email || !password) {
-//             return res.status(400).json({ error: 'Email và mật khẩu là bắt buộc' });
-//         }
-//         const results = await query('SELECT id, emailAddress, password, role FROM Users WHERE emailAddress = ? LIMIT 1', [email]);
-//         if (results.length === 0) {
-//             return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
-//         }
-//         const user = results[0];
-//         // Kiểm tra mật khẩu
-//         // const passwordValid = await bcrypt.compare(password, user.password);
-//         // if (!passwordValid) {
-//         //     return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
-//         // }
-//          if (password!=user.password) {
-//             return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
-//         }
+    res.status(201).json({ message: 'Đăng ký thành công' });
+  } catch (error) {
+    console.error('Lỗi đăng ký:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ' });
+  }
+};
 
-//         // Tạo JWT token
-//         const token = jwt.sign(
-//             { 
-//                 id: user.id, 
-//                 email: user.emailAddress, 
-//                 role: user.role 
-//             },
-//             process.env.JWT_SECRET,
-//             { expiresIn: '5h' } 
-//         );
+// Đăng nhập
+export const login = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
 
-//         // Trả về token và thông tin người dùng
-//         res.status(200).json({ 
-//             token, 
-//             user: { 
-//                 id: user.id, 
-//                 email: user.email, 
-//                 role: user.role 
-//             } 
-//         });
+    if (!email || !password) {
+      res.status(400).json({ error: 'Email và mật khẩu là bắt buộc' });
+      return;
+    }
 
-//     } catch (error) {
-//         console.error('Login error:', error);
-//         res.status(500).json({ message: 'Lỗi máy chủ' });
-//     }
-// };
+    const results: User[] = await query('SELECT id, emailAddress, password, role FROM Users WHERE emailAddress = ? LIMIT 1', [email]);
 
-// // Đăng xuất (phía máy khách)
-// exports.logout = (req, res) => {
-//     res.status(200).json({ message: 'Đăng xuất thành công' });
-//   };
+    if (results.length === 0) {
+      res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
+      return;
+    }
+
+    const user = results[0];
+
+    // Nếu bạn chưa mã hóa mật khẩu trong DB, dùng điều kiện trực tiếp
+    // Nhưng nếu đã hash, dùng đoạn này:
+    // const passwordValid = await bcrypt.compare(password, user.password);
+    // if (!passwordValid) {
+    //   return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
+    // }
+
+    if (password !== user.password) {
+      res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
+      return;
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.emailAddress,
+        role: user.role,
+      },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '5h' }
+    );
+
+    res.status(200).json({
+      token,
+      user: {
+        id: user.id,
+        email: user.emailAddress,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ' });
+  }
+};
+
+// Đăng xuất
+export const logout = (_req: Request, res: Response): void => {
+  res.status(200).json({ message: 'Đăng xuất thành công' });
+};
