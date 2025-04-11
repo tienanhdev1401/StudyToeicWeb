@@ -1,10 +1,12 @@
 import { Application } from 'express';
 import authRouter from './authRoutes';
 import userRouter from './userRouter';
+import dictionaryRoutes from './dictionaryRoutes';
 import test from './test'
 function route(app: Application): void {
   app.use('/api/user', userRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/dictionary', dictionaryRoutes);
   app.use('/', test);
 }
 

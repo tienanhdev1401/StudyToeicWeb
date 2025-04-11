@@ -1,0 +1,150 @@
+
+.dictionary-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dictionary-page h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.search-bar {
+  display: flex;
+  margin-bottom: 30px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 12px 15px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+  outline: none;
+}
+
+.search-bar button {
+  padding: 12px 20px;
+  background-color: #4a6fa5;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.search-bar button:hover {
+  background-color: #3a5a80;
+}
+
+.word-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.word-header h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #333;
+}
+
+.phonetic {
+  margin-left: 15px;
+  color: #666;
+  font-style: italic;
+}
+
+.audio-button {
+  margin-left: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.origin {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.origin h3 {
+  margin-bottom: 5px;
+  color: #555;
+  font-size: 18px;
+}
+
+.meaning {
+  margin-bottom: 25px;
+}
+
+.part-of-speech {
+  color: #4a6fa5;
+  font-style: italic;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.definitions {
+  padding-left: 20px;
+}
+
+.definitions li {
+  margin-bottom: 15px;
+}
+
+.definition {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.example {
+  margin-top: 5px;
+  color: #666;
+  font-style: italic;
+}
+
+.synonyms, .antonyms {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.synonyms span, .antonyms span {
+  font-weight: bold;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: #4a6fa5;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  text-align: center;
+  color: #d9534f;
+  padding: 20px;
+  background-color: #f9f2f2;
+  border-radius: 4px;
+  margin: 20px 0;
+}

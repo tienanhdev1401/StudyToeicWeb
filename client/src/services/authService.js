@@ -14,6 +14,7 @@ export const loginUser = async (email, password) => {
     // Lưu thông tin người dùng và token
     localStorage.setItem('user', JSON.stringify(response.data.user));
     localStorage.setItem('token', response.data.token);
+   
 
     return response.data;
   } catch (error) {
@@ -32,12 +33,13 @@ export const loginUser = async (email, password) => {
 export const logoutUser = async () => {
   try {
     const token = localStorage.getItem('token');
-    
+   
     // Gọi API logout backend
     await API.post('/auth/logout', null, {
       headers: {
         Authorization: `Bearer ${token}`
       }
+      
     });
     
   } catch (error) {

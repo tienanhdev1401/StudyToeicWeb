@@ -2,7 +2,7 @@ import database from '../config/db';
 import bcrypt from 'bcrypt';
 import { User } from '../models/User';
 
-export class UserRepository {
+export class authRepository {
   // Tìm người dùng theo email
   static async findByEmail(email: string): Promise<User | null> {
     const results = await database.query(

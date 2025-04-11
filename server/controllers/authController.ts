@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { User } from '../models/User';
-import { UserRepository } from '../repositories/userRepository';
+import { authRepository } from '../repositories/authRepository';
 import jwt from 'jsonwebtoken';
 
 export class AuthController {
@@ -15,16 +15,16 @@ export class AuthController {
       }
 
       // Kiểm tra email đã tồn tại chưa
-      const existingUser = await UserRepository.findByEmail(email);
+      const existingUser = await authRepository.findByEmail(email);
       if (existingUser) {
         res.status(400).json({ message: 'Email đã được đăng ký' });
         return;
       }
 
       // Tạo người dùng mới
-      const hashedPassword = await UserRepository.hashPassword(password);
+      const hashedPassword = await authRepository.hashPassword(password);
       const newUser = new User(email, hashedPassword);
-      await UserRepository.save(newUser);
+      await authRepository.save(newUser);
 
       res.status(201).json({ message: 'Đăng ký thành công' });
     } catch (error) {
@@ -44,7 +44,7 @@ export class AuthController {
       }
       
       // Tìm người dùng
-      const user = await UserRepository.findByEmail(email);
+      const user = await authRepository.findByEmail(email);
       if (!user) {
         res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
         return;
