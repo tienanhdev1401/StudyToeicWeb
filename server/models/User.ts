@@ -2,9 +2,9 @@ export class User {
   constructor(
     public email: string,
     public password: string,
+    public fullName?: string,
     public role: string = 'user',
     public id?: number,
-    public fullName?: string,
     public phoneNumber?: string,
     public dateOfBirth?: Date,
     public gender?: string,

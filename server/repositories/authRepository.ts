@@ -20,24 +20,15 @@ export class authRepository {
 
   // Lưu người dùng mới hoặc cập nhật người dùng hiện có
   static async save(user: User): Promise<User> {
-    if (user.id) {
-      // Cập nhật người dùng hiện có
-      await database.query(
-        'UPDATE Users SET emailAddress = ?, password = ?, role = ? WHERE id = ?',
-        [user.email, user.password, user.role, user.id]
-      );
-    } else {
-      // Thêm người dùng mới
-      const result = await database.query(
-        'INSERT INTO Users (emailAddress, password, role) VALUES (?, ?, ?)',
-        [user.email, user.password, user.role]
-      );
-      
-      if ('insertId' in result) {
-        user.id = result.insertId as number;
-      }
+    if (!user.id) {
+      throw new Error('Không thể cập nhật user không có ID');
     }
     
+    await database.query(
+      'UPDATE Users SET emailAddress = ?, password = ?, role = ? WHERE id = ?',
+      [user.email, user.password, user.role, user.id]
+    );
+
     return user;
   }
 

@@ -1,6 +1,12 @@
 import database from '../config/db';
 import { User } from '../models/User';
 import util from 'util';
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
+import bcrypt from 'bcrypt';
+import { Request, Response } from 'express';
+import { authRepository } from '../repositories/authRepository';
+
 
 // Tạo query promisified từ kết nối db
 const query = util.promisify(
@@ -42,19 +48,39 @@ export class userRepository {
       throw error;
     }
   }
+  // Tạo người dùng mới
+  static async createUser(user: User): Promise<User> {
+    try {
+      const result = await query(
+        'INSERT INTO Users (emailAddress,fullname, password, role) VALUES (?, ?,?, ?)',
+        [user.email,user.fullName, user.password, "user"]
+      );
+      if ('insertId' in result) {
+        user.id = result.insertId as number;
+      }
+      return user;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  }
 
-//   // Các phương thức khác có thể được thêm vào khi cần
-//   static async updateUser(user: User): Promise<User> {
-//     try {
-//       await query(
-//         'UPDATE Users SET fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, avatar = ?, status = ?, updatedAt = NOW() WHERE id = ?',
-//         [user.fullName, user.phoneNumber, user.dateOfBirth, user.gender, user.avatar, user.status, user.id]
-//       );
+
+
+  // Cập nhật thông tin người dùng
+  static async updateUser(user: User): Promise<User> {
+    try {
+      const now = new Date();
+      await query(
+        'UPDATE Users SET fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, avatar = ?, status = ?, updatedAt = ? WHERE id = ?',
+        [user.fullName, user.phoneNumber, user.dateOfBirth, user.gender, user.avatar, user.status, now, user.id]
+      );
       
-//       return user;
-//     } catch (error) {
-//       console.error('Error updating user:', error);
-//       throw error;
-//     }
-//   }
+      user.updatedAt = now;
+      return user;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }
 }

@@ -32,23 +32,24 @@ export const loginUser = async (email, password) => {
 // Cập nhật hàm logoutUser
 export const logoutUser = async () => {
   try {
-    const token = localStorage.getItem('token');
-   
-    // Gọi API logout backend
-    await API.post('/auth/logout', null, {
+    await axios.post('/api/logout', {}, {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       }
-      
     });
-    
-  } catch (error) {
-    console.error('Lỗi đăng xuất:', error);
-    throw error;
-  } finally {
-    // Luôn xóa dữ liệu local dù API thành công hay thất bại
-    localStorage.removeItem('user');
+
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  } catch (error) {
+    // Nếu lỗi 401 thì không cần xử lý gì thêm
+    if (error.response?.status === 401) {
+      console.warn('Token hết hạn hoặc không hợp lệ khi logout');
+    } else {
+      console.error('Lỗi khi logout:', error);
+    }
+    // Vẫn xóa token để đăng xuất user
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 };
 

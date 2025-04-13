@@ -1,169 +1,117 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaGithub, FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
-import '../styles/Profile.css';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { useUser } from '../context/userContext';
+import '../styles/Register.css';
 
-const ProfilePage = () => {
-    const { isLoggedIn, user, logout } = useAuth();
-    const navigate = useNavigate();
-    const [profileData, setProfileData] = useState(null);
+const RegisterForm = () => {
+  const { sendVerificationCode, register } = useUser();
+  const [formData, setFormData] = useState({
+    fullname: '',
+    email: '',
+    password: '',
+    otp: '',
+  });
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [countdown, setCountdown] = useState(0);
 
-    useEffect(() => {
-        // Nếu chưa đăng nhập, chuyển về trang login
-        if (!isLoggedIn) {
-            navigate('/login');
-            return;
-        }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-        // Hàm fetch thông tin người dùng
-        const fetchUserProfile = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get('/api/user/profile', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                setProfileData(response.data);
-            } catch (error) {
-                console.error('Lỗi tải thông tin người dùng:', error);
-                logout(); // Đăng xuất nếu không tải được thông tin
-                navigate('/login');
-            }
-        };
+  const handleSendCode = async () => {
+    if (!formData.email) {
+      alert('Vui lòng nhập email');
+      return;
+    }
 
-        fetchUserProfile();
-    }, [isLoggedIn, navigate, logout]);
+    try {
+      await sendVerificationCode(formData.email);
+      setIsCodeSent(true);
+      setCountdown(60);
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
 
-    if (!profileData) return <div>Đang tải...</div>;
+      alert('Mã xác thực đã được gửi đến email của bạn');
+    } catch (error) {
+      console.error('Error sending verification code:', error);
+      alert('Đã có lỗi xảy ra khi gửi mã xác thực');
+    }
+  };
 
-    return (
-        <>
-            <Header />
-            <div className="containerprofile">
-                <div className="grid-container">
-                    {/* Profile Card */}
-                    <div className="profile-card">
-                        <div className="profile-content">
-                            <img
-                                alt="Profile"
-                                className="profile-image"
-                                src={profileData.avatar || '/default-avatar.png'}
-                            />
-                            <h2 className="profile-name">{profileData.fullName}</h2>
-                            <p className="profile-title">TOEIC Learner</p>
-                            <p className="profile-location">
-                                {profileData.city}, {profileData.country}
-                            </p>
-                            <div className="profile-buttons">
-                                <button className="btn-primary">EDIT PROFILE</button>
-                                <button
-                                    className="btn-secondary"
-                                    onClick={handleLogout}
-                                >
-                                    ĐĂNG XUẤT
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+  const handleRegister = async (e) => {
+    e.preventDefault();
 
-                    {/* Contact Information - các phần còn lại giữ nguyên */}
-                    <div className="contact-info">
-                        <div className="contact-grid">
-                            <div className="contact-item">
-                                <p className="contact-label">Full Name</p>
-                                <p className="contact-value">{profileData.fullName}</p>
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Email</p>
-                                <p className="contact-value">{profileData.email}</p>
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Phone</p>
-                                <p className="contact-value">{user.phoneNumber}</p>
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Date of Birth</p>
-                                <p className="contact-value">
-                                    {new Date(user.dateOfBirth).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Address</p>
-                                <p className="contact-value">
-                                    {user.address.street}, {user.address.city}, {user.address.country}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    if (!isCodeSent) {
+      alert('Vui lòng gửi mã xác thực trước');
+      return;
+    }
 
-                <div className="grid-container">
-                    {/* Social Links */}
-                    <div className="social-links">
-                        <h3 className="section-title">Social Connections</h3>
-                        <ul className="social-list">
-                            <li className="social-item">
-                                <FaGithub className="social-icon" />
-                                <a className="social-link" href="#">
-                                    GitHub
-                                </a>
-                            </li>
-                            <li className="social-item">
-                                <FaTwitter className="social-icon" />
-                                <a className="social-link" href="#">
-                                    Twitter
-                                </a>
-                            </li>
-                            <li className="social-item">
-                                <FaInstagram className="social-icon" />
-                                <a className="social-link" href="#">
-                                    Instagram
-                                </a>
-                            </li>
-                            <li className="social-item">
-                                <FaFacebook className="social-icon" />
-                                <a className="social-link" href="#">
-                                    Facebook
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    {/* Account Information */}
-                    <div className="account-info">
-                        <h3 className="section-title">Account Details</h3>
-                        <div className="info-grid">
-                            <div className="info-item">
-                                <p className="info-label">Member Since</p>
-                                <p className="info-value">
-                                    {new Date(user.joinAt).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div className="info-item">
-                                <p className="info-label">Account Status</p>
-                                <p className="info-value badge">{user.status}</p>
-                            </div>
-                            <div className="info-item">
-                                <p className="info-label">User ID</p>
-                                <p className="info-value">{user.id}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    try {
+      const response = await register(formData);
+      alert('Đăng ký thành công!');
+      console.log('Registered user:', response);
+    } catch (error) {
+      console.error('Error registering user:', error);
+      alert('Đã có lỗi xảy ra khi đăng ký');
+    }
+  };
 
-            </div>
-            <Footer />
-        </>
-    );
+  return (
+    <div className="register-container">
+      <form onSubmit={handleRegister}>
+        <input
+          type="text"
+          name="fullname"
+          placeholder="Full Name"
+          value={formData.fullname}
+          onChange={handleInputChange}
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email Address"
+          value={formData.email}
+          onChange={handleInputChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleInputChange}
+          required
+        />
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input
+            type="text"
+            name="otp"
+            placeholder="Mã xác thực"
+            value={formData.otp}
+            onChange={handleInputChange}
+            required
+          />
+          <button
+            type="button"
+            onClick={handleSendCode}
+            disabled={countdown > 0}
+          >
+            {countdown > 0 ? `Gửi lại mã (${countdown}s)` : 'Gửi mã'}
+          </button>
+        </div>
+        <button type="submit">Đăng ký</button>
+      </form>
+    </div>
+  );
 };
 
-export default ProfilePage;
+export default RegisterForm;
