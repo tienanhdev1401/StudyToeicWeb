@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Cấu hình axios với base URL
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api', // Điều chỉnh URL phù hợp với backend của bạn
+  baseURL: 'http://localhost:5000/api', 
   withCredentials: true
 });
 
