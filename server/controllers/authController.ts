@@ -18,11 +18,12 @@ export class AuthController {
       
       // Tìm người dùng
       const user = await authRepository.findByEmail(email);
+
       if (!user) {
         res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
         return;
       }
-      
+      console.log('Đăng nhập thành công:', user);
       // Kiểm tra mật khẩu
       if (!user.checkPassword(password)) {
         res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
@@ -35,7 +36,7 @@ export class AuthController {
         process.env.JWT_SECRET || 'default_secret',
         { expiresIn: '5h' } 
       );
-
+  
       // Trả về token và thông tin người dùng
       res.status(200).json({ 
         token, 
@@ -45,6 +46,7 @@ export class AuthController {
           role: user.role 
         } 
       });
+      
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({ message: 'Lỗi máy chủ' });

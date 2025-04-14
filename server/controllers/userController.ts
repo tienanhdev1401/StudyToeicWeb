@@ -155,7 +155,11 @@ export class UserController {
       const hashedPassword = await authRepository.hashPassword(password);
 
       // Tạo user mới
-      const newUser = new User(email, hashedPassword, fullname);
+      const newUser = new User({
+        email: email,
+        password: hashedPassword,
+        fullName: fullname,
+      });
       const createdUser = await userRepository.createUser(newUser);
       
       console.log("Preparing to send successful response");

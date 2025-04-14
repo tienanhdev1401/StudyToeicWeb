@@ -1,11 +1,11 @@
-import database from '../config/db';
+import db from '../config/db';
 import bcrypt from 'bcrypt';
 import { User } from '../models/User';
 
 export class authRepository {
   // Tìm người dùng theo email
   static async findByEmail(email: string): Promise<User | null> {
-    const results = await database.query(
+    const results = await db.query(
       'SELECT id, emailAddress as email, password, role FROM Users WHERE emailAddress = ? LIMIT 1', 
       [email]
     );
@@ -13,10 +13,10 @@ export class authRepository {
     if (Array.isArray(results) && results.length === 0) {
       return null;
     }
-
     const userData = results[0] as any;
-    return new User(userData.email, userData.password, userData.role, userData.id);
+    return new User(userData);
   }
+ 
 
   // Lưu người dùng mới hoặc cập nhật người dùng hiện có
   static async save(user: User): Promise<User> {
@@ -24,7 +24,7 @@ export class authRepository {
       throw new Error('Không thể cập nhật user không có ID');
     }
     
-    await database.query(
+    await db.query(
       'UPDATE Users SET emailAddress = ?, password = ?, role = ? WHERE id = ?',
       [user.email, user.password, user.role, user.id]
     );

@@ -14,4 +14,7 @@ router.get('/me', authenticate, (req: Request, res: Response) => {
   res.status(200).json({ user: (req as any).user });
 });
 
+// Route lấy thông tin profile người dùng
+router.get('/profile', authenticate, (req, res) => userControllers.getUser(req, res));
+
 export default router;
