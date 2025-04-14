@@ -32,11 +32,7 @@ export class userRepository {
   // Tạo người dùng mới
   static async createUser(user: User): Promise<User> {
     try {
-      console.log('Đang tạo người dùng mới:', user);
-      
-      // Thêm log để theo dõi quá trình
-      console.log('Bắt đầu thực hiện query...');
-      
+    
       const result = await db.query(
         'INSERT INTO Users (emailAddress, fullname, password, role) VALUES (?, ?, ?, ?)',
         [user.email, user.fullName, user.password, "user"]

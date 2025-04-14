@@ -162,7 +162,6 @@ export class UserController {
       });
       const createdUser = await userRepository.createUser(newUser);
       
-      console.log("Preparing to send successful response");
        res.status(201).json({
         success: true,
         message: 'Đăng ký thành công',
