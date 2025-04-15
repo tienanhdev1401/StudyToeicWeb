@@ -325,3 +325,33 @@
   font-weight: bold;
   padding-top: 2px;
 }
+
+/* Bổ sung thêm CSS cho phần OTP */
+.otp-group .input-wrapper {
+  display: flex;
+  position: relative;
+}
+
+.otp-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding: 0 15px;
+  background-color: #4a7bff;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.otp-btn:hover {
+  background-color: #3563d8;
+}
+
+.otp-btn:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}

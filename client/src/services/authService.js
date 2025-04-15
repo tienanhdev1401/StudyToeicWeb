@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Cấu hình axios với base URL
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api', // Điều chỉnh URL phù hợp với backend của bạn
+  baseURL: 'http://localhost:5000/api', 
   withCredentials: true
 });
 
@@ -13,6 +13,7 @@ export const loginUser = async (email, password) => {
     
     // Lưu thông tin người dùng và token
     localStorage.setItem('user', JSON.stringify(response.data.user));
+    
     localStorage.setItem('token', response.data.token);
    
 
@@ -32,23 +33,24 @@ export const loginUser = async (email, password) => {
 // Cập nhật hàm logoutUser
 export const logoutUser = async () => {
   try {
-    const token = localStorage.getItem('token');
-   
-    // Gọi API logout backend
-    await API.post('/auth/logout', null, {
+    await axios.post('/api/logout', {}, {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       }
-      
     });
-    
-  } catch (error) {
-    console.error('Lỗi đăng xuất:', error);
-    throw error;
-  } finally {
-    // Luôn xóa dữ liệu local dù API thành công hay thất bại
-    localStorage.removeItem('user');
+
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  } catch (error) {
+    // Nếu lỗi 401 thì không cần xử lý gì thêm
+    if (error.response?.status === 401) {
+      console.warn('Token hết hạn hoặc không hợp lệ khi logout');
+    } else {
+      console.error('Lỗi khi logout:', error);
+    }
+    // Vẫn xóa token để đăng xuất user
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 };
 

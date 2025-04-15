@@ -24,21 +24,20 @@ const Login = () => {
     setError("");
   
     try {
-      // Gọi service đăng nhập
       const userData = await loginUser(email, password);
-      
-      // Cập nhật trạng thái đăng nhập trong context
       login(userData);
-      
-      // Nếu đăng nhập thành công
       navigate('/');
-      
     } catch (err) {
-      // Xử lý lỗi đăng nhập
-      setError(err.message || "Đăng nhập thất bại");
+      if (err.response && err.response.status === 401) {
+        setError("Email hoặc mật khẩu không chính xác");
+      } else {
+        console.error("Lỗi không xác định:", err);
+        setError("Email hoặc mật khẩu không chính xác.");
+      }
     } finally {
       setIsLoading(false);
     }
+    
   };
 
   return (

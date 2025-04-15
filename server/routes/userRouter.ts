@@ -1,15 +1,20 @@
 import express, { Request, Response } from 'express';
-
+import userControllers from '../controllers/userController';
 const router = express.Router();
-//import { getUser } from'../controllers/userController';
 import { authenticate } from '../middleware/auth';
 
-// Route lấy thông tin người dùng
-//router.get('/profile', getUser);
+// Route gửi mã xác thực
+router.post('/send-verification-code', (req, res) => userControllers.sendVerificationCode(req, res));
 
-// Route kiểm tra trạng thái xác thực
+// Route đăng ký
+router.post('/register', (req, res) => userControllers.register(req, res));
+
+// Route lấy thông tin người dùng hiện tại
 router.get('/me', authenticate, (req: Request, res: Response) => {
-  res.status(200).json({ user: (req as any).user }); // hoặc định nghĩa `user` trong interface Request nếu muốn rõ ràng hơn
+  res.status(200).json({ user: (req as any).user });
 });
+
+// Route lấy thông tin profile người dùng
+router.get('/profile', authenticate, (req, res) => userControllers.getUser(req, res));
 
 export default router;

@@ -1,60 +1,69 @@
-import database from '../config/db';
+import db from '../config/db';
 import { User } from '../models/User';
-import util from 'util';
 
-// Tạo query promisified từ kết nối db
-const query = util.promisify(
-    database.query as (
-        sql: string,
-        values: any[],
-        callback: (err: Error | null, results: any) => void
-    ) => void
-).bind(database) as (sql: string, values?: any[]) => Promise<any>;
 
 export class userRepository {
   // Tìm người dùng theo ID
   static async findById(id: number): Promise<User | null> {
+    const results = await db.query(
+      `SELECT 
+        avatar,
+        dateOfBirth,
+        emailAddress AS email,
+        fullname AS fullName,
+        gender,
+        joinAt,
+        phoneNumber,
+        status,
+        updatedAt,
+        role
+      FROM Users 
+      WHERE id = ? 
+      LIMIT 1`, 
+      [id]
+    );
+    if (Array.isArray(results) && results.length === 0) {
+      return null;
+    }
+  
+    const userData = results[0] as any;
+    return new User(userData); 
+  }
+  // Tạo người dùng mới
+  static async createUser(user: User): Promise<User> {
     try {
-      const results: any[] = await query('SELECT * FROM Users WHERE id = ? LIMIT 1', [id]) as any[];
-      
-      if (results.length === 0) {
-        return null;
-      }
-      
-      const userData = results[0];
-      
-      return new User(
-        userData.emailAddress,
-        userData.password,
-        userData.role,
-        userData.id,
-        userData.fullname,
-        userData.phoneNumber, 
-        userData.dateOfBirth,
-        userData.gender,
-        userData.avatar,
-        userData.joinAt,
-        userData.status,
-        userData.updatedAt
+    
+      const result = await db.query(
+        'INSERT INTO Users (emailAddress, fullname, password, role) VALUES (?, ?, ?, ?)',
+        [user.email, user.fullName, user.password, "user"]
       );
+      if (!result) {
+        throw new Error('Kết quả query là null hoặc undefined');
+      }
+      user.id = result.insertId;
+      return user;
     } catch (error) {
-      console.error('Error finding user by ID:', error);
+      console.error('Lỗi khi tạo người dùng:', error);
       throw error;
     }
   }
 
-//   // Các phương thức khác có thể được thêm vào khi cần
-//   static async updateUser(user: User): Promise<User> {
-//     try {
-//       await query(
-//         'UPDATE Users SET fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, avatar = ?, status = ?, updatedAt = NOW() WHERE id = ?',
-//         [user.fullName, user.phoneNumber, user.dateOfBirth, user.gender, user.avatar, user.status, user.id]
-//       );
+
+
+  // Cập nhật thông tin người dùng
+  static async updateUser(user: User): Promise<User> {
+    try {
+      const now = new Date();
+      await db.query(
+        'UPDATE Users SET fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, avatar = ?, status = ?, updatedAt = ? WHERE id = ?',
+        [user.fullName, user.phoneNumber, user.dateOfBirth, user.gender, user.avatar, user.status, now, user.id]
+      );
       
-//       return user;
-//     } catch (error) {
-//       console.error('Error updating user:', error);
-//       throw error;
-//     }
-//   }
+      user.updatedAt = now;
+      return user;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }
 }

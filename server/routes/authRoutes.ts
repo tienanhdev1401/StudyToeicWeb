@@ -4,8 +4,7 @@ import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
-// Route đăng ký
-router.post('/register', (req, res) => authController.register(req, res));
+
 
 // Route đăng nhập
 router.post('/login', (req, res) => authController.login(req, res));

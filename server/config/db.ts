@@ -1,39 +1,49 @@
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: './.env' });
 
 class Database {
-  private connection: any;
+  private static instance: Database | null = null;
+  private pool: mysql.Pool;
 
-  constructor() {
-    this.connection = mysql.createConnection({
+  private constructor() {
+    this.pool = mysql.createPool({
       host: process.env.DATABASE_HOST,
       user: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE,
-      insecureAuth: true
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0
     });
-
-    this.connection.connect((err: any) => {
-      if (err) {
-        console.error('Lỗi kết nối đến cơ sở dữ liệu:', err.stack);
-        return;
-      }
-      console.log('Kết nối đến cơ sở dữ liệu thành công!');
-    });
+    console.log('Khởi tạo pool kết nối database');
   }
 
-  query(sql: string, values?: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.connection.query(sql, values, (error: any, results: any) => {
-        if (error) {
-          return reject(error);
-        }
-        resolve(results);
-      });
-    });
+  public static getInstance(): Database {
+    if (!Database.instance) {
+      Database.instance = new Database();
+    }
+    return Database.instance;
+  }
+
+  async query(sql: string, values?: any): Promise<any> {
+    try {
+      const [results] = await this.pool.query(sql, values);
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async end(): Promise<void> {
+    if (this.pool) {
+      await this.pool.end();
+      console.log('Đã đóng kết nối database pool');
+    }
   }
 }
 
-export default new Database();
+// Export instance thay vì class
+const db = Database.getInstance();
+export default db;

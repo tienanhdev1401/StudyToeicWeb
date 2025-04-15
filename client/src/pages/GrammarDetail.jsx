@@ -1,23 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaPlay } from 'react-icons/fa';
-import { mockGrammars } from '../data/mockGrammars';
 import '../styles/GrammarDetail.css'; 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import GrammarTopicService from '../services/grammarTopicService';
 
 const GrammarDetail = () => {
-    const { topicSlug } = useParams();
+    const { topicId } = useParams();
     const navigate = useNavigate();
+    const [topic, setTopic] = useState(topicId);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const topicKey = Object.keys(mockGrammars).find(
-        key => key.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') === topicSlug
-    );
+    useEffect(() => {
+        const fetchGrammarTopic = async () => {
+            try {
+                const topicData = await GrammarTopicService.getGrammarTopicById(topicId);
+                setTopic(topicData);
+                setLoading(false);
+            } catch (err) {
+                setError(err.message);
+                setLoading(false);
+                console.error('Error fetching grammar topic:', err);
+            }
+        };
 
-    const topic = mockGrammars[topicKey];
+        fetchGrammarTopic();
+    }, [topicId]);
 
     const handlePracticeClick = () => {
-        navigate(`/learn-grammar/${topicSlug}/do-grammar-exercise`, {
+        if (!topic) return;
+        
+        navigate(`/learn-grammar/${topicId}/do-grammar-exercise`, {
             state: {
                 topicId: topic.id,
                 topicName: topic.title,
@@ -26,8 +41,37 @@ const GrammarDetail = () => {
         });
     };
 
+    if (loading) {
+        return (
+            <>
+                <Header />
+                <div className="loading-container">
+                    <div className="loader"></div>
+                    <p>Loading grammar topic...</p>
+                </div>
+                <Footer />
+            </>
+        );
+    }
+
+    if (error) {
+        return (
+            <>
+                <Header />
+                <div className="error-message">{error}</div>
+                <Footer />
+            </>
+        );
+    }
+
     if (!topic) {
-        return <div className="error-message">Topic not found</div>;
+        return (
+            <>
+                <Header />
+                <div className="error-message">Topic not found</div>
+                <Footer />
+            </>
+        );
     }
 
     return (

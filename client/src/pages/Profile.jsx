@@ -78,26 +78,26 @@ const ProfilePage = () => {
                         <div className="contact-grid">
                             <div className="contact-item">
                                 <p className="contact-label">Full Name</p>
-                                <p className="contact-value">{profileData.fullName}</p>
+                                <p className="contact-value">{profileData.fullName || 'Not Provided'}</p>
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Email</p>
-                                <p className="contact-value">{profileData.email}</p>
+                                <p className="contact-value">{profileData.email || 'Not Provided'}</p>
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Phone Number</p>
-                                <p className="contact-value">{profileData.phoneNumber}</p>
+                                <p className="contact-value">{profileData.phoneNumber || 'Not Provided'}</p>
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Gender</p>
-                                <p className="contact-value">{profileData.gender}</p>
+                                <p className="contact-value">{profileData.gender || 'Not Provided'}</p>
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Date of Birth</p>
                                 <p className="contact-value">
-                                    {profileData.dateOfBirth ? 
-                                        new Date(profileData.dateOfBirth).toLocaleDateString() : 
-                                        'Not provided'}
+                                    {profileData.dateOfBirth && profileData.dateOfBirth !== '' ?
+                                        new Date(profileData.dateOfBirth).toLocaleDateString() :
+                                        'Not Provided'}
                                 </p>
                             </div>
                         </div>
@@ -142,7 +142,7 @@ const ProfilePage = () => {
                             <div className="info-item">
                                 <p className="info-label">Member Since:</p>
                                 <p className="info-value">
-                                • {new Date(profileData.joinAt).toLocaleDateString()}
+                                    • {new Date(profileData.joinAt).toLocaleDateString()}
                                 </p>
                             </div>
                             <div className="info-item">
@@ -152,7 +152,7 @@ const ProfilePage = () => {
                             <div className="info-item">
                                 <p className="info-label">Last Updated:</p>
                                 <p className="info-value">
-                                • {new Date(profileData.updatedAt).toLocaleDateString()}
+                                    • {new Date(profileData.updatedAt).toLocaleDateString()}
                                 </p>
                             </div>
                         </div>
