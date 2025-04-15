@@ -1,10 +1,6 @@
 // Login.jsx
 import React, { useState } from 'react';
-
 import { useAuth } from '../context/AuthContext';
-
-import { mockUsers } from '../data/mockUser';
-
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/authService';
 import '../styles/Register.css';
@@ -16,8 +12,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  
-  const { login } = useAuth();
+  const { login } = useAuth(); // Lấy hàm login từ AuthContext
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
@@ -27,12 +22,19 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    
+  
     try {
+      // Gọi service đăng nhập
       const userData = await loginUser(email, password);
-      login(userData.user); // Thêm dòng này để cập nhật context
-      navigate('/'); // Điều hướng đến trang chính
+      
+      // Cập nhật trạng thái đăng nhập trong context
+      login(userData);
+      
+      // Nếu đăng nhập thành công
+      navigate('/');
+      
     } catch (err) {
+      // Xử lý lỗi đăng nhập
       setError(err.message || "Đăng nhập thất bại");
     } finally {
       setIsLoading(false);
@@ -41,17 +43,6 @@ const Login = () => {
 
   return (
     <div className="register-container">
-      {/* <div id="preloader-active">
-        <div className="preloader d-flex align-items-center justify-content-center">
-          <div className="preloader-inner position-relative">
-            <div className="preloader-circle"></div>
-            <div className="preloader-img pere-text">
-              <img src="assets/img/logo/loder.png" alt="" />
-            </div>
-          </div>
-        </div>
-      </div> */}
-
       <div className="bg-overlay"></div>
 
       <div className="floating-card">

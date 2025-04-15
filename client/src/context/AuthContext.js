@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { getCurrentUser, isAuthenticated } from '../services/authService';
+import { getCurrentUser, isAuthenticated,logoutUser } from '../services/authService';
 
 // Tạo context
 const AuthContext = createContext(null);
@@ -31,9 +31,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Hàm đăng xuất
-  const logout = () => {
-    setUser(null);
-    setIsLoggedIn(false);
+  const logout = async () => {
+    setIsLoading(true);
+    try {
+      await logoutUser(); // Gọi service đăng xuất
+    } catch (error) {
+      console.error('Lỗi đăng xuất:', error);
+    } finally {
+      setUser(null);
+      setIsLoggedIn(false);
+      setIsLoading(false);
+    }
   };
 
   // Giá trị context

@@ -71,7 +71,18 @@ h1 {
   outline: none;
   color: #1f2937;
   padding-left: 8px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none;
 }
+
+.search-input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
 
 .vocabulary-table {
   margin-top: 20px;

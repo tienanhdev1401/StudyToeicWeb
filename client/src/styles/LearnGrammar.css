@@ -1,78 +1,218 @@
+/* LearnGrammar.css - Modernized Version */
+
+/* Main Container */
 .grammarcontainer {
-    max-width: 90rem;
-    margin: 120px auto 50px auto; 
-    padding: 1rem;
-    background-color: #f3f4f6;
-  }
-  
-  .card {
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 1rem;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 0.5rem;
-  }
-  
-  .title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #1e3a8a;
-  }
-  
-  .counter {
-    color: #6b7280;
-  }
-  
-  .test-list {
-    margin-top: 1rem;
-  }
-  
-  .test-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem 0;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  
-  .item-content {
-    display: flex;
-    align-items: center;
-  }
-  
-  .item-number {
-    background-color: #f97316;
-    color: white;
-    border-radius: 9999px;
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-  }
-  
-  .item-icon {
-    color: #374151;
-    margin-right: 0.5rem;
-  }
-  
-  .item-title {
-    font-weight: bold;
-    color: #1f2937;
-  }
-  
-  .item-score {
-    margin-left: auto;
-    color: #6b7280;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+/* Header Section */
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 120px 0 3rem 0;
+  text-align: center;
+}
+
+/* Search Box Modern Style */
+.search-box {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+}
+
+.search-icon {
+  position: absolute;
+  top: 40%;
+  margin-right: 20px;
+  transform: translateX(-90%);
+  color: #4f46e5;
+  font-size: 1.5rem; 
+  z-index: 10; 
+}
+
+.search-input {
+  padding: 1rem 1.5rem 1rem 10rem; 
+  border: 2px solid #e0e7ff;
+  border-radius: 50px;
+  width: 100%;
+  font-size: 1.5rem;
+  padding-left: 10rem;
+  background: linear-gradient(145deg, #ffffff, #f8f9ff);
+  box-shadow: 0 4px 6px 3px rgba(79, 70, 229, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.search-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+/* Title Styles with Gradient */
+.vocab-page-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #4f46e5, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Card Styles Modern */
+.card {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Card Header with Gradient */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  color: white;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.counter {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* Test Items Modern Design */
+.test-list {
+  padding: 1rem 2rem;
+}
+
+.test-item {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem;
+  margin: 0.75rem 0;
+  border-radius: 12px;
+  background: white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.test-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1);
+  border-color: #e0e7ff;
+}
+
+.item-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-grow: 1;
+}
+
+/* Modern Number Badge */
+.item-number {
+  background: linear-gradient(45deg, #4f46e5, #6366f1);
+  color: white;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+}
+
+/* Improved Icon Styling */
+.item-icon {
+  color: #4f46e5;
+  font-size: 1.6rem;
+  opacity: 0.9;
+  transition: color 0.3s ease;
+}
+
+.test-item:hover .item-icon {
+  color: #ef4444;
+}
+
+.item-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1f2937;
+  transition: color 0.2s ease;
+}
+
+.item-score {
+  color: #6b7280;
+  font-weight: 500;
+  margin-left: auto;
+  padding-right: 1rem;
+}
+
+/* Completed State Enhancements */
+.test-item.completed {
+  background: #f0fdf4;
+  border-left: 4px solid #10b981;
+}
+
+.completed-icon {
+  color: #10b981;
+  font-size: 1.8rem;
+  margin-left: 1rem;
+  filter: drop-shadow(0 2px 2px rgba(16, 185, 129, 0.2));
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container {
+    margin-top: 100px;
+    padding: 0 1rem;
   }
 
-  .item-title:hover {
-    color: #f97316; /* Màu cam khi hover */
+  .vocab-page-title {
+    font-size: 2rem;
   }
+
+  .card {
+    border-radius: 1rem;
+  }
+
+  .header {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .test-list {
+    padding: 0.5rem;
+  }
+
+  .test-item {
+    padding: 1rem;
+  }
+
+  .item-content {
+    gap: 1rem;
+  }
+
+  .item-number {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+}

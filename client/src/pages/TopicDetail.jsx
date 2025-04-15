@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import '../styles/TopicDetail.css';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const TopicDetail = () => {
     const [isFlipped, setIsFlipped] = useState(false);
@@ -50,6 +51,19 @@ const TopicDetail = () => {
         audio.play().catch(error => console.log("Error playing audio:", error));
     };
 
+    const navigate = useNavigate();
+    const { topicSlug } = useParams();
+
+    const handlePracticeClick = () => {
+        navigate(`/learn-vocabulary/${topicSlug}/do-vocabulary-exercise`, {
+            state: {
+                topicId: "123", // Replace with actual topic data
+                topicName: "Hướng dẫn cách sử dụng Quizizz để tạo câu hỏi trắc nghiệm",
+                topicContent: flashCards // Or whatever content you want to pass
+            }
+        });
+    };
+
     return (
         <div className="td-layout-container">
             <Header />
@@ -77,7 +91,12 @@ const TopicDetail = () => {
 
                         <div className="td-features-grid">
                             {featuresData.map((feature, index) => (
-                                <div key={index} className="td-feature-card">
+                                <div key={index} className="td-feature-card" onClick={() => {
+                                    // if (feature.label === 'Test') {
+                                        handlePracticeClick();
+                                    // }
+                                }}
+                                style={{ cursor: 'pointer' }}>
                                     <i className={`fas fa-${feature.icon} td-feature-icon`}></i>
                                     <span className="td-feature-label">{feature.label}</span>
                                 </div>

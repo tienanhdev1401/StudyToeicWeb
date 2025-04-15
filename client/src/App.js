@@ -21,10 +21,12 @@ import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
 import GrammarDetail from './pages/GrammarDetail';
 import { AuthProvider } from './context/AuthContext';
-import VocabularyTopic from './pages/Admin/ManageVocabularyTopic';
-
+import DoGrammarExercise from './pages/DoGrammarExercise'
+import DoVocabularyExercise from './pages/DoVocabularyExercise'
+import DictionaryPage from './pages/DictionaryPage';
 
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
+import TOEICCalculator from './pages/calculatorScore';
 
 function App() {
   return (
@@ -54,8 +56,11 @@ function App() {
           <Route path="/Dotest/:testID" element={<Dotest />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin/*" element={<Admin />} />
-
-          
+          <Route path="/dictionary" element={<DictionaryPage />} />
+          <Route path="/learn-grammar/:topicSlug/do-grammar-exercise" element={<DoGrammarExercise />} />
+          <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} />
+          <Route path="/calculateScore" element={<TOEICCalculator/>}/>
+        
         </Routes>
         </AuthProvider>
       </BrowserRouter>

@@ -115,7 +115,7 @@ const AdminDashboard = () => {
     <div className={styles.adminDashboard}>
       {/* Header Section */}
       <header className={styles.header}>
-        <h1>Quản trị hệ thống ZEnglish</h1>
+        <h1>ZEnglish Admin Dashboard</h1>
         <div className={styles.timeFilters}>
           {['Day', 'Week', 'Month', 'Year'].map((filter) => (
             <button
@@ -135,18 +135,18 @@ const AdminDashboard = () => {
       <section className={styles.metricsGrid}>
         <MetricCard
           icon={<FiUsers className={styles.metricIcon} />}
-          title="Tổng người dùng"
+          title="Total Users"
           value={DASHBOARD_DATA.users.total}
           trend={12.5}
         />
         <MetricCard
           icon={<FiBook className={styles.metricIcon} />}
-          title="Khóa học"
+          title="Total Tests"
           value={DASHBOARD_DATA.content.courses}
         />
         <MetricCard
           icon={<FiActivity className={styles.metricIcon} />}
-          title="Hoàn thành"
+          title="Completed Tests"
           value={`${DASHBOARD_DATA.content.completionRate}%`}
           trend={2.8}
         />
@@ -156,13 +156,13 @@ const AdminDashboard = () => {
       <main className={styles.mainContent}>
         {/* User Statistics Chart */}
         <article className={styles.chartContainer}>
-          <h2>Thống kê người dùng</h2>
+          <h2>User Statistics</h2>
           <Bar
             ref={barChartRef}
             data={{
               labels: DASHBOARD_DATA.users.chartLabels,
               datasets: [{
-                label: 'Người dùng mới',
+                label: 'New Users',
                 data: DASHBOARD_DATA.users.chartData,
                 backgroundColor: '#3B82F6',
                 borderRadius: 6
@@ -176,12 +176,12 @@ const AdminDashboard = () => {
         {/* Sidebar Section */}
         <aside className={styles.sidebar}>
           <div className={styles.sidebarSection}>
-            <h3>Phân bổ học tập</h3>
+            <h3>Learning Distribution</h3>
             <div className={styles.pieChart}>
               <Pie
                 ref={pieChartRef}
                 data={{
-                  labels: ['Đã hoàn thành', 'Đang học', 'Chưa bắt đầu'],
+                  labels: ['Completed', 'In Progress', 'Not Started'],
                   datasets: [{
                     data: [65, 25, 10],
                     backgroundColor: ['#3B82F6', '#10B981', '#6366F1']
@@ -197,50 +197,56 @@ const AdminDashboard = () => {
           </div>
         </aside>
         <div className={styles.tableContainer}>
-      <h2>Bài kiểm tra được làm nhiều nhất</h2>
-      <table className={styles.statsTable}>
-        <thead>
-          <tr>
-            <th>Tên bài test</th>
-            <th>Chuyên mục</th>
-            <th>Số lượt làm</th>
-            <th>Điểm trung bình</th>
-          </tr>
-        </thead>
-        <tbody>
-          {testData.map((test, index) => (
-            <tr key={index}>
-              <td>{test.testName}</td>
-              <td>
-                <span className={styles.categoryBadge}>
-                  {test.category}
-                </span>
-              </td>
-              <td>{test.attempts.toLocaleString()}</td>
-              <td>
-                <div className={styles.scoreWrapper}>
-                  {test.category === 'TOEIC' ? (
-                    <>
-                      {test.averageScore}/{test.maxScore}
-                      <div className={styles.scoreBar} 
-                        style={{ width: `${(test.averageScore/test.maxScore)*100}%` }}>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {test.averageScore}/10
-                      <div className={styles.scoreBar} 
-                        style={{ width: `${test.averageScore * 10}%` }}>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          <div className={styles.tableHeader}>
+            <h2>Most Completed Tests</h2>
+            <button className={styles.viewDetailBtn}>
+              <i className="fas fa-eye"></i>
+              See All
+            </button>
+          </div>
+          <table className={styles.statsTable}>
+            <thead>
+              <tr>
+                <th>Test Name</th>
+                <th>Category</th>
+                <th>Number of Attempts</th>
+                <th>Average Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {testData.map((test, index) => (
+                <tr key={index}>
+                  <td>{test.testName}</td>
+                  <td>
+                    <span className={styles.categoryBadge}>
+                      {test.category}
+                    </span>
+                  </td>
+                  <td>{test.attempts.toLocaleString()}</td>
+                  <td>
+                    <div className={styles.scoreWrapper}>
+                      {test.category === 'TOEIC' ? (
+                        <>
+                          {test.averageScore}/{test.maxScore}
+                          <div className={styles.scoreBar} 
+                            style={{ width: `${(test.averageScore/test.maxScore)*100}%` }}>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {test.averageScore}/10
+                          <div className={styles.scoreBar} 
+                            style={{ width: `${test.averageScore * 10}%` }}>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </main>
     </div>
   );
