@@ -270,13 +270,14 @@ export class UserController {
       }
 
       // Lấy dữ liệu cập nhật từ request body
-      const { fullName, phoneNumber, dateOfBirth, gender } = req.body;
+      const { fullName, phoneNumber, dateOfBirth, gender ,avatar} = req.body;
 
       // Cập nhật thông tin mới
-      currentUser.fullName = fullName || currentUser.fullName;
-      currentUser.phoneNumber = phoneNumber || currentUser.phoneNumber;
-      currentUser.dateOfBirth = dateOfBirth || currentUser.dateOfBirth;
-      currentUser.gender = gender || currentUser.gender;
+        currentUser.fullName = fullName || currentUser.fullName;
+        currentUser.phoneNumber = phoneNumber || currentUser.phoneNumber;
+        currentUser.dateOfBirth = dateOfBirth || currentUser.dateOfBirth;
+        currentUser.gender = gender || currentUser.gender;
+        currentUser.avatar = avatar || currentUser.avatar;
 
       // Lưu thông tin cập nhật vào database
       const updatedUser = await userRepository.updateUser(currentUser);

@@ -75,8 +75,9 @@ export class userRepository {
             null;
 
         await db.query(
-            'UPDATE Users SET fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, updatedAt = ? WHERE id = ?',
+            'UPDATE Users SET avatar=?, fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, updatedAt = ? WHERE id = ?',
             [
+                user.avatar,
                 user.fullName, 
                 user.phoneNumber, 
                 formattedDateOfBirth,

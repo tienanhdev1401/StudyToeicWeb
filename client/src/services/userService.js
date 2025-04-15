@@ -105,29 +105,53 @@ const userService = {
     }
   },
 
+  uploadImage: async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await fetch('https://api.imgbb.com/1/upload?key=', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        return data.data.url;
+      } else {
+        throw new Error('Failed to upload image');
+      }
+    } catch (error) {
+      throw new Error('Error uploading image: ' + error.message);
+    }
+  },
+
   updateProfile: async (userData) => {
     try {
-        const token = localStorage.getItem('token');
-        const response = await axios.put(
-            `${API_URL}/update-profile`,
-            userData,
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-        );
-
-        if (response.status >= 200 && response.status < 300) {
-            return response.data;
+      let updatedData = { ...userData };
+      
+      // Nếu có file ảnh mới, upload trước
+      if (userData.newAvatarFile instanceof File) {
+        const avatarUrl = await userService.uploadImage(userData.newAvatarFile);
+        updatedData.avatar = avatarUrl;
+        console.log('Uploaded avatar URL:', avatarUrl);
+      }
+      
+      // Xóa file khỏi dữ liệu gửi lên
+      delete updatedData.newAvatarFile;
+      console.log('Updated data:', updatedData);
+      const response = await axios.put('/api/user/update-profile', updatedData, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
         }
-        throw new Error('Failed to update profile');
+      });
+
+      return response.data;
     } catch (error) {
-        throw new Error(error.response?.data?.error || 'Error updating profile');
+      throw new Error(error.response?.data?.message || 'Error updating profile');
     }
   }
-  
 };
-
 
 export default userService;

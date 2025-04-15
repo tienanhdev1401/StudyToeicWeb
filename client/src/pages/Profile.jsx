@@ -16,6 +16,7 @@ const ProfilePage = () => {
     const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedUser, setEditedUser] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
     useEffect(() => {
         if (!loading && !isLoggedIn) {
@@ -28,6 +29,15 @@ const ProfilePage = () => {
             setEditedUser({ ...user });
         }
     }, [user]);
+
+    useEffect(() => {
+        // Cleanup function để xóa URL preview khi component unmount
+        return () => {
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
 
     if (!user) return null;
 
@@ -44,20 +54,56 @@ const ProfilePage = () => {
         setIsPasswordPopupOpen(false);
     };
 
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            const maxSize = 16 * 1024 * 1024; // 16MB
+
+            if (!validTypes.includes(file.type)) {
+                alert('Chỉ chấp nhận file ảnh JPG, PNG hoặc GIF');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                alert('Kích thước file không được vượt quá 16MB');
+                return;
+            }
+
+            // Tạo preview URL cho ảnh
+            const previewUrl = URL.createObjectURL(file);
+            setImagePreview(previewUrl);
+            
+            // Lưu file để đợi upload khi save
+            console.log('File to upload:', file);
+            setEditedUser(prev => ({
+                ...prev,
+                newAvatarFile: file
+            }));
+        }
+    };
+
     const handleEditToggle = () => {
         if (isEditing) {
-            handleSave();
+            setImagePreview(null);
+            setEditedUser({ ...user });
         }
         setIsEditing(!isEditing);
     };
 
     const handleSave = async () => {
         try {
-            console.log('Saving profile:', editedUser);
+            console.log('Saving profile with editedUser:', editedUser);
             await userService.updateProfile(editedUser);
             setIsEditing(false);
             await fetchUserProfile();
-        
+            
+            // Xóa preview
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+                setImagePreview(null);
+            }
         } catch (error) {
             console.error('Error saving profile:', error);
             alert('Failed to save changes');
@@ -78,17 +124,39 @@ const ProfilePage = () => {
                     {/* Profile Card */}
                     <div className="profile-card">
                         <div className="profile-content">
-                            <img
-                                alt="Profile"
-                                className="profile-image"
-                                src={user.avatar || '/default-avatar.png'}
-                            />
+                            <div className="profile-image-container">
+                                <img
+                                    alt="Profile"
+                                    className="profile-image"
+                                    src={imagePreview || user.avatar || '/assets/img/Placeholder-Profile-Image.jpg'}
+                                />
+                                {isEditing && (
+                                    <div className="image-upload-overlay">
+                                        <input
+                                            type="file"
+                                            id="avatar-upload"
+                                            accept="image/*"
+                                            style={{ display: 'none' }}
+                                            onChange={handleImageChange}
+                                        />
+                                        <label htmlFor="avatar-upload" className="upload-button">
+                                            Thay đổi ảnh
+                                        </label>
+                                    </div>
+                                )}
+                            </div>
                             <h2 className="profile-name">{user.fullName}</h2>
                             <p className="profile-title">TOEIC Learner</p>
                             <div className="profile-buttons">
-                                <button 
+                                <button
                                     className="btn-primary"
-                                    onClick={handleEditToggle}
+                                    onClick={() => {
+                                        if (isEditing) {
+                                            handleSave();
+                                        } else {
+                                            handleEditToggle();
+                                        }
+                                    }}
                                 >
                                     {isEditing ? 'SAVE' : 'EDIT PROFILE'}
                                 </button>
@@ -234,13 +302,13 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </div>
-            
+
             {/* Password Change Popup */}
-            <PasswordChangePopup 
-                isOpen={isPasswordPopupOpen} 
-                onClose={closePasswordPopup} 
+            <PasswordChangePopup
+                isOpen={isPasswordPopupOpen}
+                onClose={closePasswordPopup}
             />
-            
+
             <Footer />
         </>
     );
