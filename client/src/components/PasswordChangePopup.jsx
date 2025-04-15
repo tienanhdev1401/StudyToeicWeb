@@ -54,8 +54,6 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
 
     const handleSendCode = async () => {
         try {
-            const user = JSON.parse(localStorage.user);
-            console.log('Gửi mã xác thực...',user, formData.verificationCode);
             if (!user || !user.email) {
                 setErrors({
                     form: 'Không thể xác định email người dùng. Vui lòng làm mới trang.'
@@ -78,52 +76,51 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
-
+        // Xóa thông báo lỗi và thành công trước khi thực hiện yêu cầu
+        setSuccessMessage('');
+        setErrors({});
         try {
-            // Đảm bảo user tồn tại và có email
-            if (!user || !user.email) {
-                setErrors({
-                    form: 'Không thể xác định email người dùng. Vui lòng làm mới trang.'
-                });
-                return;
-            }
-
-            await changePassword({
-                email: user.email,
-                currentPassword: formData.currentPassword,
-                newPassword: formData.newPassword,
-                verificationCode: formData.verificationCode
+          // Đảm bảo user tồn tại và có email
+          if (!user || !user.email) {
+            setErrors({ form: 'Không thể xác định email người dùng. Vui lòng làm mới trang.' });
+            return;
+          }
+          await changePassword({
+            email: user.email,
+            currentPassword: formData.currentPassword,
+            newPassword: formData.newPassword,
+            verificationCode: formData.verificationCode
+          });
+          setSuccessMessage('Đổi mật khẩu thành công!');
+          // Reset form sau khi thành công
+          setTimeout(() => {
+            setFormData({
+              currentPassword: '',
+              newPassword: '',
+              confirmPassword: '',
+              verificationCode: ''
             });
-            
-            setSuccessMessage('Đổi mật khẩu thành công!');
-            
-            // Reset form sau khi thành công
-            setTimeout(() => {
-                setFormData({
-                    currentPassword: '',
-                    newPassword: '',
-                    confirmPassword: '',
-                    verificationCode: ''
-                });
-                setSuccessMessage('');
-                onClose();
-            }, 2000);
+            setSuccessMessage('');
+            onClose();
+          }, 2000);
+          
         } catch (error) {
-            console.error('Lỗi đổi mật khẩu:', error);
-            setErrors({
-                form: error.message || 'Đã xảy ra lỗi khi đổi mật khẩu'
-            });
+          console.error('Lỗi đổi mật khẩu:', error);
+          // Chỉ cập nhật thông báo lỗi, không làm gì khác
+          setErrors({ form: error.message || 'Đã xảy ra lỗi khi đổi mật khẩu' });
+          // Không chuyển trang, không đóng popup
+        } finally {
+       
         }
-    };
+      };
 
     if (!isOpen) return null;
 
     return (
         <div className="changepass-popup-overlay">
             <div className="changepass-popup-container">
-                <div className="changepass-popup-header">
+                <div className="changepass-custom-text-h2">
                     <h2>Đổi mật khẩu</h2>
-                    <button className="changepass-popup-close" onClick={onClose}>×</button>
                 </div>
                 
                 <form className="changepass-popup-form" onSubmit={handleSubmit}>

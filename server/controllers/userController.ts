@@ -167,7 +167,81 @@ export class UserController {
     }
   }
 
-
+  async changePassword(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, currentPassword, newPassword, verificationCode } = req.body;
+  
+      // Kiểm tra dữ liệu đầu vào
+      if (!email || !currentPassword || !newPassword || !verificationCode) {
+        res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin' });
+        return;
+      }
+  
+      // Kiểm tra mã OTP
+      const otpData = otpStore.get(email);
+      
+      if (!otpData) {
+        res.status(400).json({
+          success: false,
+          message: 'Bạn cần gửi mã xác thực trước'
+        });
+        return;
+      }
+  
+      // Kiểm tra mã OTP có hết hạn không
+      if (new Date() > otpData.expires) {
+        // Xóa mã hết hạn
+        otpStore.delete(email);
+        res.status(400).json({
+          success: false,
+          message: 'Mã xác thực đã hết hạn, vui lòng yêu cầu mã mới'
+        });
+        return;
+      }
+      // Kiểm tra mã xác thực
+      if (verificationCode !== otpData.otp) {
+        res.status(401).json({
+          success: false,
+          message: 'Mã xác thực không đúng'
+        });
+        return;
+      }
+  
+      // Tìm người dùng theo email
+      const user = await authRepository.findByEmail(email);
+      if (!user) {
+        res.status(404).json({ error: 'Người dùng không tồn tại' });
+        return;
+      }
+      // Kiểm tra mật khẩu hiện tại
+      const isPasswordValid = await user.checkPassword(currentPassword);
+      if (!isPasswordValid) {
+        res.status(401).json({ error: 'Mật khẩu hiện tại không đúng' });
+        return;
+      }
+  
+      // Mã hóa mật khẩu mới
+      const hashedNewPassword = await authRepository.hashPassword(newPassword);
+  
+      // Cập nhật mật khẩu
+      if (!user.id) {
+        throw new Error("User ID không hợp lệ");
+    }
+    
+    await userRepository.updatePassword(user.id, hashedNewPassword);
+    
+      // Xóa mã OTP sau khi đổi mật khẩu thành công
+      otpStore.delete(email);
+  
+      res.status(200).json({
+        success: true,
+        message: 'Đổi mật khẩu thành công'
+      });
+    } catch (error) {
+      console.error('Lỗi đổi mật khẩu:', error);
+      res.status(500).json({ error: 'Lỗi máy chủ' });
+    }
+  }
   // Các phương thức khác có thể được thêm vào sau
   async updateProfile(req: Request, res: Response): Promise<void> {
     try {

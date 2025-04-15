@@ -48,7 +48,20 @@ export class userRepository {
     }
   }
 
-
+  static async updatePassword(userId: number, newHashedPassword: string): Promise<boolean> {
+    try {
+      const now = new Date();
+      await db.query(
+        'UPDATE Users SET password = ?, updatedAt = ? WHERE id = ?',
+        [newHashedPassword, now, userId]
+      );
+      return true;
+    } catch (error) {
+      console.error('Lỗi khi cập nhật mật khẩu:', error);
+      throw error;
+    }
+  }
+  
 
   // Cập nhật thông tin người dùng
   static async updateUser(user: User): Promise<User> {
