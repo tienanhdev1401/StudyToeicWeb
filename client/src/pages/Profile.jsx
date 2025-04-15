@@ -7,19 +7,30 @@ import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/userContext';
 import PasswordChangePopup from '../components/PasswordChangePopup';
+import userService from '../services/userService';
 
 const ProfilePage = () => {
     const { isLoggedIn, logout } = useAuth();
-    const { user,loading } = useUser();
+    const { user, loading, fetchUserProfile } = useUser();
     const navigate = useNavigate();
     const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedUser, setEditedUser] = useState(null);
 
     useEffect(() => {
         if (!loading && !isLoggedIn) {
             navigate('/login');
         }
     }, [isLoggedIn, loading, navigate]);
+
+    useEffect(() => {
+        if (user) {
+            setEditedUser({ ...user });
+        }
+    }, [user]);
+
     if (!user) return null;
+
     const handleLogout = () => {
         logout();
         navigate('/');
@@ -32,7 +43,33 @@ const ProfilePage = () => {
     const closePasswordPopup = () => {
         setIsPasswordPopupOpen(false);
     };
-    if (!user) return <div>Đang tải thông tin người dùng...</div>;
+
+    const handleEditToggle = () => {
+        if (isEditing) {
+            handleSave();
+        }
+        setIsEditing(!isEditing);
+    };
+
+    const handleSave = async () => {
+        try {
+            console.log('Saving profile:', editedUser);
+            await userService.updateProfile(editedUser);
+            setIsEditing(false);
+            await fetchUserProfile();
+        
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            alert('Failed to save changes');
+        }
+    };
+
+    const handleInputChange = (field, value) => {
+        setEditedUser(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
     return (
         <>
             <Header />
@@ -49,7 +86,12 @@ const ProfilePage = () => {
                             <h2 className="profile-name">{user.fullName}</h2>
                             <p className="profile-title">TOEIC Learner</p>
                             <div className="profile-buttons">
-                                <button className="btn-primary">EDIT PROFILE</button>
+                                <button 
+                                    className="btn-primary"
+                                    onClick={handleEditToggle}
+                                >
+                                    {isEditing ? 'SAVE' : 'EDIT PROFILE'}
+                                </button>
                                 <button
                                     className="btn-secondary"
                                     onClick={handleLogout}
@@ -65,7 +107,16 @@ const ProfilePage = () => {
                         <div className="contact-grid">
                             <div className="contact-item">
                                 <p className="contact-label">Full Name</p>
-                                <p className="contact-value">{user.fullName || 'Not Provided'}</p>
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={editedUser?.fullName || ''}
+                                        onChange={(e) => handleInputChange('fullName', e.target.value)}
+                                        className="edit-input"
+                                    />
+                                ) : (
+                                    <p className="contact-value">{user.fullName || 'Not Provided'}</p>
+                                )}
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Email</p>
@@ -73,19 +124,50 @@ const ProfilePage = () => {
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Phone Number</p>
-                                <p className="contact-value">{user.phoneNumber || 'Not Provided'}</p>
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={editedUser?.phoneNumber || ''}
+                                        onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                                        className="edit-input"
+                                    />
+                                ) : (
+                                    <p className="contact-value">{user.phoneNumber || 'Not Provided'}</p>
+                                )}
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Gender</p>
-                                <p className="contact-value">{user.gender || 'Not Provided'}</p>
+                                {isEditing ? (
+                                    <select
+                                        value={editedUser?.gender || ''}
+                                        onChange={(e) => handleInputChange('gender', e.target.value)}
+                                        className="edit-input"
+                                    >
+                                        <option value="">Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                ) : (
+                                    <p className="contact-value">{user.gender || 'Not Provided'}</p>
+                                )}
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Date of Birth</p>
-                                <p className="contact-value">
-                                    {user.dateOfBirth && user.dateOfBirth !== '' ?
-                                        new Date(user.dateOfBirth).toLocaleDateString() :
-                                        'Not Provided'}
-                                </p>
+                                {isEditing ? (
+                                    <input
+                                        type="date"
+                                        value={editedUser?.dateOfBirth?.split('T')[0] || ''}
+                                        onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                                        className="edit-input"
+                                    />
+                                ) : (
+                                    <p className="contact-value">
+                                        {user.dateOfBirth && user.dateOfBirth !== '' ?
+                                            new Date(user.dateOfBirth).toLocaleDateString() :
+                                            'Not Provided'}
+                                    </p>
+                                )}
                             </div>
                             <div className="contact-item">
                                 <p className="contact-label">Password</p>

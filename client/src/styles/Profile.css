@@ -203,3 +203,21 @@
     height: 100%;
     border-radius: 9999px;
   }
+
+  /* Edit Input */
+  .edit-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  select.edit-input {
+    background-color: white;
+  }
+
+  input[type="date"].edit-input {
+    padding: 6px 8px;
+  }

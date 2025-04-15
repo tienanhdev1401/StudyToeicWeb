@@ -103,6 +103,28 @@ const userService = {
     } catch (error) {
       throw new Error('Lỗi lấy thông tin người dùng');
     }
+  },
+
+  updateProfile: async (userData) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.put(
+            `${API_URL}/update-profile`,
+            userData,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+
+        if (response.status >= 200 && response.status < 300) {
+            return response.data;
+        }
+        throw new Error('Failed to update profile');
+    } catch (error) {
+        throw new Error(error.response?.data?.error || 'Error updating profile');
+    }
   }
   
 };

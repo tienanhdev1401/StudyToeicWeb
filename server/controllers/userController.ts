@@ -5,7 +5,6 @@ import { userRepository } from '../repositories/userRepository';
 import { authRepository } from '../repositories/authRepository';
 import { User } from '../models/User';
 
-
 // Interface mở rộng kiểu của JWT payload
 interface CustomJwtPayload extends JwtPayload {
   id: number;
@@ -242,14 +241,55 @@ export class UserController {
       res.status(500).json({ error: 'Lỗi máy chủ' });
     }
   }
-  // Các phương thức khác có thể được thêm vào sau
   async updateProfile(req: Request, res: Response): Promise<void> {
     try {
-      // Logic cập nhật thông tin người dùng
-      // ...
+      // Lấy token từ header
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        res.status(401).json({ error: 'Unauthorized - No token provided' });
+        return;
+      }
+
+      // Verify token và lấy user ID
+      const token = authHeader.split(' ')[1];
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET as string
+      ) as CustomJwtPayload;
+
+      if (!decoded?.id) {
+        res.status(401).json({ error: 'Invalid token' });
+        return;
+      }
+
+      // Lấy thông tin user hiện tại
+      const currentUser = await userRepository.findById(decoded.id);
+      if (!currentUser) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+
+      // Lấy dữ liệu cập nhật từ request body
+      const { fullName, phoneNumber, dateOfBirth, gender } = req.body;
+
+      // Cập nhật thông tin mới
+      currentUser.fullName = fullName || currentUser.fullName;
+      currentUser.phoneNumber = phoneNumber || currentUser.phoneNumber;
+      currentUser.dateOfBirth = dateOfBirth || currentUser.dateOfBirth;
+      currentUser.gender = gender || currentUser.gender;
+
+      // Lưu thông tin cập nhật vào database
+      const updatedUser = await userRepository.updateUser(currentUser);
+
+      // Trả về kết quả
+      res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully',
+        user: updatedUser.toJSON()
+      });
     } catch (error) {
       console.error('Update profile error:', error);
-      res.status(500).json({ error: 'Lỗi máy chủ' });
+      res.status(500).json({ error: 'Server error when updating profile' });
     }
   }
 }

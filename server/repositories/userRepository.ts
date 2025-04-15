@@ -6,7 +6,8 @@ export class userRepository {
   // Tìm người dùng theo ID
   static async findById(id: number): Promise<User | null> {
     const results = await db.query(
-      `SELECT 
+      `SELECT
+        id, 
         avatar,
         dateOfBirth,
         emailAddress AS email,
@@ -66,17 +67,29 @@ export class userRepository {
   // Cập nhật thông tin người dùng
   static async updateUser(user: User): Promise<User> {
     try {
-      const now = new Date();
-      await db.query(
-        'UPDATE Users SET fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, avatar = ?, status = ?, updatedAt = ? WHERE id = ?',
-        [user.fullName, user.phoneNumber, user.dateOfBirth, user.gender, user.avatar, user.status, now, user.id]
-      );
-      
-      user.updatedAt = now;
-      return user;
+        const now = new Date();
+        
+        // Format dateOfBirth to MySQL date format (YYYY-MM-DD)
+        const formattedDateOfBirth = user.dateOfBirth ? 
+            new Date(user.dateOfBirth).toISOString().split('T')[0] : 
+            null;
+
+        await db.query(
+            'UPDATE Users SET fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, updatedAt = ? WHERE id = ?',
+            [
+                user.fullName, 
+                user.phoneNumber, 
+                formattedDateOfBirth,
+                user.gender, 
+                now, 
+                user.id
+            ]
+        );
+        user.updatedAt = now;
+        return user;
     } catch (error) {
-      console.error('Error updating user:', error);
-      throw error;
+        console.error('Error updating user:', error);
+        throw error;
     }
   }
 }
