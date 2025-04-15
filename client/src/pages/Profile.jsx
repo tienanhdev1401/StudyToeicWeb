@@ -6,11 +6,13 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import PasswordChangePopup from '../components/PasswordChangePopup';
 
 const ProfilePage = () => {
     const { isLoggedIn, logout } = useAuth();
     const navigate = useNavigate();
     const [profileData, setProfileData] = useState(null);
+    const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
 
     useEffect(() => {
         // Nếu chưa đăng nhập, chuyển về trang login
@@ -42,6 +44,14 @@ const ProfilePage = () => {
     const handleLogout = () => {
         logout();
         navigate('/');
+    };
+
+    const openPasswordPopup = () => {
+        setIsPasswordPopupOpen(true);
+    };
+
+    const closePasswordPopup = () => {
+        setIsPasswordPopupOpen(false);
     };
 
     if (!profileData) return <div>Đang tải...</div>;
@@ -99,6 +109,12 @@ const ProfilePage = () => {
                                         new Date(profileData.dateOfBirth).toLocaleDateString() :
                                         'Not Provided'}
                                 </p>
+                            </div>
+                            <div className="contact-item">
+                                <p className="contact-label">Password</p>
+                                <button className="btn-primary" onClick={openPasswordPopup}>
+                                    Change Password
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -159,6 +175,13 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </div>
+            
+            {/* Password Change Popup */}
+            <PasswordChangePopup 
+                isOpen={isPasswordPopupOpen} 
+                onClose={closePasswordPopup} 
+            />
+            
             <Footer />
         </>
     );
