@@ -38,20 +38,37 @@ export const uploadController = {
       if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
       }
-
-      const imageUrl = await uploadRepository.uploadToCloud(req.file);
+  
+      // Lấy folderPath từ query params hoặc body
+      const folderPath = req.query.folder || req.body.folder;
+      
+      // Upload với folderPath động
+      const imageUrl = await uploadRepository.uploadToCloud(req.file, folderPath as string);
+      
+      // Xóa file tạm sau khi upload thành công
+      try {
+        if (req.file.path && fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path);
+        }
+      } catch (cleanupError) {
+        console.log('Non-critical cleanup error:', cleanupError);
+      }
+      
       return res.status(200).json({ url: imageUrl });
-
+  
     } catch (error: any) {
       console.error('Upload error:', error);
-      return res.status(500).json({ error: error.message || 'Upload failed' });
-    } finally {
-      // Clean up: xóa file tạm sau khi upload
-      if (req.file) {
-        fs.unlink(req.file.path, (err) => {
-          if (err) console.error('Error deleting temp file:', err);
-        });
+      
+      // Đảm bảo xóa file tạm nếu có lỗi trong quá trình upload
+      try {
+        if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path);
+        }
+      } catch (cleanupError) {
+        console.log('Non-critical cleanup error:', cleanupError);
       }
+      
+      return res.status(500).json({ error: error.message || 'Upload failed' });
     }
   }
 };

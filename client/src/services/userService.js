@@ -38,12 +38,12 @@ const userService = {
           }
         }
       );
-  
+
       // Kiểm tra status code thành công
       if (response.status >= 200 && response.status < 300) {
         return response.data;
       }
-  
+
       throw new Error('Thay đổi mật khẩu thất bại');
     } catch (error) {
       console.error("Chi tiết lỗi:", {
@@ -52,9 +52,9 @@ const userService = {
         status: error.response?.status,
         data: error.response?.data,
       });
-  
+
       let errorMessage = 'Đã có lỗi xảy ra khi thay đổi mật khẩu';
-  
+
       if (error.response) {
         // Server phản hồi lỗi
         if (error.response.data?.error) {
@@ -71,7 +71,7 @@ const userService = {
         // Lỗi xảy ra trước khi gửi request
         errorMessage = `Lỗi khi gửi yêu cầu: ${error.message}`;
       }
-  
+
       throw new Error(errorMessage);
     }
   },
@@ -106,26 +106,25 @@ const userService = {
     }
   },
 
-  uploadImage: async (file) => {
+  uploadImage: async (file, folder = 'users') => {
     try {
-        const formData = new FormData();
-        formData.append('image', file);
+      const formData = new FormData();
+      formData.append('image', file);
 
-        const token = localStorage.getItem('token');
-        const response = await axios.post('/api/upload/image', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (response.data && response.data.url) {
-            return response.data.url;
+      const response = await axios.post(`${UPLOAD_URL}/image?folder=${folder}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-        throw new Error('Upload failed: No URL returned');
+      });
+
+      if (response.data && response.data.url) {
+        return response.data.url;
+      }
+      throw new Error('Upload failed: No URL returned');
     } catch (error) {
-        console.error('Upload error:', error);
-        throw error;
+      console.error('Upload error:', error);
+      throw error;
     }
   },
 
@@ -133,19 +132,25 @@ const userService = {
     try {
       let updatedData = { ...userData };
       
+      // Nếu có file ảnh mới, tải lên và lấy URL
       if (userData.newAvatarFile) {
+        // Tải ảnh mới lên
         const imageUrl = await userService.uploadImage(userData.newAvatarFile);
+        
+        // Lưu URL ảnh mới vào dữ liệu cập nhật
         updatedData.avatar = imageUrl;
       }
-      
+  
+      // Xóa file ảnh tạm khỏi dữ liệu gửi đi
       delete updatedData.newAvatarFile;
-
+  
       const token = localStorage.getItem('token');
       const response = await axios.put('/api/user/update-profile', updatedData, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
+      
       return response.data;
     } catch (error) {
       console.error('Profile update error:', error);

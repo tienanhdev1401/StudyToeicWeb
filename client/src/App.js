@@ -21,7 +21,7 @@ import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
 import GrammarDetail from './pages/GrammarDetail';
 import { AuthProvider } from './context/AuthContext';
-import { UserProvider } from './context/userContext'; // Thêm dòng này
+import { UserProvider } from './context/UserContext'; 
 import DoGrammarExercise from './pages/DoGrammarExercise'
 import DoVocabularyExercise from './pages/DoVocabularyExercise'
 import DictionaryPage from './pages/DictionaryPage';
