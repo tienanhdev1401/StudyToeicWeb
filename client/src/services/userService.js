@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_URL = '/api/user';
+const UPLOAD_URL = '/api/upload';
 
 const userService = {
   sendVerificationCode: async (email) => {
@@ -107,22 +108,24 @@ const userService = {
 
   uploadImage: async (file) => {
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      
-      const response = await fetch('https://api.imgbb.com/1/upload?key=', {
-        method: 'POST',
-        body: formData
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        return data.data.url;
-      } else {
-        throw new Error('Failed to upload image');
-      }
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const token = localStorage.getItem('token');
+        const response = await axios.post('/api/upload/image', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.data && response.data.url) {
+            return response.data.url;
+        }
+        throw new Error('Upload failed: No URL returned');
     } catch (error) {
-      throw new Error('Error uploading image: ' + error.message);
+        console.error('Upload error:', error);
+        throw error;
     }
   },
 
@@ -130,26 +133,23 @@ const userService = {
     try {
       let updatedData = { ...userData };
       
-      // Nếu có file ảnh mới, upload trước
-      if (userData.newAvatarFile instanceof File) {
-        const avatarUrl = await userService.uploadImage(userData.newAvatarFile);
-        updatedData.avatar = avatarUrl;
-        console.log('Uploaded avatar URL:', avatarUrl);
+      if (userData.newAvatarFile) {
+        const imageUrl = await userService.uploadImage(userData.newAvatarFile);
+        updatedData.avatar = imageUrl;
       }
       
-      // Xóa file khỏi dữ liệu gửi lên
       delete updatedData.newAvatarFile;
-      console.log('Updated data:', updatedData);
+
+      const token = localStorage.getItem('token');
       const response = await axios.put('/api/user/update-profile', updatedData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${token}`
         }
       });
-
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Error updating profile');
+      console.error('Profile update error:', error);
+      throw error;
     }
   }
 };
