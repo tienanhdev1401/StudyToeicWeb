@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useUser } from '../context/userContext';
+import { useUser } from '../context/UserContext';
 import '../styles/Register.css';
 
 const RegisterForm = () => {

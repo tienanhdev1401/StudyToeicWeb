@@ -5,7 +5,7 @@ import '../styles/Profile.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
-import { useUser } from '../context/userContext';
+import { useUser } from '../context/UserContext';
 import PasswordChangePopup from '../components/PasswordChangePopup';
 import userService from '../services/userService';
 
