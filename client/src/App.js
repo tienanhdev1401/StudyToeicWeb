@@ -51,9 +51,9 @@ function App() {
             <Route path="/test-online-new" element={<TestOnlineNew/>} />
             <Route path="/learn-vocabulary" element={<LearnVocabulary/>} />
             <Route path="/learn-grammary" element={<LearnGrammary/>} />
-            <Route path="/learn-grammar/:topicSlug" element={<GrammarDetail/>} />
+            <Route path="/learn-grammar/:topicId" element={<GrammarDetail/>} />
             <Route path="/Stm_Quizzes/:testId" element={<StmQuizzes />} />
-            <Route path="/learn-vocabulary/:topicSlug" element={<TopicDetail />} />
+            <Route path="/learn-vocabulary/:topicId" element={<TopicDetail />} />
             <Route path="/toeic-exercise" element={<ExerciseList/>} />
             <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
             <Route path="/Dotest/:testID" element={<Dotest />} />

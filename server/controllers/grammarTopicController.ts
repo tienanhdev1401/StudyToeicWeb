@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { GrammarTopicRepository } from '../repositories/grammarTopicRepostory';
 import { GrammarTopic } from '../models/GrammarTopic';
+import { ExerciseRepository } from '../repositories/exerciseRepository';
 
 export class GrammarTopicController {
 
@@ -53,4 +54,14 @@ export class GrammarTopicController {
             });
         }
     }
+
+    static async getExercisesByGrammarTopicId(req: Request, res: Response) {
+        try {
+          const grammarTopicId = parseInt(req.params.grammarTopicId);
+          const exercises = await ExerciseRepository.getExercisesByGrammarTopicId(grammarTopicId);
+          res.json(exercises);
+        } catch (error) {
+          res.status(500).json({ message: 'Error fetching exercises for grammar topic' });
+        }
+      }
 }

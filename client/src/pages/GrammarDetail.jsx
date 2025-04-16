@@ -12,11 +12,13 @@ const GrammarDetail = () => {
     const [topic, setTopic] = useState(topicId);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    console.log(topicId)
 
     useEffect(() => {
         const fetchGrammarTopic = async () => {
             try {
                 const topicData = await GrammarTopicService.getGrammarTopicById(topicId);
+                console.log(topicData)
                 setTopic(topicData);
                 setLoading(false);
             } catch (err) {
