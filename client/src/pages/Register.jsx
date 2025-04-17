@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/Register.css'; // Make sure to create this file with the CSS below
-import { useUser } from '../context/userContext';
+import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
