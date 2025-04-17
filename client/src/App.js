@@ -15,7 +15,7 @@ import Dotest from './pages/DoTest';
 import LearnVocabulary from './pages/LearnVocabulary';
 import LearnGrammary from './pages/LearnGrammar';
 import TopicDetail from './pages/TopicDetail';
-import Admin from './pages/Admin/adminpage';
+import Admin from './pages/admin/AdminPage';
 import ExerciseList from './pages/ExerciseList';
 import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
@@ -59,7 +59,7 @@ function App() {
             <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
             <Route path="/Dotest/:testID" element={<Dotest />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/*" element={<Admin />} />
             <Route path="/dictionary" element={<DictionaryPage />} />
             <Route path="/nhap" element={<Nhap />} />
             <Route path="/learn-grammar/:topicSlug/do-grammar-exercise" element={<DoGrammarExercise />} />
