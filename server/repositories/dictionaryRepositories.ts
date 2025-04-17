@@ -1,6 +1,6 @@
 // dictionaryRepositories.ts
 import { DictionaryService, DictionaryEntry, RawDictionaryEntry } from '../interfaces/Dictionary';
-import { DictionaryAdapter } from '../Adapter/dictionaryAdapter';
+import { DictionaryAdapter } from '../adapter/dictionaryAdapter';
 
 export class DictionaryRepositories implements DictionaryService {
   private readonly baseUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en';

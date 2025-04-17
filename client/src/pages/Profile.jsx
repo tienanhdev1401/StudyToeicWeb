@@ -59,7 +59,7 @@ const ProfilePage = () => {
         if (file) {
             // Validate file
             const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            const maxSize = 16 * 1024 * 1024; // 16MB
+            const maxSize = 5 * 1024 * 1024; // 5MB
 
             if (!validTypes.includes(file.type)) {
                 alert('Chỉ chấp nhận file ảnh JPG, PNG hoặc GIF');

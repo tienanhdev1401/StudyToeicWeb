@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { userRepository } from '../repositories/userRepository';
 import { authRepository } from '../repositories/authRepository';
+import { uploadRepository } from '../repositories/uploadRepository';
 import { User } from '../models/User';
 
 // Interface mở rộng kiểu của JWT payload
@@ -152,8 +153,8 @@ export class UserController {
         fullName: fullname,
       });
       const createdUser = await userRepository.createUser(newUser);
-      
-       res.status(201).json({
+
+      res.status(201).json({
         success: true,
         message: 'Đăng ký thành công',
         user: createdUser.toJSON(),
@@ -169,16 +170,16 @@ export class UserController {
   async changePassword(req: Request, res: Response): Promise<void> {
     try {
       const { email, currentPassword, newPassword, verificationCode } = req.body;
-  
+
       // Kiểm tra dữ liệu đầu vào
       if (!email || !currentPassword || !newPassword || !verificationCode) {
         res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin' });
         return;
       }
-  
+
       // Kiểm tra mã OTP
       const otpData = otpStore.get(email);
-      
+
       if (!otpData) {
         res.status(400).json({
           success: false,
@@ -186,7 +187,7 @@ export class UserController {
         });
         return;
       }
-  
+
       // Kiểm tra mã OTP có hết hạn không
       if (new Date() > otpData.expires) {
         // Xóa mã hết hạn
@@ -205,7 +206,7 @@ export class UserController {
         });
         return;
       }
-  
+
       // Tìm người dùng theo email
       const user = await authRepository.findByEmail(email);
       if (!user) {
@@ -218,20 +219,20 @@ export class UserController {
         res.status(401).json({ error: 'Mật khẩu hiện tại không đúng' });
         return;
       }
-  
+
       // Mã hóa mật khẩu mới
       const hashedNewPassword = await authRepository.hashPassword(newPassword);
-  
+
       // Cập nhật mật khẩu
       if (!user.id) {
         throw new Error("User ID không hợp lệ");
-    }
-    
-    await userRepository.updatePassword(user.id, hashedNewPassword);
-    
+      }
+
+      await userRepository.updatePassword(user.id, hashedNewPassword);
+
       // Xóa mã OTP sau khi đổi mật khẩu thành công
       otpStore.delete(email);
-  
+
       res.status(200).json({
         success: true,
         message: 'Đổi mật khẩu thành công'
@@ -270,14 +271,24 @@ export class UserController {
       }
 
       // Lấy dữ liệu cập nhật từ request body
-      const { fullName, phoneNumber, dateOfBirth, gender ,avatar} = req.body;
-
+      const { fullName, phoneNumber, dateOfBirth, gender, avatar } = req.body;
+      // Kiểm tra xem avatar có thay đổi không
+      if (avatar && avatar !== currentUser.avatar && currentUser.avatar) {
+        // Nếu avatar thay đổi và có avatar cũ, xóa avatar cũ
+        try {
+          await uploadRepository.deleteImageByUrl(currentUser.avatar);
+          console.log(`Avatar cũ đã được xóa: ${currentUser.avatar}`);
+        } catch (deleteError) {
+          console.error('Lỗi khi xóa avatar cũ:', deleteError);
+          // Tiếp tục mà không ném lỗi
+        }
+      }
       // Cập nhật thông tin mới
-        currentUser.fullName = fullName || currentUser.fullName;
-        currentUser.phoneNumber = phoneNumber || currentUser.phoneNumber;
-        currentUser.dateOfBirth = dateOfBirth || currentUser.dateOfBirth;
-        currentUser.gender = gender || currentUser.gender;
-        currentUser.avatar = avatar || currentUser.avatar;
+      currentUser.fullName = fullName || currentUser.fullName;
+      currentUser.phoneNumber = phoneNumber || currentUser.phoneNumber;
+      currentUser.dateOfBirth = dateOfBirth || currentUser.dateOfBirth;
+      currentUser.gender = gender || currentUser.gender;
+      currentUser.avatar = avatar || currentUser.avatar;
 
       // Lưu thông tin cập nhật vào database
       const updatedUser = await userRepository.updateUser(currentUser);
