@@ -9,6 +9,9 @@ router.post('/send-verification-code', (req, res) => userControllers.sendVerific
 // Route đăng ký
 router.post('/register', (req, res) => userControllers.register(req, res));
 
+router.post('/change-password', (req, res) => userControllers.changePassword(req, res));
+
+router.put('/update-profile', (req, res) => userControllers.updateProfile(req, res));
 // Route lấy thông tin người dùng hiện tại
 router.get('/me', authenticate, (req: Request, res: Response) => {
   res.status(200).json({ user: (req as any).user });

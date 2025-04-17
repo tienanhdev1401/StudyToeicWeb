@@ -42,6 +42,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Phục vụ static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // Import và đăng ký routes
