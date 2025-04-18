@@ -21,7 +21,7 @@ const AdminPage = () => {
               <ManageVocabularyTopic />
             </div>
           );
-        case 'grammar':
+        case 'grammar': 
           return (
             <div className={styles.contentArea}>
               <h1>Grammar Management</h1>
