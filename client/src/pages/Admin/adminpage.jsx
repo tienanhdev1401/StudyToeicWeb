@@ -5,9 +5,15 @@ import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/AdminPage.module.css';
 import Dashboard from './Dashboard';
 import ManageVocabularyTopic from './ManageVocabularyTopic';
+<<<<<<< HEAD
 import ManageGrammarTopic from './ManageGrammarTopic';
 import ManageStaff from './ManageStaff';
 
+=======
+import ManageStaff from './ManageStaff';
+import ManageLearn from './ManageLearner';
+import ManageGrammarTopic from './ManageGrammarTopic';
+>>>>>>> dc40a01 (fix code cho e trí)
 
 
 
@@ -37,12 +43,13 @@ const AdminPage = () => {
         <Route path="/staff" element={<ManageStaff />} />
         <Route path="/learner" element={<ManageLearn />} />
         <Route path="/grammar" element={<ManageGrammarTopic />} />
+<<<<<<< HEAD
 
+=======
+>>>>>>> dc40a01 (fix code cho e trí)
       </Routes>
     </AdminLayout>
   );
 };
-
-
-
+ 
 export default AdminPage;
