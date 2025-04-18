@@ -1,30 +1,56 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Sidebar.module.css';
-const Sidebar = ({ onMenuClick }) => {
+
+const Sidebar = () => {
+  const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState('dashboard');
-  const [openSubmenus, setOpenSubmenus] = useState({
-    content: false,
-    users: false,
-    tables: false,
-    pages: false
-  });
+  const [openSubmenus, setOpenSubmenus] = useState({});
 
   const toggleSubmenu = (menu) => {
-    setOpenSubmenus(prev => ({
-      ...Object.fromEntries(Object.keys(prev).map(key => [key, false])),
-      [menu]: !prev[menu]
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
     }));
   };
 
-  const handleMenuClick = (menu) => {
+  const handleMenuClick = (menu, path) => {
     setActiveMenu(menu);
-    onMenuClick?.(menu); // Sử dụng optional chaining để an toàn
-    // Tự động đóng submenu khi chọn mục con (tuỳ chọn)
-    //setOpenSubmenus(prev => ({...prev, content: false}));
+    navigate(path);
   };
+
+  const menuItems = [
+    { key: 'dashboard', label: 'Dashboard', icon: 'fas fa-th-large', path: '/admin/dashboard' },
+    { key: 'calendar', label: 'Calendar', icon: 'fas fa-calendar', path: '/admin/calendar' },
+    {
+      key: 'content',
+      label: 'Content',
+      icon: 'fas fa-tasks',
+      subMenu: [
+        { key: 'vocabulary', label: 'Vocabulary', path: '/admin/vocabularyTopic' },
+        { key: 'grammar', label: 'Grammar', path: '/admin/grammar' },
+        { key: 'exercise', label: 'Exercise', path: '/admin/exercise' },
+        { key: 'test', label: 'Test', path: '/admin/test' },
+        { key: 'question', label: 'Question', path: '/admin/question' },
+      ],
+    },
+    {
+      key: 'users',
+      label: 'Users',
+      icon: 'fas fa-users',
+      subMenu: [
+        { key: 'learner', label: 'Learner', path: '/admin/learner' },
+        { key: 'staff', label: 'Staff', path: '/admin/staff' },
+      ],
+    },
+    { key: 'tables', label: 'Tables', icon: 'fas fa-table', path: '/admin/tables' },
+    { key: 'pages', label: 'Pages', icon: 'fas fa-file', path: '/admin/pages' },
+    { key: 'chat', label: 'Chat', icon: 'fas fa-comment-dots', path: '/admin/chat' },
+  ];
 
   return (
     <div className={styles.sidebar}>
+      {/* Logo Section */}
       <div className={styles.logoSection}>
         <img
           src="https://storage.googleapis.com/a1aa/image/UKgR22ZUm22NJMqRs2e2z2w6qbn3vPgRfCIzqNQXGZo.jpg"
@@ -33,127 +59,52 @@ const Sidebar = ({ onMenuClick }) => {
         />
         <span className={styles.logoText}>ZEnglish</span>
       </div>
-      
+
+      {/* Navigation Menu */}
       <nav>
-        <ul>
-          <li className={styles.menuItem}>
-            <button
-              onClick={() => handleMenuClick('dashboard')}
-              className={`${styles.menuButton} ${activeMenu === 'dashboard' ? styles.active : ''}`}
-            >
-              <i className="fas fa-th-large mr-2"></i>
-              Dashboard
-            </button>
-          </li>
-
-          <li className={styles.menuItem}>
-            <button onClick={() => handleMenuClick('calendar')}
-              className={`${styles.menuButton} ${activeMenu === 'calendar' ? styles.active : ''}`}
-            >
-              <i className="fas fa-calendar mr-2"></i>
-              Calendar
-            </button>
-          </li>
-
-          
-          <li className={styles.menuItem}>
-            <button 
-              onClick={() => toggleSubmenu('content')}
-              className={`${styles.menuButton} ${['vocabulary', 'grammar', 'exercise', 'test', 'question'].includes(activeMenu)  ? styles.active : ''}`}
-            >
-              <i className="fas fa-tasks mr-2"></i>
-              Content
-              <i className={`fas fa-chevron-${openSubmenus.content ? 'down' : 'right'} ml-auto`}></i>
-            </button>
-            {openSubmenus.content && (
-              <ul className={styles.subMenu}>
-                <li>
-                  <button onClick={() => handleMenuClick('vocabulary')}
-                    className={`${styles.menuButton} ${activeMenu === 'vocabulary' ? styles.active : ''}`}
-                    >Vocabulary</button>
-                  
-                </li>
-                <li>
-                  <button onClick={() => handleMenuClick('grammar')}
-                    className={`${styles.menuButton} ${activeMenu === 'grammar' ? styles.active : ''}`}
-                    >Grammar</button>
-                </li>
-                <li>
-                  <button onClick={() => handleMenuClick('exercise')}
-                    className={`${styles.menuButton} ${activeMenu === 'exercise' ? styles.active : ''}`}
-                    >Exercise</button>
-                </li>
-                <li>
-                  <button onClick={() => handleMenuClick('test')}
-                    className={`${styles.menuButton} ${activeMenu === 'test' ? styles.active : ''}`}
-                    >Test</button>
-                </li>
-                <li>
-                  <button onClick={() => handleMenuClick('question')}
-                    className={`${styles.menuButton} ${activeMenu === 'question' ? styles.active : ''}`}
-                    >Question</button>
-                </li>
-              </ul>
-            )}
-          </li>
-         
-          <li className={styles.menuItem}>
-            <button 
-              onClick={() => toggleSubmenu('users')}
-              className={styles.menuButton}
-            >
-              <i className="fas fa-users mr-2"></i>
-              Users
-              <i className={`fas fa-chevron-${openSubmenus.users ? 'down' : 'right'} ml-auto`}></i>
-            </button>
-            {openSubmenus.users && (
-              <ul className={styles.subMenu}>
-                <li>
-                  <button onClick={() => handleMenuClick('learner')}
-                    className={`${styles.menuButton} ${activeMenu === 'learner' ? styles.active : ''}`}
-                    >Learner</button>
-                </li>
-                <li>
-                  <button onClick={() => handleMenuClick('staff')}
-                    className={`${styles.menuButton} ${activeMenu === 'staff' ? styles.active : ''}`}
-                    >Staff</button>
-                </li>
-               
-              </ul>
-            )}
-          </li>
-          
-          <li className={styles.menuItem}>
-            <button 
-              onClick={() => toggleSubmenu('tables')}
-              className={styles.menuButton}
-            >
-              <i className="fas fa-table mr-2"></i>
-              Tables
-              <i className={`fas fa-chevron-${openSubmenus.tables ? 'down' : 'right'} ml-auto`}></i>
-            </button>
-          </li>
-          
-          <li className={styles.menuItem}>
-            <button 
-              onClick={() => toggleSubmenu('pages')}
-              className={styles.menuButton}
-            >
-              <i className="fas fa-file mr-2"></i>
-              Pages
-              <i className={`fas fa-chevron-${openSubmenus.pages ? 'down' : 'right'} ml-auto`}></i>
-            </button>
-          </li>
-          
-          <li className={styles.menuItem}>
-            <div className={styles.supportSection}>SUPPORT</div>
-            <button onClick={() => handleMenuClick('chat')}
-              className={`${styles.menuButton} ${activeMenu === 'chat' ? styles.active : ''}`}
-            >
-              <i className="fas fa-comment-dots mr-2"></i>
-              Chat
-            </button>
-          </li>
+        <ul className={styles.menuList}>
+          {menuItems.map((item) => (
+            <li key={item.key} className={styles.menuItem}>
+              {/* Nếu có submenu */}
+              {item.subMenu ? (
+                <>
+                  <button
+                    onClick={() => toggleSubmenu(item.key)}
+                    className={`${styles.menuButton} ${
+                      item.subMenu.some((sub) => sub.key === activeMenu) ? styles.active : ''
+                    }`}
+                  >
+                    <i className={`${item.icon} ${styles.icon}`}></i>
+                    {item.label}
+                    <i className={`fas fa-chevron-${openSubmenus[item.key] ? 'down' : 'right'} ${styles.chevronIcon}`}></i>
+                  </button>
+                  {openSubmenus[item.key] && (
+                    <ul className={styles.subMenu}>
+                      {item.subMenu.map((sub) => (
+                        <li key={sub.key} className={styles.subMenuItem}>
+                          <button
+                            onClick={() => handleMenuClick(sub.key, sub.path)}
+                            className={`${styles.menuButton} ${activeMenu === sub.key ? styles.active : ''}`}
+                          >
+                            {sub.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                // Nếu không có submenu
+                <button
+                  onClick={() => item.path && handleMenuClick(item.key, item.path)}
+                  className={`${styles.menuButton} ${activeMenu === item.key ? styles.active : ''}`}
+                >
+                  <i className={`${item.icon} ${styles.icon}`}></i>
+                  {item.label}
+                </button>
+              )}
+            </li>
+          ))}
         </ul>
       </nav>
     </div>

@@ -7,6 +7,6 @@ export class Vocabulary {
       public transcribe: string,
       public urlAudio: string,
       public urlImage: string,
-      public VocabularyTopicId: number | null
+      public VocabularyTopicId: number | null // note: k duoc null
     ) {}
   }

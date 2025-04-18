@@ -13,7 +13,6 @@ const PORT = process.env.PORT || 5000;
 
 // Kết nối đến cơ sở dữ liệu
 import './config/db';
-
 // Cấu hình CORS
 app.use(cors({
   origin: 'http://localhost:3000',
