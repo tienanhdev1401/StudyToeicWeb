@@ -112,6 +112,7 @@ export class VocabularyTopicRepository {
         }
     }
 
+
     // Trả về topic đã được thêm cùng với ID mới
     const createdTopic = await this.findById(topicId);
     if (!createdTopic) {
@@ -119,5 +120,6 @@ export class VocabularyTopicRepository {
     }
     return createdTopic;
   }
+
 
 }

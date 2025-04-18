@@ -15,7 +15,7 @@ import Dotest from './pages/DoTest';
 import LearnVocabulary from './pages/LearnVocabulary';
 import LearnGrammary from './pages/LearnGrammar';
 import TopicDetail from './pages/TopicDetail';
-import Admin from './pages/Admin/adminpage';
+import Admin from './pages/admin/AdminPage';
 import ExerciseList from './pages/ExerciseList';
 import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
@@ -29,6 +29,7 @@ import Nhap from './pages/nhap';
 // Gọi hàm này khi ứng dụng khởi động
 
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
+import TOEICCalculator from './pages/calculatorScore';
 
 function App() {
   return (
@@ -58,11 +59,12 @@ function App() {
             <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
             <Route path="/Dotest/:testID" element={<Dotest />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/*" element={<Admin />} />
             <Route path="/dictionary" element={<DictionaryPage />} />
             <Route path="/nhap" element={<Nhap />} />
             <Route path="/learn-grammar/:topicSlug/do-grammar-exercise" element={<DoGrammarExercise />} />
             <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} />
+            <Route path="/calculateScore" element={<TOEICCalculator/>}/>
 
           
           </Routes>
