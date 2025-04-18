@@ -15,7 +15,7 @@ import Dotest from './pages/DoTest';
 import LearnVocabulary from './pages/LearnVocabulary';
 import LearnGrammary from './pages/LearnGrammar';
 import TopicDetail from './pages/TopicDetail';
-import Admin from './pages/admin/AdminPage';
+import Admin from './pages/Admin/AdminPage';
 import ExerciseList from './pages/ExerciseList';
 import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
