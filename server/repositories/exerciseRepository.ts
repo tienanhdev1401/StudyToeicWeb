@@ -81,8 +81,7 @@ export class ExerciseRepository {
         [exerciseId]
       );
       
-      return await Promise.all(results.map(async (row: any) => {
-        const resource = row.ResourceId ? await ResourceRepository.findById(row.ResourceId) : null;
+      return results.map((row: any) => {
         return new Question(
           row.id,
           row.content,
@@ -92,9 +91,9 @@ export class ExerciseRepository {
           row.option_b,
           row.option_c,
           row.option_d,
-          resource
+          row.ResourceId
         );
-      }));
+      });
     } catch (error) {
       console.error(`Error getting questions for exercise ${exerciseId}:`, error);
       return [];
@@ -109,8 +108,7 @@ export class QuestionRepository {
         'SELECT id, content, correct_answer, explain_detail, option_a, option_b, option_c, option_d, ResourceId FROM questions'
       );
       
-      return await Promise.all(results.map(async (row: any) => {
-        const resource = row.ResourceId ? await ResourceRepository.findById(row.ResourceId) : null;
+      return results.map((row: any) => {
         return new Question(
           row.id,
           row.content,
@@ -120,9 +118,9 @@ export class QuestionRepository {
           row.option_b,
           row.option_c,
           row.option_d,
-          resource
+          row.ResourceId
         );
-      }));
+      });
     } catch (error) {
       console.error('Error getting all questions:', error);
       throw error;
@@ -141,7 +139,6 @@ export class QuestionRepository {
       }
 
       const row = results[0];
-      const resource = row.ResourceId ? await ResourceRepository.findById(row.ResourceId) : null;
       return new Question(
         row.id,
         row.content,
@@ -151,7 +148,7 @@ export class QuestionRepository {
         row.option_b,
         row.option_c,
         row.option_d,
-        resource
+        row.ResourceId
       );
     } catch (error) {
       console.error(`Error finding question with ID ${id}:`, error);
@@ -175,7 +172,6 @@ export class QuestionRepository {
         [content, correctAnswer, explainDetail, optionA, optionB, optionC, optionD, resourceId]
       );
       
-      const resource = resourceId ? await ResourceRepository.findById(resourceId) : null;
       return new Question(
         result.insertId,
         content,
@@ -185,7 +181,7 @@ export class QuestionRepository {
         optionB,
         optionC,
         optionD,
-        resource
+        resourceId || undefined
       );
     } catch (error) {
       console.error('Error creating question:', error);
