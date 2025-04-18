@@ -26,6 +26,7 @@ import DoGrammarExercise from './pages/DoGrammarExercise'
 import DoVocabularyExercise from './pages/DoVocabularyExercise'
 import DictionaryPage from './pages/DictionaryPage';
 import Nhap from './pages/nhap';
+import NotFound from './components/404'; 
 // Gọi hàm này khi ứng dụng khởi động
 
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
@@ -65,7 +66,7 @@ function App() {
             <Route path="/learn-grammar/:topicSlug/do-grammar-exercise" element={<DoGrammarExercise />} />
             <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} />
             <Route path="/calculateScore" element={<TOEICCalculator/>}/>
-
+            <Route path="*" element={<NotFound />} />
           
           </Routes>
         </UserProvider> {/* Đóng UserProvider */}
