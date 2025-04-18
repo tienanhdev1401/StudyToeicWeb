@@ -5,6 +5,9 @@ import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/AdminPage.module.css';
 import Dashboard from './Dashboard';
 import ManageVocabularyTopic from './ManageVocabularyTopic';
+import ManageStaff from './ManageStaff';
+import ManageLearn from './ManageLearner';
+import ManageGrammarTopic from './ManageGrammarTopic';
 
 
 
@@ -31,11 +34,12 @@ const AdminPage = () => {
         <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/vocabularyTopic" element={<ManageVocabularyTopic />} />
+        <Route path="/staff" element={<ManageStaff />} />
+        <Route path="/learner" element={<ManageLearn />} />
+        <Route path="/grammar" element={<ManageGrammarTopic />} />
       </Routes>
     </AdminLayout>
   );
 };
-
-
-
+ 
 export default AdminPage;
