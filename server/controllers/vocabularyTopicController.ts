@@ -60,10 +60,10 @@ export class VocabularyTopicController {
   static async addVocabularyTopic(req: Request, res: Response) {
     try {
         // Lấy dữ liệu từ request body
-        const { topicName, vocabularies } = req.body;
+        const { topicName,imageUrl, vocabularies } = req.body;
 
         // Tạo một đối tượng VocabularyTopic mới
-        const newTopic = new VocabularyTopic(0, topicName);
+        const newTopic = new VocabularyTopic(0, topicName,imageUrl);
 
         // Thêm danh sách từ vựng vào topic (nếu có)
         if (vocabularies && Array.isArray(vocabularies)) {

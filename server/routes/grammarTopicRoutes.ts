@@ -12,6 +12,6 @@ router.get('/:id', GrammarTopicController.findById);
 // router.put('/:id', GrammarController.updateGrammarTopic);
 // router.delete('/:id', GrammarController.deleteGrammarTopic);
 
-router.get('/:grammarTopicId/exercise', GrammarTopicController.getExercisesByGrammarTopicId);
+router.get('/:id/exercise', GrammarTopicController.getExercisesForGrammarTopic);
 
 export default router;

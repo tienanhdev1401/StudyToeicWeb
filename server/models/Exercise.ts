@@ -1,6 +1,17 @@
+import { Question } from "./Question";
+
 export class Exercise {
+    public id: number;
+    public exerciseName: string;
+    public questions: Question[];
+
     constructor(
-      public id: number,
-      public exerciseName: string
-    ) {}
-  }
+        id: number,
+        exerciseName: string,
+        questions: Question[]
+    ) {
+        this.id = id;
+        this.exerciseName = exerciseName;
+        this.questions = questions;
+    }
+}

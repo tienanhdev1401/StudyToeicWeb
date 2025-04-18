@@ -6,7 +6,8 @@ export class VocabularyTopic {
   
     constructor(
       public id: number,
-      public topicName: string
+      public topicName: string,
+      public imageUrl: string | null
     ) {}
   
     // Thêm DANH SÁCH từ vựng (mới)

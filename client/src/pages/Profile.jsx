@@ -18,6 +18,8 @@ const ProfilePage = () => {
     const [editedUser, setEditedUser] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
 
+    console.log('TienAnh',user)
+
     useEffect(() => {
         if (!loading && !isLoggedIn) {
             navigate('/login');
