@@ -1,6 +1,6 @@
-import database from '../config/db';
-import { VocabularyTopic } from '../models/VocabularyTopic';
-import { Vocabulary } from '../models/Vocabulary';
+import database from '../../config/db';
+import { VocabularyTopic } from '../../models/VocabularyTopic';
+import { Vocabulary } from '../../models/Vocabulary';
 
 export class VocabularyTopicRepository {
   /**
