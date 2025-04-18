@@ -4,6 +4,9 @@ import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/AdminPage.module.css';
 import Dashboard from './Dashboard';
 import ManageVocabularyTopic from './ManageVocabularyTopic';
+import ManageGrammarTopic from './ManageGrammarTopic';
+import ManageLearner from './ManageLearner';
+import ManageStaff from './ManageStaff';
 const AdminPage = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
 
@@ -24,8 +27,7 @@ const AdminPage = () => {
         case 'grammar':
           return (
             <div className={styles.contentArea}>
-              <h1>Grammar Management</h1>
-              {/* Thêm component quản lý ngữ pháp ở đây */}
+               <ManageGrammarTopic />
             </div>
           );
         case 'exercise':
@@ -33,6 +35,18 @@ const AdminPage = () => {
             <div className={styles.contentArea}>
               <h1>Exercise Management</h1>
               {/* Thêm component quản lý bài tập ở đây */}
+            </div>
+          );
+          case 'learner':
+          return (
+            <div className={styles.contentArea}>
+               <ManageLearner />
+            </div>
+          );
+          case 'staff':
+          return (
+            <div className={styles.contentArea}>
+               <ManageStaff />
             </div>
           );
       default:
