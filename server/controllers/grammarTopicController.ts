@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { GrammarTopicRepository } from '../repositories/grammarTopicRepostory';
 import { GrammarTopic } from '../models/GrammarTopic';
+import { ExerciseRepository } from '../repositories/exerciseRepository';
 
 export class GrammarTopicController {
 
     static async getAllGrammarTopic(req: Request, res: Response) {
         try {
-            const grammarTopics = await GrammarTopicRepository.getAllGranmmarTopic();
+            const grammarTopics = await GrammarTopicRepository.getAllGrammarTopic();
             res.status(200).json({
                 success: true,
                 data: grammarTopics,
@@ -53,4 +54,37 @@ export class GrammarTopicController {
             });
         }
     }
-}
+
+    // static async getExercisesByGrammarTopicId(req: Request, res: Response) {
+    //     try {
+    //       const grammarTopicId = parseInt(req.params.grammarTopicId);
+    //       const exercises = await ExerciseRepository.getExercisesByGrammarTopicId(grammarTopicId);
+    //       res.json(exercises);
+    //     } catch (error) {
+    //       res.status(500).json({ message: 'Error fetching exercises for grammar topic' });
+    //     }
+    //   }
+
+
+    static async getExercisesForGrammarTopic(req: Request, res: Response) {
+        try {
+          const grammarTopicId = parseInt(req.params.id);
+    
+          // Get exercises from repository
+          const exercises = await GrammarTopicRepository.getExercisesForGrammarTopic(grammarTopicId);
+    
+          return res.status(200).json({
+            success: true,
+            data: exercises
+          });
+        } catch (error) {
+          console.error('Error in getExercisesForGrammarTopic:', error); 
+          return res.status(500).json({
+            success: false,
+            message: 'Đã xảy ra lỗi khi lay danh sach bai tap cua ngu phap'
+          });
+        }
+      }
+    }
+    
+

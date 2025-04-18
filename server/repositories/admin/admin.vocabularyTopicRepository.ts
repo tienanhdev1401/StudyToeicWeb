@@ -17,7 +17,7 @@ export class VocabularyTopicRepository {
     }
 
     const topicData = results[0] as any;
-    const topic = new VocabularyTopic(topicData.id, topicData.topicName);
+    const topic = new VocabularyTopic(topicData.id, topicData.topicName,topicData.imageUrl);
 
     // Lấy danh sách vocabularies thuộc topic này
     const vocabResults = await database.query(
@@ -72,7 +72,7 @@ export class VocabularyTopicRepository {
           )
         );
 
-        const vocabularyTopic = new VocabularyTopic(topic.id, topic.topicName);
+        const vocabularyTopic = new VocabularyTopic(topic.id, topic.topicName,topic.imageUrl);
         vocabularyTopic.addVocabularyList(vocabularyList);
         
         return vocabularyTopic;

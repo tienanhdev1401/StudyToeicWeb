@@ -47,6 +47,7 @@ export const AuthProvider = ({ children }) => {
             console.error('Lỗi đăng xuất:', error);
         } finally {
             setUser(null);
+            console.log('Hunganh:',user)
             setIsLoggedIn(false);
             setIsLoading(false);
         }

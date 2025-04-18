@@ -11,7 +11,7 @@ export class DictionaryAdapter {
     
     // Tìm phonetic đầu tiên có audio
     const phoneticWithAudio = entry.phonetics.find(p => p.audio);
-    
+     
     return {
       word: entry.word,
       pronunciation: {
