@@ -1,14 +1,27 @@
 import { Vocabulary } from '../models/Vocabulary';
+import { Exercise } from './Exercise';
 
 
 export class VocabularyTopic {
+    public id: number;
+    public topicName: string;
+    public imageUrl: string | null;
     public vocabularies: Vocabulary[] = [];
+    public exercises: Exercise[]; 
   
     constructor(
-      public id: number,
-      public topicName: string,
-      public imageUrl: string | null
-    ) {}
+      id: number,
+      topicName: string,
+      imageUrl: string | null,
+      vocabularies: Vocabulary[]=[],
+      exercises: Exercise[] = []     
+    ) {
+      this.id = id;
+      this.topicName = topicName;
+      this.imageUrl = imageUrl;
+      this.vocabularies=vocabularies;
+      this.exercises = exercises;
+    }
   
     // // Thêm DANH SÁCH từ vựng (mới)
     // addVocabularyList(vocabList: Vocabulary[]): void {

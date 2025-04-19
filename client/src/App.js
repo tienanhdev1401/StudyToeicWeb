@@ -63,8 +63,8 @@ function App() {
             <Route path="/dictionary" element={<DictionaryPage />} />
             <Route path="/nhap" element={<Nhap />} />
             {/* <Route path="/learn-grammar/:topicId/do-grammar-exercise" element={<DoGrammarExercise />} /> */}
-            <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} />
-            <Route path="/exercise/:exerciseId" element={<DoGrammarExercise />} />
+            {/* <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} /> */}
+            <Route path="/exercise/:exerciseId" element={<DoExercise />} />
 
             <Route path="/calculateScore" element={<TOEICCalculator/>}/>
 

@@ -6,10 +6,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import VocabularyTopicService from '../services/vocabularyTopicService';
 
 const TopicDetail = () => {
+
+    const { topicSlug, topicId } = useParams();
+
     const [isFlipped, setIsFlipped] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
     const [currentCard, setCurrentCard] = useState(0);
-    const [topicData, setTopicData] = useState(null);
+    const [topic, setTopic] = useState(topicId);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [flashCards, setFlashCards] = useState([]);
@@ -17,13 +20,13 @@ const TopicDetail = () => {
     const scrollContainerRef = useRef(null);
 
     const navigate = useNavigate();
-    const { topicSlug, topicId } = useParams();
+    
 
     useEffect(() => {
         const fetchTopicData = async () => {
             try {
                 const data = await VocabularyTopicService.getVocabularyTopicById(topicId);
-                setTopicData(data);
+                setTopic(data);
                 
                 // Process the data to create flashCards and termsData
                 if (data && data.vocabularies && data.vocabularies.length > 0) {
@@ -82,21 +85,35 @@ const TopicDetail = () => {
         audio.play().catch(error => console.log("Error playing audio:", error));
     };
 
-    const handlePracticeClick = () => {
-        if (!topicData) return;
+    const handlePracticeClick = async () => {
+        if (!topic) return;
         
-        navigate(`/learn-vocabulary/${topicSlug}/do-vocabulary-exercise`, {
-            state: {
-                topicId: topicData.id,
-                topicName: topicData.topicName,
-                topicContent: topicData.vocabularies
+        try {
+            // First get the exercise for this grammar topic
+            const exercises = await VocabularyTopicService.getExercisesForVocabularyTopic(topicId);
+            
+            if (exercises.length === 0) {
+                alert('Không có bài tập cho chủ đề này');
+                return;
             }
-        });
+    
+            // Navigate to exercise page with the first exercise
+            navigate(`/exercise/${exercises[0].id}`, {
+                state: {
+                    topicId: topic.id,
+                    topicName: topic.topicName,
+                    topicType: 'Vocabulary'
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching exercises:', error);
+            alert('Lỗi khi tải bài tập');
+        }
     };
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
-    if (!topicData) return <div>No data found</div>;
+    if (!topic) return <div>No data found</div>;
     if (!flashCards || flashCards.length === 0) return <div>No flashcards available</div>;
 
     return (
@@ -107,7 +124,7 @@ const TopicDetail = () => {
                 <div className="td-content-container">
                     {/* Phần tiêu đề và nút hành động */}
                     <div className="td-header-section">
-                        <h1 className="td-main-title">{topicData.topicName}</h1>
+                        <h1 className="td-main-title">{topic.topicName}</h1>
                         <div className="td-action-buttons">
                             <button className="td-action-btn">
                                 <i className="fas fa-save td-btn-icon"></i>

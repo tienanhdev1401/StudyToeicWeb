@@ -47,7 +47,8 @@ const GrammarDetail = () => {
             navigate(`/exercise/${exercises[0].id}`, {
                 state: {
                     topicId: topic.id,
-                    topicName: topic.title
+                    topicName: topic.title,
+                    topicType: 'Grammar'
                 }
             });
         } catch (error) {

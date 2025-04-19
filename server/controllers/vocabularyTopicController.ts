@@ -99,7 +99,28 @@ export class VocabularyTopicController {
   //           error: error instanceof Error ? error.message : 'Unknown error'
   //       });
   //   }
+
+  static async getExercisesForGrammarTopic(req: Request, res: Response) {
+    try {
+      const vocabularyTopicId = parseInt(req.params.id);
+
+      // Get exercises from repository
+      const exercises = await VocabularyTopicRepository.getExercisesForVocabularyTopic(vocabularyTopicId);
+
+      return res.status(200).json({
+        success: true,
+        data: exercises
+      });
+    } catch (error) {
+      console.error('Error in getExercisesForVocabularyTopic:', error); 
+      return res.status(500).json({
+        success: false,
+        message: 'Đã xảy ra lỗi khi lay danh sach bai tap cua tu vung'
+      });
+    }
+  }
 }
+
 
 
   

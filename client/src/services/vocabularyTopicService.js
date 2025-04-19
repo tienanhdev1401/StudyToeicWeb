@@ -36,6 +36,24 @@ const VocabularyTopicService = {
     }
   },
 
+  getExercisesForVocabularyTopic: async (vocabularyTopicId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/vocabulary-topic/${vocabularyTopicId}/exercise`);
+      
+      if (response.data.success) {
+        return response.data.data;
+      } else {
+        throw new Error(response.data.message || `Failed to fetch exercises for vocabulary topic ${vocabularyTopicId}`);
+      }
+    } catch (error) {
+      console.error(`Error fetching exercises for vocabulary topic ${vocabularyTopicId}:`, error);
+      throw error;
+    }
+  },
+
+
+
+
   
 };
 
