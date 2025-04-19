@@ -7,7 +7,7 @@ import VocabularyTopicService from '../services/vocabularyTopicService';
 
 const TopicDetail = () => {
 
-    const { topicSlug, topicId } = useParams();
+    const {topicId } = useParams();
 
     const [isFlipped, setIsFlipped] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
@@ -25,6 +25,7 @@ const TopicDetail = () => {
     useEffect(() => {
         const fetchTopicData = async () => {
             try {
+                console.log("Fetching topic data for ID:", topicId);
                 const data = await VocabularyTopicService.getVocabularyTopicById(topicId);
                 setTopic(data);
                 

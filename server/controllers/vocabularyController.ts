@@ -56,9 +56,8 @@ export class VocabularyController {
    */
   static async getVocabulariesByTopicId(req: Request, res: Response) {
     try {
-      const topicId = parseInt(req.params.d);
+      const topicId = parseInt(req.params.id);
       const vocabularies = await VocabularyRepository.getVocabulariesByTopicId(topicId);
-
       res.status(200).json({
         success: true,
         data: vocabularies,
