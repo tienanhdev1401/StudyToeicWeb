@@ -12,4 +12,6 @@ router.get('/:id', VocabularyTopicController.findVocabularyTopicById);
 
 // router.post('/', VocabularyTopicController.addVocabularyTopic);
 router.get('/:id/vocabularies', VocabularyController.getVocabulariesByTopicId);
+
+router.get('/:id/exercise', VocabularyTopicController.getExercisesForGrammarTopic);
 export default router;
