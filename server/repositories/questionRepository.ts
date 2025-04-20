@@ -1,14 +1,9 @@
+import { Resource } from './../models/Resource';
 import { Question } from '../models/Question';
 import { ResourceRepository } from './resourceRepository';
 import db from '../config/db';
 
 export class QuestionRepository {
-  private resourceRepository: ResourceRepository;
-
-  constructor() {
-    this.resourceRepository = new ResourceRepository();
-  }
-
   async findById(id: number): Promise<Question | null> {
     try {
       const [rows] = await db.query(
@@ -20,6 +15,7 @@ export class QuestionRepository {
       if (!questions.length) return null;
 
       const question = questions[0];
+      const resource = question.ResourceId ? await ResourceRepository.findById(question.resourceId) : null;
       return new Question(
         question.id,
         question.content,
@@ -29,7 +25,7 @@ export class QuestionRepository {
         question.optionB,
         question.optionC,
         question.optionD,
-        question.ResourceId
+        resource
       );
     } catch (error) {
       console.error('QuestionRepository.findById error:', error);
@@ -42,34 +38,36 @@ export class QuestionRepository {
       if (!ids.length) {
         return [];
       }
-
-      const [results] = await db.query(
-        'SELECT * FROM questions WHERE id IN (?)',
-        [ids]
+      // Sửa phần này, sử dụng dấu ? cho từng phần tử trong mảng
+      const placeholders = ids.map(() => '?').join(',');
+      const [rows] = await db.query(
+        `SELECT * FROM questions WHERE id IN (${placeholders})`,
+        ids
       );
-      if (!results) {
-        return [];
-      }
-
-      const rows = Array.isArray(results) ? results : [results];
-
-      const questions = rows.map(row => {
+  
+      // Đảm bảo rows là mảng
+      const results = Array.isArray(rows) ? rows : [rows];
+      
+      // Xử lý từng câu hỏi với resource
+      const questions = await Promise.all(results.map(async row => {
+        const resource = row.ResourceId ? 
+          await ResourceRepository.findById(Number(row.ResourceId)) : 
+          null;
+  
         return new Question(
           Number(row.id),
           row.content,
-          row.correctAnswer,
-          row.explainDetail,
-          row.optionA,
-          row.optionB,
-          row.optionC,
-          row.optionD,
-          row.ResourceId ? Number(row.ResourceId) : undefined
+          row.correct_answer,
+          row.explain_detail, 
+          row.option_a,     
+          row.option_b,      
+          row.option_c,     
+          row.option_d,    
+          resource
         );
-      });
-
-      console.log('All created questions:', questions);
+      }));
+  
       return questions;
-
     } catch (error) {
       console.error('QuestionRepository.findByIds error:', error);
       throw error;

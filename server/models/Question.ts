@@ -1,14 +1,15 @@
+import { Resource } from "./Resource";
 
 export class Question {
-    id: number;
-    content: string;
-    correctAnswer: string;
-    explainDetail: string;
-    optionA: string;
-    optionB: string;
-    optionC: string;
-    optionD: string;
-    ResourceId?: number;
+    public id: number;
+    public content: string;
+    public correctAnswer: string;
+    public explainDetail: string;
+    public optionA: string;
+    public optionB: string;
+    public optionC: string;
+    public optionD: string;
+    public resource: Resource | null; 
 
     constructor(
         id: number,
@@ -19,7 +20,7 @@ export class Question {
         optionB: string,
         optionC: string,
         optionD: string,
-        ResourceId?: number
+        resource: Resource | null = null 
     ) {
         this.id = id;
         this.content = content;
@@ -29,6 +30,6 @@ export class Question {
         this.optionB = optionB;
         this.optionC = optionC;
         this.optionD = optionD;
-        this.ResourceId = ResourceId;
+        this.resource = resource;
     }
 }

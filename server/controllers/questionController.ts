@@ -1,15 +1,10 @@
 import { Request, Response } from 'express';
 import { Question } from '../models/Question';
 import { QuestionRepository } from '../repositories/questionRepository';
-import { ResourceRepository } from '../repositories/resourceRepository';
-
 export class QuestionController {
   private questionRepository: QuestionRepository;
-  private resourceRepository: ResourceRepository;
-
   constructor() {
     this.questionRepository = new QuestionRepository();
-    this.resourceRepository = new ResourceRepository();
   }
 
   async getById(req: Request, res: Response) {
@@ -23,13 +18,7 @@ export class QuestionController {
       if (!question) {
         return res.status(404).json({ error: 'Không tìm thấy câu hỏi' });
       }
-
-      let resource = null;
-      if (question.ResourceId) {
-        resource = await this.resourceRepository.findById(question.ResourceId);
-      }
-
-      return res.status(200).json({ ...question, resource });
+      return res.status(200).json({ ...question});
     } catch (error) {
       console.error('QuestionController.getById error:', error);
       return res.status(500).json({ error: 'Lỗi máy chủ' });

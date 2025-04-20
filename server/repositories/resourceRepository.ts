@@ -2,24 +2,26 @@ import { Resource } from '../models/Resource';
 import db from '../config/db';
 
 export class ResourceRepository {
-  async findById(id: number): Promise<Resource | null> {
+  static async findById(id: number): Promise<Resource | null> {
     try {
-      const [rows] = await db.query(
-        'SELECT * FROM resources WHERE id = ?',
+      const results = await db.query(
+        'SELECT id, paragraph, urlAudio, urlImage FROM resources WHERE id = ? LIMIT 1',
         [id]
       );
-      
-      const resources = rows as any[];
-      return resources.length
-        ? new Resource(
-            resources[0].id,
-            resources[0].paragraph,
-            resources[0].urlAudio,
-            resources[0].urlImage
-          )
-        : null;
+
+      if (results.length === 0) {
+        return null;
+      }
+
+      const row = results[0];
+      return new Resource(
+        row.id,
+        row.paragraph,
+        row.urlAudio,
+        row.urlImage
+      );
     } catch (error) {
-      console.error('ResourceRepository.findById error:', error);
+      console.error(`Error finding resource with ID ${id}:`, error);
       throw error;
     }
   }
