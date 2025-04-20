@@ -11,24 +11,37 @@ import userService from '../services/userService';
 
 const ProfilePage = () => {
     const { isLoggedIn, logout } = useAuth();
-    const { user, loading, fetchUserProfile } = useUser();
+    const { user, loading, initialized, fetchUserProfile } = useUser();
     const navigate = useNavigate();
     const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedUser, setEditedUser] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
 
     console.log('TienAnh',user)
 
     useEffect(() => {
-        if (!loading && !isLoggedIn) {
+        if (initialized && !loading && !isLoggedIn) {
             navigate('/login');
         }
-    }, [isLoggedIn, loading, navigate]);
+    }, [isLoggedIn, loading, initialized, navigate]);
 
     useEffect(() => {
+        const fetchUserProfile = async () => {
+            if (user && user.id) {
+                try {
+                    const response = await fetch(`/api/users/${user.id}`);
+                    const data = await response.json();
+                    setUserProfile(data);
+                } catch (error) {
+                    console.error('Error fetching user profile:', error);
+                }
+            }
+        };
+
         if (user) {
-            setEditedUser({ ...user });
+            fetchUserProfile();
         }
     }, [user]);
 
@@ -41,7 +54,23 @@ const ProfilePage = () => {
         };
     }, [imagePreview]);
 
-    if (!user) return null;
+    // Hiển thị loading spinner khi đang loading hoặc chưa initialized
+    if (loading || !initialized) {
+        return (
+            <>
+                <Header />
+                <div className="containerprofile">
+                    <div className="loading-spinner">Loading...</div>
+                </div>
+                <Footer />
+            </>
+        );
+    }
+
+    // Return null nếu không có user sau khi đã load xong
+    if (!user) {
+        return null;
+    }
 
     const handleLogout = () => {
         logout();

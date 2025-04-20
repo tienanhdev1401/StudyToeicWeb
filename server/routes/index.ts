@@ -8,6 +8,7 @@ import adminVocabularyRoutes from './admin/admin.vocabularyRoutes'
 import grammarTopicTopicRoutes from './grammarTopicRoutes'
 import uploadRouter from './uploadRouter';
 import exerciseRouter from './exerciseRouter'
+import learningRouter from './learningGoalRouter'
 
 
 import test from './test'
@@ -21,6 +22,7 @@ function route(app: Application): void {
   app.use('/api/grammar-topic',grammarTopicTopicRoutes)
   app.use('/api/upload', uploadRouter);
   app.use('/api/exercise',exerciseRouter);
+  app.use('/api/learning-goal',learningRouter)
   app.use('/', test);
   
 }
