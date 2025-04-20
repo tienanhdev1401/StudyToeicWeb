@@ -1,28 +1,67 @@
 import database from '../../config/db';
 import { VocabularyTopic } from '../../models/VocabularyTopic';
 import { Vocabulary } from '../../models/Vocabulary';
-
+import slugify from 'slugify';
 export class VocabularyTopicRepository {
   /**
    * Tìm VocabularyTopic theo ID
    */
-  static async findById(id: number): Promise<VocabularyTopic | null> {
+  static async findById(topicId: number): Promise<VocabularyTopic | null> {
     const results = await database.query(
-      'SELECT id, topicName FROM vocabularytopics WHERE id = ? LIMIT 1',
-      [id]
+      'SELECT * FROM vocabularytopics WHERE id = ? LIMIT 1',
+      [topicId]
     );
 
     if (Array.isArray(results) && results.length === 0) {
       return null;
     }
 
+
     const topicData = results[0] as any;
-    const topic = new VocabularyTopic(topicData.id, topicData.topicName);
+    const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.slug ,topicData.imageUrl, topicData.createdAt, topicData.updatedAt);
 
     // Lấy danh sách vocabularies thuộc topic này
     const vocabResults = await database.query(
       'SELECT * FROM vocabularies WHERE VocabularyTopicId = ?',
-      [id]
+      [topicData.id]
+    );
+
+    topic.addVocabularyList(
+      vocabResults.map((v: any) => new Vocabulary(
+        v.id,
+        v.content,
+        v.meaning,
+        v.synonym ? JSON.parse(v.synonym) : null,
+        v.transcribe,
+        v.urlAudio,
+        v.urlImage,
+        v.VocabularyTopicId
+      ))
+    );
+
+    return topic;
+  }
+
+
+
+  static async findBySlug(slug: string): Promise<VocabularyTopic | null> {
+    const results = await database.query(
+      'SELECT id, topicName,slug FROM vocabularytopics WHERE slug = ? LIMIT 1',
+      [slug]
+    );
+
+    if (Array.isArray(results) && results.length === 0) {
+      return null;
+    }
+
+
+    const topicData = results[0] as any;
+    const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.slug ,topicData.imgUrl, topicData.createAt, topicData.updateAt);
+
+    // Lấy danh sách vocabularies thuộc topic này
+    const vocabResults = await database.query(
+      'SELECT * FROM vocabularies WHERE VocabularyTopicId = ?',
+      [topicData.id]
     );
 
     topic.addVocabularyList(
@@ -45,10 +84,10 @@ export class VocabularyTopicRepository {
   /**
    * Lấy tất cả VocabularyTopics
    */
-  static async getAllVocabularyTopics(): Promise<VocabularyTopic[]> {
+  static async getAllVocabularyTopics(): Promise<{vocabularyTopic: VocabularyTopic, count: number}[]> {
     // 1. Lấy tất cả topics
     const topics = await database.query(
-      'SELECT id, topicName FROM vocabularytopics'
+      'SELECT * FROM vocabularytopics'
     );
 
     // 2. Với mỗi topic, lấy danh sách từ vựng tương ứng
@@ -72,10 +111,12 @@ export class VocabularyTopicRepository {
           )
         );
 
-        const vocabularyTopic = new VocabularyTopic(topic.id, topic.topicName);
-        vocabularyTopic.addVocabularyList(vocabularyList);
+        const count = vocabularyList.length;
         
-        return vocabularyTopic;
+        const vocabularyTopic = new VocabularyTopic(topic.id, topic.topicName, topic.slug ,topic.imageUrl, topic.createdAt, topic.updatedAt);
+        vocabularyTopic.addVocabularyList(vocabularyList);
+
+        return {vocabularyTopic, count};
       })
     );
 
@@ -85,8 +126,8 @@ export class VocabularyTopicRepository {
   static async addVocabularyTopic(topic: VocabularyTopic): Promise<VocabularyTopic> {
     // 1. Thêm topic vào bảng vocabularytopics
     const topicResult = await database.query(
-        'INSERT INTO vocabularytopics (topicName) VALUES (?)',
-        [topic.topicName]
+        'INSERT INTO vocabularytopics (topicName, slug, imageURL) VALUES (?, ?, ?)',
+        [topic.topicName, topic.slug, topic.imgUrl]
     );
 
     // Lấy ID của topic vừa được thêm
@@ -113,6 +154,7 @@ export class VocabularyTopicRepository {
     }
 
 
+
     // Trả về topic đã được thêm cùng với ID mới
     const createdTopic = await this.findById(topicId);
     if (!createdTopic) {
@@ -121,5 +163,71 @@ export class VocabularyTopicRepository {
     return createdTopic;
   }
 
+  static async updateVocabularyTopic(topic: VocabularyTopic): Promise<VocabularyTopic> {
+    // 1. Cập nhật topic trong bảng vocabularytopics
+    const topicResult = await database.query(
+      'UPDATE vocabularytopics SET topicName = ?, slug = ?, imageURL = ? WHERE id = ?',
+      [topic.topicName, topic.slug, topic.imgUrl, topic.id]
+    );  
+
+    // 2. Cập nhật từng vocabulary trong bảng vocabularies
+    if (topic.vocabularies && topic.vocabularies.length > 0) {
+        for (const vocab of topic.vocabularies) {
+            await database.query(
+                `UPDATE vocabularies  
+                SET content = ?, meaning = ?, synonym = ?, transcribe = ?, urlAudio = ?, urlImage = ? 
+                WHERE id = ?`,
+                [
+                    vocab.content,
+                    vocab.meaning,
+                    vocab.synonym ? JSON.stringify(vocab.synonym) : null,
+                    vocab.transcribe, 
+                    vocab.urlAudio,
+                    vocab.urlImage,
+                    vocab.id
+                ]
+            );
+        }
+    }     
+
+    // Trả về topic đã được cập nhật
+    const updatedTopic = await this.findById(topic.id);
+    if (!updatedTopic) {
+        throw new Error('Failed to update vocabulary topic');
+    }
+    return updatedTopic;
+  }
+
+  /**
+   * Xóa chủ đề từ vựng và tất cả từ vựng liên quan
+   */
+  static async deleteVocabularyTopic(topicId: number): Promise<boolean> {
+    try {
+      // Bắt đầu transaction để đảm bảo toàn vẹn dữ liệu
+      await database.query('START TRANSACTION');
+      
+      // 1. Xóa tất cả từ vựng thuộc chủ đề này
+      await database.query(
+        'DELETE FROM vocabularies WHERE VocabularyTopicId = ?',
+        [topicId]
+      );
+      
+      // 2. Xóa chủ đề
+      await database.query(
+        'DELETE FROM vocabularytopics WHERE id = ?',
+        [topicId]
+      );
+      
+      // Commit transaction nếu mọi thứ thành công
+      await database.query('COMMIT');
+      
+      return true;
+    } catch (error) {
+      // Rollback nếu có lỗi
+      await database.query('ROLLBACK');
+      console.error('Error deleting vocabulary topic:', error);
+      throw error;
+    }
+  }
 
 }

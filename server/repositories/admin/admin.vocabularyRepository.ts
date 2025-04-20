@@ -2,7 +2,7 @@ import database from '../../config/db';
 import { Vocabulary } from '../../models/Vocabulary';
 
 export class VocabularyRepository {
-    static async countVocabulariesByTopicId(topicId: Number): Promise<number> {
+    static async countVocabulariesByTopicId(topicId: number): Promise<number> {
         const results = await database.query(
             'SELECT COUNT(*) as count FROM vocabularies WHERE VocabularyTopicId = ?',
             [topicId]
@@ -11,26 +11,24 @@ export class VocabularyRepository {
     }
 
     static async getVocabulariesByTopicId(topicId: number): Promise<Vocabulary[] | null> {
-        const [results] = await database.query(
+        const results = await database.query(
             'SELECT * FROM vocabularies WHERE VocabularyTopicId = ?',
             [topicId]
         );
-    
-        if (!Array.isArray(results) || results.length === 0) {
-            return null;
-        }
-    
+        console.log('results',results);
+       
         const vocabularies = results.map((row: any) => new Vocabulary(
             row.id,
             row.content,
             row.meaning,
-            row.synonym,
+            row.synonym ? JSON.parse(row.synonym) : null,   
             row.transcribe,
             row.urlAudio,
             row.urlImage,
             row.VocabularyTopicId
         ));
-    
+
+        console.log('vocabularies',vocabularies);
         return vocabularies;
     }
     

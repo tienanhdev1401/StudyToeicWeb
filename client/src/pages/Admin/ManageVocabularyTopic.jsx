@@ -1,27 +1,82 @@
 import React, {useState, useEffect} from 'react';
 import  '../../styles/ManageVocabularyTopic.css';
 import vocabularyTopicService from '../../services/admin/admin.vocabularyTopicService';
+import userService from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { read, utils } from 'xlsx'; // Thêm import thư viện xlsx
 
 
-
-const AddTopicModal = ({isOpen, onClose, onAdd}) => {
+const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = null}) => {
   const [formData, setFormData] = useState({
     topicName: '',
-    imageURL: '',
   });
+  const [topicImage, setTopicImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
   const [vocabularyFile, setVocabularyFile] = useState(null);
+  const [vocabularyItems, setVocabularyItems] = useState([]);
   const [errors, setErrors] = useState({
     topicName: '',
-    imageUrl: ''
-    // vocabularyFile: '',
+    topicImage: ''
   });
   const [touched, setTouched] = useState({
     topicName: false,
-    imageUrl: false
-    // vocabularyFile: false,
+    topicImage: false
   });
+  const [serverError, setServerError] = useState(''); // Add state for server error
+  // State để lưu danh sách tên topic hiện có
+  const [existingTopicNames, setExistingTopicNames] = useState([]);
+  
+  // Lấy danh sách tên topic hiện có khi component mount
+  useEffect(() => {
+    const fetchExistingTopics = async () => {
+      try {
+        const data = await vocabularyTopicService.getAllVocabularyTopics();
+        // Lọc danh sách các tên topic, bỏ qua tên của topic đang được chỉnh sửa (nếu có)
+        const topicNames = data
+          .filter(item => !editMode || item.vocabularyTopic.id !== topicToEdit?.id)
+          .map(item => item.vocabularyTopic.topicName.toLowerCase());
+        setExistingTopicNames(topicNames);
+      } catch (error) {
+        console.error('Error fetching topics:', error);
+      }
+    };
+    
+    if (isOpen) {
+      fetchExistingTopics();
+      setServerError(''); // Clear server error when modal opens
+    }
+  }, [isOpen, editMode, topicToEdit]);
+
+  // Khi modal mở và ở chế độ chỉnh sửa, cập nhật formData từ topicToEdit
+  useEffect(() => {
+    if (isOpen && editMode && topicToEdit) {
+      setFormData({
+        topicName: topicToEdit.topicName || '',
+      });
+      
+      // Nếu có ảnh, hiển thị preview
+      if (topicToEdit.imgUrl) {
+        setImagePreview(topicToEdit.imgUrl);
+      }
+    } else if (isOpen && !editMode) {
+      // Reset form khi mở modal ở chế độ thêm mới
+      setFormData({ topicName: '' });
+      setTopicImage(null);
+      setImagePreview('');
+      setVocabularyFile(null);
+      setVocabularyItems([]);
+      setErrors({
+        topicName: '',
+        topicImage: ''
+      });
+      setTouched({
+        topicName: false,
+        topicImage: false
+      });
+      setServerError('');
+    }
+  }, [isOpen, editMode, topicToEdit]);
 
   if(!isOpen) return null;
 
@@ -33,6 +88,8 @@ const AddTopicModal = ({isOpen, onClose, onAdd}) => {
     if (value.trim()) {
       setErrors({...errors, [name]: ''});
     }
+    // Clear server error when user makes changes
+    setServerError('');
   };
 
   const handleBlur = (e) => {
@@ -46,12 +103,12 @@ const AddTopicModal = ({isOpen, onClose, onAdd}) => {
   const validateField = (fieldName, value) => {
     let errorMessage = '';
     
-    if (fieldName === 'topicName' && !value.trim()) {
-      errorMessage = 'Topic name is required';
-    }
-    
-    if (fieldName === 'imageUrl' && !value.trim()) {
-      errorMessage = 'Image URL is required';
+    if (fieldName === 'topicName') {
+      if (!value.trim()) {
+        errorMessage = 'Topic name is required';
+      } else if (existingTopicNames.includes(value.trim().toLowerCase())) {
+        errorMessage = 'Topic name already exists';
+      }
     }
     
     setErrors({...errors, [fieldName]: errorMessage});
@@ -59,61 +116,190 @@ const AddTopicModal = ({isOpen, onClose, onAdd}) => {
   };
 
   const validateForm = () => {
+    const topicNameValue = formData.topicName.trim();
+    
     const newErrors = {
-      topicName: !formData.topicName.trim() ? 'Topic name is required' : '',
-      imageUrl: !formData.imageUrl.trim() ? 'Image URL is required' : ''
-      // vocabularyFile: !vocabularyFile ? 'Vocabulary file is required' : '',
+      topicName: !topicNameValue ? 'Topic name is required' : 
+                (existingTopicNames.includes(topicNameValue.toLowerCase()) ? 'Topic name already exists' : ''),
+      // Không yêu cầu hình ảnh mới nếu đang chỉnh sửa và đã có ảnh cũ
+      topicImage: !topicImage && !imagePreview ? 'Topic image is required' : ''
     };
     
     setErrors(newErrors);
     setTouched({
       topicName: true,
-      imageUrl: true
-      // vocabularyFile: true,
+      topicImage: true
     });
     
     return !Object.values(newErrors).some(error => error);
   };
-  
 
-  const handleVocabularyFileChange = (e) => {
-    if (e.target.files[0]) {
-      setVocabularyFile(e.target.files[0]);
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!validTypes.includes(file.type)) {
+        alert('Only JPG, PNG or GIF images are allowed');
+        return;
+      }
+
+      if (file.size > maxSize) {
+        alert('File size must not exceed 5MB');
+        return;
+      }
+
+      // Create a preview URL for the image
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      setTopicImage(file);
+      setErrors({...errors, topicImage: ''});
     }
   };
 
+  const handleVocabularyFileChange = async (e) => {
+    if (e.target.files[0]) {
+      const file = e.target.files[0];
+      setVocabularyFile(file);
 
+      try {
+        // Đọc file Excel hoặc CSV
+        const data = await file.arrayBuffer();
+        const workbook = read(data);
+        
+        // Kiểm tra xem workbook có tồn tại và có sheet không
+        if (!workbook || !workbook.SheetNames || workbook.SheetNames.length === 0) {
+          throw new Error("File không hợp lệ hoặc không có dữ liệu");
+        }
+        
+        // Lấy worksheet đầu tiên
+        const worksheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[worksheetName];
+        
+        // Kiểm tra worksheet có tồn tại không
+        if (!worksheet) {
+          throw new Error("Không thể đọc dữ liệu từ file");
+        }
+        
+        // Chuyển đổi worksheet thành JSON
+        const jsonData = utils.sheet_to_json(worksheet);
+        
+        // Kiểm tra xem có dữ liệu không
+        if (!jsonData || jsonData.length === 0) {
+          throw new Error("File không chứa dữ liệu từ vựng");
+        }
+        
+        // Kiểm tra các trường bắt buộc
+        const requiredFields = ['content', 'meaning'];
+        const alternativeFields = [['từ', 'Từ'], ['nghĩa', 'Nghĩa']];
+        
+        // Kiểm tra record đầu tiên
+        const firstRecord = jsonData[0];
+        const missingFields = [];
+        
+        requiredFields.forEach((field, index) => {
+          const alternatives = alternativeFields[index];
+          if (
+            !firstRecord[field] && 
+            !alternatives.some(alt => firstRecord[alt])
+          ) {
+            missingFields.push(field);
+          }
+        });
+        
+        if (missingFields.length > 0) {
+          throw new Error(`File thiếu các trường bắt buộc: ${missingFields.join(', ')}`);
+        }
+        
+        // Chuẩn hóa dữ liệu thành định dạng từ vựng
+        const vocabularies = jsonData.map((row, index) => ({
+          id: 0, // ID sẽ được tạo ở server
+          content: row.content || row.Content || row.từ || row.Từ || '',
+          meaning: row.meaning || row.Meaning || row.nghĩa || row.Nghĩa || '',
+          synonym: row.synonym || row.Synonym || row.từđồngnghĩa || row.Từđồngnghĩa || null,
+          transcribe: row.transcribe || row.Transcribe || row.phiênâm || row.Phiênâm || '',
+          urlAudio: row.urlAudio || row.UrlAudio || row.audio || row.Audio || '',
+          urlImage: row.urlImage || row.UrlImage || row.hình || row.Hình || '',
+          VocabularyTopicId: null // Sẽ được gán khi gửi lên server
+        }));
+        
+        // Kiểm tra độ dài và gán vào state
+        if (vocabularies.length > 0) {
+          setVocabularyItems(vocabularies);
+          console.log('Đã đọc được', vocabularies.length, 'từ vựng từ file Excel/CSV');
+        } else {
+          throw new Error("Không thể trích xuất từ vựng từ file");
+        }
+      } catch (error) {
+        console.error('Lỗi khi đọc file:', error);
+        alert('Không thể đọc file. Vui lòng kiểm tra định dạng file: ' + error.message);
+        // Reset vocabularyItems nếu có lỗi
+        setVocabularyItems([]);
+      }
+    }
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setServerError(''); // Clear server error on new submission
 
     if (!validateForm()) {
       return;
     }
 
-    const newTopic = {
-      topicName: formData.topicName,
-      imageURL: formData.imageURL,
-      date: new Date().toISOString().split('T'[0]),
-    };
+    try {
+      let imageUrl = '';
+      
+      // Nếu có file ảnh mới, upload
+      if (topicImage) {
+        imageUrl = await userService.uploadImage(topicImage, 'vocabularyTopic');
+      } else if (editMode && topicToEdit.imgUrl) {
+        // Nếu không có file ảnh mới nhưng đang edit và có URL ảnh cũ
+        imageUrl = topicToEdit.imgUrl;
+      }
+      
+      const updatedTopic = {
+        ...topicToEdit, // Giữ nguyên ID và các thông tin khác nếu đang edit
+        topicName: formData.topicName,
+        imgUrl: imageUrl,
+        date: editMode ? topicToEdit.date : new Date().toISOString().split('T')[0],
+        vocabularies: vocabularyItems // Thêm danh sách từ vựng từ file Excel
+      };
 
-        // Here you would handle the Excel files upload
-    // You would need to implement file upload logic with FormData
-
-    onAdd(newTopic);
-    onClose();
+      try {
+        await onAdd(updatedTopic, editMode);
+        onClose();
+      } catch (error) {
+        // Handle server-side validation errors
+        setServerError(error.message || 'An error occurred. Please try again.');
+        return;
+      }
+      
+      // Clean up the preview URL
+      if (imagePreview && topicImage) { // Chỉ xóa URL khi đó là URL tạm
+        URL.revokeObjectURL(imagePreview);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setServerError(error.message || 'An error occurred. Please try again.');
+    }
   };
 
  return (
     <div className="add-modal-overlay">
       <div className="add-modal-content">
         <div className="add-modal-header">
-          <h2>Add New Topic</h2>
+          <h2>{editMode ? 'Edit Topic' : 'Add New Topic'}</h2>
           <button type="button" className="close-btn" onClick={onClose}>
             <i className="fas fa-times"></i>
           </button>
         </div>
         <div className="add-modal-body">
+          {serverError && (
+            <div className="server-error-message">{serverError}</div>
+          )}
           <form onSubmit={handleSubmit} noValidate>
             <div className={`form-group ${errors.topicName && touched.topicName ? 'has-error' : ''}`}>
               <label htmlFor="topicName">Topic Name <span className="required">*</span></label>
@@ -133,34 +319,37 @@ const AddTopicModal = ({isOpen, onClose, onAdd}) => {
               )}
             </div>
             
-            <div className={`form-group ${errors.imageUrl && touched.imageUrl ? 'has-error' : ''}`}>
-              <label htmlFor="imageUrl">Image URL <span className="required">*</span></label>
-              <input
-                type="text"
-                id="imageUrl"
-                name="imageUrl"
-                value={formData.imageUrl}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                placeholder="Enter image URL"
-                className={errors.imageUrl && touched.imageUrl ? 'input-error' : ''}
-              />
-              {errors.imageUrl && touched.imageUrl && (
-                <div className="error-message">{errors.imageUrl}</div>
+            <div className={`form-group ${errors.topicImage && touched.topicImage ? 'has-error' : ''}`}>
+              <label htmlFor="topicImage">Topic Image <span className="required">*</span></label>
+              <div className="image-upload-container">
+                <input
+                  type="file"
+                  id="topicImage"
+                  name="topicImage"
+                  accept="image/jpeg, image/png, image/gif"
+                  onChange={handleImageChange}
+                  className="file-input"
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="topicImage" className="file-input-label">
+                  <i className="fas fa-upload"></i> {editMode ? 'Change Image' : 'Choose Image'}
+                </label>
+                <span className="file-name">
+                  {topicImage ? topicImage.name : (imagePreview && editMode ? "Current image" : "No file chosen")}
+                </span>
+              </div>
+              {errors.topicImage && touched.topicImage && (
+                <div className="error-message">{errors.topicImage}</div>
               )}
               <div className="image-preview">
-                {formData.imageUrl && (
-                  <img src={formData.imageUrl} alt="Preview" onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://via.placeholder.com/150?text=Invalid+Image+URL";
-                  }} />
+                {imagePreview && (
+                  <img src={imagePreview} alt="Preview" />
                 )}
               </div>
             </div>
             
             <div className="file-upload-section">
-              <div className={`form-group file-upload ${errors.vocabularyFile && touched.vocabularyFile ? 'file-error' : ''}`}>
+              <div className="form-group file-upload">
                 <label htmlFor="vocabularyFile">
                   <i className="fas fa-file-excel"></i>
                   Upload Vocabulary Excel File 
@@ -168,20 +357,14 @@ const AddTopicModal = ({isOpen, onClose, onAdd}) => {
                 <input
                   type="file"
                   id="vocabularyFile"
-                  accept=".xlsx, .xls"
+                  accept=".xlsx, .xls, .csv"
                   onChange={handleVocabularyFileChange}
                   className="file-input"
-                  required
                 />
                 <div className="file-info">
                   {vocabularyFile ? vocabularyFile.name : "No file chosen"}
                 </div>
-                {errors.vocabularyFile && touched.vocabularyFile && (
-                  <div className="error-message">{errors.vocabularyFile}</div>
-                )}
               </div>
-              
-          
             </div>
             
             <div className="add-modal-footer">
@@ -189,7 +372,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd}) => {
                 Cancel
               </button>
               <button type="submit" className="submit-btn">
-                Add Topic
+                {editMode ? 'Save Changes' : 'Add Topic'}
               </button>
             </div>
           </form>
@@ -197,29 +380,36 @@ const AddTopicModal = ({isOpen, onClose, onAdd}) => {
       </div>
     </div>
   );
-
 } 
+
 const ManageVocabularyTopic = () => {
-const navigate = useNavigate();
-const [vocabularyList, setVocabularyList] = useState([]);
-const [isLoading, setIsLoading] = useState(true); // State để quản lý trạng thái loading
-const [error, setError] = useState(null); // State để quản lý lỗi
+  const navigate = useNavigate();
+  const [vocabularyList, setVocabularyList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // State để quản lý trạng thái loading
+  const [error, setError] = useState(null); // State để quản lý lỗi
 
-const [searchTerm, setSearchTerm] = useState('');
-const [currentPage, setCurrentPage] = useState(1);
-const [itemsPerPage, setItemsPerPage] = useState(5); // Change from const to state
-const [sortField, setSortField] = useState('id');
-const [sortDirection, setSortDirection] = useState('asc');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Change from const to state
+  const [sortField, setSortField] = useState('vocabularyTopic.id');
+  const [sortDirection, setSortDirection] = useState('asc');
 
-const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
 
-// Thêm state để quản lý modal
-const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-const [itemToDelete, setItemToDelete] = useState(null); // Thêm state này
-const [isAddModalOpen, setIsAddModalOpen] = useState(false); // New state for add modal
+  // Thêm state để quản lý modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null); // Thêm state này
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // New state for add modal
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add state for form submission status
 
+  // Thêm state cho chế độ chỉnh sửa
+  const [editMode, setEditMode] = useState(false);
+  const [topicToEdit, setTopicToEdit] = useState(null);
 
-useEffect(() => {
+  useEffect(() => {
+    fetchVocabularyTopics();
+  }, []);
+
   const fetchVocabularyTopics = async () => {
     try {
       setIsLoading(true); // Bắt đầu loading
@@ -232,115 +422,169 @@ useEffect(() => {
     }
   };
 
-  fetchVocabularyTopics();
-}, []);
+  // Handle adding or updating a topic
+  const handleAddOrUpdateTopic = async (topic, isEdit) => {
+    try {
+      setIsSubmitting(true);
+      if (isEdit) {
+        // Update existing topic
+        await vocabularyTopicService.updateVocabularyTopic(topic.id, topic);
+        alert('Topic updated successfully!');
+      } else {
+        // Add new topic
+        await vocabularyTopicService.addVocabularyTopic(topic);
+        alert('Topic added successfully!');
+      }
+      
+      // Refresh the list
+      await fetchVocabularyTopics();
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message || 'An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-// Add entries options
-const entriesOptions = [5, 10, 25, 50, 100];
+  // Add entries options
+  const entriesOptions = [5, 10, 25, 50, 100];
 
-const handleEntriesChange = (e) => {
-  setItemsPerPage(Number(e.target.value));
-  setCurrentPage(1); // Reset to first page when changing entries per page
-};
+  const handleEntriesChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing entries per page
+  };
 
-// Dữ liệu mẫu
+  // Xử lý tìm kiếm
+  const filteredData = vocabularyList.filter(item =>
+    item.vocabularyTopic.topicName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.vocabularyTopic.imageURL?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.count.toString().includes(searchTerm) ||
+    item.vocabularyTopic.createAt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.vocabularyTopic.id.toString().includes(searchTerm)
+  );
 
-// Xử lý tìm kiếm
-const filteredData = vocabularyList.filter(item =>
-  item.topicName.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  // Đầu tiên sort data
+  const sortedData = [...filteredData].sort((a, b) => {
+    // Handle nested properties for sorting
+    const getSortValue = (obj, field) => {
+      // If field contains dot notation, it's a nested property
+      if (field.includes('.')) {
+        const parts = field.split('.');
+        let value = obj;
+        for (const part of parts) {
+          if (value === null || value === undefined) return '';
+          value = value[part];
+        }
+        return value;
+      }
+      // Regular property
+      return obj[field];
+    };
 
-// Đầu tiên sort data
-const sortedData = [...filteredData].sort((a, b) => {
-  if (sortDirection === 'asc') {
-    return a[sortField] > b[sortField] ? 1 : -1;
-  } else {
-    return a[sortField] < b[sortField] ? 1 : -1;
-  }
-});
+    const valueA = getSortValue(a, sortField);
+    const valueB = getSortValue(b, sortField);
 
-  // Sau đó mới tính toán phân trang
-const indexOfLastItem = currentPage * itemsPerPage;
-const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
-const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-
-// Thêm useEffect để reset về trang 1 khi thay đổi itemsPerPage hoặc searchTerm
-useEffect(() => {
-  setCurrentPage(1);
-}, [itemsPerPage, searchTerm]);
-
-// Đảm bảo currentPage không vượt quá totalPages
-useEffect(() => {
-  if (currentPage > totalPages) {
-    setCurrentPage(totalPages || 1);
-  }
-}, [currentPage, totalPages]);
-
-const handleSort = (field) => {
-  if (sortField === field) {
-    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-  } else {
-    setSortField(field);
-    setSortDirection('asc');
-  }
-};
-
-const handleSelectAll = (e) => {
-  if (e.target.checked) {
-    setSelectedItems(sortedData.map(item => item.id));
-  } else {
-    setSelectedItems([]);
-  }
-};
-
-const handleSelectItem = (id) => {
-  setSelectedItems(prev => {
-    if (prev.includes(id)) {
-      return prev.filter(item => item !== id);
+    if (sortDirection === 'asc') {
+      return valueA > valueB ? 1 : -1;
     } else {
-      return [...prev, id];
+      return valueA < valueB ? 1 : -1;
     }
   });
-};
+
+  // Sau đó mới tính toán phân trang
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+  // Thêm useEffect để reset về trang 1 khi thay đổi itemsPerPage hoặc searchTerm
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [itemsPerPage, searchTerm]);
+
+  // Đảm bảo currentPage không vượt quá totalPages
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages || 1);
+    }
+  }, [currentPage, totalPages]);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedItems(sortedData.map(item => item.vocabularyTopic.id));
+    } else {
+      setSelectedItems([]);
+    }
+  };
+
+  const handleSelectItem = (id) => {
+    setSelectedItems(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
 
   // Add this handler to prevent sort when clicking checkbox
   const handleCheckboxClick = (e) => {
     e.stopPropagation(); // This prevents the click event from bubbling up to the th element
   };
 
+  // Thêm hàm mở modal cho chế độ chỉnh sửa
+  const handleEditClick = (item) => {
+    setTopicToEdit({
+      id: item.vocabularyTopic.id,
+      topicName: item.vocabularyTopic.topicName,
+      imgUrl: item.vocabularyTopic.imgUrl,
+      date: item.vocabularyTopic.createAt
+    });
+    setEditMode(true);
+    setIsAddModalOpen(true);
+  };
+
   // Component Modal được sửa để handle cả xóa một và nhiều items
-const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selectedItems }) => {
-  if (!isOpen) return null;
+  const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selectedItems }) => {
+    if (!isOpen) return null;
 
-  const isMultiDelete = !itemToDelete;
-  const message = isMultiDelete 
-    ? `Are you sure you want to delete ${selectedItems.length} selected items?`
-    : `Are you sure you want to delete "${itemToDelete.topicName}"?`;
+    const isMultiDelete = !itemToDelete;
+    const message = isMultiDelete 
+      ? `Are you sure you want to delete ${selectedItems.length} selected items?`
+      : `Are you sure you want to delete "${itemToDelete.vocabularyTopic.topicName}"?`;
 
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h2>Confirm Delete</h2>
-          <button className="close-btn" onClick={onClose}>
-            <i className="fas fa-times"></i>
-          </button>
-        </div>
-        <div className="modal-body">
-          <p>{message}</p>
-        </div>
-        <div className="modal-footer">
-          <button className="cancel-btn" onClick={onClose}>Cancel</button>
-          <button className="confirm-delete-btn" onClick={onConfirm}>
-            <i className="fas fa-trash"></i>
-            Delete
-          </button>
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h2>Confirm Delete</h2>
+            <button className="close-btn" onClick={onClose}>
+              <i className="fas fa-times"></i>
+            </button>
+          </div>
+          <div className="modal-body">
+            <p>{message}</p>
+          </div>
+          <div className="modal-footer">
+            <button className="cancel-btn" onClick={onClose}>Cancel</button>
+            <button className="confirm-delete-btn" onClick={onConfirm}>
+              <i className="fas fa-trash"></i>
+              Delete
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
   // Thêm hàm tạo mảng số trang với dấu ...
   const getPageNumbers = (currentPage, totalPages) => {
@@ -358,7 +602,7 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selected
     }
 
     // Luôn hiển thị trang cuối nếu không phải trang 1
-    if (totalPages > 1) {
+    if (currentPage < totalPages) {
       range.push(totalPages);
     }
 
@@ -385,13 +629,12 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selected
   }
 
   return (
-      <div className="vocabulary-container">
-        <h1>Manage Vocabulary Topic</h1>
+    <div className="vocabulary-container">
+      <h1>Manage Vocabulary Topic</h1>
       <div className="header-section">
       </div>
       <div className="pagination">
-      
-      <div className="entries-select">
+        <div className="entries-select">
           <p>Show </p>
           <select 
             value={itemsPerPage} 
@@ -405,32 +648,31 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selected
             ))}
           </select>
           <p>entries </p>
-      </div>
-
-      <div className="action-section">
-        <div className="search-box">
-          <i className="fas fa-search"></i>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
         </div>
-              
-        <button className="add-btn" onClick={() => setIsAddModalOpen(true)}>
-          <i className="fas fa-plus"></i>
-          Add New
-        </button>
-        <button className="trash-btn">
-          <i className="fas fa-trash"></i>
-            Trash
-        </button>
-      </div>
-      </div>
-      
 
+        <div className="action-section">
+          <div className="search-box">
+            <i className="fas fa-search"></i>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+                
+          <button className="add-btn" onClick={() => setIsAddModalOpen(true)}>
+            <i className="fas fa-plus"></i>
+            Add New
+          </button>
+          <button className="trash-btn">
+            <i className="fas fa-trash"></i>
+            Trash
+          </button>
+        </div>
+      </div>
+        
       <table className="vocabulary-table">
         <thead>
           <tr>
@@ -442,59 +684,76 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selected
                   checked={selectedItems.length === sortedData.length}
                   onClick={handleCheckboxClick}
                 />
-                <span onClick={() => handleSort('id')} className="sortable">
+                <span onClick={() => handleSort('vocabularyTopic.id')} className="sortable">
                   STT
-                  <i className={`fas ${sortField === 'id' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+                  <i className={`fas ${sortField === 'vocabularyTopic.id' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
                 </span>
               </div>
             </th>
-            <th onClick={() => handleSort('word')} className="sortable">
+            <th onClick={() => handleSort('vocabularyTopic.topicName')} className="sortable">
               Topic name
-              <i className={`fas ${sortField === 'topicName' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              <i className={`fas ${sortField === 'vocabularyTopic.topicName' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('imgURL')} className="sortable">
-              Image URL
-              <i className={`fas ${sortField === 'word' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+            <th onClick={() => handleSort('vocabularyTopic.imgUrl')} className="sortable image-url-column">
+              Image
+              <i className={`fas ${sortField === 'vocabularyTopic.imgUrl' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('type')} className="sortable">
+            <th onClick={() => handleSort('count')} className="sortable">
               Number of words
-              <i className={`fas ${sortField === 'type' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              <i className={`fas ${sortField === 'count' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            
-            <th onClick={() => handleSort('date')} className="sortable">
+            <th onClick={() => handleSort('vocabularyTopic.createAt')} className="sortable">
               Date created
-              <i className={`fas ${sortField === 'date' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              <i className={`fas ${sortField === 'vocabularyTopic.createAt' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {currentItems.map((item) => (
-            <tr key={item.id}>
+            <tr key={item.vocabularyTopic.id}>
               <td className="id-column">
                 <div className="id-cell">
                   <input
                     type="checkbox"
-                    checked={selectedItems.includes(item.id)}
-                    onChange={() => handleSelectItem(item.id)}
+                    checked={selectedItems.includes(item.vocabularyTopic.id)}
+                    onChange={() => handleSelectItem(item.vocabularyTopic.id)}
                   />
-                  <span>{item.id}</span>
+                  <span>{item.vocabularyTopic.id}</span>
                 </div>
               </td>
-              <td>{item.topicName}</td>
-              <td>{item.topicName}</td>
-              <td>0</td>
+              <td>{item.vocabularyTopic.topicName}</td>
+              <td className="image-cell">
+                {item.vocabularyTopic.imgUrl && (
+                  <img 
+                    src={item.vocabularyTopic.imgUrl} 
+                    alt={item.vocabularyTopic.topicName} 
+                    className="vocabulary-image" 
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://via.placeholder.com/50?text=No+Image";
+                    }} 
+                  />
+                )}
+              </td>
+              <td>{item.count}</td>
               <td>
-                <span className={item.date}>
-                  0
+                <span className={item.vocabularyTopic.createAt} >
+                  {item.vocabularyTopic.createAt}
                 </span>
               </td>
               <td>
-                <button className="view-btn">
+                <button 
+                  className="view-btn"
+                  onClick={() => navigate(`/admin/vocabularyTopic/${item.vocabularyTopic.id}/vocabularies`)}
+                >
                   <i className="fa-solid fa-eye"></i>
                 </button>
 
-                <button className="edit-btn">
+                <button 
+                  className="edit-btn"
+                  onClick={() => handleEditClick(item)}
+                >
                   <i className="fa-solid fa-pen-to-square"></i>
                 </button>
                 <button 
@@ -574,14 +833,32 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selected
           setIsDeleteModalOpen(false);
           setItemToDelete(null);
         }}
-        onConfirm={() => {
-          if (itemToDelete) {
-            // Xử lý xóa một item
-            console.log("Deleting single item:", itemToDelete);
-          } else {
-            // Xử lý xóa nhiều items
-            console.log("Deleting multiple items:", selectedItems);
+        onConfirm={async () => {
+          try {
+            if (itemToDelete) {
+              // Xử lý xóa một item
+              console.log("Deleting single item:", itemToDelete);
+              await vocabularyTopicService.deleteVocabularyTopic(itemToDelete.vocabularyTopic.id);
+            } else {
+              // Xử lý xóa nhiều items
+              console.log("Deleting multiple items:", selectedItems);
+              // Implement batch delete if your API supports it
+              // For now, we'll delete them one by one
+              for (const id of selectedItems) {
+                await vocabularyTopicService.deleteVocabularyTopic(id);
+              }
+            }
+            
+            // Refresh the list
+            await fetchVocabularyTopics();
+            // Reset selected items
+            setSelectedItems([]);
+            
+          } catch (error) {
+            console.error("Error deleting items:", error);
+            alert("Failed to delete items. Please try again.");
           }
+          
           setIsDeleteModalOpen(false);
           setItemToDelete(null);
         }}
@@ -591,17 +868,17 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selected
 
       <AddTopicModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onAdd={(newTopic) => {
-          setVocabularyList([...vocabularyList, newTopic]);
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditMode(false);
+          setTopicToEdit(null);
         }}
+        onAdd={handleAddOrUpdateTopic}
+        editMode={editMode}
+        topicToEdit={topicToEdit}
       />
     </div>
   );  
 };   
-
-
-
-
 
 export default ManageVocabularyTopic;

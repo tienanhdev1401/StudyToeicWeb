@@ -1,7 +1,7 @@
 .vocabulary-container {
   padding: 30px;
   font-family: 'Arial', sans-serif;
-  max-width: 1400px; /* Tăng max-width */
+  max-width: 1200px; /* Tăng max-width */
   margin: 0 auto;
   background-color: white;
   border-radius: 8px;
@@ -87,7 +87,8 @@ h1 {
 .vocabulary-table {
   margin-top: 20px;
   width: 100%;
-  min-width: 1100px;
+  table-layout: fixed;
+  max-width: 1150px;
   border-collapse: separate;
   border-spacing: 0;
   margin-bottom: 80px;
@@ -301,13 +302,28 @@ h1 {
 }
 
 .id-column {
-  width: 80px;
+  min-width: 100px;
+  width: 100px;
+  
 }
 
 .id-header, .id-cell {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+/* Cột URL ảnh */
+.image-url-column {
+  max-width: 100px;
+}
+
+vocabulary-table th,
+.vocabulary-table td {
+  padding: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .id-header input[type="checkbox"],
@@ -324,6 +340,17 @@ h1 {
 /* Optional: Style for selected rows */
 .vocabulary-table tbody tr:has(input:checked) {
   background-color: #f0f7ff;
+}
+
+/* Styles for images in table */
+.vocabulary-image {
+  max-width: 50px;
+  max-height: 50px;
+  border-radius: 4px;
+}
+
+.image-cell {
+  text-align: center;
 }
 
 .table-action-bar {
@@ -636,7 +663,6 @@ h1 {
   max-height: 100%;
   object-fit: contain;
 }
-
 .file-upload-section {
   margin-bottom: 20px;
 }
@@ -672,9 +698,10 @@ h1 {
 .file-upload i {
   font-size: 2rem;
   margin-bottom: 8px;
+  margin-right: 10px;
 }
 
-.file-input {
+.file-upload .file-input {
   position: absolute;
   top: 0;
   left: 0;
@@ -682,11 +709,26 @@ h1 {
   height: 100%;
   opacity: 0;
   cursor: pointer;
+  z-index: 2;
+  font-size: 0; /* Ẩn text "No file chosen" */
+}
+
+/* Ẩn các phần tử mặc định của input file */
+input[type="file"]::-webkit-file-upload-button {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+
+input[type="file"]::file-selector-button {
+  visibility: hidden;
+  width: 0;
+  height: 0;
 }
 
 .file-info {
   margin-top: 10px;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   color: #555;
 }
 
@@ -725,4 +767,236 @@ h1 {
 
 .submit-btn:hover {
   background-color: #3a7bc8;
+}
+
+/* Thiết lập chiều rộng cố định cho các cột */
+.vocabulary-table th,
+.vocabulary-table td {
+  padding: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Image upload styles */
+.image-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-input-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: fit-content;
+}
+
+.file-input-label:hover {
+  background-color: #0056b3;
+}
+
+.file-input-label i {
+  margin-right: 8px;
+}
+
+.file-name {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.image-preview {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+/* Thêm CSS cho phần hướng dẫn file Excel */
+.excel-guide {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.excel-guide a {
+  color: #3498db;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.excel-guide a:hover {
+  text-decoration: underline;
+}
+
+.excel-guide i {
+  margin-right: 5px;
+}
+
+.excel-templates {
+  display: flex;
+  align-items: center;
+}
+
+.excel-templates p {
+  margin: 0 10px 0 0;
+  color: #666;
+}
+
+.excel-templates a {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #28a745;
+  font-size: 0.85rem;
+  margin-right: 8px;
+}
+
+.excel-templates a:hover {
+  background-color: #e9ecef;
+  text-decoration: none;
+}
+
+.excel-templates a i {
+  margin-right: 5px;
+}
+
+/* CSS cho file upload section */
+.file-upload-section {
+  margin-bottom: 20px;
+}
+
+.file-upload {
+  position: relative;
+  margin-bottom: 15px;
+  border: 2px dashed #ddd;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+
+.file-upload:hover {
+  border-color: #3498db;
+}
+
+.file-upload.file-error {
+  border-color: #e74c3c;
+}
+
+.file-upload label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: #3498db;
+}
+
+.file-upload label i {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.file-upload .file-input {
+  display: block;
+  width: 100%;
+  opacity: 0.8;
+}
+
+.file-upload .file-info {
+  margin-top: 10px;
+  font-style: italic;
+  color: #555;
+}
+
+/* Add CSS for server error message */
+.server-error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  border: 1px solid #f5c6cb;
+  font-size: 14px;
+}
+
+/* Vocabulary images upload section */
+.vocabulary-images-upload {
+  margin-top: 15px;
+  border-color: #4dbeff;
+  background-color: #f0f9ff;
+}
+
+.vocabulary-images-upload label {
+  color: #0088cc;
+}
+
+.vocabulary-images-upload label small {
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+  color: #666;
+  margin-top: 5px;
+}
+
+.vocabulary-images-upload:hover {
+  border-color: #009dff;
+}
+
+/* Loading indicator for image upload */
+.vocabulary-image-preview.uploading {
+  position: relative;
+}
+
+.vocabulary-image-preview.uploading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vocabulary-image-preview.uploading::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  z-index: 2;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }

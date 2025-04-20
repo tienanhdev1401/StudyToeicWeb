@@ -9,7 +9,7 @@ const vocabularyservice = {
           
           if (response.data.success) {
             console.log(response.data.data)
-            return response.data.data; // Returns the array of grammar topics
+            return response.data.data; // Returns the array of vocabularies
           
           } else {
             throw new Error(response.data.message || 'Failed to fetch vocabularies ');
@@ -22,7 +22,7 @@ const vocabularyservice = {
 
       getVocabularyCountByTopicId: async (topicId) => {
         try {
-          const response = await axios.get(`${API_BASE_URL}/vocabulary-topic/${topicId}/count`);
+          const response = await axios.get(`${API_BASE_URL}/admin/vocabulary-topic/${topicId}/count`);
           if (response.data.success) {
             return response.data.count;
           } else {
