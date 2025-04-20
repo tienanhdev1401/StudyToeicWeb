@@ -34,10 +34,8 @@ export class TestController {
       for (const part of parts) {
         const questionInAParts = await this.questionInAPartRepository.findByPartId(part.id);
         part.questions = questionInAParts;
-
         const questionIds = questionInAParts.map(qp => qp.QuestionId);
         const questions = await this.questionController.getQuestionsByIds(questionIds);
-
         for (const questionInAPart of questionInAParts) {
           questionInAPart.question = questions.find(q => q.id === questionInAPart.QuestionId);
         }

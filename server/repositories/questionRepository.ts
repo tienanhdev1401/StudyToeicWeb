@@ -38,22 +38,16 @@ export class QuestionRepository {
       if (!ids.length) {
         return [];
       }
-      // Sửa phần này, sử dụng dấu ? cho từng phần tử trong mảng
       const placeholders = ids.map(() => '?').join(',');
-      const [rows] = await db.query(
+      const rows = await db.query(
         `SELECT * FROM questions WHERE id IN (${placeholders})`,
         ids
       );
-  
-      // Đảm bảo rows là mảng
       const results = Array.isArray(rows) ? rows : [rows];
-      
-      // Xử lý từng câu hỏi với resource
       const questions = await Promise.all(results.map(async row => {
         const resource = row.ResourceId ? 
           await ResourceRepository.findById(Number(row.ResourceId)) : 
           null;
-  
         return new Question(
           Number(row.id),
           row.content,
