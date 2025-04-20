@@ -1,155 +1,179 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import '../styles/DoTest.css';
-import { mockTests } from '../data/mockTests';
+import { useTest } from '../context/TestContext';
+import TestService from '../services/TestService';
 
 const DoTest = () => {
-    const { testID } = useParams();
-    const { state } = useLocation();
-    const [currentPart, setCurrentPart] = useState(5);
+    const { testId } = useParams();
     const [showPanel, setShowPanel] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(7200);
-    const [currentQuestion, setCurrentQuestion] = useState(1);
-    const [filteredQuestions, setFilteredQuestions] = useState([]);
-    const [answers, setAnswers] = useState({});
+    const [localError, setLocalError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    
+    const resolvedTestId = testId || 1; // Nếu không có testId trong URL, sử dụng testId mặc định là 1
+    console.log(resolvedTestId);
+    useEffect(() => {
+        if (resolvedTestId) {
+            TestService.getTestById(resolvedTestId)
+                .then(rawData => {
+                    const processedData = TestService.processTestData(rawData);
+                    // Update test data in context
+                    setTest(processedData);
+                })
+                .catch(error => {
+                    setLocalError(error.message);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        }
+    }, [resolvedTestId, setTest]);
+
+    const { setTest,
+        test,
+        loading,
+        error,
+        userAnswers,
+        remainingTime,
+        formattedTime,
+        isTestStarted,
+        isTestFinished,
+        currentQuestionIndex,
+        currentQuestion,
+        startTest,
+        finishTest,
+        saveAnswer,
+        goToNextQuestion,
+        goToPreviousQuestion,
+        goToQuestion,
+        calculateScore,
+        getQuestionsByPart
+    } = useTest();
+
+    // State để theo dõi phần hiện tại
+    const [currentPart, setCurrentPart] = useState(1);
+    
+    // State để theo dõi nhóm câu hỏi hiện tại (cho part 3-7)
     const [currentGroup, setCurrentGroup] = useState([]);
 
-    // Khởi tạo và lọc câu hỏi
+    // Cập nhật nhóm câu hỏi khi có sự thay đổi về câu hỏi hiện tại
     useEffect(() => {
-        const selectedParts = state?.selectedParts || [];
-        const allQuestions = mockTests[testID]?.questions || [];
+        if (!currentQuestion || !test) return;
 
-        const filtered = selectedParts.length > 0
-            ? allQuestions.filter(q => selectedParts.includes(q.part))
-            : allQuestions;
+        // Cập nhật phần hiện tại
+        setCurrentPart(currentQuestion.partNumber);
 
-        setFilteredQuestions(filtered);
-        setCurrentQuestion(1);
-    }, [state, testID]);
-
-    // Xử lý timer
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTimeLeft(prev => Math.max(0, prev - 1));
-        }, 1000);
-        return () => clearInterval(timer);
-    }, []);
-
-    // Cập nhật nhóm câu hỏi
-    useEffect(() => {
-        const question = filteredQuestions[currentQuestion - 1];
-        if (!question) {
-            setCurrentGroup([]);
-            return;
-        }
-
-        setCurrentPart(question.part);
-
-        if ([3, 4, 6, 7].includes(question.part)) {
-            const newGroup = filteredQuestions.filter(q =>
-                q.resourceId === question.resourceId
+        // Xử lý logic nhóm câu hỏi
+        if ([3, 4, 6, 7].includes(currentQuestion.partNumber)) {
+            // Nhóm các câu hỏi có cùng resourceId
+            const newGroup = test.allQuestions.filter(q => 
+                q.resource && 
+                currentQuestion.resource && 
+                q.resource.id === currentQuestion.resource.id
             );
             setCurrentGroup(newGroup);
         } else {
-            setCurrentGroup([question]);
+            // Đối với part 1, 2, 5, mỗi câu hỏi là một nhóm riêng biệt
+            setCurrentGroup([currentQuestion]);
         }
-    }, [currentQuestion, filteredQuestions]);
+    }, [currentQuestion, test]);
 
-    const formatTime = (seconds) => {
-        const hrs = Math.floor(seconds / 3600);
-        const mins = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        return [hrs, mins, secs].map(n => n.toString().padStart(2, '0')).join(':');
+    // Bắt đầu bài kiểm tra khi component được mount
+    useEffect(() => {
+        if (test && !isTestStarted && !isTestFinished) {
+            startTest();
+        }
+    }, [test, isTestStarted, isTestFinished, startTest]);
+
+    // Xử lý lựa chọn đáp án
+    const handleAnswerSelect = (questionId, answer) => {
+        saveAnswer(questionId, answer);
     };
 
-    const handleAnswerSelect = (questionId, answerId) => {
-        setAnswers(prev => ({
-            ...prev,
-            [questionId]: answerId
-        }));
-    };
-
-    const handleQuestionNavigation = (questionId) => {
-        const index = filteredQuestions.findIndex(q => q.id === questionId);
-        if (index >= 0) setCurrentQuestion(index + 1);
-    };
-
-    // Điều hướng giữa các nhóm
+    // Xử lý điều hướng giữa các câu hỏi
     const navigateQuestions = (direction) => {
-        // Lấy câu hỏi hiện tại
-        const currentQ = filteredQuestions[currentQuestion - 1];
-        if (!currentQ) return;
+        if (!currentQuestion || !test) return;
 
         // Xác định resourceId hiện tại (dùng để nhận diện nhóm)
-        const currentResourceId = currentQ.resourceId;
+        const currentResourceId = currentQuestion.resource?.id;
 
         if (direction === 'next') {
-            // TÌM CÂU ĐẦU TIÊN CỦA NHÓM TIẾP THEO
-            if ([3, 4, 6, 7].includes(currentQ.part)) {
-                // Duyệt từ vị trí hiện tại để tìm câu đầu tiên của nhóm khác
+            if ([3, 4, 6, 7].includes(currentQuestion.partNumber) && currentResourceId) {
+                // Tìm câu hỏi đầu tiên của nhóm tiếp theo
                 let nextGroupIndex = -1;
-                for (let i = currentQuestion; i < filteredQuestions.length; i++) {
-                    if (filteredQuestions[i].resourceId !== currentResourceId) {
+                for (let i = currentQuestionIndex + 1; i < test.allQuestions.length; i++) {
+                    if (!test.allQuestions[i].resource || 
+                        test.allQuestions[i].resource.id !== currentResourceId) {
                         nextGroupIndex = i;
                         break;
                     }
                 }
 
                 if (nextGroupIndex !== -1) {
-                    setCurrentQuestion(nextGroupIndex + 1);
+                    goToQuestion(nextGroupIndex);
                 } else {
-                    // Nếu không tìm thấy nhóm tiếp theo, di chuyển đến câu tiếp theo
-                    setCurrentQuestion(Math.min(filteredQuestions.length, currentQuestion + 1));
+                    goToNextQuestion();
                 }
             } else {
-                // Đối với các phần không nhóm, chỉ đơn giản là tới câu tiếp theo
-                setCurrentQuestion(Math.min(filteredQuestions.length, currentQuestion + 1));
+                goToNextQuestion();
             }
         } else {
-            // TÌM CÂU ĐẦU TIÊN CỦA NHÓM TRƯỚC ĐÓ 
-            if ([3, 4, 6, 7].includes(currentQ.part)) {
-                // Duyệt ngược từ vị trí hiện tại để tìm nhóm trước đó
+            if ([3, 4, 6, 7].includes(currentQuestion.partNumber) && currentResourceId) {
+                // Tìm câu hỏi đầu tiên của nhóm trước đó
+                let prevResourceId = null;
                 let prevGroupLastIndex = -1;
-                for (let i = currentQuestion - 2; i >= 0; i--) {
-                    if (filteredQuestions[i].resourceId !== currentResourceId) {
+
+                for (let i = currentQuestionIndex - 1; i >= 0; i--) {
+                    if (!test.allQuestions[i].resource || 
+                        test.allQuestions[i].resource.id !== currentResourceId) {
                         prevGroupLastIndex = i;
+                        prevResourceId = test.allQuestions[i].resource?.id;
                         break;
                     }
                 }
 
-                if (prevGroupLastIndex !== -1) {
-                    // Tìm câu đầu tiên của nhóm trước đó
-                    const prevResourceId = filteredQuestions[prevGroupLastIndex].resourceId;
+                if (prevGroupLastIndex !== -1 && prevResourceId) {
+                    // Tìm câu hỏi đầu tiên của nhóm trước đó
                     let firstOfPrevGroup = prevGroupLastIndex;
-
                     while (firstOfPrevGroup > 0 &&
-                        filteredQuestions[firstOfPrevGroup - 1].resourceId === prevResourceId) {
+                        test.allQuestions[firstOfPrevGroup - 1].resource &&
+                        test.allQuestions[firstOfPrevGroup - 1].resource.id === prevResourceId) {
                         firstOfPrevGroup--;
                     }
-
-                    setCurrentQuestion(firstOfPrevGroup + 1);
+                    goToQuestion(firstOfPrevGroup);
                 } else {
-                    // Nếu không tìm thấy nhóm trước đó, lùi một câu
-                    setCurrentQuestion(Math.max(1, currentQuestion - 1));
+                    goToPreviousQuestion();
                 }
             } else {
-                // Đối với các phần không nhóm, chỉ đơn giản là lùi một câu
-                setCurrentQuestion(Math.max(1, currentQuestion - 1));
+                goToPreviousQuestion();
             }
         }
     };
-    // Render giao diện
+
+    // Xử lý chọn câu hỏi cụ thể
+    const handleQuestionNavigation = (questionId) => {
+        const index = test.allQuestions.findIndex(q => q.id === questionId);
+        if (index >= 0) goToQuestion(index);
+    };
+
+    // Xử lý nộp bài
+    const handleSubmitTest = () => {
+        finishTest();
+        // Thêm logic hiển thị kết quả hoặc chuyển hướng trang ở đây
+    };
+
+    // Render câu hỏi đơn lẻ (Part 1, 2, 5)
     const renderSingleQuestion = () => {
         const question = currentGroup[0];
         if (!question) return null;
 
         return (
             <div className="single-container">
-                {question.part === 1 && (
-                    <img src={question.imageUrl} alt="Mô tả" className="main-image" />
+                {question.partNumber === 1 && question.resource?.urlImage && (
+                    <img src={question.resource.urlImage} alt="Mô tả" className="main-image" />
                 )}
 
-                {question.part === 2 && (
+                {question.partNumber === 2 && question.resource?.urlAudio && (
                     <div className="audio-section">
                         <button className="audio-button">
                             <i className="fas fa-play"></i> Nghe câu hỏi
@@ -159,25 +183,27 @@ const DoTest = () => {
 
                 <div className="answer-section">
                     <div className="question-header">
-                        <span className="question-number">Câu {question.id}</span>
-                        {question.part === 5 && (
-                            <p className="sentence">{question.sentence}</p>
+                        <span className="question-number">Câu {question.questionNumber}</span>
+                        {question.content && (
+                            <p className="sentence">{question.content}</p>
                         )}
                     </div>
 
                     <div className="answer-grid">
-                        {question.answers.map(answer => (
-                            <div key={answer.id} className="answer-row">
-                                <label className="option-item">
-                                    <input
-                                        type="radio"
-                                        name={`question-${question.id}`}
-                                        checked={answers[question.id] === answer.id}
-                                        onChange={() => handleAnswerSelect(question.id, answer.id)}
-                                    />
-                                    <span className="option-label">{answer.text}</span>
-                                </label>
-                            </div>
+                        {Object.entries(question.options).map(([key, text]) => (
+                            text && (
+                                <div key={key} className="answer-row">
+                                    <label className="option-item">
+                                        <input
+                                            type="radio"
+                                            name={`question-${question.id}`}
+                                            checked={userAnswers[question.id] === key}
+                                            onChange={() => handleAnswerSelect(question.id, key)}
+                                        />
+                                        <span className="option-label">{key}: {text}</span>
+                                    </label>
+                                </div>
+                            )
                         ))}
                     </div>
                 </div>
@@ -185,42 +211,37 @@ const DoTest = () => {
         );
     };
 
+    // Render nhóm câu hỏi (Part 3, 4, 6, 7)
     const renderGroupQuestions = () => {
         const question = currentGroup[0];
         if (!question) return null;
+
         return (
             <div className="group-container">
                 <div className="resource-panel">
-                    {[3, 4].includes(question.part) && (
+                    {[3, 4].includes(question.partNumber) && question.resource?.urlAudio && (
                         <div className="audio-resource">
                             <button className="audio-button">
                                 <i className="fas fa-play"></i>
-                                {question.part === 3 ? 'Nghe hội thoại' : 'Nghe bài nói'}
+                                {question.partNumber === 3 ? 'Nghe hội thoại' : 'Nghe bài nói'}
                             </button>
-                            {question.chart && (
-                                <img src={question.chart} alt="Biểu đồ" className="chart-image" />
+                            {question.resource.urlImage && (
+                                <img src={question.resource.urlImage} alt="Biểu đồ" className="chart-image" />
                             )}
                         </div>
                     )}
 
-                    {question.part === 6 && (
+                    {question.partNumber === 6 && question.resource?.paragraph && (
                         <div className="text-resource">
-                            {question.passageText.map((text, idx) => (
-                                <p key={idx} dangerouslySetInnerHTML={{ __html: text }} />
-                            ))}
+                            <p dangerouslySetInnerHTML={{ __html: question.resource.paragraph }} />
                         </div>
                     )}
 
-                    {question.part === 7 && (
+                    {question.partNumber === 7 && question.resource?.paragraph && (
                         <div className="reading-resource">
-                            {question.passages?.map((passage, idx) => (
-                                <div key={idx} className="passage">
-                                    <h4>{passage.title}</h4>
-                                    {passage.content.map((text, i) => (
-                                        <p key={i}>{text}</p>
-                                    ))}
-                                </div>
-                            ))}
+                            <div className="passage">
+                                <p dangerouslySetInnerHTML={{ __html: question.resource.paragraph }} />
+                            </div>
                         </div>
                     )}
                 </div>
@@ -229,25 +250,24 @@ const DoTest = () => {
                     {currentGroup.map(q => (
                         <div key={q.id} className="question-block">
                             <div className="question-header">
-                                <span className="question-number">Câu {q.id}</span>
-                                {q.part === 6 && (
-                                    <span className="blank-number"></span>
-                                )}
+                                <span className="question-number">Câu {q.questionNumber}</span>
                             </div>
 
-                            {q.questionText && <p className="question-text">{q.questionText}</p>}
+                            {q.content && <p className="question-text">{q.content}</p>}
 
                             <div className="answer-options">
-                                {q.answers.map(answer => (
-                                    <label key={answer.id} className="option-item">
-                                        <input
-                                            type="radio"
-                                            name={`question-${q.id}`}
-                                            checked={answers[q.id] === answer.id}
-                                            onChange={() => handleAnswerSelect(q.id, answer.id)}
-                                        />
-                                        <span className="option-label">{answer.text}</span>
-                                    </label>
+                                {Object.entries(q.options).map(([key, text]) => (
+                                    text && (
+                                        <label key={key} className="option-item">
+                                            <input
+                                                type="radio"
+                                                name={`question-${q.id}`}
+                                                checked={userAnswers[q.id] === key}
+                                                onChange={() => handleAnswerSelect(q.id, key)}
+                                            />
+                                            <span className="option-label">{key}: {text}</span>
+                                        </label>
+                                    )
                                 ))}
                             </div>
                         </div>
@@ -257,7 +277,10 @@ const DoTest = () => {
         );
     };
 
+    // Render panel điều hướng câu hỏi
     const renderNavigationPanel = () => {
+        if (!test) return null;
+
         return (
             <div className={`question-panel ${showPanel ? 'open' : ''}`}>
                 <div className="panel-header">
@@ -266,47 +289,93 @@ const DoTest = () => {
                 </div>
 
                 <div className="panel-content">
-                    {[1, 2, 3, 4, 5, 6, 7].map(part => (
-                        <div key={part} className="part-section">
-                            <h4>PART {part}</h4>
-                            <div className="question-grid">
-                                {filteredQuestions
-                                    .filter(q => q.part === part)
-                                    .map(q => {
-                                        const isDisabled = currentPart <= 4 || q.part <= 4;
+                    {[1, 2, 3, 4, 5, 6, 7].map(partNumber => {
+                        const partQuestions = test.parts.find(p => p.partNumber === partNumber)?.questions || [];
+                        
+                        if (partQuestions.length === 0) return null;
+                        
+                        return (
+                            <div key={partNumber} className="part-section">
+                                <h4>PART {partNumber}</h4>
+                                <div className="question-grid">
+                                    {partQuestions.map(q => {
+                                        const isCurrentQuestion = currentQuestion && q.id === currentQuestion.id;
+                                        const isAnswered = userAnswers[q.id] !== undefined;
+                                        const isDisabled = currentPart <= 4 || q.partNumber <= 4;
+
                                         return (
                                             <button
                                                 key={q.id}
                                                 className={`question-btn 
-                                                    ${answers[q.id] ? 'answered' : ''}
-                                                    ${currentGroup.some(gq => gq.id === q.id) ? 'active' : ''}
+                                                    ${isAnswered ? 'answered' : ''}
+                                                    ${isCurrentQuestion ? 'active' : ''}
                                                     ${isDisabled ? 'disabled' : ''}`}
                                                 onClick={!isDisabled ? () => handleQuestionNavigation(q.id) : undefined}
                                                 disabled={isDisabled}
                                             >
-                                                {q.id}
+                                                {q.questionNumber}
                                             </button>
                                         );
                                     })}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         );
     };
 
+    // Hiển thị trạng thái loading
+    if (isLoading) {
+        return (
+            <div className="loading-container">
+                <div className="loader"></div>
+                <p>Đang tải bài kiểm tra...</p>
+            </div>
+        );
+    }
+
+    // Hiển thị lỗi
+    if (localError) {
+        return (
+            <div className="error-container">
+                <h2>Đã xảy ra lỗi</h2>
+                <p>{localError}</p>
+                <button onClick={() => window.location.reload()}>Thử lại</button>
+            </div>
+        );
+    }
+
+    // Hiển thị kết quả nếu đã hoàn thành
+    if (isTestFinished) {
+        const { correctCount, totalQuestions, score } = calculateScore();
+        
+        return (
+            <div className="result-container">
+                <h2>Kết quả bài kiểm tra</h2>
+                <div className="score-display">
+                    <div className="score">{score}%</div>
+                    <p>Bạn đã trả lời đúng {correctCount}/{totalQuestions} câu hỏi</p>
+                </div>
+                <button className="review-btn" onClick={() => window.location.reload()}>Xem lại bài làm</button>
+            </div>
+        );
+    }
+
+    // Hiển thị giao diện chính của bài kiểm tra
     return (
         <div className="do-test-container">
             <header className="test-header">
                 <div className="header-content_white">
-                    <span className="test-title">Đề thi thử TOEIC</span>
+                    <span className="test-title">{test?.title || 'Bài kiểm tra TOEIC'}</span>
                     <div className="header-controls">
-                        <button className="submit-button">Nộp bài</button>
-                        <div className="timer">{formatTime(timeLeft)}</div>
+                        <button className="submit-button" onClick={handleSubmitTest}>Nộp bài</button>
+                        <div className="timer">{formattedTime}</div>
                         <button
                             className={`panel-toggle ${currentPart <= 4 ? 'disabled' : ''}`}
                             onClick={() => setShowPanel(!showPanel)}
+                            disabled={currentPart <= 4}
                         >
                             <i className="fas fa-bars"></i>
                         </button>
@@ -319,32 +388,32 @@ const DoTest = () => {
             <main className="main-content">
                 <div className="progress-container">
                     <div className="word-counter">
-                        {Object.keys(answers).length}/{filteredQuestions.length}
+                        {Object.keys(userAnswers).length}/{test?.allQuestions.length || 0}
                     </div>
                 </div>
                 <div className="content-wrapper">
                     <h2 className="part-title">PART {currentPart}</h2>
 
-                    {filteredQuestions.length > 0 ? (
+                    {test && test.allQuestions.length > 0 ? (
                         <div className="question-content">
                             {[1, 2, 5].includes(currentPart) ?
                                 (currentGroup.length > 0 ? renderSingleQuestion() : null) :
                                 (currentGroup.length > 0 ? renderGroupQuestions() : null)}
 
-                            {/* Thêm điều kiện hiển thị */}
+                            {/* Hiển thị nút điều hướng cho các phần 5-7 */}
                             {![1, 2, 3, 4].includes(currentPart) && (
                                 <div className="navigation-controls">
                                     <button
                                         className="nav-btn prev"
                                         onClick={() => navigateQuestions('prev')}
-                                        disabled={currentQuestion === 1}
+                                        disabled={currentQuestionIndex === 0}
                                     >
                                         ← Câu trước
                                     </button>
                                     <button
                                         className="nav-btn next"
                                         onClick={() => navigateQuestions('next')}
-                                        disabled={currentQuestion === filteredQuestions.length}
+                                        disabled={currentQuestionIndex === test.allQuestions.length - 1}
                                     >
                                         Câu tiếp →
                                     </button>
@@ -352,14 +421,11 @@ const DoTest = () => {
                             )}
                         </div>
                     ) : (
-                        <div className="no-questions">Không có câu hỏi nào được chọn</div>
+                        <div className="no-questions">Không có câu hỏi nào trong bài kiểm tra</div>
                     )}
-
                 </div>
-
             </main>
         </div>
-
     );
 };
 

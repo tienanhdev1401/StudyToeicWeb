@@ -26,6 +26,7 @@ import DoGrammarExercise from './pages/DoGrammarExercise'
 import DoVocabularyExercise from './pages/DoVocabularyExercise'
 import DictionaryPage from './pages/DictionaryPage';
 import Nhap from './pages/nhap';
+import { TestProvider } from './context/TestContext';
 import NotFound from './components/404'; 
 // Gọi hàm này khi ứng dụng khởi động
 
@@ -39,7 +40,8 @@ function App() {
     
       <BrowserRouter basename="/">
       <AuthProvider>
-          <UserProvider> {/* Thêm UserProvider bao quanh Routes */}
+          <UserProvider> 
+            <TestProvider>
             <Routes>
               
               <Route path="/" element={<Home />} />
@@ -70,6 +72,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             
             </Routes>
+            </TestProvider>
           </UserProvider>
         </AuthProvider>
       </BrowserRouter>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Stm_quizzes.css';
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams  } from 'react-router-dom';
 import LoginPopup from '../components/LoginPopup';
 import { useAuth } from '../context/AuthContext'; 
 
@@ -10,6 +10,7 @@ function Stmquizzes() {
   const { isLoggedIn, user } = useAuth();
   const [showLoginPopup, setShowLoginPopup] = useState(!isLoggedIn); // Set initial state based on login status
   const [selectedParts, setSelectedParts] = useState([]);
+  const { testId } = useParams();
   const navigate = useNavigate();
 
   // Add useEffect to handle login state changes
@@ -26,9 +27,11 @@ function Stmquizzes() {
   };
 
   const handleStartTest = () => {
-    navigate(`/Dotest/test1`, {
+    // Sử dụng testId lấy từ URL để điều hướng
+    //navigate(`/Dotest/${testId}`
+    navigate(`/Dotest/1`, {
       state: {
-        selectedParts: selectedParts
+        selectedParts: selectedParts.length > 0 ? selectedParts : [1, 2, 3, 4, 5, 6, 7]
       }
     });
   };
