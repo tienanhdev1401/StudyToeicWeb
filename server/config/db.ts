@@ -11,6 +11,7 @@ class Database {
     this.pool = mysql.createPool({
       host: process.env.DATABASE_HOST,
       user: process.env.DATABASE_USER,
+      port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT, 10) : undefined,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE,
       waitForConnections: true,
