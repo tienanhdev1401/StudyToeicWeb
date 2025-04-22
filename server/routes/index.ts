@@ -9,6 +9,7 @@ import grammarTopicTopicRoutes from './grammarTopicRoutes'
 import uploadRouter from './uploadRouter';
 import exerciseRouter from './exerciseRouter'
 import learningRouter from './learningGoalRouter'
+import commentRoutes from './commentRoutes'
 
 
 import test from './test'
@@ -23,6 +24,7 @@ function route(app: Application): void {
   app.use('/api/upload', uploadRouter);
   app.use('/api/exercise',exerciseRouter);
   app.use('/api/learning-goal',learningRouter)
+  app.use('/api/comment', commentRoutes);
   app.use('/', test);
   
 }
