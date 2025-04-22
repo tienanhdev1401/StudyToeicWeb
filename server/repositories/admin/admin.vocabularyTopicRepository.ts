@@ -7,10 +7,12 @@ export class VocabularyTopicRepository {
    * Tìm VocabularyTopic theo ID
    */
   static async findById(topicId: number): Promise<VocabularyTopic | null> {
+    console.log('topicId',topicId);
     const results = await database.query(
       'SELECT * FROM vocabularytopics WHERE id = ? LIMIT 1',
       [topicId]
     );
+    console.log('results',results);
 
     if (Array.isArray(results) && results.length === 0) {
       return null;
@@ -124,10 +126,13 @@ export class VocabularyTopicRepository {
   }
 
   static async addVocabularyTopic(topic: VocabularyTopic): Promise<VocabularyTopic> {
+    // Tạo đối tượng datetime hợp lệ (định dạng YYYY-MM-DD HH:MM:SS)
+    const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    
     // 1. Thêm topic vào bảng vocabularytopics
     const topicResult = await database.query(
-        'INSERT INTO vocabularytopics (topicName, slug, imageURL) VALUES (?, ?, ?)',
-        [topic.topicName, topic.slug, topic.imgUrl]
+        'INSERT INTO vocabularytopics (topicName, slug, imageURL, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)',
+        [topic.topicName, topic.slug, topic.imgUrl, currentDateTime, currentDateTime]
     );
 
     // Lấy ID của topic vừa được thêm
@@ -153,8 +158,6 @@ export class VocabularyTopicRepository {
         }
     }
 
-
-
     // Trả về topic đã được thêm cùng với ID mới
     const createdTopic = await this.findById(topicId);
     if (!createdTopic) {
@@ -164,10 +167,13 @@ export class VocabularyTopicRepository {
   }
 
   static async updateVocabularyTopic(topic: VocabularyTopic): Promise<VocabularyTopic> {
+    // Tạo đối tượng datetime hợp lệ (định dạng YYYY-MM-DD HH:MM:SS)
+    const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    
     // 1. Cập nhật topic trong bảng vocabularytopics
     const topicResult = await database.query(
-      'UPDATE vocabularytopics SET topicName = ?, slug = ?, imageURL = ? WHERE id = ?',
-      [topic.topicName, topic.slug, topic.imgUrl, topic.id]
+      'UPDATE vocabularytopics SET topicName = ?, slug = ?, imageURL = ?, updatedAt = ? WHERE id = ?',
+      [topic.topicName, topic.slug, topic.imgUrl, currentDateTime, topic.id]
     );  
 
     // 2. Cập nhật từng vocabulary trong bảng vocabularies

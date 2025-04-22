@@ -30,15 +30,14 @@ export class VocabularyTopicController {
 
   static async findVocabularyTopicById(req: Request, res: Response) {
     try {
-      const id = parseInt(req.params.slug);
-      
+      const id = parseInt(req.params.id);
       // Gọi repository
       const topic = await VocabularyTopicRepository.findById(id);
       
       if (!topic) {
         return res.status(404).json({
           success: false,
-          message: 'Không tìm thấy chủ đề'
+          message: 'Không tìm thấy chủ đề' 
         });
       }
   
@@ -68,7 +67,7 @@ export class VocabularyTopicController {
       if (!topic) {
         return res.status(404).json({
           success: false,
-          message: 'Không tìm thấy chủ đề'
+          message: 'Không tìm thấy chủ đề' + slug
         });
       }
   

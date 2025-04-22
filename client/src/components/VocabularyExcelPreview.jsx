@@ -17,6 +17,7 @@ const VocabularyExcelPreview = ({ vocabularies }) => {
               <th>Nghĩa</th>
               <th>Từ đồng nghĩa</th>
               <th>Phiên âm</th>
+              <th>Url hỉnh ảnh</th>
             </tr>
           </thead>
           <tbody>
@@ -27,6 +28,7 @@ const VocabularyExcelPreview = ({ vocabularies }) => {
                 <td>{vocab.meaning}</td>
                 <td>{vocab.synonym ? (typeof vocab.synonym === 'string' ? vocab.synonym : JSON.stringify(vocab.synonym)) : ''}</td>
                 <td>{vocab.transcribe}</td>
+                <td>{vocab.urlImage}</td>
               </tr>
             ))}
           </tbody>
@@ -40,7 +42,7 @@ const VocabularyExcelPreview = ({ vocabularies }) => {
       <style jsx="true">{`
         .vocabulary-excel-preview {
           margin-top: 15px;
-          border: 1px solid #e0e0e0;
+          border: 1px solid #e0e0e0 !important;
           border-radius: 4px;
           padding: 10px;
           background-color: #f9f9f9;

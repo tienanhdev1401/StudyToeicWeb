@@ -9,7 +9,7 @@ const vocabularyTopicService = {
           const response = await axios.get(`${API_BASE_URL}/admin/vocabulary-topic/`);
           
           if (response.data.success) {
-            console.log(response.data.data)
+            // console.log(response.data.data)
             return response.data.data; // Returns the array of grammar topics
           
           } else {
@@ -73,6 +73,7 @@ const vocabularyTopicService = {
     addVocabularyTopic: async (topicData) => {
       try {
         const response = await axios.post(`${API_BASE_URL}/admin/vocabulary-topic/`, topicData);
+        console.log(response.data)
         return response.data;
       } catch (error) {
         console.error('Error adding vocabulary topic:', error);

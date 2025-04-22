@@ -136,6 +136,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    
     if (file) {
       // Validate file
       const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
@@ -153,7 +154,9 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
 
       // Create a preview URL for the image
       const previewUrl = URL.createObjectURL(file);
+      
       setImagePreview(previewUrl);
+      
       setTopicImage(file);
       setErrors({...errors, topicImage: ''});
     }
@@ -221,7 +224,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
           synonym: row.synonym || row.Synonym || row.từđồngnghĩa || row.Từđồngnghĩa || null,
           transcribe: row.transcribe || row.Transcribe || row.phiênâm || row.Phiênâm || '',
           urlAudio: row.urlAudio || row.UrlAudio || row.audio || row.Audio || '',
-          urlImage: row.urlImage || row.UrlImage || row.hình || row.Hình || '',
+          urlImage: row.urlImage || row.UrlImage || row.hình || row.Hình || row.image || row.Image || '',
           VocabularyTopicId: null // Sẽ được gán khi gửi lên server
         }));
         
@@ -240,6 +243,8 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
       }
     }
   };
+  
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -254,6 +259,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
       
       // Nếu có file ảnh mới, upload
       if (topicImage) {
+
         imageUrl = await userService.uploadImage(topicImage, 'vocabularyTopic');
       } else if (editMode && topicToEdit.imgUrl) {
         // Nếu không có file ảnh mới nhưng đang edit và có URL ảnh cũ
@@ -363,6 +369,11 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
                 />
                 <div className="file-info">
                   {vocabularyFile ? vocabularyFile.name : "No file chosen"}
+                  {vocabularyItems.length > 0 && (
+                    <span className="file-status">
+                      ({vocabularyItems.length} items loaded)
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -630,7 +641,7 @@ const ManageVocabularyTopic = () => {
 
   return (
     <div className="vocabulary-container">
-      <h1>Manage Vocabulary Topic</h1>
+      <h1 className="header-title">Manage Vocabulary Topic</h1>
       <div className="header-section">
       </div>
       <div className="pagination">
