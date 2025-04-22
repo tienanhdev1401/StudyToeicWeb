@@ -1,19 +1,29 @@
 .grammar-detail-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    margin-top: 80px;
     padding: 20px;
     box-sizing: border-box;
+    min-height: unset;
 }
 
 .grammar-detail-content {
-    max-width: 800px;
+    max-width: 1500px;
     width: 100%;
     background: #fff;
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+.grammar-content-wrapper {
+    background-color: #f9f9fc;
+    border-radius: 8px;
+    padding: 60px;
+    padding-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eaeaea;
 }
 
 .grammar-title {
@@ -21,11 +31,14 @@
     border-bottom: 2px solid #f97316;
     padding-bottom: 10px;
     margin-bottom: 20px;
+    font-size: 24px;
 }
 
 .grammar-text {
-    line-height: 1.6;
+    line-height: 1.7;
     font-size: 16px;
+    color: #333;
+    margin-bottom: 30px;
 }
 
 .error-message {
@@ -36,19 +49,26 @@
     margin-top: 50px;
 }
 
+.practice-button-container {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+}
+
 .practice-button {
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 12px 24px;
     border-radius: 5px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1rem;
+    font-size: 1.1rem;
     transition: all 0.3s ease;
     white-space: nowrap;
+    font-weight: 600;
 }
 
 .practice-button:hover {
@@ -61,14 +81,143 @@
     font-size: 0.9rem;
 }
 
+/* Comments Section */
+.comments-section {
+    margin-top: 40px;
+    border-top: 1px solid #eaeaea;
+    padding-top: 30px;
+}
+
+.comments-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1e3a8a;
+    font-size: 20px;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.comment-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.comment-input:focus {
+    outline: none;
+    border-color: #4a6baf;
+    box-shadow: 0 0 0 2px rgba(74, 107, 175, 0.2);
+}
+
+.submit-comment-button {
+    align-self: flex-end;
+    background-color: #4a6baf;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+}
+
+.submit-comment-button:hover:not(:disabled) {
+    background-color: #3a5a9e;
+}
+
+.submit-comment-button:disabled {
+    background-color: #a9b6d3;
+    cursor: not-allowed;
+}
+
+.comments-list {
+    margin-top: 20px;
+}
+
+.no-comments {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.comment-item {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.comment-author {
+    font-weight: bold;
+    color: #1e3a8a;
+}
+
+.comment-date {
+    color: #666;
+}
+
+.comment-content {
+    line-height: 1.5;
+    color: #333;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .grammar-header {
-        flex-direction: column;
-        align-items: flex-start;
+    .grammar-detail-container {
+        padding: 10px;
+    }
+    
+    .grammar-detail-content {
+        padding: 20px;
+    }
+    
+    .grammar-content-wrapper {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .grammar-title {
+        font-size: 20px;
+    }
+    
+    .grammar-text {
+        font-size: 15px;
     }
     
     .practice-button {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 16px;
+        font-size: 1rem;
+    }
+    
+    .submit-comment-button {
         width: 100%;
         justify-content: center;
     }

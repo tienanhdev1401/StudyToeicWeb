@@ -7,7 +7,7 @@ const CommentService = {
   // Lấy tất cả comments theo GrammarTopicId
   getCommentsByGrammarTopicId: async (grammarTopicId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/comments/grammar-topic/${grammarTopicId}`);
+      const response = await axios.get(`${API_BASE_URL}/comment/grammar-topic/${grammarTopicId}`);
       
       if (response.data.success) {
         return response.data; // Trả về response.data chứa success, data và message
@@ -23,7 +23,7 @@ const CommentService = {
   // Lấy tất cả comments theo VocabularyTopicId
   getCommentsByVocabularyTopicId: async (vocabularyTopicId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/comments/vocabulary-topic/${vocabularyTopicId}`);
+      const response = await axios.get(`${API_BASE_URL}/comment/vocabulary-topic/${vocabularyTopicId}`);
       
       if (response.data.success) {
         return response.data; // Trả về response.data chứa success, data và message
