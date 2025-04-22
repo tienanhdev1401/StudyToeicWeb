@@ -3,10 +3,11 @@ import '../styles/Stm_quizzes.css';
 import Footer from '../components/Footer';
 import { useNavigate,useParams  } from 'react-router-dom';
 import LoginPopup from '../components/LoginPopup';
+
 import { useAuth } from '../context/AuthContext'; 
 
 function Stmquizzes() {
-  const [showSelectPart, setShowSelectPart] = useState(false);
+  const [showSelectPart, setShowSelectPart,setUserInteracted] = useState(false);
   const { isLoggedIn, user } = useAuth();
   const [showLoginPopup, setShowLoginPopup] = useState(!isLoggedIn); // Set initial state based on login status
   const [selectedParts, setSelectedParts] = useState([]);
@@ -29,7 +30,8 @@ function Stmquizzes() {
   const handleStartTest = () => {
     // Sử dụng testId lấy từ URL để điều hướng
     //navigate(`/Dotest/${testId}`
-    navigate(`/Dotest/1`, {
+    localStorage.setItem('userInteracted', 'true');
+    navigate(`/nhap`, {
       state: {
         selectedParts: selectedParts.length > 0 ? selectedParts : [1, 2, 3, 4, 5, 6, 7]
       }

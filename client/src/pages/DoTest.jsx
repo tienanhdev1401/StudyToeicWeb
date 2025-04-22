@@ -1,209 +1,327 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import '../styles/DoTest.css';
-import { useTest } from '../context/TestContext';
 import TestService from '../services/TestService';
 
 const DoTest = () => {
-    const { testId } = useParams();
+    const { testID } = useParams();
+    const { state } = useLocation();
+    const [currentPart, setCurrentPart] = useState(5);
     const [showPanel, setShowPanel] = useState(false);
-    const [localError, setLocalError] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    
-    const resolvedTestId = testId || 1; // Nếu không có testId trong URL, sử dụng testId mặc định là 1
-    console.log(resolvedTestId);
-    useEffect(() => {
-        if (resolvedTestId) {
-            TestService.getTestById(resolvedTestId)
-                .then(rawData => {
-                    const processedData = TestService.processTestData(rawData);
-                    // Update test data in context
-                    setTest(processedData);
-                })
-                .catch(error => {
-                    setLocalError(error.message);
-                })
-                .finally(() => {
-                    setIsLoading(false);
-                });
-        }
-    }, [resolvedTestId, setTest]);
-
-    const { setTest,
-        test,
-        loading,
-        error,
-        userAnswers,
-        remainingTime,
-        formattedTime,
-        isTestStarted,
-        isTestFinished,
-        currentQuestionIndex,
-        currentQuestion,
-        startTest,
-        finishTest,
-        saveAnswer,
-        goToNextQuestion,
-        goToPreviousQuestion,
-        goToQuestion,
-        calculateScore,
-        getQuestionsByPart
-    } = useTest();
-
-    // State để theo dõi phần hiện tại
-    const [currentPart, setCurrentPart] = useState(1);
-    
-    // State để theo dõi nhóm câu hỏi hiện tại (cho part 3-7)
+    const [timeLeft, setTimeLeft] = useState(7200);
+    const [currentQuestion, setCurrentQuestion] = useState(1);
+    const [filteredQuestions, setFilteredQuestions] = useState([]);
+    const [answers, setAnswers] = useState({});
     const [currentGroup, setCurrentGroup] = useState([]);
+    const [testData, setTestData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Cập nhật nhóm câu hỏi khi có sự thay đổi về câu hỏi hiện tại
+    // Tải dữ liệu từ API
     useEffect(() => {
-        if (!currentQuestion || !test) return;
+        const fetchTestData = async () => {
+            try {
+                setLoading(true);
+                const rawData = await TestService.getTestById(1);
+                const processedData = TestService.processTestData(rawData);
+                setTestData(processedData);
 
-        // Cập nhật phần hiện tại
-        setCurrentPart(currentQuestion.partNumber);
+                // Khởi tạo thời gian nếu có
+                if (processedData.duration) {
+                    setTimeLeft(processedData.duration * 60); // Chuyển phút thành giây
+                }
 
-        // Xử lý logic nhóm câu hỏi
-        if ([3, 4, 6, 7].includes(currentQuestion.partNumber)) {
-            // Nhóm các câu hỏi có cùng resourceId
-            const newGroup = test.allQuestions.filter(q => 
-                q.resource && 
-                currentQuestion.resource && 
-                q.resource.id === currentQuestion.resource.id
+                setLoading(false);
+            } catch (err) {
+                console.error("Lỗi khi tải dữ liệu bài kiểm tra:", err);
+                setError("Không thể tải bài kiểm tra. Vui lòng thử lại sau.");
+                setLoading(false);
+            }
+        };
+
+        fetchTestData();
+    }, [testID]);
+
+    // Khởi tạo và lọc câu hỏi
+    useEffect(() => {
+        if (!testData) return;
+
+        const selectedParts = state?.selectedParts || [];
+        const allQuestions = testData.allQuestions || [];
+
+        const filtered = selectedParts.length > 0
+            ? allQuestions.filter(q => selectedParts.includes(q.partNumber))
+            : allQuestions;
+
+        // Chuyển đổi dữ liệu để phù hợp với cấu trúc TOEIC chuẩn
+        const formattedQuestions = filtered.map(q => {
+            // Lấy thông tin resource
+            const resource = q.resource || {};
+
+            return {
+                id: q.id,
+                questionNumber: q.questionNumber,
+                part: q.partNumber,
+                resourceId: resource.id || null,
+                // Phần 5 - câu đơn chỉ có câu hỏi
+                sentence: q.partNumber === 5 ? q.content : null,
+                // Phần 6 - đoạn văn với 4 câu hỏi
+                passageText: q.partNumber === 6 && resource.paragraph ?
+                    [resource.paragraph] : [],
+                // Phần 7 - đoạn đọc với số câu hỏi đa dạng
+                passages: q.partNumber === 7 && resource.paragraph ?
+                    [{
+                        title: "Reading Passage",
+                        content: [resource.paragraph]
+                    }] : [],
+                // Lưu trữ đường dẫn âm thanh (Part 1-4)
+                audioUrl: resource.urlAudio || null,
+                // Lưu trữ đường dẫn hình ảnh
+                imageUrl: resource.urlImage || null,
+                questionText: q.content,
+                answers: q.partNumber === 2 ?
+                    // Part 2 chỉ có 3 đáp án A, B, C
+                    [
+                        { id: 'A', text: q.options.A },
+                        { id: 'B', text: q.options.B },
+                        { id: 'C', text: q.options.C }
+                    ] :
+                    // Các part khác đều có 4 đáp án A, B, C, D
+                    [
+                        { id: 'A', text: q.options.A },
+                        { id: 'B', text: q.options.B },
+                        { id: 'C', text: q.options.C },
+                        { id: 'D', text: q.options.D }
+                    ]
+            };
+        });
+
+        setFilteredQuestions(formattedQuestions);
+        setCurrentQuestion(1);
+    }, [testData, state]);
+
+    // Xử lý timer
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTimeLeft(prev => Math.max(0, prev - 1));
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Cập nhật nhóm câu hỏi theo đặc trưng của từng phần
+    useEffect(() => {
+        const question = filteredQuestions[currentQuestion - 1];
+        if (!question) {
+            setCurrentGroup([]);
+            return;
+        }
+
+        setCurrentPart(question.part);
+
+        // Xác định cách gom nhóm câu hỏi theo từng phần
+        if (question.part === 1 || question.part === 2 || question.part === 5) {
+            // Part 1, 2, 5: Câu đơn
+            setCurrentGroup([question]);
+        } else if (question.part === 3 || question.part === 4) {
+            // Part 3, 4: Gom nhóm theo resourceId (1 audio cho 3 câu hỏi)
+            const newGroup = filteredQuestions.filter(q =>
+                q.resourceId === question.resourceId && q.part === question.part
             );
             setCurrentGroup(newGroup);
-        } else {
-            // Đối với part 1, 2, 5, mỗi câu hỏi là một nhóm riêng biệt
-            setCurrentGroup([currentQuestion]);
+        } else if (question.part === 6) {
+            // Part 6: Gom nhóm theo resourceId (1 đoạn văn cho 4 câu hỏi)
+            const newGroup = filteredQuestions.filter(q =>
+                q.resourceId === question.resourceId && q.part === 6
+            );
+            setCurrentGroup(newGroup);
+        } else if (question.part === 7) {
+            // Part 7: Gom nhóm theo resourceId (có thể 2 câu hoặc 4 câu cho 1 đoạn đọc)
+            const newGroup = filteredQuestions.filter(q =>
+                q.resourceId === question.resourceId && q.part === 7
+            );
+            setCurrentGroup(newGroup);
         }
-    }, [currentQuestion, test]);
+    }, [currentQuestion, filteredQuestions]);
 
-    // Bắt đầu bài kiểm tra khi component được mount
-    useEffect(() => {
-        if (test && !isTestStarted && !isTestFinished) {
-            startTest();
-        }
-    }, [test, isTestStarted, isTestFinished, startTest]);
-
-    // Xử lý lựa chọn đáp án
-    const handleAnswerSelect = (questionId, answer) => {
-        saveAnswer(questionId, answer);
+    const formatTime = (seconds) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return [hrs, mins, secs].map(n => n.toString().padStart(2, '0')).join(':');
     };
 
-    // Xử lý điều hướng giữa các câu hỏi
+    const handleAnswerSelect = (questionId, answerId) => {
+        setAnswers(prev => ({
+            ...prev,
+            [questionId]: answerId
+        }));
+    };
+
+    const handleQuestionNavigation = (questionId) => {
+        const index = filteredQuestions.findIndex(q => q.id === questionId);
+        if (index >= 0) setCurrentQuestion(index + 1);
+    };
+
+    const playAudio = (url) => {
+        if (!url) {
+            console.error('Không có đường dẫn âm thanh');
+            return;
+        }
+
+        const audio = new Audio(url);
+        audio.play().catch(err => {
+            console.error('Lỗi khi phát âm thanh:', err);
+            alert('Không thể phát âm thanh. Vui lòng kiểm tra kết nối mạng.');
+        });
+    };
+
+    const prepareAnswersToSubmit = () => {
+        const answersArray = Object.entries(answers).map(([questionId, answerId]) => ({
+            questionId: parseInt(questionId),
+            selectedAnswer: answerId // 'A', 'B', 'C' hoặc 'D'
+        }));
+
+        return {
+            testId: parseInt(testID),
+            answers: answersArray
+        };
+    };
+
+    const handleSubmitTest = async () => {
+        try {
+            if (Object.keys(answers).length === 0) {
+                alert('Bạn chưa trả lời câu hỏi nào. Vui lòng làm bài trước khi nộp.');
+                return;
+            }
+
+            const confirmSubmit = window.confirm('Bạn có chắc muốn nộp bài?');
+            if (!confirmSubmit) return;
+
+            const submissionData = prepareAnswersToSubmit();
+            // Phần này sẽ được kích hoạt khi có API nộp bài
+            // await TestService.submitTestAnswers(submissionData);
+            console.log('Nộp bài:', submissionData);
+
+            // Hiển thị thông báo thành công
+            alert('Nộp bài thành công!');
+        } catch (error) {
+            console.error('Lỗi khi nộp bài:', error);
+            alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+        }
+    };
+
+    // Điều hướng giữa các nhóm câu hỏi
     const navigateQuestions = (direction) => {
-        if (!currentQuestion || !test) return;
+        // Lấy câu hỏi hiện tại
+        const currentQ = filteredQuestions[currentQuestion - 1];
+        if (!currentQ) return;
 
         // Xác định resourceId hiện tại (dùng để nhận diện nhóm)
-        const currentResourceId = currentQuestion.resource?.id;
+        const currentResourceId = currentQ.resourceId;
 
         if (direction === 'next') {
-            if ([3, 4, 6, 7].includes(currentQuestion.partNumber) && currentResourceId) {
-                // Tìm câu hỏi đầu tiên của nhóm tiếp theo
+            // TÌM CÂU ĐẦU TIÊN CỦA NHÓM TIẾP THEO
+            if ([3, 4, 6, 7].includes(currentQ.part)) {
+                // Duyệt từ vị trí hiện tại để tìm câu đầu tiên của nhóm khác
                 let nextGroupIndex = -1;
-                for (let i = currentQuestionIndex + 1; i < test.allQuestions.length; i++) {
-                    if (!test.allQuestions[i].resource || 
-                        test.allQuestions[i].resource.id !== currentResourceId) {
+                for (let i = currentQuestion; i < filteredQuestions.length; i++) {
+                    if (filteredQuestions[i].resourceId !== currentResourceId ||
+                        filteredQuestions[i].part !== currentQ.part) {
                         nextGroupIndex = i;
                         break;
                     }
                 }
 
                 if (nextGroupIndex !== -1) {
-                    goToQuestion(nextGroupIndex);
+                    setCurrentQuestion(nextGroupIndex + 1);
                 } else {
-                    goToNextQuestion();
+                    // Nếu không tìm thấy nhóm tiếp theo, di chuyển đến câu tiếp theo
+                    setCurrentQuestion(Math.min(filteredQuestions.length, currentQuestion + 1));
                 }
             } else {
-                goToNextQuestion();
+                // Đối với các phần không nhóm, chỉ đơn giản là tới câu tiếp theo
+                setCurrentQuestion(Math.min(filteredQuestions.length, currentQuestion + 1));
             }
         } else {
-            if ([3, 4, 6, 7].includes(currentQuestion.partNumber) && currentResourceId) {
-                // Tìm câu hỏi đầu tiên của nhóm trước đó
-                let prevResourceId = null;
+            // TÌM CÂU ĐẦU TIÊN CỦA NHÓM TRƯỚC ĐÓ 
+            if ([3, 4, 6, 7].includes(currentQ.part)) {
+                // Duyệt ngược từ vị trí hiện tại để tìm nhóm trước đó
                 let prevGroupLastIndex = -1;
-
-                for (let i = currentQuestionIndex - 1; i >= 0; i--) {
-                    if (!test.allQuestions[i].resource || 
-                        test.allQuestions[i].resource.id !== currentResourceId) {
+                for (let i = currentQuestion - 2; i >= 0; i--) {
+                    if (filteredQuestions[i].resourceId !== currentResourceId ||
+                        filteredQuestions[i].part !== currentQ.part) {
                         prevGroupLastIndex = i;
-                        prevResourceId = test.allQuestions[i].resource?.id;
                         break;
                     }
                 }
 
-                if (prevGroupLastIndex !== -1 && prevResourceId) {
-                    // Tìm câu hỏi đầu tiên của nhóm trước đó
+                if (prevGroupLastIndex !== -1) {
+                    // Tìm câu đầu tiên của nhóm trước đó
+                    const prevResourceId = filteredQuestions[prevGroupLastIndex].resourceId;
+                    const prevPart = filteredQuestions[prevGroupLastIndex].part;
                     let firstOfPrevGroup = prevGroupLastIndex;
+
                     while (firstOfPrevGroup > 0 &&
-                        test.allQuestions[firstOfPrevGroup - 1].resource &&
-                        test.allQuestions[firstOfPrevGroup - 1].resource.id === prevResourceId) {
+                        filteredQuestions[firstOfPrevGroup - 1].resourceId === prevResourceId &&
+                        filteredQuestions[firstOfPrevGroup - 1].part === prevPart) {
                         firstOfPrevGroup--;
                     }
-                    goToQuestion(firstOfPrevGroup);
+
+                    setCurrentQuestion(firstOfPrevGroup + 1);
                 } else {
-                    goToPreviousQuestion();
+                    // Nếu không tìm thấy nhóm trước đó, lùi một câu
+                    setCurrentQuestion(Math.max(1, currentQuestion - 1));
                 }
             } else {
-                goToPreviousQuestion();
+                // Đối với các phần không nhóm, chỉ đơn giản là lùi một câu
+                setCurrentQuestion(Math.max(1, currentQuestion - 1));
             }
         }
     };
 
-    // Xử lý chọn câu hỏi cụ thể
-    const handleQuestionNavigation = (questionId) => {
-        const index = test.allQuestions.findIndex(q => q.id === questionId);
-        if (index >= 0) goToQuestion(index);
-    };
-
-    // Xử lý nộp bài
-    const handleSubmitTest = () => {
-        finishTest();
-        // Thêm logic hiển thị kết quả hoặc chuyển hướng trang ở đây
-    };
-
-    // Render câu hỏi đơn lẻ (Part 1, 2, 5)
-    const renderSingleQuestion = () => {
-        const question = currentGroup[0];
+    // Render Part 1 - 1 ảnh, 1 audio, 4 đáp án
+    const renderPart1Question = (question) => {
         if (!question) return null;
 
         return (
-            <div className="single-container">
-                {question.partNumber === 1 && question.resource?.urlImage && (
-                    <img src={question.resource.urlImage} alt="Mô tả" className="main-image" />
-                )}
+            <div className="part1-container">
+                <div className="image-container">
+                    <img
+                        src={question.imageUrl}
+                        alt={`Hình ảnh câu ${question.questionNumber}`}
+                        className="main-image"
+                        onError={(e) => {
+                            console.error("Lỗi tải hình ảnh:", e);
+                            e.target.src = "/placeholder-image.jpg";
+                            e.target.alt = "Không thể tải hình ảnh";
+                        }}
+                    />
+                </div>
 
-                {question.partNumber === 2 && question.resource?.urlAudio && (
-                    <div className="audio-section">
-                        <button className="audio-button">
-                            <i className="fas fa-play"></i> Nghe câu hỏi
-                        </button>
-                    </div>
-                )}
+                <div className="audio-section">
+                    <button className="audio-button" onClick={() => playAudio(question.audioUrl)}>
+                        <i className="fas fa-play"></i> Nghe câu hỏi
+                    </button>
+                </div>
 
                 <div className="answer-section">
                     <div className="question-header">
                         <span className="question-number">Câu {question.questionNumber}</span>
-                        {question.content && (
-                            <p className="sentence">{question.content}</p>
-                        )}
                     </div>
 
                     <div className="answer-grid">
-                        {Object.entries(question.options).map(([key, text]) => (
-                            text && (
-                                <div key={key} className="answer-row">
-                                    <label className="option-item">
-                                        <input
-                                            type="radio"
-                                            name={`question-${question.id}`}
-                                            checked={userAnswers[question.id] === key}
-                                            onChange={() => handleAnswerSelect(question.id, key)}
-                                        />
-                                        <span className="option-label">{key}: {text}</span>
-                                    </label>
-                                </div>
-                            )
+                        {question.answers.map(answer => (
+                            <div key={answer.id} className="answer-row">
+                                <label className="option-item">
+                                    <input
+                                        type="radio"
+                                        name={`question-${question.id}`}
+                                        checked={answers[question.id] === answer.id}
+                                        onChange={() => handleAnswerSelect(question.id, answer.id)}
+                                    />
+                                    <span className="option-label">{answer.text}</span>
+                                </label>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -211,37 +329,71 @@ const DoTest = () => {
         );
     };
 
-    // Render nhóm câu hỏi (Part 3, 4, 6, 7)
-    const renderGroupQuestions = () => {
-        const question = currentGroup[0];
+    // Render Part 2 - Chỉ có audio và 3 đáp án A, B, C
+    const renderPart2Question = (question) => {
         if (!question) return null;
 
         return (
-            <div className="group-container">
-                <div className="resource-panel">
-                    {[3, 4].includes(question.partNumber) && question.resource?.urlAudio && (
-                        <div className="audio-resource">
-                            <button className="audio-button">
-                                <i className="fas fa-play"></i>
-                                {question.partNumber === 3 ? 'Nghe hội thoại' : 'Nghe bài nói'}
-                            </button>
-                            {question.resource.urlImage && (
-                                <img src={question.resource.urlImage} alt="Biểu đồ" className="chart-image" />
-                            )}
-                        </div>
-                    )}
+            <div className="part2-container">
+                <div className="audio-section">
+                 
+                    <button className="audio-button" onClick={() => playAudio("http://webaudioapi.com/samples/audio-tag/chrono.mp3")}>
+                        <i className="fas fa-play"></i> Nghe câu hỏi
+                    </button>
+                </div>
 
-                    {question.partNumber === 6 && question.resource?.paragraph && (
-                        <div className="text-resource">
-                            <p dangerouslySetInnerHTML={{ __html: question.resource.paragraph }} />
-                        </div>
-                    )}
+                <div className="answer-section">
+                    
+                    <div className="question-header-dotest">
+                                    <span className="question-number-dotest">Câu {question.questionNumber}: </span> 
+                    </div>
 
-                    {question.partNumber === 7 && question.resource?.paragraph && (
-                        <div className="reading-resource">
-                            <div className="passage">
-                                <p dangerouslySetInnerHTML={{ __html: question.resource.paragraph }} />
+                    <div className="answer-grid">
+                        {question.answers.map(answer => (
+                            <div key={answer.id} className="answer-row">
+                                <label className="option-item">
+                                    <input
+                                        type="radio"
+                                        name={`question-${question.id}`}
+                                        checked={answers[question.id] === answer.id}
+                                        onChange={() => handleAnswerSelect(question.id, answer.id)}
+                                    />
+                                    <span className="option-label">{answer.text}</span>
+                                </label>
                             </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // Render Part 3,4 - 1 audio cho 3 câu hỏi (Part 3 cuối có thêm ảnh)
+    const renderPart3and4Questions = () => {
+        if (!currentGroup || currentGroup.length === 0) return null;
+
+        const hasImage = currentGroup[0].imageUrl !== null;
+        const isPart3End = currentGroup[0].part === 3 && hasImage; // 9 câu cuối part 3 có ảnh
+
+        return (
+            <div className="part3-4-container">
+                <div className="audio-resource">
+                    <button className="audio-button" onClick={() => playAudio(currentGroup[0].audioUrl)}>
+                        <i className="fas fa-play"></i>
+                        {currentGroup[0].part === 3 ? 'Nghe hội thoại' : 'Nghe bài nói'}
+                    </button>
+
+                    {isPart3End && (
+                        <div className="image-container">
+                            <img
+                                src={currentGroup[0].imageUrl}
+                                alt="Hình ảnh hỗ trợ"
+                                className="supporting-image"
+                                onError={(e) => {
+                                    console.error("Lỗi tải hình ảnh:", e);
+                                    e.target.style.display = "none";
+                                }}
+                            />
                         </div>
                     )}
                 </div>
@@ -253,21 +405,19 @@ const DoTest = () => {
                                 <span className="question-number">Câu {q.questionNumber}</span>
                             </div>
 
-                            {q.content && <p className="question-text">{q.content}</p>}
+                            <p className="question-text">{q.questionText}</p>
 
                             <div className="answer-options">
-                                {Object.entries(q.options).map(([key, text]) => (
-                                    text && (
-                                        <label key={key} className="option-item">
-                                            <input
-                                                type="radio"
-                                                name={`question-${q.id}`}
-                                                checked={userAnswers[q.id] === key}
-                                                onChange={() => handleAnswerSelect(q.id, key)}
-                                            />
-                                            <span className="option-label">{key}: {text}</span>
-                                        </label>
-                                    )
+                                {q.answers.map(answer => (
+                                    <label key={answer.id} className="option-item">
+                                        <input
+                                            type="radio"
+                                            name={`question-${q.id}`}
+                                            checked={answers[q.id] === answer.id}
+                                            onChange={() => handleAnswerSelect(q.id, answer.id)}
+                                        />
+                                        <span className="option-label">{answer.text}</span>
+                                    </label>
                                 ))}
                             </div>
                         </div>
@@ -277,10 +427,174 @@ const DoTest = () => {
         );
     };
 
-    // Render panel điều hướng câu hỏi
-    const renderNavigationPanel = () => {
-        if (!test) return null;
+    // Render Part 5 - Câu đơn chỉ có câu hỏi và đáp án
+    const renderPart5Question = (question) => {
+        if (!question) return null;
 
+        return (
+            <div className="part5-container">
+                <div className="answer-section">
+                    <div className="question-header-dotest">
+                        <span className="question-number-dotest">Câu {question.questionNumber}: </span>
+                        <span className="sentence">{question.sentence}</span>
+                    </div>
+
+                    <div className="answer-grid">
+                        {question.answers.map(answer => (
+                            <div key={answer.id} className="answer-row">
+                                <label className="option-item">
+                                    <input
+                                        type="radio"
+                                        name={`question-${question.id}`}
+                                        checked={answers[question.id] === answer.id}
+                                        onChange={() => handleAnswerSelect(question.id, answer.id)}
+                                    />
+                                    <span className="option-label">{answer.text}</span>
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // Render Part 6 - 1 đoạn văn/ảnh cho 4 câu hỏi
+    const renderPart6Questions = () => {
+        if (!currentGroup || currentGroup.length === 0) return null;
+    
+        return (
+            <div className="part6-container">
+                <div className="part6-two-columns">
+                    <div className="resource-panel scrollable-content">
+                        {currentGroup[0].imageUrl && (
+                            <div className="image-container">
+                                <img
+                                    src={currentGroup[0].imageUrl}
+                                    alt="Hình ảnh hỗ trợ"
+                                    className="supporting-image"
+                                    onError={(e) => {
+                                        console.error("Lỗi tải hình ảnh:", e);
+                                        e.target.src = "/placeholder-image.jpg";
+                                        e.target.alt = "Không thể tải hình ảnh";
+                                    }}
+                                />
+                            </div>
+                        )}
+                        <div className="text-resource">
+                            {currentGroup[0].passageText.map((text, idx) => (
+                                <p key={idx} dangerouslySetInnerHTML={{ __html: text }} />
+                            ))}
+                        </div>
+                    </div>
+    
+                    <div className="questions-panel">
+                        {currentGroup.map(q => (
+                            <div key={q.id} className="question-block">
+                                <div className="question-header-dotest">
+                                    <span className="question-number-dotest">Câu {q.questionNumber}: </span>
+                                    <span className="sentence">{q.questionText}</span>
+                                </div>
+    
+                                <div className="answer-options">
+                                    {q.answers.map(answer => (
+                                        <label key={answer.id} className="option-item">
+                                            <input
+                                                type="radio"
+                                                name={`question-${q.id}`}
+                                                checked={answers[q.id] === answer.id}
+                                                onChange={() => handleAnswerSelect(q.id, answer.id)}
+                                            />
+                                            <span className="option-label">{answer.text}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+    // Render Part 7 - Đa dạng (1 ảnh/đoạn đọc cho 2-4 câu hỏi)
+    const renderPart7Questions = () => {
+        if (!currentGroup || currentGroup.length === 0) return null;
+    
+        return (
+            <div className="part7-container">
+                <div className="part7-two-columns">
+                    <div className="resource-panel scrollable-image">
+                        {currentGroup[0].imageUrl && (
+                            <div className="image-container">
+                                <img 
+                                    src={currentGroup[0].imageUrl} 
+                                    alt="Hình ảnh đọc hiểu" 
+                                    className="supporting-image" 
+                                    onError={(e) => {
+                                        console.error("Lỗi tải hình ảnh:", e);
+                                        e.target.src = "/placeholder-image.jpg";
+                                        e.target.alt = "Không thể tải hình ảnh";
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+    
+                    <div className="questions-panel">
+                        {currentGroup.map(q => (
+                            <div key={q.id} className="question-block">
+                                  <div className="question-header-dotest">
+                                <span className="question-number-dotest">Câu {q.questionNumber}: </span>
+                                <span className="sentence">{q.questionText}</span>
+                            </div>
+    
+                                <div className="answer-options">
+                                    {q.answers.map(answer => (
+                                        <label key={answer.id} className="option-item">
+                                            <input
+                                                type="radio"
+                                                name={`question-${q.id}`}
+                                                checked={answers[q.id] === answer.id}
+                                                onChange={() => handleAnswerSelect(q.id, answer.id)}
+                                            />
+                                            <span className="option-label">{answer.text}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // Render các câu hỏi dựa trên phần hiện tại
+    const renderQuestionsByPart = () => {
+        if (currentGroup.length === 0) return null;
+
+        const part = currentGroup[0].part;
+
+        switch (part) {
+            case 1:
+                return renderPart1Question(currentGroup[0]);
+            case 2:
+                return renderPart2Question(currentGroup[0]);
+            case 3:
+            case 4:
+                return renderPart3and4Questions();
+            case 5:
+                return renderPart5Question(currentGroup[0]);
+            case 6:
+                return renderPart6Questions();
+            case 7:
+                return renderPart7Questions();
+            default:
+                return null;
+        }
+    };
+
+    const renderNavigationPanel = () => {
         return (
             <div className={`question-panel ${showPanel ? 'open' : ''}`}>
                 <div className="panel-header">
@@ -289,26 +603,20 @@ const DoTest = () => {
                 </div>
 
                 <div className="panel-content">
-                    {[1, 2, 3, 4, 5, 6, 7].map(partNumber => {
-                        const partQuestions = test.parts.find(p => p.partNumber === partNumber)?.questions || [];
-                        
-                        if (partQuestions.length === 0) return null;
-                        
-                        return (
-                            <div key={partNumber} className="part-section">
-                                <h4>PART {partNumber}</h4>
-                                <div className="question-grid">
-                                    {partQuestions.map(q => {
-                                        const isCurrentQuestion = currentQuestion && q.id === currentQuestion.id;
-                                        const isAnswered = userAnswers[q.id] !== undefined;
-                                        const isDisabled = currentPart <= 4 || q.partNumber <= 4;
-
+                    {[1, 2, 3, 4, 5, 6, 7].map(part => (
+                        <div key={part} className="part-section">
+                            <h4>PART {part}</h4>
+                            <div className="question-grid">
+                                {filteredQuestions
+                                    .filter(q => q.part === part)
+                                    .map(q => {
+                                        const isDisabled = currentPart <= 4 || q.part <= 4;
                                         return (
                                             <button
                                                 key={q.id}
                                                 className={`question-btn 
-                                                    ${isAnswered ? 'answered' : ''}
-                                                    ${isCurrentQuestion ? 'active' : ''}
+                                                    ${answers[q.id] ? 'answered' : ''}
+                                                    ${currentGroup.some(gq => gq.id === q.id) ? 'active' : ''}
                                                     ${isDisabled ? 'disabled' : ''}`}
                                                 onClick={!isDisabled ? () => handleQuestionNavigation(q.id) : undefined}
                                                 disabled={isDisabled}
@@ -317,61 +625,24 @@ const DoTest = () => {
                                             </button>
                                         );
                                     })}
-                                </div>
                             </div>
-                        );
-                    })}
+                        </div>
+                    ))}
                 </div>
             </div>
         );
     };
 
-    // Hiển thị trạng thái loading
-    if (isLoading) {
-        return (
-            <div className="loading-container">
-                <div className="loader"></div>
-                <p>Đang tải bài kiểm tra...</p>
-            </div>
-        );
-    }
-
-    // Hiển thị lỗi
-    if (localError) {
-        return (
-            <div className="error-container">
-                <h2>Đã xảy ra lỗi</h2>
-                <p>{localError}</p>
-                <button onClick={() => window.location.reload()}>Thử lại</button>
-            </div>
-        );
-    }
-
-    // Hiển thị kết quả nếu đã hoàn thành
-    if (isTestFinished) {
-        const { correctCount, totalQuestions, score } = calculateScore();
-        
-        return (
-            <div className="result-container">
-                <h2>Kết quả bài kiểm tra</h2>
-                <div className="score-display">
-                    <div className="score">{score}%</div>
-                    <p>Bạn đã trả lời đúng {correctCount}/{totalQuestions} câu hỏi</p>
-                </div>
-                <button className="review-btn" onClick={() => window.location.reload()}>Xem lại bài làm</button>
-            </div>
-        );
-    }
-
-    // Hiển thị giao diện chính của bài kiểm tra
     return (
         <div className="do-test-container">
             <header className="test-header">
                 <div className="header-content_white">
-                    <span className="test-title">{test?.title || 'Bài kiểm tra TOEIC'}</span>
+                    <span className="test-title">
+                        {testData ? testData.title : 'Đề thi thử TOEIC'}
+                    </span>
                     <div className="header-controls">
                         <button className="submit-button" onClick={handleSubmitTest}>Nộp bài</button>
-                        <div className="timer-dotest">{formattedTime}</div>
+                        <div className="timer-dotest">{formatTime(timeLeft)}</div>
                         <button
                             className={`panel-toggle ${currentPart <= 4 ? 'disabled' : ''}`}
                             onClick={() => setShowPanel(!showPanel)}
@@ -386,44 +657,55 @@ const DoTest = () => {
             {renderNavigationPanel()}
 
             <main className="main-content">
-                <div className="progress-container">
-                    <div className="word-counter">
-                        {Object.keys(userAnswers).length}/{test?.allQuestions.length || 0}
+                {loading ? (
+                    <div className="loading-state">
+                        <p>Đang tải dữ liệu bài kiểm tra...</p>
                     </div>
-                </div>
-                <div className="content-wrapper">
-                    <h2 className="part-title">PART {currentPart}</h2>
+                ) : error ? (
+                    <div className="error-state">
+                        <p>{error}</p>
+                        <button onClick={() => window.location.reload()}>Thử lại</button>
+                    </div>
+                ) : (
+                    <>
+                        <div className="progress-container">
+                            <div className="word-counter">
+                                {Object.keys(answers).length}/{filteredQuestions.length}
+                            </div>
+                        </div>
+                        <div className="content-wrapper">
+                            <h2 className="part-title">PART {currentPart}</h2>
 
-                    {test && test.allQuestions.length > 0 ? (
-                        <div className="question-content">
-                            {[1, 2, 5].includes(currentPart) ?
-                                (currentGroup.length > 0 ? renderSingleQuestion() : null) :
-                                (currentGroup.length > 0 ? renderGroupQuestions() : null)}
+                            {filteredQuestions.length > 0 ? (
+                                <div className="question-content">
+                                    {renderQuestionsByPart()}
 
-                            {/* Hiển thị nút điều hướng cho các phần 5-7 */}
-                            {![1, 2, 3, 4].includes(currentPart) && (
-                                <div className="navigation-controls">
-                                    <button
-                                        className="nav-btn prev"
-                                        onClick={() => navigateQuestions('prev')}
-                                        disabled={currentQuestionIndex === 0}
-                                    >
-                                        ← Câu trước
-                                    </button>
-                                    <button
-                                        className="nav-btn next"
-                                        onClick={() => navigateQuestions('next')}
-                                        disabled={currentQuestionIndex === test.allQuestions.length - 1}
-                                    >
-                                        Câu tiếp →
-                                    </button>
+                                    {/* Hiển thị nút điều hướng cho Part 5-7 */}
+                                    {![1, 2, 3, 4].includes(currentPart) && (
+                                        <div className="navigation-controls">
+                                            <button
+                                                className="nav-btn prev"
+                                                onClick={() => navigateQuestions('prev')}
+                                                disabled={currentQuestion === 1}
+                                            >
+                                                ← Câu trước
+                                            </button>
+                                            <button
+                                                className="nav-btn next"
+                                                onClick={() => navigateQuestions('next')}
+                                                disabled={currentQuestion === filteredQuestions.length}
+                                            >
+                                                Câu tiếp →
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
+                            ) : (
+                                <div className="no-questions">Không có câu hỏi nào được chọn</div>
                             )}
                         </div>
-                    ) : (
-                        <div className="no-questions">Không có câu hỏi nào trong bài kiểm tra</div>
-                    )}
-                </div>
+                    </>
+                )}
             </main>
         </div>
     );

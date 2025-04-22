@@ -16,6 +16,8 @@ const Nhap = () => {
     const [testData, setTestData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+    const [audioElement, setAudioElement] = useState(null);
 
     // Tải dữ liệu từ API
     useEffect(() => {
@@ -143,6 +145,91 @@ const Nhap = () => {
         }
     }, [currentQuestion, filteredQuestions]);
 
+    // Tự động phát audio cho phần nghe (1-4)
+    useEffect(() => {
+        const question = filteredQuestions[currentQuestion - 1];
+        if (!question) return;
+
+        // Dừng audio đang phát (nếu có) khi chuyển câu hỏi
+        stopAudio();
+
+        // Tự động phát audio cho các phần nghe (1, 2, 3, 4)
+        if ([1, 2, 3, 4].includes(question.part) && (question.audioUrl || currentGroup[0]?.audioUrl)) {
+            // Đặt timeout nhỏ để cho phép render hoàn tất trước khi phát
+            const timer = setTimeout(() => {
+                const audioUrl = question.audioUrl || currentGroup[0]?.audioUrl;
+
+                // Xác định callback khi audio kết thúc
+                // Xác định callback khi audio kết thúc
+                const onAudioComplete = () => {
+                    // Tự động chuyển câu 
+                    if ([1, 2, 3, 4].includes(question.part)) {
+                        navigateQuestions('next');
+                    }
+                };
+                const interacted = localStorage.getItem('userInteracted');
+                if (interacted === "true") {
+                playAudio(audioUrl, onAudioComplete);
+            }
+            }, 1000); // 1 giây đợi trước khi tự động phát
+
+            return () => clearTimeout(timer);
+        }
+    }, [currentQuestion, filteredQuestions, currentGroup]);
+    useEffect(() => {
+        return () => {
+            if (audioElement) {
+                audioElement.pause();
+                audioElement.src = '';
+            }
+        };
+    }, [audioElement]);
+
+    // Hàm phát audio với callback khi kết thúc
+    const playAudio = (url, onComplete = null) => {
+        if (!url) {
+            console.error('Không có đường dẫn âm thanh');
+            return;
+        }
+
+        // Nếu đang phát, dừng audio trước
+        if (isAudioPlaying && audioElement) {
+            audioElement.pause();
+        }
+
+        setIsAudioPlaying(true);
+        const audio = new Audio(url);
+        setAudioElement(audio);
+
+        // Sự kiện khi audio kết thúc
+        audio.onended = () => {
+            setIsAudioPlaying(false);
+            setAudioElement(null);
+
+            // Gọi callback nếu có
+            if (onComplete && typeof onComplete === 'function') {
+                onComplete();
+            }
+        };
+
+        // Phát audio
+        audio.play().catch(err => {
+            console.error('Lỗi khi phát âm thanh:', err);
+            setIsAudioPlaying(false);
+            setAudioElement(null);
+        });
+    };
+
+    // Hàm dừng audio đang phát
+    const stopAudio = () => {
+        if (audioElement) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+            setIsAudioPlaying(false);
+            setAudioElement(null);
+        }
+    };
+
     const formatTime = (seconds) => {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
@@ -160,19 +247,6 @@ const Nhap = () => {
     const handleQuestionNavigation = (questionId) => {
         const index = filteredQuestions.findIndex(q => q.id === questionId);
         if (index >= 0) setCurrentQuestion(index + 1);
-    };
-
-    const playAudio = (url) => {
-        if (!url) {
-            console.error('Không có đường dẫn âm thanh');
-            return;
-        }
-
-        const audio = new Audio(url);
-        audio.play().catch(err => {
-            console.error('Lỗi khi phát âm thanh:', err);
-            alert('Không thể phát âm thanh. Vui lòng kiểm tra kết nối mạng.');
-        });
     };
 
     const prepareAnswersToSubmit = () => {
@@ -212,6 +286,9 @@ const Nhap = () => {
 
     // Điều hướng giữa các nhóm câu hỏi
     const navigateQuestions = (direction) => {
+        // Dừng audio đang phát (nếu có)
+        stopAudio();
+
         // Lấy câu hỏi hiện tại
         const currentQ = filteredQuestions[currentQuestion - 1];
         if (!currentQ) return;
@@ -299,14 +376,16 @@ const Nhap = () => {
                 </div>
 
                 <div className="audio-section">
-                    <button className="audio-button" onClick={() => playAudio(question.audioUrl)}>
-                        <i className="fas fa-play"></i> Nghe câu hỏi
-                    </button>
+                    {isAudioPlaying ? (
+                        <div className="audio-status playing">Đang phát âm thanh...</div>
+                    ) : (
+                        <div className="audio-status">Chuẩn bị phát âm thanh...</div>
+                    )}
                 </div>
 
                 <div className="answer-section">
                     <div className="question-header">
-                        <span className="question-number">Câu {question.questionNumber}</span>
+                        <span className="question-number-dotest">Câu {question.questionNumber}</span>
                     </div>
 
                     <div className="answer-grid">
@@ -336,14 +415,16 @@ const Nhap = () => {
         return (
             <div className="part2-container">
                 <div className="audio-section">
-                    <button className="audio-button" onClick={() => playAudio(question.audioUrl)}>
-                        <i className="fas fa-play"></i> Nghe câu hỏi
-                    </button>
+                    {isAudioPlaying ? (
+                        <div className="audio-status playing">Đang phát câu hỏi...</div>
+                    ) : (
+                        <div className="audio-status">Chuẩn bị phát câu hỏi...</div>
+                    )}
                 </div>
 
                 <div className="answer-section">
-                    <div className="question-header">
-                        <span className="question-number">Câu {question.questionNumber}</span>
+                    <div className="question-header-dotest">
+                        <span className="question-number-dotest">Câu {question.questionNumber}: </span>
                     </div>
 
                     <div className="answer-grid">
@@ -366,60 +447,68 @@ const Nhap = () => {
         );
     };
 
-    // Render Part 3,4 - 1 audio cho 3 câu hỏi (Part 3 cuối có thêm ảnh)
+    // Render Part 3,4 - 1 audio cho 3 câu hỏi
     const renderPart3and4Questions = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
 
         const hasImage = currentGroup[0].imageUrl !== null;
-        const isPart3End = currentGroup[0].part === 3 && hasImage; // 9 câu cuối part 3 có ảnh
 
         return (
             <div className="part3-4-container">
-                <div className="audio-resource">
-                    <button className="audio-button" onClick={() => playAudio(currentGroup[0].audioUrl)}>
-                        <i className="fas fa-play"></i>
-                        {currentGroup[0].part === 3 ? 'Nghe hội thoại' : 'Nghe bài nói'}
-                    </button>
-
-                    {isPart3End && (
-                        <div className="image-container">
-                            <img
-                                src={currentGroup[0].imageUrl}
-                                alt="Hình ảnh hỗ trợ"
-                                className="supporting-image"
-                                onError={(e) => {
-                                    console.error("Lỗi tải hình ảnh:", e);
-                                    e.target.style.display = "none";
-                                }}
-                            />
+                <div className="part3-4-two-columns">
+                    <div className="resource-panel scrollable-content">
+                        <div className="audio-resource">
+                            {isAudioPlaying ? (
+                                <div className="audio-status playing">
+                                    {currentGroup[0].part === 3 ? 'Đang phát hội thoại...' : 'Đang phát bài nói...'}
+                                </div>
+                            ) : (
+                                <div className="audio-status">
+                                    {currentGroup[0].part === 3 ? 'Chuẩn bị phát hội thoại...' : 'Chuẩn bị phát bài nói...'}
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
 
-                <div className="questions-panel">
-                    {currentGroup.map(q => (
-                        <div key={q.id} className="question-block">
-                            <div className="question-header">
-                                <span className="question-number">Câu {q.questionNumber}</span>
+                        {/* Phần hiển thị ảnh (nếu có) */}
+                        {hasImage && (
+                            <div className="image-container">
+                                <img
+                                    src={currentGroup[0].imageUrl}
+                                    alt="Hình ảnh hỗ trợ"
+                                    className="supporting-image"
+                                    onError={(e) => {
+                                        console.error("Lỗi tải hình ảnh:", e);
+                                        e.target.style.display = "none";
+                                    }}
+                                />
                             </div>
+                        )}
+                    </div>
 
-                            <p className="question-text">{q.questionText}</p>
+                    <div className="questions-panel">
+                        {currentGroup.map(q => (
+                            <div key={q.id} className="question-block">
+                                <div className="question-header-dotest">
+                                    <span className="question-number-dotest">Câu {q.questionNumber}: </span>
+                                    <span className="sentence">{q.questionText}</span>
+                                </div>
 
-                            <div className="answer-options">
-                                {q.answers.map(answer => (
-                                    <label key={answer.id} className="option-item">
-                                        <input
-                                            type="radio"
-                                            name={`question-${q.id}`}
-                                            checked={answers[q.id] === answer.id}
-                                            onChange={() => handleAnswerSelect(q.id, answer.id)}
-                                        />
-                                        <span className="option-label">{answer.text}</span>
-                                    </label>
-                                ))}
+                                <div className="answer-options">
+                                    {q.answers.map(answer => (
+                                        <label key={answer.id} className="option-item">
+                                            <input
+                                                type="radio"
+                                                name={`question-${q.id}`}
+                                                checked={answers[q.id] === answer.id}
+                                                onChange={() => handleAnswerSelect(q.id, answer.id)}
+                                            />
+                                            <span className="option-label">{answer.text}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         );
@@ -460,7 +549,7 @@ const Nhap = () => {
     // Render Part 6 - 1 đoạn văn/ảnh cho 4 câu hỏi
     const renderPart6Questions = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
-    
+
         return (
             <div className="part6-container">
                 <div className="part6-two-columns">
@@ -485,7 +574,7 @@ const Nhap = () => {
                             ))}
                         </div>
                     </div>
-    
+
                     <div className="questions-panel">
                         {currentGroup.map(q => (
                             <div key={q.id} className="question-block">
@@ -493,7 +582,7 @@ const Nhap = () => {
                                     <span className="question-number-dotest">Câu {q.questionNumber}: </span>
                                     <span className="sentence">{q.questionText}</span>
                                 </div>
-    
+
                                 <div className="answer-options">
                                     {q.answers.map(answer => (
                                         <label key={answer.id} className="option-item">
@@ -514,20 +603,21 @@ const Nhap = () => {
             </div>
         );
     };
+
     // Render Part 7 - Đa dạng (1 ảnh/đoạn đọc cho 2-4 câu hỏi)
     const renderPart7Questions = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
-    
+
         return (
             <div className="part7-container">
                 <div className="part7-two-columns">
                     <div className="resource-panel scrollable-image">
                         {currentGroup[0].imageUrl && (
                             <div className="image-container">
-                                <img 
-                                    src={currentGroup[0].imageUrl} 
-                                    alt="Hình ảnh đọc hiểu" 
-                                    className="supporting-image" 
+                                <img
+                                    src={currentGroup[0].imageUrl}
+                                    alt="Hình ảnh đọc hiểu"
+                                    className="supporting-image"
                                     onError={(e) => {
                                         console.error("Lỗi tải hình ảnh:", e);
                                         e.target.src = "/placeholder-image.jpg";
@@ -537,15 +627,15 @@ const Nhap = () => {
                             </div>
                         )}
                     </div>
-    
+
                     <div className="questions-panel">
                         {currentGroup.map(q => (
                             <div key={q.id} className="question-block">
-                                  <div className="question-header-dotest">
-                                <span className="question-number-dotest">Câu {q.questionNumber}: </span>
-                                <span className="sentence">{q.questionText}</span>
-                            </div>
-    
+                                <div className="question-header-dotest">
+                                    <span className="question-number-dotest">Câu {q.questionNumber}: </span>
+                                    <span className="sentence">{q.questionText}</span>
+                                </div>
+
                                 <div className="answer-options">
                                     {q.answers.map(answer => (
                                         <label key={answer.id} className="option-item">
@@ -707,6 +797,8 @@ const Nhap = () => {
             </main>
         </div>
     );
+   
+    
 };
 
 export default Nhap;
