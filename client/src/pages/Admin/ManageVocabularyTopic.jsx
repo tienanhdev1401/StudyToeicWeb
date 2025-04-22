@@ -4,13 +4,14 @@ import vocabularyTopicService from '../../services/admin/admin.vocabularyTopicSe
 import userService from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { read, utils } from 'xlsx'; // Thêm import thư viện xlsx
+import { parseVocabularyExcel, isValidExcelFile } from '../../utils/excelUtils';
 
 
-const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = null}) => {
+const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = null, isSubmitting = false}) => {
   const [formData, setFormData] = useState({
     topicName: '',
   });
+  const [isUploading, setIsUploading] = useState(false);
   const [topicImage, setTopicImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [vocabularyFile, setVocabularyFile] = useState(null);
@@ -26,7 +27,10 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
   const [serverError, setServerError] = useState(''); // Add state for server error
   // State để lưu danh sách tên topic hiện có
   const [existingTopicNames, setExistingTopicNames] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Tính toán trạng thái loading tổng hợp (từ cả local và parent)
+  const isLoading = isUploading || isSubmitting;
+
   // Lấy danh sách tên topic hiện có khi component mount
   useEffect(() => {
     const fetchExistingTopics = async () => {
@@ -163,88 +167,35 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
   };
 
   const handleVocabularyFileChange = async (e) => {
-    if (e.target.files[0]) {
-      const file = e.target.files[0];
-      setVocabularyFile(file);
-
-      try {
-        // Đọc file Excel hoặc CSV
-        const data = await file.arrayBuffer();
-        const workbook = read(data);
-        
-        // Kiểm tra xem workbook có tồn tại và có sheet không
-        if (!workbook || !workbook.SheetNames || workbook.SheetNames.length === 0) {
-          throw new Error("File không hợp lệ hoặc không có dữ liệu");
-        }
-        
-        // Lấy worksheet đầu tiên
-        const worksheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[worksheetName];
-        
-        // Kiểm tra worksheet có tồn tại không
-        if (!worksheet) {
-          throw new Error("Không thể đọc dữ liệu từ file");
-        }
-        
-        // Chuyển đổi worksheet thành JSON
-        const jsonData = utils.sheet_to_json(worksheet);
-        
-        // Kiểm tra xem có dữ liệu không
-        if (!jsonData || jsonData.length === 0) {
-          throw new Error("File không chứa dữ liệu từ vựng");
-        }
-        
-        // Kiểm tra các trường bắt buộc
-        const requiredFields = ['content', 'meaning'];
-        const alternativeFields = [['từ', 'Từ'], ['nghĩa', 'Nghĩa']];
-        
-        // Kiểm tra record đầu tiên
-        const firstRecord = jsonData[0];
-        const missingFields = [];
-        
-        requiredFields.forEach((field, index) => {
-          const alternatives = alternativeFields[index];
-          if (
-            !firstRecord[field] && 
-            !alternatives.some(alt => firstRecord[alt])
-          ) {
-            missingFields.push(field);
-          }
-        });
-        
-        if (missingFields.length > 0) {
-          throw new Error(`File thiếu các trường bắt buộc: ${missingFields.join(', ')}`);
-        }
-        
-        // Chuẩn hóa dữ liệu thành định dạng từ vựng
-        const vocabularies = jsonData.map((row, index) => ({
-          id: 0, // ID sẽ được tạo ở server
-          content: row.content || row.Content || row.từ || row.Từ || '',
-          meaning: row.meaning || row.Meaning || row.nghĩa || row.Nghĩa || '',
-          synonym: row.synonym || row.Synonym || row.từđồngnghĩa || row.Từđồngnghĩa || null,
-          transcribe: row.transcribe || row.Transcribe || row.phiênâm || row.Phiênâm || '',
-          urlAudio: row.urlAudio || row.UrlAudio || row.audio || row.Audio || '',
-          urlImage: row.urlImage || row.UrlImage || row.hình || row.Hình || row.image || row.Image || '',
-          VocabularyTopicId: null // Sẽ được gán khi gửi lên server
-        }));
-        
-        // Kiểm tra độ dài và gán vào state
-        if (vocabularies.length > 0) {
-          setVocabularyItems(vocabularies);
-          console.log('Đã đọc được', vocabularies.length, 'từ vựng từ file Excel/CSV');
-        } else {
-          throw new Error("Không thể trích xuất từ vựng từ file");
-        }
-      } catch (error) {
-        console.error('Lỗi khi đọc file:', error);
-        alert('Không thể đọc file. Vui lòng kiểm tra định dạng file: ' + error.message);
-        // Reset vocabularyItems nếu có lỗi
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Kiểm tra định dạng file
+    if (!isValidExcelFile(file)) {
+      alert('Chỉ chấp nhận file Excel (.xlsx, .xls) hoặc CSV (.csv)');
+      return;
+    }
+    
+    setVocabularyFile(file);
+    
+    try {
+      setIsUploading(true); // Thêm loading khi đang xử lý file
+      const result = await parseVocabularyExcel(file);
+      if (result.error) {
+        alert(result.error);
         setVocabularyItems([]);
+      } else {
+        setVocabularyItems(result.vocabularies);
+        console.log('Đã đọc được', result.vocabularies.length, 'từ vựng từ file Excel/CSV');
       }
+    } catch (error) {
+      console.error('Lỗi khi đọc file:', error);
+      alert('Không thể đọc file. Vui lòng kiểm tra định dạng file: ' + error.message);
+      setVocabularyItems([]);
+    } finally {
+      setIsUploading(false); // Kết thúc loading sau khi xử lý xong
     }
   };
-  
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -253,14 +204,17 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
     if (!validateForm()) {
       return;
     }
+    
+    if (isLoading) { // Không cho phép submit nếu đang loading
+      return;
+    }
 
     try {
-      setIsSubmitting(true); 
+      setIsUploading(true); // Bắt đầu loading khi submit
       let imageUrl = '';
       
       // Nếu có file ảnh mới, upload
       if (topicImage) {
-
         imageUrl = await userService.uploadImage(topicImage, 'vocabularyTopic');
       } else if (editMode && topicToEdit.imgUrl) {
         // Nếu không có file ảnh mới nhưng đang edit và có URL ảnh cũ
@@ -277,13 +231,13 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
 
       try {
         await onAdd(updatedTopic, editMode);
-        onClose();
+        // Để cho parent component đóng modal
       } catch (error) {
         // Handle server-side validation errors
         setServerError(error.message || 'An error occurred. Please try again.');
-        setIsSubmitting(false);
-        // Nếu có lỗi từ server, không cần reset form 
         return;
+      } finally {
+        setIsUploading(false); // Chỉ kết thúc loading local, parent component sẽ quản lý isSubmitting
       }
       
       // Clean up the preview URL
@@ -293,8 +247,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
     } catch (error) {
       console.error('Error:', error);
       setServerError(error.message || 'An error occurred. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      setIsUploading(false);
     }
   };
 
@@ -303,7 +256,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
       <div className="add-modal-content">
         <div className="add-modal-header">
           <h2>{editMode ? 'Edit Topic' : 'Add New Topic'}</h2>
-          <button type="button" className="close-btn" onClick={onClose} disabled={isSubmitting}>
+          <button type="button" className="close-btn" onClick={onClose} disabled={isLoading}>
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -324,7 +277,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
                 required
                 placeholder="Enter topic name"
                 className={errors.topicName && touched.topicName ? 'input-error' : ''}
-                disabled={isSubmitting}
+                disabled={isLoading}
               />
               {errors.topicName && touched.topicName && (
                 <div className="error-message">{errors.topicName}</div>
@@ -342,9 +295,9 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
                   onChange={handleImageChange}
                   className="file-input"
                   style={{ display: 'none' }}
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                 />
-                <label htmlFor="topicImage" className={`file-input-label ${isSubmitting ? 'disabled' : ''}`}>
+                <label htmlFor="topicImage" className={`file-input-label ${isLoading ? 'disabled' : ''}`}>
                   <i className="fas fa-upload"></i> {editMode ? 'Change Image' : 'Choose Image'}
                 </label>
                 <span className="file-name">
@@ -363,7 +316,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
             
             <div className="file-upload-section">
               <div className="form-group file-upload">
-                <label htmlFor="vocabularyFile" className={isSubmitting ? 'disabled' : ''}>
+                <label htmlFor="vocabularyFile" className={isLoading ? 'disabled' : ''}>
                   <i className="fas fa-file-excel"></i>
                   Upload Vocabulary Excel File 
                 </label>
@@ -373,7 +326,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
                   accept=".xlsx, .xls, .csv"
                   onChange={handleVocabularyFileChange}
                   className="file-input"
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                 />
                 <div className="file-info">
                   {vocabularyFile ? vocabularyFile.name : "No file chosen"}
@@ -387,17 +340,18 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
             </div>
             
             <div className="add-modal-footer">
-              <button type="button" className="cancel-btn" onClick={onClose} disabled={isSubmitting}>
+              <button type="button" className="cancel-btn" onClick={onClose} disabled={isLoading}>
                 Cancel
               </button>
-              <button type="submit" className="submit-btn" disabled={isSubmitting}>
-                { isSubmitting ? (
-                    <>
+              <button type="submit" className="submit-btn" disabled={isLoading}>
+                {isLoading ? (
+                  <>
                     <i className="fas fa-spinner fa-spin"></i> 
                     Loading...
                   </>
-                ) : ( 
-                  editMode ? 'Save Changes' : 'Add Topic')}
+                ) : (
+                  editMode ? 'Save Changes' : 'Add Topic'
+                )}
               </button>
             </div>
           </form>

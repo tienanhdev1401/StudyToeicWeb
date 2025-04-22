@@ -4,8 +4,8 @@ import vocabularyService from '../../services/admin/admin.vocabularyService';
 import vocabularyTopicService from '../../services/admin/admin.vocabularyTopicService';
 import userService from '../../services/userService';
 import '../../styles/ManageVocabulary.css';
-import * as XLSX from 'xlsx';
 import VocabularyExcelPreview from '../../components/VocabularyExcelPreview';
+import { parseVocabularyExcel, isValidExcelFile } from '../../utils/excelUtils';
 
 // Combine Add and Edit functionality into one modal component
 const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicId, editMode = false }) => {
@@ -358,78 +358,36 @@ const ImportExcelModal = ({ isOpen, onClose, onImport, topicId }) => {
     }
   }, [isOpen]);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
 
     // Kiểm tra định dạng file
-    const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
-    const validExtensions = ['xlsx', 'xls', 'csv'];
-    
-    if (!validExtensions.includes(fileExtension)) {
+    if (!isValidExcelFile(selectedFile)) {
       setError('Chỉ chấp nhận file Excel (.xlsx, .xls) hoặc CSV (.csv)');
       return;
     }
 
     setFile(selectedFile);
     setError('');
-    parseExcel(selectedFile);
-  };
-
-  const parseExcel = (file) => {
     setIsLoading(true);
     
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        
-        // Lấy sheet đầu tiên
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-        
-        // Chuyển đổi sang JSON
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        
-        // Chuyển đổi dữ liệu từ Excel thành định dạng cần thiết
-        const vocabularies = jsonData.map(row => ({
-          content: row['Từ vựng'] || row['Word'] || row['Content'] || row['content'] || '',
-          meaning: row['Nghĩa'] || row['Meaning'] ||row['meaning'] || '',
-          synonym: row['Từ đồng nghĩa'] || row['Synonym'] || row['synonym'] || '',
-          transcribe: row['Phiên âm'] || row['Transcribe'] || row['transcribe'] || '',
-          urlAudio: row['URL Audio'] || row['Audio URL'] || row['urlAudio'] ||  '',
-          urlImage: row['URL Hình ảnh'] || row['Image URL'] || row['Image'] || ''
-        }));
-        
-        // Lọc ra các từ vựng có đủ thông tin cần thiết
-        const validVocabularies = vocabularies.filter(vocab => 
-          vocab.content && vocab.content.trim() !== '' && 
-          vocab.meaning && vocab.meaning.trim() !== ''
-        );
-        
-        if (validVocabularies.length === 0) {
-          setError('Không tìm thấy dữ liệu từ vựng hợp lệ trong file');
-          setExcelData([]);
-        } else {
-          setExcelData(validVocabularies);
-          setError('');
-        }
-      } catch (err) {
-        console.error('Lỗi khi đọc file Excel:', err);
-        setError('Lỗi khi đọc file Excel. Vui lòng kiểm tra định dạng file.');
+    try {
+      const result = await parseVocabularyExcel(selectedFile);
+      if (result.error) {
+        setError(result.error);
         setExcelData([]);
-      } finally {
-        setIsLoading(false);
+      } else {
+        setExcelData(result.vocabularies);
+        setError('');
       }
-    };
-    
-    reader.onerror = () => {
-      setError('Lỗi khi đọc file');
+    } catch (err) {
+      console.error('Lỗi khi xử lý file Excel:', err);
+      setError('Lỗi không xác định khi xử lý file.');
+      setExcelData([]);
+    } finally {
       setIsLoading(false);
-    };
-    
-    reader.readAsArrayBuffer(file);
+    }
   };
 
   const handleSubmit = async (e) => {
