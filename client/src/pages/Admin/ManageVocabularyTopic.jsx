@@ -26,7 +26,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
   const [serverError, setServerError] = useState(''); // Add state for server error
   // State để lưu danh sách tên topic hiện có
   const [existingTopicNames, setExistingTopicNames] = useState([]);
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Lấy danh sách tên topic hiện có khi component mount
   useEffect(() => {
     const fetchExistingTopics = async () => {
@@ -255,6 +255,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
     }
 
     try {
+      setIsSubmitting(true); 
       let imageUrl = '';
       
       // Nếu có file ảnh mới, upload
@@ -280,6 +281,8 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
       } catch (error) {
         // Handle server-side validation errors
         setServerError(error.message || 'An error occurred. Please try again.');
+        setIsSubmitting(false);
+        // Nếu có lỗi từ server, không cần reset form 
         return;
       }
       
@@ -290,6 +293,8 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
     } catch (error) {
       console.error('Error:', error);
       setServerError(error.message || 'An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -298,7 +303,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
       <div className="add-modal-content">
         <div className="add-modal-header">
           <h2>{editMode ? 'Edit Topic' : 'Add New Topic'}</h2>
-          <button type="button" className="close-btn" onClick={onClose}>
+          <button type="button" className="close-btn" onClick={onClose} disabled={isSubmitting}>
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -319,6 +324,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
                 required
                 placeholder="Enter topic name"
                 className={errors.topicName && touched.topicName ? 'input-error' : ''}
+                disabled={isSubmitting}
               />
               {errors.topicName && touched.topicName && (
                 <div className="error-message">{errors.topicName}</div>
@@ -336,8 +342,9 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
                   onChange={handleImageChange}
                   className="file-input"
                   style={{ display: 'none' }}
+                  disabled={isSubmitting}
                 />
-                <label htmlFor="topicImage" className="file-input-label">
+                <label htmlFor="topicImage" className={`file-input-label ${isSubmitting ? 'disabled' : ''}`}>
                   <i className="fas fa-upload"></i> {editMode ? 'Change Image' : 'Choose Image'}
                 </label>
                 <span className="file-name">
@@ -356,7 +363,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
             
             <div className="file-upload-section">
               <div className="form-group file-upload">
-                <label htmlFor="vocabularyFile">
+                <label htmlFor="vocabularyFile" className={isSubmitting ? 'disabled' : ''}>
                   <i className="fas fa-file-excel"></i>
                   Upload Vocabulary Excel File 
                 </label>
@@ -366,6 +373,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
                   accept=".xlsx, .xls, .csv"
                   onChange={handleVocabularyFileChange}
                   className="file-input"
+                  disabled={isSubmitting}
                 />
                 <div className="file-info">
                   {vocabularyFile ? vocabularyFile.name : "No file chosen"}
@@ -379,11 +387,17 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
             </div>
             
             <div className="add-modal-footer">
-              <button type="button" className="cancel-btn" onClick={onClose}>
+              <button type="button" className="cancel-btn" onClick={onClose} disabled={isSubmitting}>
                 Cancel
               </button>
-              <button type="submit" className="submit-btn">
-                {editMode ? 'Save Changes' : 'Add Topic'}
+              <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                { isSubmitting ? (
+                    <>
+                    <i className="fas fa-spinner fa-spin"></i> 
+                    Loading...
+                  </>
+                ) : ( 
+                  editMode ? 'Save Changes' : 'Add Topic')}
               </button>
             </div>
           </form>
@@ -449,6 +463,10 @@ const ManageVocabularyTopic = () => {
       
       // Refresh the list
       await fetchVocabularyTopics();
+
+      setIsAddModalOpen(false);
+      setEditMode(false);
+      setTopicToEdit(null);
     } catch (error) {
       console.error('Error:', error);
       alert(error.message || 'An error occurred. Please try again.');
@@ -880,13 +898,17 @@ const ManageVocabularyTopic = () => {
       <AddTopicModal
         isOpen={isAddModalOpen}
         onClose={() => {
-          setIsAddModalOpen(false);
-          setEditMode(false);
-          setTopicToEdit(null);
+          if(!isSubmitting) {
+            setIsAddModalOpen(false);
+            setEditMode(false);
+            setTopicToEdit(null);
+          }
+          
         }}
         onAdd={handleAddOrUpdateTopic}
         editMode={editMode}
         topicToEdit={topicToEdit}
+        isSubmitting={isSubmitting} // Pass isSubmitting state
       />
     </div>
   );  

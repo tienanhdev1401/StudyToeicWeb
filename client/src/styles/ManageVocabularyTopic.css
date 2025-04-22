@@ -1005,3 +1005,33 @@ input[type="file"]::file-selector-button {
   0% { transform: translate(-50%, -50%) rotate(0deg); }
   100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
+/* Add these styles to your ManageVocabularyTopic.css file */
+
+.disabled {
+  opacity: 0.7;
+  cursor: not-allowed !important;
+}
+
+.file-input-label.disabled {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.submit-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.submit-btn i.fa-spinner {
+  margin-right: 8px;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
