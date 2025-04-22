@@ -18,7 +18,7 @@ router.post('/', VocabularyTopicController.addVocabularyTopic);
 // DELETE /api/admin/vocabulary-topic/:topicId
 router.delete('/:topicId', VocabularyTopicController.deleteVocabularyTopic);
 // GET /api/admin/vocabulary-topic/:slug
-router.get('/:slug', VocabularyTopicController.findVocabularyTopicBySlug);
+// router.get('/:slug', VocabularyTopicController.findVocabularyTopicBySlug);
 
 //api vocabulary
 // GET /api/admin/vocabulary-topic/:id/vocabularies

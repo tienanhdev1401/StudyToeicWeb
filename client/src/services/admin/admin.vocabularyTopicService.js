@@ -31,19 +31,19 @@ const vocabularyTopicService = {
       }
     },  
 
-    getVocabularyTopicBySlug: async (slug) => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/admin/vocabulary-topic/${slug}`);
-        if (response.data.success) {
-          return response.data.data;
-        } else {
-          throw new Error(response.data.message || 'Failed to fetch vocabulary topic by slug');
-        }
-      } catch (error) {
-        console.error('Error fetching vocabulary topic by slug:', error);
-        throw error;
-      }
-    },
+    // getVocabularyTopicBySlug: async (slug) => {
+    //   try {
+    //     const response = await axios.get(`${API_BASE_URL}/admin/vocabulary-topic/${slug}`);
+    //     if (response.data.success) {
+    //       return response.data.data;
+    //     } else {
+    //       throw new Error(response.data.message || 'Failed to fetch vocabulary topic by slug');
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching vocabulary topic by slug:', error);
+    //     throw error;
+    //   }
+    // },
 
     uploadImage: async (file, folder = 'vocabularyTopic') => {
       try {

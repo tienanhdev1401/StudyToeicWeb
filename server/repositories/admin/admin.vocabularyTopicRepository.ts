@@ -7,12 +7,10 @@ export class VocabularyTopicRepository {
    * Tìm VocabularyTopic theo ID
    */
   static async findById(topicId: number): Promise<VocabularyTopic | null> {
-    console.log('topicId',topicId);
     const results = await database.query(
       'SELECT * FROM vocabularytopics WHERE id = ? LIMIT 1',
       [topicId]
     );
-    console.log('results',results);
 
     if (Array.isArray(results) && results.length === 0) {
       return null;
@@ -20,7 +18,7 @@ export class VocabularyTopicRepository {
 
 
     const topicData = results[0] as any;
-    const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.slug ,topicData.imageUrl, topicData.createdAt, topicData.updatedAt);
+    const topic = new VocabularyTopic(topicData.id, topicData.topicName ,topicData.imageUrl, topicData.createdAt, topicData.updatedAt);
 
     // Lấy danh sách vocabularies thuộc topic này
     const vocabResults = await database.query(
@@ -46,41 +44,41 @@ export class VocabularyTopicRepository {
 
 
 
-  static async findBySlug(slug: string): Promise<VocabularyTopic | null> {
-    const results = await database.query(
-      'SELECT id, topicName,slug FROM vocabularytopics WHERE slug = ? LIMIT 1',
-      [slug]
-    );
+  // static async findBySlug(slug: string): Promise<VocabularyTopic | null> {
+  //   const results = await database.query(
+  //     'SELECT id, topicName,slug FROM vocabularytopics WHERE slug = ? LIMIT 1',
+  //     [slug]
+  //   );
 
-    if (Array.isArray(results) && results.length === 0) {
-      return null;
-    }
+  //   if (Array.isArray(results) && results.length === 0) {
+  //     return null;
+  //   }
 
 
-    const topicData = results[0] as any;
-    const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.slug ,topicData.imgUrl, topicData.createAt, topicData.updateAt);
+  //   const topicData = results[0] as any;
+  //   const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.slug ,topicData.imgUrl, topicData.createAt, topicData.updateAt);
 
-    // Lấy danh sách vocabularies thuộc topic này
-    const vocabResults = await database.query(
-      'SELECT * FROM vocabularies WHERE VocabularyTopicId = ?',
-      [topicData.id]
-    );
+  //   // Lấy danh sách vocabularies thuộc topic này
+  //   const vocabResults = await database.query(
+  //     'SELECT * FROM vocabularies WHERE VocabularyTopicId = ?',
+  //     [topicData.id]
+  //   );
 
-    topic.addVocabularyList(
-      vocabResults.map((v: any) => new Vocabulary(
-        v.id,
-        v.content,
-        v.meaning,
-        v.synonym ? JSON.parse(v.synonym) : null,
-        v.transcribe,
-        v.urlAudio,
-        v.urlImage,
-        v.VocabularyTopicId
-      ))
-    );
+  //   topic.addVocabularyList(
+  //     vocabResults.map((v: any) => new Vocabulary(
+  //       v.id,
+  //       v.content,
+  //       v.meaning,
+  //       v.synonym ? JSON.parse(v.synonym) : null,
+  //       v.transcribe,
+  //       v.urlAudio,
+  //       v.urlImage,
+  //       v.VocabularyTopicId
+  //     ))
+  //   );
 
-    return topic;
-  }
+  //   return topic;
+  // }
 
 
   /**
@@ -115,7 +113,7 @@ export class VocabularyTopicRepository {
 
         const count = vocabularyList.length;
         
-        const vocabularyTopic = new VocabularyTopic(topic.id, topic.topicName, topic.slug ,topic.imageUrl, topic.createdAt, topic.updatedAt);
+        const vocabularyTopic = new VocabularyTopic(topic.id, topic.topicName ,topic.imageUrl, topic.createdAt, topic.updatedAt);
         vocabularyTopic.addVocabularyList(vocabularyList);
 
         return {vocabularyTopic, count};
@@ -131,8 +129,8 @@ export class VocabularyTopicRepository {
     
     // 1. Thêm topic vào bảng vocabularytopics
     const topicResult = await database.query(
-        'INSERT INTO vocabularytopics (topicName, slug, imageURL, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)',
-        [topic.topicName, topic.slug, topic.imgUrl, currentDateTime, currentDateTime]
+        'INSERT INTO vocabularytopics (topicName, imageURL, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
+        [topic.topicName, topic.imgUrl, currentDateTime, currentDateTime]
     );
 
     // Lấy ID của topic vừa được thêm
@@ -172,8 +170,8 @@ export class VocabularyTopicRepository {
     
     // 1. Cập nhật topic trong bảng vocabularytopics
     const topicResult = await database.query(
-      'UPDATE vocabularytopics SET topicName = ?, slug = ?, imageURL = ?, updatedAt = ? WHERE id = ?',
-      [topic.topicName, topic.slug, topic.imgUrl, currentDateTime, topic.id]
+      'UPDATE vocabularytopics SET topicName = ?,  imageURL = ?, updatedAt = ? WHERE id = ?',
+      [topic.topicName,  topic.imgUrl, currentDateTime, topic.id]
     );  
 
     // 2. Cập nhật từng vocabulary trong bảng vocabularies

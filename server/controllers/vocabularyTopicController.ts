@@ -65,7 +65,7 @@ export class VocabularyTopicController {
         const slug = slugify(topicName, { lower: true, strict: true });
 
         // Tạo một đối tượng VocabularyTopic mới
-        const newTopic = new VocabularyTopic(0, topicName, slug, imgUrl,new Date(), new Date()); 
+        const newTopic = new VocabularyTopic(0, topicName, imgUrl,new Date(), new Date()); 
 
         // Thêm danh sách từ vựng vào topic (nếu có)
         if (vocabularies && Array.isArray(vocabularies)) {

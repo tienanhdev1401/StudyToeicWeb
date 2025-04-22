@@ -172,6 +172,20 @@
   margin-right: 5px;
 }
 
+.import-btn {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.import-btn i {
+  margin-right: 5px;
+  font-size: 1.25rem;
+} 
+
+.import-btn:hover {
+  background-color: #3a7bc8;
+}
+
 .word-table {
   margin-top: 20px;
   width: 100%;

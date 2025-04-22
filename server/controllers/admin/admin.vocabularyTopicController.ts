@@ -57,35 +57,35 @@ export class VocabularyTopicController {
     }
   }
 
-  static async findVocabularyTopicBySlug(req: Request, res: Response) {
-    try {
-      const slug = req.params.slug;
+  // static async findVocabularyTopicBySlug(req: Request, res: Response) {
+  //   try {
+  //     const slug = req.params.slug;
       
-      // Gọi repository
-      const topic = await VocabularyTopicRepository.findBySlug(slug);
+  //     // Gọi repository
+  //     const topic = await VocabularyTopicRepository.findBySlug(slug);
       
-      if (!topic) {
-        return res.status(404).json({
-          success: false,
-          message: 'Không tìm thấy chủ đề' + slug
-        });
-      }
+  //     if (!topic) {
+  //       return res.status(404).json({
+  //         success: false,
+  //         message: 'Không tìm thấy chủ đề' + slug
+  //       });
+  //     }
   
-      // Trả về response thành công
-      res.status(200).json({
-        success: true,
-        data: topic,
-        message: 'Lấy thông tin chủ đề thành công'
-      });
+  //     // Trả về response thành công
+  //     res.status(200).json({
+  //       success: true,
+  //       data: topic,
+  //       message: 'Lấy thông tin chủ đề thành công'
+  //     });
   
-    } catch (error) {
-      console.error('Lỗi khi lấy thông tin chủ đề:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Đã xảy ra lỗi khi lấy thông tin chủ đề'
-      });
-    }
-  }
+  //   } catch (error) {
+  //     console.error('Lỗi khi lấy thông tin chủ đề:', error);
+  //     res.status(500).json({
+  //       success: false,
+  //       message: 'Đã xảy ra lỗi khi lấy thông tin chủ đề'
+  //     });
+  //   }
+  // }
 
 
   static async addVocabularyTopic(req: Request, res: Response) {
@@ -118,7 +118,7 @@ export class VocabularyTopicController {
         console.log('req.body',req.body);
         const slug = slugify(topicName, { lower: true, strict: true });
         // Tạo một đối tượng VocabularyTopic mới
-        const newTopic = new VocabularyTopic(0, topicName, slug, imgUrl,new Date(), new Date()); 
+        const newTopic = new VocabularyTopic(0, topicName,  imgUrl,new Date(), new Date()); 
 
         // Thêm danh sách từ vựng vào topic (nếu có)
         if (vocabularies && Array.isArray(vocabularies)) {
@@ -207,15 +207,14 @@ export class VocabularyTopicController {
       }
       
       // Tạo slug mới nếu tên chủ đề thay đổi
-      const slug = topicName !== existingTopic.topicName
-        ? slugify(topicName, { lower: true, strict: true })
-        : existingTopic.slug;
+      // const slug = topicName !== existingTopic.topicName
+      //   ? slugify(topicName, { lower: true, strict: true })
+      //   : existingTopic.slug;
 
       // Cập nhật thông tin chủ đề
       const updatedTopic = new VocabularyTopic(
         topicId,
         topicName || existingTopic.topicName,
-        slug,
         imgUrl || existingTopic.imgUrl,
         existingTopic.createAt,
         new Date() // updateAt
