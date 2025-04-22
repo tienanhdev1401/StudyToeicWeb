@@ -64,7 +64,7 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/admin/*" element={<Admin />} />
               <Route path="/dictionary" element={<DictionaryPage />} />
-              <Route path="/nhap" element={<Nhap />} />
+              <Route path="/nhap/:testID" element={<Nhap />} />
               <Route path="/learn-vocabulary/:topicId" element={<TopicDetail />} />
               <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} />
               <Route path="/exercise/:exerciseId" element={<DoGrammarExercise />} />

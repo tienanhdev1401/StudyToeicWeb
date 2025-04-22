@@ -31,7 +31,7 @@ function Stmquizzes() {
     // Sử dụng testId lấy từ URL để điều hướng
     //navigate(`/Dotest/${testId}`
     localStorage.setItem('userInteracted', 'true');
-    navigate(`/nhap`, {
+    navigate(`/nhap/${testId}`, {
       state: {
         selectedParts: selectedParts.length > 0 ? selectedParts : [1, 2, 3, 4, 5, 6, 7]
       }

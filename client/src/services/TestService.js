@@ -106,6 +106,15 @@ class TestService {
     
     return groupedQuestions;
   }
+  static async getAllTests() {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/test/`);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu bài kiểm tra:', error);
+      throw error;
+    }
+  }
 }
 
 export default TestService;

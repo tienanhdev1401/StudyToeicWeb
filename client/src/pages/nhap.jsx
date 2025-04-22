@@ -23,8 +23,9 @@ const Nhap = () => {
     useEffect(() => {
         const fetchTestData = async () => {
             try {
+                console.log("Fetching test data..."+testID);
                 setLoading(true);
-                const rawData = await TestService.getTestById(1);
+                const rawData = await TestService.getTestById(testID);
                 const processedData = TestService.processTestData(rawData);
                 setTestData(processedData);
 
