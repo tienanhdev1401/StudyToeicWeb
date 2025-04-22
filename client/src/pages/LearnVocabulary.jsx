@@ -66,7 +66,6 @@ const LearnVocabulary = () => {
                         <div className="spinner-border text-primary" role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
-                        <p>Đang tải dữ liệu...</p>
                     </div>
                 </main>
                 <Footer />

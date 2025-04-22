@@ -10,7 +10,24 @@
     padding: 1rem;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+.question-header-dotest {
+    margin-bottom: 1rem;
+}
 
+.question-header-dotest .sentence {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    line-height: 1.5;
+    color: #1a365d;
+    
+}
+
+.question-number-dotest {
+    font-weight: bold;
+    font-size: 2rem;
+    color: #1a365d;
+}
 .header-content_white {
     max-width: 1200px;
     margin: 0 auto;
@@ -41,8 +58,8 @@
   .submit-button:hover {
     background-color: #c2410c;
   }
-.timer {
-    background-color: #3b82f6;
+.timer-dotest {
+    background-color: #0e5ad3;
     padding: 0.5rem 1.5rem;
     border-radius: 0.5rem;
 }
@@ -255,7 +272,7 @@ input[type="radio"] {
 .progress-container {
     position: fixed;
     top: 80px;
-    margin-left: 100px;
+    margin-left: 2px;
     left: 20px;
     z-index: 100;
 }
@@ -263,13 +280,13 @@ input[type="radio"] {
 .word-counter {
     background-color: #ea580c;
     color: white;
-    padding: 10px 20px;
+    padding: 8px 10px;
     border-radius: 25px;
     font-weight: 600;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    font-size: 1.1rem;
-    display: flex;
     font-size: 1.5rem;
+    display: flex;
+    font-size: 1.3rem;
     align-items: center;
     gap: 8px;
 }
@@ -278,4 +295,151 @@ input[type="radio"] {
     font-size: 1.5rem;
     content: 'Đã làm: ';
     font-weight: 500;
+}
+
+
+.part7-two-columns {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    gap: 1.5rem;
+    height: 70vh;
+}
+
+.scrollable-image {
+    height: 70vh;
+    overflow-y: auto;
+    border-right: 1px solid #ddd;
+    padding-right: 1.5rem;
+    scrollbar-width: thin;
+}
+
+.scrollable-image::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-image::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scrollable-image::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.scrollable-image::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.part7-container .supporting-image {
+    width: 100%;
+    display: block;
+    max-width: 100%;
+}
+
+.part7-container .image-container {
+    min-height: 100%;
+    display: flex;
+    align-items: flex-start;
+}
+
+.part7-container .questions-panel {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    scrollbar-width: thin;
+}
+
+.part7-container .questions-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.part7-container .questions-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.part7-container .questions-panel::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.part7-container .questions-panel::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.part6-two-columns {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    gap: 1.5rem;
+    height: 70vh;
+}
+
+.part6-container .resource-panel {
+    height: 70vh;
+    overflow-y: auto;
+    border-right: 1px solid #ddd;
+    padding-right: 1.5rem;
+    scrollbar-width: thin;
+}
+
+.part6-container .resource-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.part6-container .resource-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.part6-container .resource-panel::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.part6-container .resource-panel::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.part6-container .supporting-image {
+    width: 100%;
+    display: block;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.part6-container .text-resource {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.part6-container .text-resource p {
+    margin-bottom: 1rem;
+}
+
+.part6-container .questions-panel {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    scrollbar-width: thin;
+}
+
+.part6-container .questions-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.part6-container .questions-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.part6-container .questions-panel::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.part6-container .questions-panel::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

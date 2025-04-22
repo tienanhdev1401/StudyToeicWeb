@@ -25,12 +25,12 @@ const Nhap = () => {
                 const rawData = await TestService.getTestById(1);
                 const processedData = TestService.processTestData(rawData);
                 setTestData(processedData);
-                
+
                 // Khởi tạo thời gian nếu có
                 if (processedData.duration) {
                     setTimeLeft(processedData.duration * 60); // Chuyển phút thành giây
                 }
-                
+
                 setLoading(false);
             } catch (err) {
                 console.error("Lỗi khi tải dữ liệu bài kiểm tra:", err);
@@ -45,7 +45,7 @@ const Nhap = () => {
     // Khởi tạo và lọc câu hỏi
     useEffect(() => {
         if (!testData) return;
-        
+
         const selectedParts = state?.selectedParts || [];
         const allQuestions = testData.allQuestions || [];
 
@@ -57,7 +57,7 @@ const Nhap = () => {
         const formattedQuestions = filtered.map(q => {
             // Lấy thông tin resource
             const resource = q.resource || {};
-            
+
             return {
                 id: q.id,
                 questionNumber: q.questionNumber,
@@ -66,13 +66,13 @@ const Nhap = () => {
                 // Phần 5 - câu đơn chỉ có câu hỏi
                 sentence: q.partNumber === 5 ? q.content : null,
                 // Phần 6 - đoạn văn với 4 câu hỏi
-                passageText: q.partNumber === 6 && resource.paragraph ? 
+                passageText: q.partNumber === 6 && resource.paragraph ?
                     [resource.paragraph] : [],
                 // Phần 7 - đoạn đọc với số câu hỏi đa dạng
-                passages: q.partNumber === 7 && resource.paragraph ? 
-                    [{ 
-                        title: "Reading Passage", 
-                        content: [resource.paragraph] 
+                passages: q.partNumber === 7 && resource.paragraph ?
+                    [{
+                        title: "Reading Passage",
+                        content: [resource.paragraph]
                     }] : [],
                 // Lưu trữ đường dẫn âm thanh (Part 1-4)
                 audioUrl: resource.urlAudio || null,
@@ -167,7 +167,7 @@ const Nhap = () => {
             console.error('Không có đường dẫn âm thanh');
             return;
         }
-        
+
         const audio = new Audio(url);
         audio.play().catch(err => {
             console.error('Lỗi khi phát âm thanh:', err);
@@ -180,7 +180,7 @@ const Nhap = () => {
             questionId: parseInt(questionId),
             selectedAnswer: answerId // 'A', 'B', 'C' hoặc 'D'
         }));
-        
+
         return {
             testId: parseInt(testID),
             answers: answersArray
@@ -193,15 +193,15 @@ const Nhap = () => {
                 alert('Bạn chưa trả lời câu hỏi nào. Vui lòng làm bài trước khi nộp.');
                 return;
             }
-            
+
             const confirmSubmit = window.confirm('Bạn có chắc muốn nộp bài?');
             if (!confirmSubmit) return;
-            
+
             const submissionData = prepareAnswersToSubmit();
             // Phần này sẽ được kích hoạt khi có API nộp bài
             // await TestService.submitTestAnswers(submissionData);
             console.log('Nộp bài:', submissionData);
-            
+
             // Hiển thị thông báo thành công
             alert('Nộp bài thành công!');
         } catch (error) {
@@ -225,7 +225,7 @@ const Nhap = () => {
                 // Duyệt từ vị trí hiện tại để tìm câu đầu tiên của nhóm khác
                 let nextGroupIndex = -1;
                 for (let i = currentQuestion; i < filteredQuestions.length; i++) {
-                    if (filteredQuestions[i].resourceId !== currentResourceId || 
+                    if (filteredQuestions[i].resourceId !== currentResourceId ||
                         filteredQuestions[i].part !== currentQ.part) {
                         nextGroupIndex = i;
                         break;
@@ -248,7 +248,7 @@ const Nhap = () => {
                 // Duyệt ngược từ vị trí hiện tại để tìm nhóm trước đó
                 let prevGroupLastIndex = -1;
                 for (let i = currentQuestion - 2; i >= 0; i--) {
-                    if (filteredQuestions[i].resourceId !== currentResourceId || 
+                    if (filteredQuestions[i].resourceId !== currentResourceId ||
                         filteredQuestions[i].part !== currentQ.part) {
                         prevGroupLastIndex = i;
                         break;
@@ -286,10 +286,10 @@ const Nhap = () => {
         return (
             <div className="part1-container">
                 <div className="image-container">
-                    <img 
-                        src={question.imageUrl} 
-                        alt={`Hình ảnh câu ${question.questionNumber}`} 
-                        className="main-image" 
+                    <img
+                        src={question.imageUrl}
+                        alt={`Hình ảnh câu ${question.questionNumber}`}
+                        className="main-image"
                         onError={(e) => {
                             console.error("Lỗi tải hình ảnh:", e);
                             e.target.src = "/placeholder-image.jpg";
@@ -297,7 +297,7 @@ const Nhap = () => {
                         }}
                     />
                 </div>
-                
+
                 <div className="audio-section">
                     <button className="audio-button" onClick={() => playAudio(question.audioUrl)}>
                         <i className="fas fa-play"></i> Nghe câu hỏi
@@ -369,10 +369,10 @@ const Nhap = () => {
     // Render Part 3,4 - 1 audio cho 3 câu hỏi (Part 3 cuối có thêm ảnh)
     const renderPart3and4Questions = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
-        
+
         const hasImage = currentGroup[0].imageUrl !== null;
         const isPart3End = currentGroup[0].part === 3 && hasImage; // 9 câu cuối part 3 có ảnh
-        
+
         return (
             <div className="part3-4-container">
                 <div className="audio-resource">
@@ -380,13 +380,13 @@ const Nhap = () => {
                         <i className="fas fa-play"></i>
                         {currentGroup[0].part === 3 ? 'Nghe hội thoại' : 'Nghe bài nói'}
                     </button>
-                    
+
                     {isPart3End && (
                         <div className="image-container">
-                            <img 
-                                src={currentGroup[0].imageUrl} 
-                                alt="Hình ảnh hỗ trợ" 
-                                className="supporting-image" 
+                            <img
+                                src={currentGroup[0].imageUrl}
+                                alt="Hình ảnh hỗ trợ"
+                                className="supporting-image"
                                 onError={(e) => {
                                     console.error("Lỗi tải hình ảnh:", e);
                                     e.target.style.display = "none";
@@ -432,9 +432,9 @@ const Nhap = () => {
         return (
             <div className="part5-container">
                 <div className="answer-section">
-                    <div className="question-header">
-                        <span className="question-number">Câu {question.questionNumber}</span>
-                        <p className="sentence">{question.sentence}</p>
+                    <div className="question-header-dotest">
+                        <span className="question-number-dotest">Câu {question.questionNumber}: </span>
+                        <span className="sentence">{question.sentence}</span>
                     </div>
 
                     <div className="answer-grid">
@@ -460,115 +460,108 @@ const Nhap = () => {
     // Render Part 6 - 1 đoạn văn/ảnh cho 4 câu hỏi
     const renderPart6Questions = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
-
+    
         return (
             <div className="part6-container">
-                <div className="resource-panel">
-                    <div className="text-resource">
-                        {currentGroup[0].passageText.map((text, idx) => (
-                            <p key={idx} dangerouslySetInnerHTML={{ __html: text }} />
-                        ))}
+                <div className="part6-two-columns">
+                    <div className="resource-panel scrollable-content">
                         {currentGroup[0].imageUrl && (
                             <div className="image-container">
-                                <img 
-                                    src={currentGroup[0].imageUrl} 
-                                    alt="Hình ảnh hỗ trợ" 
-                                    className="supporting-image" 
+                                <img
+                                    src={currentGroup[0].imageUrl}
+                                    alt="Hình ảnh hỗ trợ"
+                                    className="supporting-image"
                                     onError={(e) => {
                                         console.error("Lỗi tải hình ảnh:", e);
-                                        e.target.style.display = "none"; 
+                                        e.target.src = "/placeholder-image.jpg";
+                                        e.target.alt = "Không thể tải hình ảnh";
                                     }}
                                 />
                             </div>
                         )}
-                    </div>
-                </div>
-
-                <div className="questions-panel">
-                    {currentGroup.map(q => (
-                        <div key={q.id} className="question-block">
-                            <div className="question-header">
-                                <span className="question-number">Câu {q.questionNumber}</span>
-                            </div>
-
-                            <p className="question-text">{q.questionText}</p>
-
-                            <div className="answer-options">
-                                {q.answers.map(answer => (
-                                    <label key={answer.id} className="option-item">
-                                        <input
-                                            type="radio"
-                                            name={`question-${q.id}`}
-                                            checked={answers[q.id] === answer.id}
-                                            onChange={() => handleAnswerSelect(q.id, answer.id)}
-                                        />
-                                        <span className="option-label">{answer.text}</span>
-                                    </label>
-                                ))}
-                            </div>
+                        <div className="text-resource">
+                            {currentGroup[0].passageText.map((text, idx) => (
+                                <p key={idx} dangerouslySetInnerHTML={{ __html: text }} />
+                            ))}
                         </div>
-                    ))}
+                    </div>
+    
+                    <div className="questions-panel">
+                        {currentGroup.map(q => (
+                            <div key={q.id} className="question-block">
+                                <div className="question-header-dotest">
+                                    <span className="question-number-dotest">Câu {q.questionNumber}: </span>
+                                    <span className="sentence">{q.questionText}</span>
+                                </div>
+    
+                                <div className="answer-options">
+                                    {q.answers.map(answer => (
+                                        <label key={answer.id} className="option-item">
+                                            <input
+                                                type="radio"
+                                                name={`question-${q.id}`}
+                                                checked={answers[q.id] === answer.id}
+                                                onChange={() => handleAnswerSelect(q.id, answer.id)}
+                                            />
+                                            <span className="option-label">{answer.text}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         );
     };
-
     // Render Part 7 - Đa dạng (1 ảnh/đoạn đọc cho 2-4 câu hỏi)
     const renderPart7Questions = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
-
+    
         return (
             <div className="part7-container">
-                <div className="resource-panel">
-                    <div className="reading-resource">
-                        {currentGroup[0].passages?.map((passage, idx) => (
-                            <div key={idx} className="passage">
-                                <h4>{passage.title}</h4>
-                                {passage.content.map((text, i) => (
-                                    <p key={i}>{text}</p>
-                                ))}
-                            </div>
-                        ))}
+                <div className="part7-two-columns">
+                    <div className="resource-panel scrollable-image">
                         {currentGroup[0].imageUrl && (
                             <div className="image-container">
                                 <img 
                                     src={currentGroup[0].imageUrl} 
-                                    alt="Hình ảnh hỗ trợ" 
+                                    alt="Hình ảnh đọc hiểu" 
                                     className="supporting-image" 
                                     onError={(e) => {
                                         console.error("Lỗi tải hình ảnh:", e);
-                                        e.target.style.display = "none";
+                                        e.target.src = "/placeholder-image.jpg";
+                                        e.target.alt = "Không thể tải hình ảnh";
                                     }}
                                 />
                             </div>
                         )}
                     </div>
-                </div>
-
-                <div className="questions-panel">
-                    {currentGroup.map(q => (
-                        <div key={q.id} className="question-block">
-                            <div className="question-header">
-                                <span className="question-number">Câu {q.questionNumber}</span>
+    
+                    <div className="questions-panel">
+                        {currentGroup.map(q => (
+                            <div key={q.id} className="question-block">
+                                  <div className="question-header-dotest">
+                                <span className="question-number-dotest">Câu {q.questionNumber}: </span>
+                                <span className="sentence">{q.questionText}</span>
                             </div>
-
-                            <p className="question-text">{q.questionText}</p>
-
-                            <div className="answer-options">
-                                {q.answers.map(answer => (
-                                    <label key={answer.id} className="option-item">
-                                        <input
-                                            type="radio"
-                                            name={`question-${q.id}`}
-                                            checked={answers[q.id] === answer.id}
-                                            onChange={() => handleAnswerSelect(q.id, answer.id)}
-                                        />
-                                        <span className="option-label">{answer.text}</span>
-                                    </label>
-                                ))}
+    
+                                <div className="answer-options">
+                                    {q.answers.map(answer => (
+                                        <label key={answer.id} className="option-item">
+                                            <input
+                                                type="radio"
+                                                name={`question-${q.id}`}
+                                                checked={answers[q.id] === answer.id}
+                                                onChange={() => handleAnswerSelect(q.id, answer.id)}
+                                            />
+                                            <span className="option-label">{answer.text}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         );
@@ -577,9 +570,9 @@ const Nhap = () => {
     // Render các câu hỏi dựa trên phần hiện tại
     const renderQuestionsByPart = () => {
         if (currentGroup.length === 0) return null;
-        
+
         const part = currentGroup[0].part;
-        
+
         switch (part) {
             case 1:
                 return renderPart1Question(currentGroup[0]);
@@ -647,7 +640,7 @@ const Nhap = () => {
                     </span>
                     <div className="header-controls">
                         <button className="submit-button" onClick={handleSubmitTest}>Nộp bài</button>
-                        <div className="timer">{formatTime(timeLeft)}</div>
+                        <div className="timer-dotest">{formatTime(timeLeft)}</div>
                         <button
                             className={`panel-toggle ${currentPart <= 4 ? 'disabled' : ''}`}
                             onClick={() => setShowPanel(!showPanel)}

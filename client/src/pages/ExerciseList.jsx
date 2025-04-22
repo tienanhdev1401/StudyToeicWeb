@@ -257,8 +257,31 @@ const ExerciseList = () => {
         setExpandedId(expandedId === topicName ? null : topicName);
     };
 
-    if (loading.grammar && activeTab === 'grammar') return <div className="text-center mt-8">Đang tải ngữ pháp...</div>;
-    if (loading.vocabulary && activeTab === 'vocabulary') return <div className="text-center mt-8">Đang tải từ vựng...</div>;
+    if (loading.grammar && activeTab === 'grammar') return (
+        <div id="preloader-active">
+            <div className="preloader d-flex align-items-center justify-content-center">
+                <div className="preloader-inner position-relative">
+                    <div className="preloader-circle"></div>
+                    <div className="preloader-img pere-text">
+                        <img src="assets/img/logo/loder.png" alt=""/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    if (loading.vocabulary && activeTab === 'vocabulary') return (
+        <div id="preloader-active">
+            <div className="preloader d-flex align-items-center justify-content-center">
+                <div className="preloader-inner position-relative">
+                    <div className="preloader-circle"></div>
+                    <div className="preloader-img pere-text">
+                        <img src="assets/img/logo/loder.png" alt=""/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
     
     if (error.grammar && activeTab === 'grammar') return <div className="text-center mt-8 text-red-500">{error.grammar}</div>;
     if (error.vocabulary && activeTab === 'vocabulary') return <div className="text-center mt-8 text-red-500">{error.vocabulary}</div>;

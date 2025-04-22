@@ -371,7 +371,7 @@ const DoTest = () => {
                     <span className="test-title">{test?.title || 'Bài kiểm tra TOEIC'}</span>
                     <div className="header-controls">
                         <button className="submit-button" onClick={handleSubmitTest}>Nộp bài</button>
-                        <div className="timer">{formattedTime}</div>
+                        <div className="timer-dotest">{formattedTime}</div>
                         <button
                             className={`panel-toggle ${currentPart <= 4 ? 'disabled' : ''}`}
                             onClick={() => setShowPanel(!showPanel)}
