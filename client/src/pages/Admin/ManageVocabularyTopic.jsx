@@ -707,9 +707,9 @@ const ManageVocabularyTopic = () => {
               </td>
               <td>{item.vocabularyTopic.topicName}</td>
               <td className="image-cell">
-                {item.vocabularyTopic.imgUrl && (
+                {item.vocabularyTopic.imageUrl && (
                   <img 
-                    src={item.vocabularyTopic.imgUrl} 
+                    src={item.vocabularyTopic.imageUrl} 
                     alt={item.vocabularyTopic.topicName} 
                     className="vocabulary-image" 
                     onError={(e) => {
@@ -721,8 +721,8 @@ const ManageVocabularyTopic = () => {
               </td>
               <td>{item.count}</td>
               <td>
-                <span className={item.vocabularyTopic.createAt} >
-                  {item.vocabularyTopic.createAt}
+                <span className={item.vocabularyTopic.createdAt} >
+                  {item.vocabularyTopic.createdAt}
                 </span>
               </td>
               <td>
