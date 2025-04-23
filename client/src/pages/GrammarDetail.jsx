@@ -12,11 +12,13 @@ const GrammarDetail = () => {
     const [topic, setTopic] = useState(topicId);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    // console.log(topicId)
 
     useEffect(() => {
         const fetchGrammarTopic = async () => {
             try {
                 const topicData = await GrammarTopicService.getGrammarTopicById(topicId);
+                // console.log(topicData)
                 setTopic(topicData);
                 setLoading(false);
             } catch (err) {
@@ -29,16 +31,30 @@ const GrammarDetail = () => {
         fetchGrammarTopic();
     }, [topicId]);
 
-    const handlePracticeClick = () => {
+    const handlePracticeClick = async () => {
         if (!topic) return;
         
-        navigate(`/learn-grammar/${topicId}/do-grammar-exercise`, {
-            state: {
-                topicId: topic.id,
-                topicName: topic.title,
-                topicContent: topic.content
+        try {
+            // First get the exercise for this grammar topic
+            const exercises = await GrammarTopicService.getExercisesForGrammarTopic(topicId);
+            
+            if (exercises.length === 0) {
+                alert('Không có bài tập cho chủ đề này');
+                return;
             }
-        });
+    
+            // Navigate to exercise page with the first exercise
+            navigate(`/exercise/${exercises[0].id}`, {
+                state: {
+                    topicId: topic.id,
+                    topicName: topic.title,
+                    topicType: 'Grammar'
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching exercises:', error);
+            alert('Lỗi khi tải bài tập');
+        }
     };
 
     if (loading) {

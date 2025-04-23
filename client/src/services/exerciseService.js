@@ -2,35 +2,35 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:5000/api'; // Update if your backend URL is different
 
-const GrammarTopicService = {
+const ExerciseService = {
 
-  getAllGrammarTopics: async () => {
+  getAllExercises: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/grammar-topic/`);
+      const response = await axios.get(`${API_BASE_URL}/exercise`);
       
       if (response.data.success) {
-        return response.data.data; // Returns the array of grammar topics
+        return response.data; // Returns the array of exercises
       } else {
-        throw new Error(response.data.message || 'Failed to fetch grammar topics');
+        throw new Error(response.data.message || 'Failed to fetch exercises');
       }
     } catch (error) {
-      console.error('Error fetching grammar topics:', error);
-      throw error; // Re-throw the error for the component to handle
+      console.error('Error fetching exercises:', error);
+      throw error;
     }
   },
 
 
-  getGrammarTopicById: async (id) => {
+  getExerciseById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/grammar-topic/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/exercise/${id}`);
       
       if (response.data.success) {
         return response.data.data;
       } else {
-        throw new Error(response.data.message || `Failed to fetch grammar topic with ID ${id}`);
+        throw new Error(response.data.message || `Failed to fetch exercise with ID ${id}`);
       }
     } catch (error) {
-      console.error(`Error fetching grammar topic with ID ${id}:`, error);
+      console.error(`Error fetching exercise with ID ${id}:`, error);
       throw error;
     }
   },
@@ -41,7 +41,7 @@ const GrammarTopicService = {
       const response = await axios.get(`${API_BASE_URL}/grammar-topic/${grammarTopicId}/exercise`);
       
       if (response.data.success) {
-        return response.data.data;
+        return response.data;
       } else {
         throw new Error(response.data.message || `Failed to fetch exercises for grammar topic ${grammarTopicId}`);
       }
@@ -50,9 +50,6 @@ const GrammarTopicService = {
       throw error;
     }
   },
-
-
-
 };
 
-export default GrammarTopicService;
+export default ExerciseService;

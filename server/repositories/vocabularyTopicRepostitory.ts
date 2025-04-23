@@ -1,6 +1,9 @@
 import database from '../config/db';
 import { VocabularyTopic } from '../models/VocabularyTopic';
 import { Vocabulary } from '../models/Vocabulary';
+import { VocabularyRepository } from './vocabularyRepository';
+import { Exercise } from '../models/Exercise';
+import { ExerciseRepository } from './exerciseRepository';
 
 export class VocabularyTopicRepository {
   /**
@@ -8,118 +11,79 @@ export class VocabularyTopicRepository {
    */
   static async findById(id: number): Promise<VocabularyTopic | null> {
     const results = await database.query(
-      'SELECT id, topicName FROM vocabularytopics WHERE id = ? LIMIT 1',
+      'SELECT id, topicName, imageUrl FROM vocabularytopics WHERE id = ? LIMIT 1',
       [id]
     );
-
+  
     if (Array.isArray(results) && results.length === 0) {
       return null;
     }
-
+  
     const topicData = results[0] as any;
-    const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.imgUrl, topicData.createAt, topicData.updateAt);
-
-    // Lấy danh sách vocabularies thuộc topic này
-    const vocabResults = await database.query(
-      'SELECT * FROM vocabularies WHERE VocabularyTopicId = ?',
-      [id]
-    );
-
-    topic.addVocabularyList(
-      vocabResults.map((v: any) => new Vocabulary(
-        v.id,
-        v.content,
-        v.meaning,
-        v.synonym ? JSON.parse(v.synonym) : null,
-        v.transcribe,
-        v.urlAudio,
-        v.urlImage,
-        v.VocabularyTopicId
-      ))
-    );
-
+    const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.imageUrl);
+  
+    // Lấy danh sách vocabularies từ VocabularyRepository
+    const vocabularies = await VocabularyRepository.getVocabulariesByTopicId(id);
+    topic.addVocabularyList(vocabularies);
+  
     return topic;
   }
 
 
-  /**
-   * Lấy tất cả VocabularyTopics
-   */
   static async getAllVocabularyTopics(): Promise<VocabularyTopic[]> {
-    // 1. Lấy tất cả topics
+    // Lấy tất cả topics
     const topics = await database.query(
-      'SELECT id, topicName, imageUrl, createAt FROM vocabularytopics'
+      'SELECT id, topicName, imageUrl FROM vocabularytopics'
     );
 
-    // 2. Với mỗi topic, lấy danh sách từ vựng tương ứng
-    const topicsWithVocabularies = await Promise.all(
-      topics.map(async (topic: any) => {
-        const vocabularies = await database.query(
-          'SELECT * FROM vocabularies WHERE VocabularyTopicId = ?',
-          [topic.id]
-        );
+    // Tạo danh sách VocabularyTopic với vocabularyList rỗng
+    const topicList = topics.map((topic: any) => 
+      new VocabularyTopic(topic.id, topic.topicName, topic.imageUrl)
+    );
 
-        const vocabularyList = vocabularies.map((v: any) => 
-          new Vocabulary(
-            v.id,
-            v.content,
-            v.meaning,
-            v.synonym ? JSON.parse(v.synonym) : null,
-            v.transcribe,
-            v.urlAudio,
-            v.urlImage,
-            v.VocabularyTopicId
-          )
-        );
+    return topicList;
+}
 
-        const vocabularyTopic = new VocabularyTopic(topic.id, topic.topicName, topic.imgUrl, topic.createAt, topic.updateAt);
-        vocabularyTopic.addVocabularyList(vocabularyList);
-        
-        return vocabularyTopic;
+static async getExercisesForVocabularyTopic(vocabularyTopicId: number): Promise<Exercise[]> {
+  try {
+    // 1. First, check if the grammar topic exists
+    const topicExists = await database.query(
+      'SELECT id FROM vocabularytopics WHERE id = ? LIMIT 1',
+      [vocabularyTopicId]
+    );
+    
+    if (topicExists.length === 0) {
+      throw new Error(`Grammar topic with ID ${vocabularyTopicId} not found`);
+    }
+
+    // 2. Get all exercise IDs associated with this grammar topic
+    const exerciseLinks = await database.query(
+      'SELECT exerciseId FROM `vocabularytopic-exercise` WHERE vocabularyTopicId = ?', // Thêm backticks
+      [vocabularyTopicId]
+    );
+
+    if (exerciseLinks.length === 0) {
+      return [];
+    }
+
+    // 3. Get full exercise details for each linked exercise
+    const exercises = await Promise.all(
+      exerciseLinks.map(async (link: any) => {
+        const exercise = await ExerciseRepository.findById(link.exerciseId);
+        return exercise;
       })
     );
 
-    return topicsWithVocabularies;
+    // 4. Filter out any null values and return
+    return exercises.filter(ex => ex !== null) as Exercise[];
+  } catch (error) {
+    console.error(`Error getting exercises for grammar topic ${vocabularyTopicId}:`, error);
+    throw error;
   }
-
-  static async addVocabularyTopic(topic: VocabularyTopic): Promise<VocabularyTopic> {
-    // 1. Thêm topic vào bảng vocabularytopics
-    const topicResult = await database.query(
-        'INSERT INTO vocabularytopics (topicName) VALUES (?)',
-        [topic.topicName]
-    );
-
-    // Lấy ID của topic vừa được thêm
-    const topicId = topicResult.insertId;
-
-    // 2. Thêm từng vocabulary vào bảng vocabularies
-    if (topic.vocabularies && topic.vocabularies.length > 0) {
-        for (const vocab of topic.vocabularies) {
-            await database.query(
-                `INSERT INTO vocabularies 
-                (content, meaning, synonym, transcribe, urlAudio, urlImage, VocabularyTopicId) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                [
-                    vocab.content,
-                    vocab.meaning,
-                    vocab.synonym ? JSON.stringify(vocab.synonym) : null,
-                    vocab.transcribe,
-                    vocab.urlAudio,
-                    vocab.urlImage,
-                    topicId
-                ]
-            );
-        }
-    }
+}
 
 
-    // Trả về topic đã được thêm cùng với ID mới
-    const createdTopic = await this.findById(topicId);
-    if (!createdTopic) {
-        throw new Error('Failed to create vocabulary topic');
-    }
-    return createdTopic;
-  }
+
 
 
 }

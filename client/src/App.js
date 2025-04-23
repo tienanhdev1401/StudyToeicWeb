@@ -26,10 +26,13 @@ import DoGrammarExercise from './pages/DoGrammarExercise'
 import DoVocabularyExercise from './pages/DoVocabularyExercise'
 import DictionaryPage from './pages/DictionaryPage';
 import Nhap from './pages/nhap';
+import { TestProvider } from './context/TestContext';
+import NotFound from './components/404'; 
 // Gọi hàm này khi ứng dụng khởi động
 
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
 import TOEICCalculator from './pages/calculatorScore';
+
 
 function App() {
   return (
@@ -37,38 +40,40 @@ function App() {
     
       <BrowserRouter basename="/">
       <AuthProvider>
-        <UserProvider> {/* Thêm UserProvider bao quanh Routes */}
-          <Routes>
+          <UserProvider> 
+            <TestProvider>
+            <Routes>
+              
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog_details" element={<BlogDetails />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/elements" element={<Elements />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/test-online-new" element={<TestOnlineNew/>} />
+              <Route path="/learn-vocabulary" element={<LearnVocabulary/>} />
+              <Route path="/learn-grammary" element={<LearnGrammary/>} />
+              <Route path="/learn-grammar/:topicSlug" element={<GrammarDetail/>} />
+              <Route path="/Stm_Quizzes/:testId" element={<StmQuizzes />} />
+              <Route path="/toeic-exercise" element={<ExerciseList/>} />
+              <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
+              <Route path="/Dotest/:testID" element={<Dotest />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/admin/*" element={<Admin />} />
+              <Route path="/dictionary" element={<DictionaryPage />} />
+              <Route path="/nhap/:testID" element={<Nhap />} />
+              <Route path="/learn-vocabulary/:topicId" element={<TopicDetail />} />
+              <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} />
+              <Route path="/exercise/:exerciseId" element={<DoGrammarExercise />} />
+              <Route path="/calculateScore" element={<TOEICCalculator/>}/>
+              <Route path="*" element={<NotFound />} />
             
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog_details" element={<BlogDetails />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/elements" element={<Elements />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/test-online-new" element={<TestOnlineNew/>} />
-            <Route path="/learn-vocabulary" element={<LearnVocabulary/>} />
-            <Route path="/learn-grammary" element={<LearnGrammary/>} />
-            <Route path="/learn-grammar/:topicSlug" element={<GrammarDetail/>} />
-            <Route path="/Stm_Quizzes/:testId" element={<StmQuizzes />} />
-            <Route path="/learn-vocabulary/:topicSlug" element={<TopicDetail />} />
-            <Route path="/toeic-exercise" element={<ExerciseList/>} />
-            <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
-            <Route path="/Dotest/:testID" element={<Dotest />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/admin/*" element={<Admin />} />
-            <Route path="/dictionary" element={<DictionaryPage />} />
-            <Route path="/nhap" element={<Nhap />} />
-            <Route path="/learn-grammar/:topicSlug/do-grammar-exercise" element={<DoGrammarExercise />} />
-            <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} />
-            <Route path="/calculateScore" element={<TOEICCalculator/>}/>
-
-          
-          </Routes>
-        </UserProvider> {/* Đóng UserProvider */}
+            </Routes>
+            </TestProvider>
+          </UserProvider>
         </AuthProvider>
       </BrowserRouter>
     </div>
