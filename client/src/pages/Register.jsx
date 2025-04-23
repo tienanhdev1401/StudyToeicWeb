@@ -130,7 +130,7 @@ const RegisterForm = () => {
           <form onSubmit={handleRegister}>
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">
+                <span className="input-icon-login">
                   <i className="fas fa-user"></i>
                 </span>
                 <input
@@ -138,7 +138,7 @@ const RegisterForm = () => {
                   name="fullname"
                   value={formData.fullname}
                   onChange={handleInputChange}
-                  className="custom-input"
+                  className="custom-input-login"
                   placeholder="Họ và tên"
                   required
                 />
@@ -150,7 +150,7 @@ const RegisterForm = () => {
 
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">
+                <span className="input-icon-login">
                   <i className="fas fa-envelope"></i>
                 </span>
                 <input
@@ -158,7 +158,7 @@ const RegisterForm = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="custom-input"
+                  className="custom-input-login"
                   placeholder="Địa chỉ email"
                   required
                 />
@@ -170,7 +170,7 @@ const RegisterForm = () => {
 
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">
+                <span className="input-icon-login">
                   <i className="fas fa-lock"></i>
                 </span>
                 <input
@@ -178,11 +178,11 @@ const RegisterForm = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="custom-input"
+                  className="custom-input-login"
                   placeholder="Mật khẩu"
                   required
                 />
-                <span className="input-toggle" onClick={togglePassword}>
+                <span className="input-toggle-login" onClick={togglePassword}>
                   <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
                 </span>
               </div>
@@ -190,7 +190,7 @@ const RegisterForm = () => {
 
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">
+                <span className="input-icon-login">
                   <i className="fas fa-lock"></i>
                 </span>
                 <input
@@ -198,11 +198,11 @@ const RegisterForm = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className="custom-input"
+                  className="custom-input-login"
                   placeholder="Xác nhận mật khẩu"
                   required
                 />
-                <span className="input-toggle" onClick={toggleConfirmPassword}>
+                <span className="input-toggle-login" onClick={toggleConfirmPassword}>
                   <i className={`fas ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
                 </span>
               </div>
@@ -211,7 +211,7 @@ const RegisterForm = () => {
             {/* OTP Section */}
             <div className="form-group otp-group">
               <div className="input-wrapper">
-                <span className="input-icon">
+                <span className="input-icon-login">
                   <i className="fas fa-key"></i>
                 </span>
                 <input
@@ -225,7 +225,7 @@ const RegisterForm = () => {
                       setFormData({ ...formData, verificationCode: value });
                     }
                   }}
-                  className="custom-input"
+                  className="custom-input-login"
                   placeholder="Nhập mã OTP"
                   required
                   maxLength={6}
@@ -249,7 +249,7 @@ const RegisterForm = () => {
               </label>
             </div>
 
-            <button type="submit" className="submit-btn">ĐĂNG KÝ</button>
+            <button type="submit" className="submit-btn-login">ĐĂNG KÝ</button>
 
             <div className="login-link">
               Đã có tài khoản? <a href="/Login">Đăng nhập ngay</a>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import '../styles/DoTest.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 import TestService from '../services/TestService';
 
 const Nhap = () => {
@@ -8,7 +9,7 @@ const Nhap = () => {
     const { state } = useLocation();
     const [currentPart, setCurrentPart] = useState(5);
     const [showPanel, setShowPanel] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(7200);
+    const [timeLeft, setTimeLeft] = useState(state?.timeLimit || 7200);
     const [currentQuestion, setCurrentQuestion] = useState(1);
     const [filteredQuestions, setFilteredQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
@@ -23,17 +24,16 @@ const Nhap = () => {
     useEffect(() => {
         const fetchTestData = async () => {
             try {
-                console.log("Fetching test data..."+testID);
+                console.log("Fetching test data..." + testID);
                 setLoading(true);
                 const rawData = await TestService.getTestById(testID);
                 const processedData = TestService.processTestData(rawData);
                 setTestData(processedData);
 
                 // Khởi tạo thời gian nếu có
-                if (processedData.duration) {
-                    setTimeLeft(processedData.duration * 60); // Chuyển phút thành giây
+                if (!state?.timeLimit && processedData.duration) {
+                    setTimeLeft(processedData.duration * 60);
                 }
-
                 setLoading(false);
             } catch (err) {
                 console.error("Lỗi khi tải dữ liệu bài kiểm tra:", err);
@@ -43,7 +43,7 @@ const Nhap = () => {
         };
 
         fetchTestData();
-    }, [testID]);
+    }, [testID, state?.timeLimit]);
 
     // Khởi tạo và lọc câu hỏi
     useEffect(() => {
@@ -106,10 +106,40 @@ const Nhap = () => {
     // Xử lý timer
     useEffect(() => {
         const timer = setInterval(() => {
-            setTimeLeft(prev => Math.max(0, prev - 1));
+            setTimeLeft(prev => {
+                const newTime = Math.max(0, prev - 1);
+                // Kiểm tra nếu hết thời gian
+                if (newTime === 0) {
+                    clearInterval(timer);
+                    handleTimeUp();
+                }
+                return newTime;
+            });
         }, 1000);
         return () => clearInterval(timer);
     }, []);
+
+    // Thêm hàm xử lý khi hết giờ
+    const handleTimeUp = async () => {
+        // Dừng audio nếu đang phát
+        stopAudio();
+
+        // Thông báo hết giờ
+        alert('Đã hết thời gian làm bài!');
+
+        try {
+            const submissionData = prepareAnswersToSubmit();
+            // Gọi API nộp bài
+            console.log('Nộp bài:', submissionData);
+
+            // Chuyển hướng về trang kết quả hoặc trang chủ
+            // navigate('/result', { state: { testId: testID } });
+
+        } catch (error) {
+            console.error('Lỗi khi nộp bài:', error);
+            alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+        }
+    };
 
     // Cập nhật nhóm câu hỏi theo đặc trưng của từng phần
     useEffect(() => {
@@ -170,8 +200,8 @@ const Nhap = () => {
                 };
                 const interacted = localStorage.getItem('userInteracted');
                 if (interacted === "true") {
-                playAudio(audioUrl, onAudioComplete);
-            }
+                    playAudio(audioUrl, onAudioComplete);
+                }
             }, 1000); // 1 giây đợi trước khi tự động phát
 
             return () => clearTimeout(timer);
@@ -747,9 +777,7 @@ const Nhap = () => {
 
             <main className="main-content">
                 {loading ? (
-                    <div className="loading-state">
-                        <p>Đang tải dữ liệu bài kiểm tra...</p>
-                    </div>
+                    <LoadingSpinner />
                 ) : error ? (
                     <div className="error-state">
                         <p>{error}</p>
@@ -798,8 +826,8 @@ const Nhap = () => {
             </main>
         </div>
     );
-   
-    
+
+
 };
 
 export default Nhap;
