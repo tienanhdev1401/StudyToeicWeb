@@ -18,7 +18,7 @@ export class VocabularyTopicRepository {
 
 
     const topicData = results[0] as any;
-    const topic = new VocabularyTopic(topicData.id, topicData.topicName ,topicData.imageUrl, topicData.createdAt, topicData.updatedAt);
+    const topic = new VocabularyTopic(topicData.id, topicData.topicName ,topicData.imageUrl, [], [], topicData.createdAt, topicData.updatedAt);
 
     // Lấy danh sách vocabularies thuộc topic này
     const vocabResults = await database.query(
@@ -113,7 +113,7 @@ export class VocabularyTopicRepository {
 
         const count = vocabularyList.length;
         
-        const vocabularyTopic = new VocabularyTopic(topic.id, topic.topicName ,topic.imageUrl, topic.createdAt, topic.updatedAt);
+        const vocabularyTopic = new VocabularyTopic(topic.id, topic.topicName ,topic.imageUrl, vocabularyList, [], topic.createdAt, topic.updatedAt);
         vocabularyTopic.addVocabularyList(vocabularyList);
 
         return {vocabularyTopic, count};
@@ -130,7 +130,7 @@ export class VocabularyTopicRepository {
     // 1. Thêm topic vào bảng vocabularytopics
     const topicResult = await database.query(
         'INSERT INTO vocabularytopics (topicName, imageURL, createdAt, updatedAt) VALUES (?, ?, ?, ?)',
-        [topic.topicName, topic.imgUrl, currentDateTime, currentDateTime]
+        [topic.topicName, topic.imageUrl, currentDateTime, currentDateTime]
     );
 
     // Lấy ID của topic vừa được thêm
@@ -171,7 +171,7 @@ export class VocabularyTopicRepository {
     // 1. Cập nhật topic trong bảng vocabularytopics
     const topicResult = await database.query(
       'UPDATE vocabularytopics SET topicName = ?,  imageURL = ?, updatedAt = ? WHERE id = ?',
-      [topic.topicName,  topic.imgUrl, currentDateTime, topic.id]
+      [topic.topicName,  topic.imageUrl, currentDateTime, topic.id]
     );  
 
     // 2. Cập nhật từng vocabulary trong bảng vocabularies

@@ -295,7 +295,7 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
                   onChange={handleImageChange}
                   className="file-input"
                   style={{ display: 'none' }}
-                  disabled={isLoading}
+                  disabled={isLoading} 
                 />
                 <label htmlFor="topicImage" className={`file-input-label ${isLoading ? 'disabled' : ''}`}>
                   <i className="fas fa-upload"></i> {editMode ? 'Change Image' : 'Choose Image'}
@@ -613,7 +613,7 @@ const ManageVocabularyTopic = () => {
 
   return (
     <div className="vocabulary-container">
-      <h1 className="header-title">Manage Vocabulary Topic</h1>
+      <h1 className="Topic_header-title">Manage Vocabulary Topic</h1>
       <div className="header-section">
       </div>
       <div className="pagination">

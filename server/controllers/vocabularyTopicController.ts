@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { VocabularyTopicRepository } from '../repositories/vocabularyTopicRepostitory';
 import { VocabularyTopic } from '../models/VocabularyTopic';
 import { Vocabulary } from '../models/Vocabulary';
-import slugify from 'slugify';
+
 export class VocabularyTopicController {
   /**
    * Lấy tất cả chủ đề từ vựng kèm danh sách từ vựng
@@ -57,19 +57,11 @@ export class VocabularyTopicController {
     }
   }
 
-  static async addVocabularyTopic(req: Request, res: Response) {
-    try {
-        // Lấy dữ liệu từ request body
-        const { topicName,imgUrl, vocabularies } = req.body;
-
-        const slug = slugify(topicName, { lower: true, strict: true });
   // static async addVocabularyTopic(req: Request, res: Response) {
   //   try {
   //       // Lấy dữ liệu từ request body
   //       const { topicName,imageUrl, vocabularies } = req.body;
 
-        // Tạo một đối tượng VocabularyTopic mới
-        const newTopic = new VocabularyTopic(0, topicName, imgUrl,new Date(), new Date()); 
   //       // Tạo một đối tượng VocabularyTopic mới
   //       const newTopic = new VocabularyTopic(0, topicName,imageUrl);
 

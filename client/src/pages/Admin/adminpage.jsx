@@ -38,6 +38,7 @@ const AdminPage = () => {
         <Route path="/learner" element={<ManageLearn />} />
         <Route path="/grammar" element={<ManageGrammarTopic />} />
         <Route path="/vocabularyTopic/:id/vocabularies" element={<ManageVocabulary />} />
+        
       </Routes>
     </AdminLayout>
   );

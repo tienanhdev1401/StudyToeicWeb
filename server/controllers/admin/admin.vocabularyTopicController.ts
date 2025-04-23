@@ -118,7 +118,7 @@ export class VocabularyTopicController {
         console.log('req.body',req.body);
         const slug = slugify(topicName, { lower: true, strict: true });
         // Tạo một đối tượng VocabularyTopic mới
-        const newTopic = new VocabularyTopic(0, topicName,  imgUrl,new Date(), new Date()); 
+        const newTopic = new VocabularyTopic(0, topicName,  imgUrl, [], [], new Date(), new Date()); 
 
         // Thêm danh sách từ vựng vào topic (nếu có)
         if (vocabularies && Array.isArray(vocabularies)) {
@@ -215,9 +215,11 @@ export class VocabularyTopicController {
       const updatedTopic = new VocabularyTopic(
         topicId,
         topicName || existingTopic.topicName,
-        imgUrl || existingTopic.imgUrl,
-        existingTopic.createAt,
-        new Date() // updateAt
+        imgUrl || existingTopic.imageUrl,
+        existingTopic.vocabularies,
+        existingTopic.exercises,
+        existingTopic.createdAt,
+        new Date() // updateAt  
       );
 
       // Cập nhật danh sách từ vựng nếu được cung cấp
