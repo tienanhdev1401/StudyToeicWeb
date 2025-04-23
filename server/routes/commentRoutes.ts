@@ -18,4 +18,6 @@ router.put('/:commentId', CommentController.updateComment);
 // DELETE /api/comments/:commentId - Xóa comment
 router.delete('/:commentId', CommentController.deleteComment);
 
+router.post('/', CommentController.createComment);
+
 export default router;

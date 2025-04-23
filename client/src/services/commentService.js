@@ -40,6 +40,7 @@ const CommentService = {
   createComment: async (commentData) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/comment`, commentData);
+      console.log(commentData);
       
       if (response.data.success) {
         return response.data; // Trả về response.data chứa success, data và message

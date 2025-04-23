@@ -37,6 +37,54 @@ export class CommentController {
         }
     }
 
+    static async createComment(req: Request, res: Response): Promise<Response> {
+        try {
+            const { content, userId, VocabularyTopicId, GrammarTopicId } = req.body;
+            
+            // Validate dữ liệu đầu vào
+            if (!content || !userId || (!VocabularyTopicId && !GrammarTopicId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Thiếu thông tin cần thiết để tạo bình luận'
+                });
+            }
+
+            // Kiểm tra nội dung bình luận
+            if (content.trim() === '') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Nội dung bình luận không được để trống'
+                });
+            }
+
+            // Tạo đối tượng comment mới
+            const newComment = new Comment(
+                0, // ID sẽ được database tự động tạo
+                content.trim(),
+                new Date(),
+                new Date(),
+                userId,
+                VocabularyTopicId || null,
+                GrammarTopicId || null
+            );
+
+            // Lưu comment vào database
+            const savedComment = await CommentRepository.addComment(newComment);
+
+            return res.json({
+                success: true,
+                data: savedComment,
+                message: 'Thêm bình luận thành công'
+            });
+        } catch (error) {
+            console.error('Lỗi khi tạo bình luận:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi tạo bình luận'
+            });
+        }
+    }
+
     static async findById(req: Request, res: Response): Promise<Response> {
         const commentId = parseInt(req.params.commentId);
 
