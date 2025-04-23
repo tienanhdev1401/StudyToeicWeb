@@ -72,6 +72,33 @@ export class VocabularyController {
       });
     }
   }
+
+  static async countVocabulariesByTopicId(req: Request, res: Response) {
+    try {
+        const topicId = parseInt(req.params.id);
+        
+        if (isNaN(topicId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid topic ID'
+            });
+        }
+        
+        const count = await VocabularyRepository.countVocabulariesByTopicId(topicId);
+        
+        res.status(200).json({
+            success: true,
+            count,
+            message: 'Successfully retrieved vocabulary count'
+        });
+    } catch (error) {
+        console.error('Error retrieving vocabulary count:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while retrieving vocabulary count'
+        });
+    }
+  }
 }
 
 export default new VocabularyController();

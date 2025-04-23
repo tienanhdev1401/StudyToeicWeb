@@ -111,4 +111,11 @@ export class VocabularyRepository {
       throw error;
     }
   }
+  static async countVocabulariesByTopicId(topicId: number): Promise<number> {
+    const results = await database.query(
+        'SELECT COUNT(*) as count FROM vocabularies WHERE VocabularyTopicId = ?',
+        [topicId]
+    );
+    return results[0].count;
+  }
 }
