@@ -4,20 +4,20 @@ export class Test {
     id: number;
     title?: string;
     duration?: number;
-    testCollectionID?: number;
+    testCollection?: string;
     updatedAt?: Date;
     parts?: Part[];
 
     constructor(
         id: number,
         title?: string,
-        testCollectionID?: number,
+        testCollection?: string,
         duration?: number,
         parts: Part[] = []
     ) {
         this.id = id;
         this.title = title;
-        this.testCollectionID = testCollectionID;
+        this.testCollection = testCollection;
         this.duration = duration;
         this.updatedAt = new Date();
         this.parts = parts;
