@@ -8,19 +8,24 @@ export class VocabularyTopic {
     public imageUrl: string | null;
     public vocabularies: Vocabulary[] = [];
     public exercises: Exercise[]; 
-  
+    public createdAt: Date;
+    public updatedAt: Date;
     constructor(
       id: number,
       topicName: string,
       imageUrl: string | null,
       vocabularies: Vocabulary[]=[],
-      exercises: Exercise[] = []     
+      exercises: Exercise[] = [],
+      createdAt: Date,
+      updatedAt: Date
     ) {
       this.id = id;
       this.topicName = topicName;
       this.imageUrl = imageUrl;
       this.vocabularies=vocabularies;
       this.exercises = exercises;
+      this.createdAt = createdAt;
+      this.updatedAt = updatedAt;
     }
   
     // // Thêm DANH SÁCH từ vựng (mới)
