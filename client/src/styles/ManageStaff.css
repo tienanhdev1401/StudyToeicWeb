@@ -76,7 +76,7 @@ h1 {
 .staff-table {
   margin-top: 20px;
   width: 100%;
-  min-width: 1000px;
+  min-width: 1200px;
   border-collapse: separate;
   border-spacing: 0;
   margin-bottom: 80px;
@@ -103,7 +103,7 @@ h1 {
 }
 
 .staff-table th {
-  padding: 16px;
+  padding: 20px;
   text-align: center;
   background-color: white !important;
   border: 1px solid #e5e7eb;
@@ -222,7 +222,7 @@ h1 {
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background-color: white;
+  background-color: black;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -231,7 +231,124 @@ h1 {
   transition: background-color 0.2s;
 }
 
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #4CAF50; /* Màu xanh lá */
+  color: black;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap; /* Ngăn text bị ngắt dòng */
+  text-decoration: none;
+}
 
+.add-btn:hover {
+  background-color: #45a049; /* Màu xanh lá đậm hơn khi hover */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.add-btn i {
+  font-size: 14px;
+}
+
+/* Avatar styles */
+.avatar-column {
+  width: 60px;
+  text-align: center;
+}
+
+.avatar-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto;
+  display: block;
+}
+
+.avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.avatar-placeholder i {
+  font-size: 20px;
+  color: #999;
+}
+
+.editing-row {
+  background-color: rgba(255, 255, 230, 0.5);
+}
+
+.editable-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-input {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-error {
+  border-color: #ff3333;
+}
+
+.error-text {
+  color: #ff3333;
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.save-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.add-staff-row {
+  background-color: #f8f9fa;
+  border-top: 2px dashed #28a745;
+}
+
+.password-field {
+  margin-bottom: 8px;
+}
+
+.add-staff-actions {
+  display: flex;
+  justify-content: space-between;
+}
+/* Other existing styles remain the same */
 .trash-btn {
   background-color: #a5a7a8 !important;
   color: white !important;

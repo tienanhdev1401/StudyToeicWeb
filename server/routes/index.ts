@@ -6,6 +6,8 @@ import vocabularyTopicRoutes from './vocabularyTopicRoutes'
 import adminVocabularyTopicRoutes from './admin/admin.vocabularyTopicRoutes'
 import adminVocabularyRoutes from './admin/admin.vocabularyRoutes'
 import grammarTopicTopicRoutes from './grammarTopicRoutes'
+import adminLearnerRoutes from './admin/admin.LearnerRoutes'
+import adminStaffRoutes from './admin/admin.StaffRoutes'
 import uploadRouter from './uploadRouter';
 
 
@@ -18,6 +20,8 @@ function route(app: Application): void {
   app.use('/api/admin/vocabulary-topic',adminVocabularyTopicRoutes)
   app.use('/api/admin/vocabulary',adminVocabularyRoutes)
   app.use('/api/grammar-topic',grammarTopicTopicRoutes)
+  app.use('/api/admin/learner',adminLearnerRoutes)
+  app.use('/api/admin/staff',adminStaffRoutes)
   app.use('/api/upload', uploadRouter);
 
 

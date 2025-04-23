@@ -18,7 +18,7 @@ export class userRepository {
         status,
         updatedAt,
         role
-      FROM Users 
+      FROM users 
       WHERE id = ? 
       LIMIT 1`, 
       [id]
@@ -35,7 +35,7 @@ export class userRepository {
     try {
     
       const result = await db.query(
-        'INSERT INTO Users (emailAddress, fullname, password, role) VALUES (?, ?, ?, ?)',
+        'INSERT INTO users (emailAddress, fullname, password, role) VALUES (?, ?, ?, ?)',
         [user.email, user.fullName, user.password, "user"]
       );
       if (!result) {
@@ -53,7 +53,7 @@ export class userRepository {
     try {
       const now = new Date();
       await db.query(
-        'UPDATE Users SET password = ?, updatedAt = ? WHERE id = ?',
+        'UPDATE users SET password = ?, updatedAt = ? WHERE id = ?',
         [newHashedPassword, now, userId]
       );
       return true;
@@ -75,7 +75,7 @@ export class userRepository {
             null;
 
         await db.query(
-            'UPDATE Users SET avatar=?, fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, updatedAt = ? WHERE id = ?',
+            'UPDATE users SET avatar=?, fullname = ?, phoneNumber = ?, dateOfBirth = ?, gender = ?, updatedAt = ? WHERE id = ?',
             [
                 user.avatar,
                 user.fullName, 
