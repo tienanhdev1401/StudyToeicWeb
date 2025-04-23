@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import GrammarTopicService from '../services/grammarTopicService';
+import LoadingSpinner from '../components/LoadingSpinner';
 import VocabularyTopicService from '../services/vocabularyTopicService'
 
 const GrammarCard = ({ name, stats, progress, isExpanded, onToggle, gradientClass, exercises }) => {
@@ -258,29 +259,11 @@ const ExerciseList = () => {
     };
 
     if (loading.grammar && activeTab === 'grammar') return (
-        <div id="preloader-active">
-            <div className="preloader d-flex align-items-center justify-content-center">
-                <div className="preloader-inner position-relative">
-                    <div className="preloader-circle"></div>
-                    <div className="preloader-img pere-text">
-                        <img src="assets/img/logo/loder.png" alt=""/>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <LoadingSpinner />
     );
 
     if (loading.vocabulary && activeTab === 'vocabulary') return (
-        <div id="preloader-active">
-            <div className="preloader d-flex align-items-center justify-content-center">
-                <div className="preloader-inner position-relative">
-                    <div className="preloader-circle"></div>
-                    <div className="preloader-img pere-text">
-                        <img src="assets/img/logo/loder.png" alt=""/>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <LoadingSpinner />
     );
     
     if (error.grammar && activeTab === 'grammar') return <div className="text-center mt-8 text-red-500">{error.grammar}</div>;
