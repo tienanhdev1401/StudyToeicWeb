@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaPlay, FaComment, FaPaperPlane } from 'react-icons/fa';
+import { FaPlay, FaComment, FaPaperPlane, FaEdit, FaTrash } from 'react-icons/fa';
 import '../styles/GrammarDetail.css'; 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -18,6 +18,8 @@ const GrammarDetail = () => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [commentLoading, setCommentLoading] = useState(false);
+    const [editingComment, setEditingComment] = useState(null);
+    const [editContent, setEditContent] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,7 +31,6 @@ const GrammarDetail = () => {
                 // Fetch comments
                 const commentsResponse = await CommentService.getCommentsByGrammarTopicId(topicId);
                 setComments(commentsResponse.data);
-                console.log(commentsResponse)
                 
                 setLoading(false);
             } catch (err) {
@@ -67,31 +68,103 @@ const GrammarDetail = () => {
     };
 
     const handleCommentSubmit = async (e) => {
-        // e.preventDefault();
-        // if (!newComment.trim() || !user) return;
+        e.preventDefault();
         
-        // setCommentLoading(true);
-        // try {
-        //     const commentData = {
-        //         content: newComment,
-        //         userId: user.id,
-        //         GrammarTopicId: topicId
-        //     };
+        // Validate nội dung comment
+        if (!newComment.trim()) {
+            alert('Vui lòng nhập nội dung bình luận');
+            return;
+        }
+
+        // Validate user đăng nhập
+        if (!user) {
+            alert('Vui lòng đăng nhập để bình luận');
+            return;
+        }
+        
+        setCommentLoading(true);
+        try {
+            const commentData = {
+                content: newComment.trim(),
+                userId: user.id,
+                GrammarTopicId: parseInt(topicId)
+            };
             
-        //     // In a real app, you would use CommentService.createComment
-        //     // This is a mock implementation
-        //     const response = await CommentService.createComment(commentData);
+            const response = await CommentService.createComment(commentData);
             
-        //     if (response.success) {
-        //         setComments([response.data, ...comments]);
-        //         setNewComment('');
-        //     }
-        // } catch (error) {
-        //     console.error('Error submitting comment:', error);
-        //     alert('Lỗi khi gửi bình luận');
-        // } finally {
-        //     setCommentLoading(false);
-        // }
+            if (response.success) {
+                // Thêm comment mới vào đầu danh sách
+                setComments([response.data, ...comments]);
+                setNewComment(''); // Reset form
+                alert('Thêm bình luận thành công');
+            }
+        } catch (error) {
+            console.error('Lỗi khi thêm bình luận:', error);
+            alert(error.response?.data?.message || 'Lỗi khi thêm bình luận');
+        } finally {
+            setCommentLoading(false);
+        }
+    };
+
+    const handleEditClick = (comment) => {
+        setEditingComment(comment);
+        setEditContent(comment.content);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingComment(null);
+        setEditContent('');
+    };
+
+    const handleUpdateComment = async () => {
+        if (!editContent.trim() || !editingComment) {
+            alert('Vui lòng nhập nội dung bình luận');
+            return;
+        }
+        
+        setCommentLoading(true);
+        try {
+            // Tạo đối tượng comment cần cập nhật
+            const commentToUpdate = {
+                ...editingComment,
+                content: editContent.trim(),
+                updatedAt: new Date()
+            };
+            
+            const response = await CommentService.updateComment(commentToUpdate);
+            
+            if (response.success) {
+                // Cập nhật state comments với comment đã được cập nhật
+                setComments(comments.map(c => 
+                    c.id === editingComment.id ? response.data : c
+                ));
+                setEditingComment(null);
+                setEditContent('');
+                alert('Cập nhật bình luận thành công');
+            }
+        } catch (error) {
+            console.error('Lỗi khi cập nhật bình luận:', error);
+            alert(error.response?.data?.message || 'Lỗi khi cập nhật bình luận');
+        } finally {
+            setCommentLoading(false);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        if (!window.confirm('Bạn có chắc chắn muốn xóa bình luận này?')) return;
+        
+        try {
+            const response = await CommentService.deleteComment(commentId);
+            
+            if (response.success) {
+                // Xóa comment khỏi state
+                setComments(comments.filter(c => c.id !== commentId));
+                alert('Xóa bình luận thành công');
+            }
+        } catch (error) {
+            console.error('Lỗi khi xóa bình luận:', error);
+            alert(error.response?.data?.message || 'Lỗi khi xóa bình luận');
+        }
     };
 
     const formatDate = (dateString) => {
@@ -141,16 +214,14 @@ const GrammarDetail = () => {
                         <h1 className="grammar-title">{topic.title}</h1>
                         <div className="grammar-text" dangerouslySetInnerHTML={{ __html: topic.content }} />
                         <div className="practice-button-container">
-                        <button 
-                            className="practice-button"
-                            onClick={handlePracticeClick}
-                        >
-                            <FaPlay className="practice-icon" /> Luyện tập ngay
-                        </button>
+                            <button 
+                                className="practice-button"
+                                onClick={handlePracticeClick}
+                            >
+                                <FaPlay className="practice-icon" /> Luyện tập ngay
+                            </button>
+                        </div>
                     </div>
-                    </div>
-                    
-                    
 
                     {/* Comments Section */}
                     <div className="comments-section">
@@ -159,27 +230,64 @@ const GrammarDetail = () => {
                         </h3>
                         
                         {user && (
-                            <form onSubmit={handleCommentSubmit} className="comment-form">
-                                <textarea
-                                    value={newComment}
-                                    onChange={(e) => setNewComment(e.target.value)}
-                                    placeholder="Viết bình luận của bạn..."
-                                    className="comment-input"
-                                    rows="3"
-                                    required
-                                />
-                                <button 
-                                    type="submit" 
-                                    className="submit-comment-button"
-                                    disabled={commentLoading}
-                                >
-                                    {commentLoading ? 'Đang gửi...' : (
-                                        <>
-                                            <FaPaperPlane /> Gửi
-                                        </>
-                                    )}
-                                </button>
-                            </form>
+                            <div className="comment-form">
+                                {editingComment ? (
+                                    <>
+                                        <textarea
+                                            value={editContent}
+                                            onChange={(e) => setEditContent(e.target.value)}
+                                            placeholder="Chỉnh sửa bình luận của bạn..."
+                                            className="comment-input"
+                                            rows="3"
+                                            required
+                                        />
+                                        <div className="comment-form-buttons">
+                                            <button 
+                                                onClick={handleUpdateComment}
+                                                className="submit-comment-button"
+                                                disabled={commentLoading}
+                                            >
+                                                {commentLoading ? 'Đang xử lý...' : (
+                                                    <>
+                                                        <FaPaperPlane /> Cập nhật
+                                                    </>
+                                                )}
+                                            </button>
+                                            <button 
+                                                onClick={handleCancelEdit}
+                                                className="cancel-button"
+                                                type="button"
+                                            >
+                                                Hủy
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <form onSubmit={handleCommentSubmit}>
+                                        <textarea
+                                            value={newComment}
+                                            onChange={(e) => setNewComment(e.target.value)}
+                                            placeholder="Viết bình luận của bạn..."
+                                            className="comment-input"
+                                            rows="3"
+                                            required
+                                        />
+                                        <div className="comment-form-buttons">
+                                            <button 
+                                                type="submit"
+                                                className="submit-comment-button"
+                                                disabled={commentLoading}
+                                            >
+                                                {commentLoading ? 'Đang gửi...' : (
+                                                    <>
+                                                        <FaPaperPlane /> Gửi
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </form>
+                                )}
+                            </div>
                         )}
 
                         <div className="comments-list">
@@ -189,9 +297,16 @@ const GrammarDetail = () => {
                                 comments.map(comment => (
                                     <div key={comment.id} className="comment-item">
                                         <div className="comment-header">
-                                            <span className="comment-author">
-                                                {comment.userId || 'Người dùng ẩn danh'}
-                                            </span>
+                                            <div className="comment-user-info">
+                                                <img 
+                                                    src={comment.user.avatar} 
+                                                    alt={comment.user.fullname}
+                                                    className="comment-user-avatar"
+                                                />
+                                                <span className="comment-author">
+                                                    {comment.user.fullname}
+                                                </span>
+                                            </div>
                                             <span className="comment-date">
                                                 {formatDate(comment.createdAt)}
                                             </span>
@@ -199,6 +314,22 @@ const GrammarDetail = () => {
                                         <div className="comment-content">
                                             {comment.content}
                                         </div>
+                                        {user && user.id === comment.user.id && (
+                                            <div className="comment-actions">
+                                                <button 
+                                                    onClick={() => handleEditClick(comment)}
+                                                    className="edit-button"
+                                                >
+                                                    <FaEdit /> Chỉnh sửa
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDeleteComment(comment.id)}
+                                                    className="delete-button"
+                                                >
+                                                    <FaTrash /> Xóa
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 ))
                             )}

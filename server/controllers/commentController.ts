@@ -8,7 +8,7 @@ export class CommentController {
         const grammarTopicId = parseInt(req.params.grammarTopicId);
 
         try {
-            const comments = await CommentRepository.getAllCommentByGrammarTopicId(grammarTopicId);
+            const comments = await CommentRepository.getAllCommentByGrammarTopicIdWithUser(grammarTopicId);
             return res.json({ 
                 success: true, 
                 data: comments,
@@ -25,7 +25,7 @@ export class CommentController {
         const vocabularyTopicId = parseInt(req.params.vocabularyTopicId);
 
         try {
-            const comments = await CommentRepository.getAllCommentByVocabularyTopicId(vocabularyTopicId);
+            const comments = await CommentRepository.getAllCommentByVocabularyTopicIdWithUser(vocabularyTopicId);
             return res.json({ 
                 success: true, 
                 data: comments,
@@ -37,5 +37,101 @@ export class CommentController {
         }
     }
 
+    static async findById(req: Request, res: Response): Promise<Response> {
+        const commentId = parseInt(req.params.commentId);
 
+        try {
+            const comment = await CommentRepository.findById(commentId);
+            
+            if (!comment) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Không tìm thấy bình luận' 
+                });
+            }
+
+            return res.json({ 
+                success: true, 
+                data: comment,
+                message: 'Lấy thông tin bình luận thành công' 
+            });
+        } catch (error) {
+            console.error('Error getting comment by ID:', error);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Lỗi khi lấy thông tin bình luận' 
+            });
+        }
+    }
+
+    static async updateComment(req: Request, res: Response): Promise<Response> {
+        const commentId = parseInt(req.params.commentId);
+        const { content } = req.body;
+
+        try {
+            // Kiểm tra comment có tồn tại không
+            const existingComment = await CommentRepository.findById(commentId);
+            if (!existingComment) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Không tìm thấy bình luận'
+                });
+            }
+
+            // Tạo đối tượng Comment với nội dung mới
+            const commentToUpdate = new Comment(
+                existingComment.id,
+                content,
+                existingComment.createdAt,
+                new Date(),
+                existingComment.userId,
+                existingComment.VocabularyTopicId,
+                existingComment.GrammarTopicId
+            );
+
+            // Cập nhật comment
+            const updatedComment = await CommentRepository.updateComment(commentToUpdate);
+
+            return res.json({
+                success: true,
+                data: updatedComment,
+                message: 'Cập nhật bình luận thành công'
+            });
+        } catch (error) {
+            console.error('Lỗi khi cập nhật bình luận:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi cập nhật bình luận'
+            });
+        }
+    }
+
+    static async deleteComment(req: Request, res: Response): Promise<Response> {
+        const commentId = parseInt(req.params.commentId);
+
+        try {
+            // Kiểm tra comment có tồn tại không
+            const existingComment = await CommentRepository.findById(commentId);
+            if (!existingComment) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Không tìm thấy bình luận'
+                });
+            }
+
+            // Xóa comment
+            await CommentRepository.deleteComment(commentId);
+
+            return res.json({
+                success: true,
+                message: 'Xóa bình luận thành công'
+            });
+        } catch (error) {
+            console.error('Lỗi khi xóa bình luận:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi xóa bình luận'
+            });
+        }
+    }
 }

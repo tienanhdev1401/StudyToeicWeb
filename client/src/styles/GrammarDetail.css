@@ -119,8 +119,13 @@
     box-shadow: 0 0 0 2px rgba(74, 107, 175, 0.2);
 }
 
+.comment-form-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
 .submit-comment-button {
-    align-self: flex-end;
     background-color: #4a6baf;
     color: white;
     border: none;
@@ -141,6 +146,66 @@
 .submit-comment-button:disabled {
     background-color: #a9b6d3;
     cursor: not-allowed;
+}
+
+.cancel-button {
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cancel-button:hover {
+    background-color: #4b5563;
+}
+
+.user-comment {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+
+.edit-button, .delete-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.edit-button {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #2563eb;
+}
+
+.delete-button {
+    background-color: #ef4444;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #dc2626;
 }
 
 .comments-list {
@@ -167,8 +232,23 @@
 .comment-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 10px;
     font-size: 14px;
+}
+
+.comment-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
 }
 
 .comment-author {
@@ -185,6 +265,7 @@
     color: #333;
     white-space: pre-wrap;
     word-break: break-word;
+    margin-left: 50px;
 }
 
 /* Responsive adjustments */
@@ -217,8 +298,36 @@
         font-size: 1rem;
     }
     
-    .submit-comment-button {
+    .comment-form-buttons {
+        flex-direction: column;
+    }
+
+    .submit-comment-button, .cancel-button {
         width: 100%;
         justify-content: center;
+    }
+
+    .comment-actions {
+        flex-direction: column;
+    }
+
+    .edit-button, .delete-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .comment-date {
+        margin-left: 50px;
+    }
+
+    .comment-user-avatar {
+        width: 35px;
+        height: 35px;
     }
 }

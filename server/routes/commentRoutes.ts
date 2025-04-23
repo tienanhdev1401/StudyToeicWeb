@@ -9,7 +9,13 @@ router.get('/grammar-topic/:grammarTopicId', CommentController.getCommentsByGram
 // GET /api/comments/vocabulary/:vocabularyTopicId - Lấy comments theo chủ đề từ vựng
 router.get('/vocabulary-topic/:vocabularyTopicId', CommentController.getCommentsByVocabularyTopicId);
 
+// GET /api/comments/:commentId - Lấy comment theo ID
+router.get('/:commentId', CommentController.findById);
 
+// PUT /api/comments/:commentId - Cập nhật comment
+router.put('/:commentId', CommentController.updateComment);
 
+// DELETE /api/comments/:commentId - Xóa comment
+router.delete('/:commentId', CommentController.deleteComment);
 
 export default router;
