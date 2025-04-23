@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Stm_quizzes.css';
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams  } from 'react-router-dom';
+import LoginPopup from '../components/LoginPopup';
 
+import { useAuth } from '../context/AuthContext'; 
 
 function Stmquizzes() {
-  const [showSelectPart, setShowSelectPart] = useState(false);
-  const [showLoginPopup, setShowLoginPopup] = useState(true);
-
+  const [showSelectPart, setShowSelectPart,setUserInteracted] = useState(false);
+  const { isLoggedIn, user } = useAuth();
+  const [showLoginPopup, setShowLoginPopup] = useState(!isLoggedIn); // Set initial state based on login status
   const [selectedParts, setSelectedParts] = useState([]);
+  const { testId } = useParams();
+  const navigate = useNavigate();
+
+  // Add useEffect to handle login state changes
+  useEffect(() => {
+    setShowLoginPopup(!isLoggedIn);
+  }, [isLoggedIn]);
 
   const handlePartToggle = (partNumber, isChecked) => {
     setSelectedParts(prev =>
@@ -17,16 +26,17 @@ function Stmquizzes() {
         : prev.filter(p => p !== partNumber)
     );
   };
-  const navigate = useNavigate(); // Khởi tạo navigate
-  const handleStartTest = () => { // Khởi tạo dữ liệu ảo
-    navigate(`/Dotest/test1`, {
+
+  const handleStartTest = () => {
+    // Sử dụng testId lấy từ URL để điều hướng
+    //navigate(`/Dotest/${testId}`
+    localStorage.setItem('userInteracted', 'true');
+    navigate(`/nhap/${testId}`, {
       state: {
-        selectedParts: selectedParts
+        selectedParts: selectedParts.length > 0 ? selectedParts : [1, 2, 3, 4, 5, 6, 7]
       }
     });
   };
-
-
 
   const toggleSelectPart = () => {
     setShowSelectPart(!showSelectPart);
@@ -42,13 +52,13 @@ function Stmquizzes() {
         </div>
         <h1>HỆ THỐNG THI TRỰC TUYẾN</h1>
         <div className="header-right">
-          <span>Guest (khách)</span>
-          <button className="grid-button">
-            <i className="fas fa-th"></i>
-          </button>
+          {isLoggedIn && user ? (
+            <span>User: {user.email}</span>
+          ) : (
+            <span>Guest (khách)</span>
+          )}
         </div>
       </header>
-
       <main className="main-content">
         <section className="test-section">
           <h2>TEST ĐẦU VÀO (3)</h2>
@@ -133,11 +143,12 @@ function Stmquizzes() {
           </div>
         </section>
 
-        {showLoginPopup && <LoginPopup onClose={() => setShowLoginPopup(false)} />}
+        {showLoginPopup && !isLoggedIn && (
+          <LoginPopup onClose={() => setShowLoginPopup(false)} />
+        )}
       </main>
       <Footer></Footer>
     </div>
-
   );
 }
 
@@ -161,60 +172,6 @@ const TestSection = ({ title, parts, showCheckboxes, selectedParts, onPartToggle
         ))}
       </tbody>
     </table>
-  </div>
-);
-
-const LoginPopup = ({ onClose }) => (
-  <div className="login-popup">
-    <div className="popup-content">
-      <div className="popup-sections">
-        <div className="login-section">
-          <div className="auth-tabs">
-            <button className="auth-tab active">Đăng nhập</button>
-            <button className="auth-tab">Đăng ký</button>
-          </div>
-
-          <div className="form-group">
-            <label>Tên đăng nhập</label>
-            <input
-              type="text"
-              placeholder="Nhập tên đăng nhập"
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Mật khẩu</label>
-            <input
-              type="password"
-              placeholder="Nhập mật khẩu"
-              className="form-input"
-            />
-          </div>
-        </div>
-        <div className="login-section">
-          <div className="remember-group">
-            <label className="checkbox-label">
-              <input type="checkbox" className="remember-checkbox" />
-              <span>Ghi nhớ đăng nhập</span>
-            </label>
-          </div>
-
-          <div className="action-buttons">
-            <button className="login-button">Đăng nhập</button>
-            <a href="#" className="forgot-password">Quên mật khẩu?</a>
-          </div>
-        </div>
-        <div className="guest-section">
-          <button
-            className="guest-button"
-            onClick={onClose}
-          >
-            Tiếp tục với tư cách khách
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 );
 

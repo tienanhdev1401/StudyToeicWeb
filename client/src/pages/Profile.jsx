@@ -18,6 +18,8 @@ const ProfilePage = () => {
     const [editedUser, setEditedUser] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
 
+    console.log('TienAnh',user)
+
     useEffect(() => {
         if (!loading && !isLoggedIn) {
             navigate('/login');
@@ -59,7 +61,7 @@ const ProfilePage = () => {
         if (file) {
             // Validate file
             const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            const maxSize = 5 * 1024 * 1024; // 5MB
+            const maxSize = 5 * 1024 * 1024; // ảnh max 5mb
 
             if (!validTypes.includes(file.type)) {
                 alert('Chỉ chấp nhận file ảnh JPG, PNG hoặc GIF');

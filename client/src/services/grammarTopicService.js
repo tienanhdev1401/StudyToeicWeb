@@ -33,7 +33,26 @@ const GrammarTopicService = {
       console.error(`Error fetching grammar topic with ID ${id}:`, error);
       throw error;
     }
-  }
+  },
+
+
+  getExercisesForGrammarTopic: async (grammarTopicId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/grammar-topic/${grammarTopicId}/exercise`);
+      
+      if (response.data.success) {
+        return response.data.data;
+      } else {
+        throw new Error(response.data.message || `Failed to fetch exercises for grammar topic ${grammarTopicId}`);
+      }
+    } catch (error) {
+      console.error(`Error fetching exercises for grammar topic ${grammarTopicId}:`, error);
+      throw error;
+    }
+  },
+
+
+
 };
 
 export default GrammarTopicService;

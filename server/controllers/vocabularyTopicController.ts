@@ -57,52 +57,73 @@ export class VocabularyTopicController {
     }
   }
 
-  static async addVocabularyTopic(req: Request, res: Response) {
+  // static async addVocabularyTopic(req: Request, res: Response) {
+  //   try {
+  //       // Lấy dữ liệu từ request body
+  //       const { topicName,imageUrl, vocabularies } = req.body;
+
+  //       // Tạo một đối tượng VocabularyTopic mới
+  //       const newTopic = new VocabularyTopic(0, topicName,imageUrl);
+
+  //       // Thêm danh sách từ vựng vào topic (nếu có)
+  //       if (vocabularies && Array.isArray(vocabularies)) {
+  //           const vocabularyList = vocabularies.map((v: any) => 
+  //               new Vocabulary(
+  //                   0,
+  //                   v.content,
+  //                   v.meaning,
+  //                   v.synonym || null,
+  //                   v.transcribe || '',
+  //                   v.urlAudio || '',
+  //                   v.urlImage || '',
+  //                   null
+  //               )
+  //           );
+  //           newTopic.addVocabularyList(vocabularyList);
+  //       }
+
+  //       // Gọi repository để thêm vào database
+  //       const createdTopic = await VocabularyTopicRepository.addVocabularyTopic(newTopic);
+
+  //       // Trả về kết quả
+  //       res.status(201).json({
+  //           success: true,
+  //           message: 'Vocabulary topic created successfully',
+  //           data: createdTopic
+  //       });
+  //   } catch (error) {
+  //       console.error('Error creating vocabulary topic:', error);
+  //       res.status(500).json({
+  //           success: false,
+  //           message: 'Failed to create vocabulary topic',
+  //           error: error instanceof Error ? error.message : 'Unknown error'
+  //       });
+  //   }
+
+  static async getExercisesForGrammarTopic(req: Request, res: Response) {
     try {
-        // Lấy dữ liệu từ request body
-        const { topicName, vocabularies } = req.body;
+      const vocabularyTopicId = parseInt(req.params.id);
 
-        // Tạo một đối tượng VocabularyTopic mới
-        const newTopic = new VocabularyTopic(0, topicName);
+      // Get exercises from repository
+      const exercises = await VocabularyTopicRepository.getExercisesForVocabularyTopic(vocabularyTopicId);
 
-        // Thêm danh sách từ vựng vào topic (nếu có)
-        if (vocabularies && Array.isArray(vocabularies)) {
-            const vocabularyList = vocabularies.map((v: any) => 
-                new Vocabulary(
-                    0,
-                    v.content,
-                    v.meaning,
-                    v.synonym || null,
-                    v.transcribe || '',
-                    v.urlAudio || '',
-                    v.urlImage || '',
-                    null
-                )
-            );
-            newTopic.addVocabularyList(vocabularyList);
-        }
-
-        // Gọi repository để thêm vào database
-        const createdTopic = await VocabularyTopicRepository.addVocabularyTopic(newTopic);
-
-        // Trả về kết quả
-        res.status(201).json({
-            success: true,
-            message: 'Vocabulary topic created successfully',
-            data: createdTopic
-        });
+      return res.status(200).json({
+        success: true,
+        data: exercises
+      });
     } catch (error) {
-        console.error('Error creating vocabulary topic:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to create vocabulary topic',
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
+      console.error('Error in getExercisesForVocabularyTopic:', error); 
+      return res.status(500).json({
+        success: false,
+        message: 'Đã xảy ra lỗi khi lay danh sach bai tap cua tu vung'
+      });
     }
+  }
 }
+
 
 
   
-}
+// }
 
 export default new VocabularyTopicController();

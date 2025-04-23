@@ -209,3 +209,28 @@
 }
 
 
+.option-item.correct {
+  background: #e6f7e6;
+  border-color: #4CAF50;
+}
+
+/* Styling for a selected incorrect answer */
+.option-item.incorrect {
+  background: #ffebee;
+  border-color: #f44336;
+}
+
+/* Styling to indicate the correct answer when user selected incorrectly */
+.option-item.correct-answer {
+  border: 1px dashed #4CAF50;
+  position: relative;
+}
+
+.option-item.correct-answer:after {
+  content: "✓ Đáp án đúng";
+  position: absolute;
+  right: 15px;
+  color: #4CAF50;
+  font-size: 0.8rem;
+  font-style: italic;
+}

@@ -9,9 +9,11 @@ import grammarTopicTopicRoutes from './grammarTopicRoutes'
 import adminLearnerRoutes from './admin/admin.LearnerRoutes'
 import adminStaffRoutes from './admin/admin.StaffRoutes'
 import uploadRouter from './uploadRouter';
-
-
+import exerciseRouter from './exerciseRouter'
+import questionRoutes from './questionRoutes';
+import testRoutes from './testRoutes';
 import test from './test'
+
 function route(app: Application): void {
   app.use('/api/user', userRouter);
   app.use('/api/auth', authRouter);
@@ -23,8 +25,9 @@ function route(app: Application): void {
   app.use('/api/admin/learner',adminLearnerRoutes)
   app.use('/api/admin/staff',adminStaffRoutes)
   app.use('/api/upload', uploadRouter);
-
-
+  app.use('/api/exercise',exerciseRouter);
+  app.use('/api/question', questionRoutes);
+  app.use('/api/test', testRoutes);
   app.use('/', test);
   
 }
