@@ -19,6 +19,12 @@ export class TestController {
     this.questionController = new QuestionController();
     this.testCollectionRepository = new TestCollectionRepository();
   }
+  getRandomCompletions(): string {
+    // Random từ 5000 đến 50000
+    const num = Math.floor(Math.random() * (50000 - 5000) + 5000);
+    // Format số với dấu chấm phân cách hàng nghìn
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
   async getAllTests(req: Request, res: Response) {
     try {
       // Lấy tất cả các bài test
@@ -27,14 +33,14 @@ export class TestController {
       // Nhóm các bài test theo testCollection
       const grouped: Record<string, any[]> = {};
       tests.forEach(test => {
-        const collectionKey = test.testCollection || 'Khác'; // fallback nếu testCollection bị null
+        const collectionKey = test.testCollection || 'Khác';
         if (!grouped[collectionKey]) {
           grouped[collectionKey] = [];
         }
         grouped[collectionKey].push({
           id: test.id,
           name: test.title,
-          completions: "10000" // Tạm fix, có thể thay bằng real data
+          completions: this.getRandomCompletions()
         });
       });
   
@@ -51,6 +57,7 @@ export class TestController {
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
+  
     async getTestById(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id);
