@@ -10,6 +10,7 @@ import uploadRouter from './uploadRouter';
 import exerciseRouter from './exerciseRouter'
 import learningRouter from './learningGoalRouter'
 import commentRoutes from './commentRoutes'
+import wordNoteRoutes from './wordNoteRoutes'
 
 
 import test from './test'
@@ -25,8 +26,8 @@ function route(app: Application): void {
   app.use('/api/exercise',exerciseRouter);
   app.use('/api/learning-goal',learningRouter)
   app.use('/api/comment', commentRoutes);
+  app.use('/api/wordnote', wordNoteRoutes);
   app.use('/', test);
-  
 }
 
 export default route;
