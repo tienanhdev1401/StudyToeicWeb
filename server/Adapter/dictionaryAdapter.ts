@@ -6,7 +6,7 @@ export class DictionaryAdapter {
     if (!rawEntries || rawEntries.length === 0) {
       return null;
     }
-
+ //test
     const entry = rawEntries[0];
     
     // Tìm phonetic đầu tiên có audio
