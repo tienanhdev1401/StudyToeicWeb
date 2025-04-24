@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const TestResultPopup = ({ 
   isOpen, 
+  onClose,
   result, 
   testTitle,
   onSaveResult 
@@ -14,12 +15,37 @@ const TestResultPopup = ({
 
   if (!isOpen) return null;
 
-  const viewDetails = () => {
-    // Navigate to details page
-    navigate(`/result-details/${result.testId}`);
+  const handleViewDetails = () => {
+    // Instead of navigating, just close the popup
+    // The details are already shown on the main page
+    onClose();
   };
 
   const handleClose = () => {
+    // Stop and clean up all audio elements before navigating
+    document.querySelectorAll('audio').forEach(audio => {
+      try {
+        audio.pause();
+        audio.src = '';
+        
+        // If there's a parent container, try to remove the audio element
+        if (audio.parentNode) {
+          audio.parentNode.innerHTML = '';
+        }
+      } catch (error) {
+        console.error('Error stopping audio in result popup:', error);
+      }
+    });
+    
+    // Clean up all audio containers
+    document.querySelectorAll('.audio-container').forEach(container => {
+      try {
+        container.innerHTML = '';
+      } catch (error) {
+        console.error('Error cleaning audio container:', error);
+      }
+    });
+    
     // Navigate to Test_online_new.jsx when close button is clicked
     navigate('/test-online-new');
   };
@@ -34,7 +60,7 @@ const TestResultPopup = ({
         
         <div className="test-result-popup-content">
           <div className="test-result-popup-notice">
-            <p>Bài kiểm tra của bạn đã được xử lý. Hãy chụp lại màn hình kết quả vì nó sẽ chỉ hiển thị 1 lần. Kết quả:</p>
+            <p>Bài kiểm tra của bạn đã được xử lý. Chi tiết và giải thích đã được hiển thị trực tiếp trên trang. Kết quả:</p>
           </div>
 
           <div className="test-result-popup-summary">
@@ -59,7 +85,7 @@ const TestResultPopup = ({
         </div>
         
         <div className="test-result-popup-footer">
-          <button className="test-result-popup-details-button" onClick={viewDetails}>Xem chi tiết</button>
+          <button className="test-result-popup-details-button" onClick={handleViewDetails}>Xem chi tiết</button>
           {isLoggedIn && (
             <button className="test-result-popup-save-button" onClick={onSaveResult}>Lưu kết quả</button>
           )}
