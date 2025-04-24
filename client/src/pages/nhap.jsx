@@ -4,6 +4,9 @@ import '../styles/DoTest.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TestService from '../services/TestService';
 import ScoreService from '../services/scoreService';
+import ConfirmSubmitPopup from '../components/ConfirmSubmitPopup';
+import TestResultPopup from '../components/TestResultPopup';
+import { useRef } from 'react';
 
 const Nhap = () => {
     const { testID } = useParams();
@@ -22,38 +25,80 @@ const Nhap = () => {
     const scoreService = new ScoreService();
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
     const [audioElement, setAudioElement] = useState(null);
-
+    const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+    const [showResultPopup, setShowResultPopup] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const hasHandledTimeUp = useRef(false);
     //Tính điểm 
     const calculateScore = () => {
-        if (!testData || Object.keys(answers).length === 0) return null;
-        
+        if (!testData) {
+            console.log("Không có dữ liệu bài kiểm tra để tính điểm.");
+            // Trả về đối tượng rỗng nhưng có cấu trúc
+            return {
+                listeningCorrect: 0,
+                readingCorrect: 0,
+                listeningTotal: 0,
+                readingTotal: 0,
+                listeningScore: 0,
+                readingScore: 0,
+                totalScore: 0,
+                partDetails: {
+                    part1: { correct: 0, total: 0 },
+                    part2: { correct: 0, total: 0 },
+                    part3: { correct: 0, total: 0 },
+                    part4: { correct: 0, total: 0 },
+                    part5: { correct: 0, total: 0 },
+                    part6: { correct: 0, total: 0 },
+                    part7: { correct: 0, total: 0 },
+                },
+                testId: testID
+            };
+        }
+
         // Phân loại câu hỏi theo phần Listening (1-4) và Reading (5-7)
         const listeningQuestions = filteredQuestions.filter(q => q.part <= 4);
         const readingQuestions = filteredQuestions.filter(q => q.part >= 5);
-        
+
         // Đếm số câu đúng cho mỗi phần
         let listeningCorrect = 0;
         let readingCorrect = 0;
-        
+
+        // Đếm số câu đúng cho từng part
+        const partDetails = {
+            part1: { correct: 0, total: filteredQuestions.filter(q => q.part === 1).length },
+            part2: { correct: 0, total: filteredQuestions.filter(q => q.part === 2).length },
+            part3: { correct: 0, total: filteredQuestions.filter(q => q.part === 3).length },
+            part4: { correct: 0, total: filteredQuestions.filter(q => q.part === 4).length },
+            part5: { correct: 0, total: filteredQuestions.filter(q => q.part === 5).length },
+            part6: { correct: 0, total: filteredQuestions.filter(q => q.part === 6).length },
+            part7: { correct: 0, total: filteredQuestions.filter(q => q.part === 7).length },
+        };
+
         // Kiểm tra từng câu trả lời
         Object.entries(answers).forEach(([questionId, selectedAnswer]) => {
             const question = filteredQuestions.find(q => q.id === parseInt(questionId));
             if (!question) return;
-            
+
             // Lấy đáp án đúng
             const correctAnswer = question.correctAnswer || testData.allQuestions.find(q => q.id === parseInt(questionId))?.correctAnswer;
-            
+
             if (selectedAnswer === correctAnswer) {
-                if (question.part <= 4) listeningCorrect++;
-                else readingCorrect++;
+                if (question.part <= 4) {
+                    listeningCorrect++;
+                } else {
+                    readingCorrect++;
+                }
+
+                // Cập nhật số câu đúng cho từng part
+                partDetails[`part${question.part}`].correct++;
             }
         });
-        
+
         // Tính điểm cho từng phần và tổng điểm
         const listeningScore = scoreService.calculateListeningScore(listeningCorrect);
         const readingScore = scoreService.calculateReadingScore(readingCorrect);
         const totalScore = listeningScore + readingScore;
-        
+
         return {
             listeningCorrect,
             readingCorrect,
@@ -61,7 +106,9 @@ const Nhap = () => {
             readingTotal: readingQuestions.length,
             listeningScore,
             readingScore,
-            totalScore
+            totalScore,
+            partDetails,
+            testId: testID
         };
     };
     // Tải dữ liệu từ API
@@ -149,49 +196,71 @@ const Nhap = () => {
 
     // Xử lý timer
     useEffect(() => {
+        if (isSubmitted) return;
+
         const timer = setInterval(() => {
             setTimeLeft(prev => {
                 const newTime = Math.max(0, prev - 1);
-                // Kiểm tra nếu hết thời gian
-                if (newTime === 0) {
-                    clearInterval(timer);
-                    handleTimeUp();
+
+                // Xử lý khi hết giờ
+                if (newTime === 0 && !hasHandledTimeUp.current) {
+                    hasHandledTimeUp.current = true; // Đánh dấu đã xử lý
+                    handleTimeUp(); // Gọi hàm xử lý
                 }
+
                 return newTime;
             });
         }, 1000);
-        return () => clearInterval(timer);
-    }, []);
+
+        // Cleanup
+        return () => {
+            clearInterval(timer);
+            hasHandledTimeUp.current = false; // Reset khi dependencies thay đổi
+        };
+    }, [isSubmitted, answers,testData, state]); 
 
     // Thêm hàm xử lý khi hết giờ
+
     const handleTimeUp = async () => {
-        // Dừng audio nếu đang phát
-        stopAudio();
-
-        // Tính điểm
-        const result = calculateScore();
-        setScoreResult(result);
-
-        // Thông báo hết giờ và hiển thị điểm
-        const message = result ? 
-            `Đã hết thời gian làm bài!\n\nĐiểm Listening: ${result.listeningScore} (${result.listeningCorrect}/${result.listeningTotal})\nĐiểm Reading: ${result.readingScore} (${result.readingCorrect}/${result.readingTotal})\nTổng điểm: ${result.totalScore}` :
-            'Đã hết thời gian làm bài!';
-            
-        alert(message);
-
+        if (hasHandledTimeUp.current === false) return;
         try {
-            const submissionData = prepareAnswersToSubmit();
-            // Gọi API nộp bài
-            console.log('Nộp bài:', submissionData);
-            console.log('Kết quả điểm:', result);
+            // Kiểm tra xem đã nộp bài chưa
+            if (isSubmitted) return;
 
-            // Chuyển hướng về trang kết quả hoặc trang chủ
-            // navigate('/result', { state: { testId: testID, scoreResult: result } });
+            // Dừng audio nếu đang phát
+            stopAudio();
+
+            // Kiểm tra có câu trả lời không
+            if (Object.keys(answers).length === 0) {
+                alert('Bạn chưa trả lời câu hỏi nào.');
+                return;
+            }
+
+            // Đánh dấu đã nộp bài
+            setIsSubmitted(true);
+
+            // Tính điểm
+            const result = calculateScore();
+            setScoreResult(result);
+
+            // Hiển thị popup kết quả
+            setTimeout(() => {
+                setShowResultPopup(true);
+
+                // Chuẩn bị dữ liệu nộp bài
+                const submissionData = prepareAnswersToSubmit();
+                console.log('Dữ liệu nộp bài tự động:', submissionData);
+
+                // TODO: Gửi API request
+            }, 300);
 
         } catch (error) {
-            console.error('Lỗi khi nộp bài:', error);
+            console.error('Lỗi khi nộp bài tự động:', error);
             alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
         }
+         finally {
+        hasHandledTimeUp.current = true; // Đảm bảo đánh dấu đã xử lý
+    }
     };
 
 
@@ -340,74 +409,83 @@ const Nhap = () => {
             // Tìm số thứ tự của câu hỏi (questionNumber) dựa vào questionId
             const question = filteredQuestions.find(q => q.id === parseInt(questionId));
             const questionNumber = question ? question.questionNumber : null;
-            
+
             return {
                 questionId: parseInt(questionId),  // ID câu hỏi trong DB
                 questionNumber: questionNumber,    // Số thứ tự câu trong đề (1, 2, 3,...)
                 selectedAnswer                     // Đáp án người dùng chọn (A, B, C, D)
             };
         });
-    
+
         // Dữ liệu gửi lên server
         return {
-            TestId: parseInt(testID),          
-            score: scoreResult?.totalScore || 0,   
-            completionTime: state?.timeLimit ? state.timeLimit - timeLeft : 7200 - timeLeft, 
-            tittle: testData?.title || "Bài thi TOEIC", 
-            userAnswer: JSON.stringify(userAnswerArray) 
+            TestId: parseInt(testID),
+            score: scoreResult?.totalScore || 0,
+            completionTime: state?.timeLimit ? state.timeLimit - timeLeft : 7200 - timeLeft,
+            tittle: testData?.title || "Bài thi TOEIC",
+            userAnswer: JSON.stringify(userAnswerArray)
         };
     };
 
-    const handleSubmitTest = async () => {
+    const handleSubmitTest = () => {
+        // Kiểm tra xem người dùng đã trả lời ít nhất một câu hay chưa
+        if (Object.keys(answers).length === 0) {
+            alert('Bạn chưa trả lời câu hỏi nào. Vui lòng làm bài trước khi nộp.');
+            return;
+        }
+
+        // Hiển thị popup xác nhận
+        setShowConfirmPopup(true);
+    };
+
+    const confirmSubmitTest = async () => {
+        // Đóng popup xác nhận
+        setShowConfirmPopup(false);
+
+        // Kiểm tra nếu bài đã được nộp thì không làm gì thêm
+        if (isSubmitted) return;
+
         try {
-            if (Object.keys(answers).length === 0) {
-                alert('Bạn chưa trả lời câu hỏi nào. Vui lòng làm bài trước khi nộp.');
-                return;
-            }
-    
-            const confirmSubmit = window.confirm('Bạn có chắc muốn nộp bài?');
-            if (!confirmSubmit) return;
-    
+            // Đánh dấu đã nộp bài
+            setIsSubmitted(true);
+
             // Dừng audio nếu đang phát
             stopAudio();
-    
+
             // Tính điểm
             const result = calculateScore();
             setScoreResult(result);
-    
-            // Chuẩn bị dữ liệu nộp bài
-            const submissionData = prepareAnswersToSubmit();
-            console.log('Dữ liệu nộp bài:', submissionData);
-            
-            // Gửi API request (bạn cần tạo API endpoint và service để gửi dữ liệu)
-            // Ví dụ:
-            // try {
-            //     const response = await fetch('/api/submissions', {
-            //         method: 'POST',
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //         },
-            //         body: JSON.stringify(submissionData)
-            //     });
-            //     const responseData = await response.json();
-            //     console.log('Kết quả API:', responseData);
-            // } catch (apiError) {
-            //     console.error('Lỗi API:', apiError);
-            //     throw apiError;
-            // }
-    
-            // Hiển thị thông báo thành công với điểm số
-            const message = result ? 
-                `Nộp bài thành công!\n\nĐiểm Listening: ${result.listeningScore} (${result.listeningCorrect}/${result.listeningTotal})\nĐiểm Reading: ${result.readingScore} (${result.readingCorrect}/${result.readingTotal})\nTổng điểm: ${result.totalScore}` :
-                'Nộp bài thành công!';
-                
-            alert(message);
-    
-            // Chuyển hướng đến trang kết quả nếu cần
-            // navigate('/result', { state: { testId: testID, scoreResult: result } });
+
+            // Hiển thị popup kết quả sau một thời gian ngắn để đảm bảo state đã được cập nhật
+            setTimeout(() => {
+                setShowResultPopup(true);
+
+                // Chuẩn bị dữ liệu nộp bài
+                const submissionData = prepareAnswersToSubmit();
+                console.log('Dữ liệu nộp bài thủ công:', submissionData);
+
+                // Gửi API request
+                // Implement your API call here
+            }, 300);
         } catch (error) {
             console.error('Lỗi khi nộp bài:', error);
             alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+        }
+    };
+
+    const handleSaveResult = async () => {
+        try {
+            // Implement logic to save result to the backend
+            console.log('Lưu kết quả:', scoreResult);
+            // Add your API call here
+
+            // Close the result popup
+            setShowResultPopup(false);
+
+            // Navigate to homepage or another page
+            window.location.href = '/'; // Or use navigate if you're using react-router
+        } catch (error) {
+            console.error('Lỗi khi lưu kết quả:', error);
         }
     };
 
@@ -920,6 +998,24 @@ const Nhap = () => {
                     </>
                 )}
             </main>
+
+            {/* Popup xác nhận nộp bài */}
+            <ConfirmSubmitPopup
+                isOpen={showConfirmPopup}
+                onClose={() => setShowConfirmPopup(false)}
+                onConfirm={confirmSubmitTest}
+                answeredCount={Object.keys(answers).length}
+                totalQuestions={filteredQuestions.length}
+            />
+
+            {/* Popup kết quả bài thi */}
+            <TestResultPopup
+                isOpen={showResultPopup}
+                onClose={() => setShowResultPopup(false)}
+                result={scoreResult}
+                testTitle={testData?.title || "Bài thi TOEIC"}
+                onSaveResult={handleSaveResult}
+            />
         </div>
     );
 
