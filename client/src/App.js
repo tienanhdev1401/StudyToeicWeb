@@ -28,6 +28,8 @@ import DictionaryPage from './pages/DictionaryPage';
 import Nhap from './pages/nhap';
 import { TestProvider } from './context/TestContext';
 import NotFound from './components/404';
+import WordNotePage from './pages/WordNotePage';
+import WordNoteDetail from './pages/WordNoteDetail';
 // Gọi hàm này khi ứng dụng khởi động
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -73,8 +75,9 @@ function App() {
                 <Route path="/exercise/:exerciseId" element={<DoExercise />} />
 
                 <Route path="/calculateScore" element={<TOEICCalculator />} />
-
-
+                <Route path="/word-note" element={<WordNotePage />} />
+                <Route path="/word-note/:wordNoteId" element={<WordNoteDetail />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </TestProvider>
           </UserProvider> {/* Đóng UserProvider */}
