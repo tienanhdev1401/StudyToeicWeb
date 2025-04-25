@@ -12,6 +12,7 @@ import uploadRouter from './uploadRouter';
 import exerciseRouter from './exerciseRouter'
 import questionRoutes from './questionRoutes';
 import testRoutes from './testRoutes';
+import submissionRoutes from './submissionRoutes';
 import test from './test'
 
 function route(app: Application): void {
@@ -28,6 +29,7 @@ function route(app: Application): void {
   app.use('/api/exercise',exerciseRouter);
   app.use('/api/question', questionRoutes);
   app.use('/api/test', testRoutes);
+  app.use('/api/submissions', submissionRoutes);
   app.use('/', test);
   
 }

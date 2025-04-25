@@ -4,8 +4,10 @@ import '../styles/DoTest.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TestService from '../services/TestService';
 import ScoreService from '../services/scoreService';
+import SubmissionService from '../services/SubmissionService';
 import ConfirmSubmitPopup from '../components/ConfirmSubmitPopup';
 import TestResultPopup from '../components/TestResultPopup';
+import { useAuth } from '../context/AuthContext';
 
 const Nhap = () => {
     const { testID } = useParams();
@@ -34,6 +36,8 @@ const Nhap = () => {
     const [correctAnswers, setCorrectAnswers] = useState({});
     // Ref for audio container
     const audioContainerRef = useRef(null);
+    const [submissionDataForResult, setSubmissionDataForResult] = useState(null);
+    const { user } = useAuth();
     //Tính điểm 
     const calculateScore = () => {
         if (!testData) {
@@ -279,15 +283,15 @@ const Nhap = () => {
             const result = calculateScore();
             setScoreResult(result);
 
-            // Hiển thị popup kết quả ngắn gọn
-            setShowResultPopup(true);
-
             // Chuẩn bị dữ liệu nộp bài
             const submissionData = prepareAnswersToSubmit();
             console.log('Dữ liệu nộp bài tự động:', submissionData);
+            
+            // Lưu dữ liệu submission để sử dụng trong popup
+            setSubmissionDataForResult(submissionData);
 
-            // TODO: Gửi API request
-
+            // Hiển thị popup kết quả ngắn gọn
+            setShowResultPopup(true);
         } catch (error) {
             console.error('Lỗi khi nộp bài tự động:', error);
             alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
@@ -586,7 +590,7 @@ const Nhap = () => {
             score: scoreResult?.totalScore || 0,
             completionTime: state?.timeLimit ? state.timeLimit - timeLeft : 7200 - timeLeft,
             tittle: testData?.title || "Bài thi TOEIC",
-            userAnswer: JSON.stringify(userAnswerArray)
+            userAnswer: userAnswerArray
         };
     };
 
@@ -625,15 +629,15 @@ const Nhap = () => {
             const result = calculateScore();
             setScoreResult(result);
 
-            // Hiển thị popup kết quả ngắn gọn
-            setShowResultPopup(true);
-
             // Chuẩn bị dữ liệu nộp bài
             const submissionData = prepareAnswersToSubmit();
             console.log('Dữ liệu nộp bài thủ công:', submissionData);
+            
+            // Lưu dữ liệu submission để sử dụng trong popup
+            setSubmissionDataForResult(submissionData);
 
-            // Gửi API request
-            // Implement your API call here
+            // Hiển thị popup kết quả ngắn gọn
+            setShowResultPopup(true);
         } catch (error) {
             console.error('Lỗi khi nộp bài:', error);
             alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
@@ -652,16 +656,13 @@ const Nhap = () => {
         navigate('/test-online-new');
     };
 
-    const handleSaveResult = async () => {
+    const handleSaveResult = async (response) => {
         try {
-            // Implement logic to save result to the backend
-            console.log('Lưu kết quả:', scoreResult);
-            // Add your API call here
-
-            // Navigate to homepage or another page
-            navigate('/test-online-new');
+            // Chỉ ghi log kết quả lưu (đã được xử lý từ TestResultPopup)
+            console.log('Kết quả lưu từ popup:', response);
+            // Không cần làm gì thêm ở đây, vì việc lưu bài làm đã được thực hiện từ TestResultPopup
         } catch (error) {
-            console.error('Lỗi khi lưu kết quả:', error);
+            console.error('Lỗi xử lý sau khi lưu kết quả:', error);
         }
     };
 
@@ -1417,6 +1418,7 @@ const Nhap = () => {
                 result={scoreResult}
                 testTitle={testData?.title || "Bài thi TOEIC"}
                 onSaveResult={handleSaveResult}
+                submissionData={submissionDataForResult}
             />
         </div>
     );

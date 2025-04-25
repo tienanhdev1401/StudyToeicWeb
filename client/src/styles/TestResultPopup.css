@@ -119,12 +119,12 @@
 
 .test-result-popup-section p {
   margin: 10px 0;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   color: #34495e;
 }
 
 .test-result-popup-total-score {
-  font-size: 1.7rem !important;
+  font-size: 2rem !important;
   font-weight: 800 !important;
   color: #2980b9 !important;
   padding-top: 15px;
@@ -158,7 +158,13 @@
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
   background: linear-gradient(to bottom, #ffffff, #f0f4f8);
 }
-
+.test-result-popup-completion-time
+  {
+    font-size: 1.6rem !important;
+    font-weight: 600 !important;
+    color: #3ab422 !important;
+    margin-top: 10px;
+  }
 .test-result-popup-footer {
   display: flex;
   justify-content: flex-end;
