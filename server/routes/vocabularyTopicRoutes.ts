@@ -14,4 +14,8 @@ router.get('/:id', VocabularyTopicController.findVocabularyTopicById);
 router.get('/:id/vocabularies', VocabularyController.getVocabulariesByTopicId);
 
 router.get('/:id/exercise', VocabularyTopicController.getExercisesForGrammarTopic);
+
+// GET /api/admin/vocabulary-topic/:id/count
+router.get('/:id/count', VocabularyController.countVocabulariesByTopicId);
+
 export default router;

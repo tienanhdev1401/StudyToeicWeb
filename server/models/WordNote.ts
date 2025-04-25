@@ -1,0 +1,17 @@
+class WordNote {
+    public id: number;
+    public title: string;
+    public LearnerId: number;
+
+    constructor(
+        id: number,
+        title: string,
+        LearnerId: number
+    ) {
+        this.id = id;
+        this.title = title;
+        this.LearnerId = LearnerId;
+    }
+}
+
+export default WordNote; 

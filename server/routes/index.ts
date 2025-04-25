@@ -7,10 +7,18 @@ import adminVocabularyTopicRoutes from './admin/admin.vocabularyTopicRoutes'
 import adminVocabularyRoutes from './admin/admin.vocabularyRoutes'
 import adminTestRoutes from './admin/admin.testRoutes'
 import grammarTopicTopicRoutes from './grammarTopicRoutes'
+import adminLearnerRoutes from './admin/admin.LearnerRoutes'
+import adminStaffRoutes from './admin/admin.StaffRoutes'
 import uploadRouter from './uploadRouter';
 import exerciseRouter from './exerciseRouter'
+import learningRouter from './learningGoalRouter'
+import commentRoutes from './commentRoutes'
+import wordNoteRoutes from './wordNoteRoutes'
+
+
 import questionRoutes from './questionRoutes';
 import testRoutes from './testRoutes';
+import submissionRoutes from './submissionRoutes';
 import test from './test'
 
 function route(app: Application): void {
@@ -22,12 +30,14 @@ function route(app: Application): void {
   app.use('/api/admin/vocabulary',adminVocabularyRoutes)
   app.use('/api/admin/test', adminTestRoutes)
   app.use('/api/grammar-topic',grammarTopicTopicRoutes)
+  app.use('/api/admin/learner',adminLearnerRoutes)
+  app.use('/api/admin/staff',adminStaffRoutes)
   app.use('/api/upload', uploadRouter);
   app.use('/api/exercise',exerciseRouter);
-  app.use('/api/question', questionRoutes);
-  app.use('/api/test', testRoutes);
+  app.use('/api/learning-goal',learningRouter)
+  app.use('/api/comment', commentRoutes);
+  app.use('/api/wordnote', wordNoteRoutes);
   app.use('/', test);
-  
 }
 
 export default route;
