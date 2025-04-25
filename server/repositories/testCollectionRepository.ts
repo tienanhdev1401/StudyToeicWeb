@@ -27,20 +27,21 @@ export class TestCollectionRepository {
 
     async findAll(): Promise<TestCollection[]> {
         try {
-            const rows = await db.query('SELECT * FROM `test-collection`');
+            const rows = await db.query('SELECT DISTINCT testCollection FROM tests');
             
-            const testCollections = Array.isArray(rows) ? rows : [rows];
-            if (!testCollections.length) return [];
-
-            const collections = testCollections.map(row => new TestCollection(
-                Number(row.id),
-                row.title,
+            const distinctCollections = Array.isArray(rows) ? rows : [rows];
+            if (!distinctCollections.length) return [];
+    
+            const collections = distinctCollections.map((row, index) => new TestCollection(
+                index + 1, // ID tự sinh
+                row.testCollection
             ));
+    
             return collections;
-            
         } catch (error) {
             console.error('TestCollectionRepository.findAll error:', error);
             throw error;
         }
     }
+    
 }

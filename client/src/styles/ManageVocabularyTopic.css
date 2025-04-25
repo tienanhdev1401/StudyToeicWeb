@@ -13,12 +13,13 @@ h1 {
   font-weight: 600;
 }
 
-.Topic_header-title {
+.vocabularyTopic-header-title {
+  margin-top: 10px;
   font-size: 40px;
   font-weight: 600;
 }
 
-.header-section {
+.vocabularyTopic-header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -26,14 +27,14 @@ h1 {
   margin-top: 100dp;
 }
 
-.entries-select {
+.vocabularyTopic-entries-select {
 
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.entries-dropdown {
+.vocabularyTopic-entries-dropdown {
   padding: 6px 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -43,24 +44,24 @@ h1 {
   cursor: pointer;
 }
 
-.entries-dropdown:focus {
+.vocabularyTopic-entries-dropdown:focus {
   outline: none;
   border-color: #007bff;
 }
 
 
-.search-box {
+.vocabularyTopic-search-box {
   display: flex;
   align-items: center;
   background-color: white;
-  border: 1px solid #c7c7c7;
+  border: 0px solid #c7c7c7;
   border-radius: 0.5rem;
-  padding: 1px 16px;
+  padding: 6px 16px;
   width: 300px;
   position: relative;
 }
 
-.search-box i {
+.vocabularyTopic-search-box i {
   position: static;
   color: #9ca3af;
   font-size: 1.2rem;
@@ -68,7 +69,7 @@ h1 {
   font-size: 1.75rem;
 }
 
-.search-input {
+.vocabularyTopic-search-input {
   flex-grow: 1;
   width: 100%;
   background: none;
@@ -82,14 +83,14 @@ h1 {
   box-shadow: none;
 }
 
-.search-input:focus {
+.vocabularyTopic-search-input:focus {
   border: none;
   outline: none;
   box-shadow: none;
 }
 
 
-.vocabulary-table {
+.vocabularyTopic-table {
   margin-top: 20px;
   width: 100%;
   table-layout: fixed;
@@ -103,23 +104,23 @@ h1 {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.vocabulary-table th:first-child {
+.vocabularyTopic-table th:first-child {
   border-top-left-radius: 8px;
 }
 
-.vocabulary-table th:last-child {
+.vocabularyTopic-table th:last-child {
   border-top-right-radius: 8px;
 }
 
-.vocabulary-table tr:last-child td:first-child {
+.vocabularyTopic-table tr:last-child td:first-child {
   border-bottom-left-radius: 8px;
 }
 
-.vocabulary-table tr:last-child td:last-child {
+.vocabularyTopic-table tr:last-child td:last-child {
   border-bottom-right-radius: 8px;
 }
 
-.vocabulary-table th {
+.vocabularyTopic-table th {
   padding: 16px;
   text-align: center;
   background-color: white !important;
@@ -128,19 +129,19 @@ h1 {
   font-weight: 600;
 }
 
-.vocabulary-table td {
+.vocabularyTopic-table td {
   padding: 16px;
   text-align: left;
   border: 1px solid #e5e7eb;
   background-color: white !important;
 }
 
-.vocabulary-table tbody {
+.vocabularyTopic-table tbody {
   background-color: #f9fafb;
 }
 
 /* Remove duplicate th styles */
-.vocabulary-table th {
+.vocabularyTopic-table th {
   border-bottom: 2px solid #e5e7eb;
 }
 
@@ -151,7 +152,7 @@ h1 {
 }
 
 
-.edit-btn, .delete-btn, .view-btn {
+.vocabularyTopic-edit-btn, .vocabularyTopic-delete-btn, .vocabularyTopic-view-btn {
   padding: 6px 12px;
   border: none;
   cursor: pointer;
@@ -160,28 +161,31 @@ h1 {
   color: #858c97;
 }
 
-.view-btn:hover {
+.vocabularyTopic-view-btn:hover {
+  background-color: transparent;
   color: #17a2b8;
 }
 
 
-.edit-btn:hover {
+.vocabularyTopic-edit-btn:hover {
+  background-color: transparent;
   color: black;
 }
 
 
-.delete-btn:hover {
+.vocabularyTopic-delete-btn:hover {
+  background-color: transparent;
   color: red;
 }
 
-.pagination {
+.vocabularyTopic-pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 
-.pagination p { 
+.vocabularyTopic-pagination p { 
   font-size: 1.5rem;
   font-weight: 00;
   font-style: normal;
@@ -191,13 +195,13 @@ h1 {
 }
 
 
-.pagination span {
+.vocabularyTopic-pagination span {
   font-size: 1.2rem;
   font-weight: 600;
   color: #9a9a9b;
 }
 
-.pagination button {
+.vocabularyTopic-pagination button {
   padding: 6px 14px;
   margin: 0 2px;
   border: 1px solid #ddd;
@@ -207,23 +211,23 @@ h1 {
   color: #344054;
 }
 
-.pagination button:hover {
+.vocabularyTopic-pagination button:hover {
   background-color: #e3effc;
   color: #007bff;
 }
 
-.pagination button.active {
+.vocabularyTopic-pagination button.active {
   background-color: #007bff;
   color: white;
   border-color: #007bff;
 }
 
-.pagination button:disabled {
+.vocabularyTopic-pagination button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.action-section {
+.vocabularyTopic-action-section {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -234,7 +238,7 @@ h1 {
   gap: 12px;
 }
 
-.add-btn, .trash-btn {
+.vocabularyTopic-add-btn, .vocabularyTopic-trash-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -249,30 +253,30 @@ h1 {
 }
 
 
-.trash-btn {
+.vocabularyTopic-trash-btn {
   background-color: #a5a7a8 !important;
   color: white !important;
 }
 
-.trash-btn:hover {
+.vocabularyTopic-trash-btn:hover {
   background-color: #5a6268 !important;
 }
 
-.add-btn i, .trash-btn i {
+.vocabularyTopic-add-btn i, .vocabularyTopic-trash-btn i {
   font-size: 14px;
 }
 
-.sortable {
+.vocabularyTopic-sortable {
   cursor: pointer;
   position: relative;
   padding-right: 25px !important;
 }
 
-.sortable:hover {
+.vocabularyTopic-sortable:hover {
   background-color: #f5f5f5;
 }
 
-.sortable i {
+.vocabularyTopic-sortable i {
   position: absolute;
   right: 8px;
   top: 50%;
@@ -281,7 +285,7 @@ h1 {
   font-size: 14px;
 }
 
-.sortable:hover i {
+.vocabularyTopic-sortable:hover i {
   color: #666;
 }
 
@@ -302,17 +306,17 @@ h1 {
 }
 
 /* Optional: Style for selected rows */
-.vocabulary-table tbody tr:has(input:checked) {
+.vocabularyTopic-table tbody tr:has(input:checked) {
   background-color: #f0f7ff;
 }
 
-.id-column {
+.vocabularyTopic-id-column {
   min-width: 100px;
   width: 100px;
   
 }
 
-.id-header, .id-cell {
+.vocabularyTopic-id-header, .vocabularyTopic-id-cell {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -323,42 +327,42 @@ h1 {
   max-width: 100px;
 }
 
-vocabulary-table th,
-.vocabulary-table td {
+.vocabularyTopic-table th,
+.vocabularyTopic-table td {
   padding: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.id-header input[type="checkbox"],
-.id-cell input[type="checkbox"] {
+.vocabularyTopic-id-header input[type="checkbox"],
+.vocabularyTopic-id-cell input[type="checkbox"] {
   width: 16px;
   height: 16px;
   cursor: pointer;
 }
 
-.id-header span {
+.vocabularyTopic-id-header span {
   margin-right: 4px;
 }
 
 /* Optional: Style for selected rows */
-.vocabulary-table tbody tr:has(input:checked) {
+.vocabularyTopic-table tbody tr:has(input:checked) {
   background-color: #f0f7ff;
 }
 
 /* Styles for images in table */
-.vocabulary-image {
-  max-width: 50px;
-  max-height: 50px;
+.vocabularyTopic-image {
+  max-width: 100px;
+  max-height: 60px;
   border-radius: 4px;
 }
 
-.image-cell {
+.vocabularyTopic-image-cell {
   text-align: center;
 }
 
-.table-action-bar {
+.vocabularyTopic-table-action-bar {
   background-color: #f8f9fa;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -366,18 +370,18 @@ vocabulary-table th,
   padding: 12px 20px;
 }
 
-.action-bar-content {
+.vocabularyTopic-action-bar-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.action-bar-content span {
+.vocabularyTopic-action-bar-content span {
   color: #666;
   font-weight: 500;
 }
 
-.delete-selected-btn {
+.vocabularyTopic-delete-selected-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -391,15 +395,15 @@ vocabulary-table th,
   transition: background-color 0.2s;
 }
 
-.delete-selected-btn:hover {
+.vocabularyTopic-delete-selected-btn:hover {
   background-color: #c82333;
 }
 
-.delete-selected-btn i {
+.vocabularyTopic-delete-selected-btn i {
   font-size: 14px;
 }
 
-.modal-overlay {
+.vocabularyTopic-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -412,7 +416,7 @@ vocabulary-table th,
   z-index: 1000;
 }
 
-.modal-content {
+.vocabularyTopic-modal-content {
   background-color: white;
   border-radius: 8px;
   width: 100%;
@@ -420,7 +424,7 @@ vocabulary-table th,
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.modal-header {
+.vocabularyTopic-modal-header {
   padding: 16px 24px;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
@@ -428,13 +432,13 @@ vocabulary-table th,
   align-items: center;
 }
 
-.modal-header h2 {
+.vocabularyTopic-modal-header h2 {
   margin: 0;
   font-size: 20px;
   color: #111827;
 }
 
-.close-btn {
+.vocabularyTopic-close-btn {
   background: none;
   border: none;
   font-size: 1.25rem;
@@ -442,16 +446,16 @@ vocabulary-table th,
   cursor: pointer;
 }
 
-.modal-body {
+.vocabularyTopic-modal-body {
   padding: 24px;
   color: #4b5563;
 }
 
-.modal-body p {
+.vocabularyTopic-modal-body p {
   margin: 0 0 8px;
 }
 
-.modal-footer {
+.vocabularyTopic-modal-footer {
   padding: 16px 24px;
   border-top: 1px solid #e5e7eb;
   display: flex;
@@ -459,7 +463,7 @@ vocabulary-table th,
   gap: 12px;
 }
 
-.cancel-btn {
+.vocabularyTopic-cancel-btn {
   padding: 8px 16px;
   background-color: white;
   border: 1px solid #d1d5db;
@@ -468,7 +472,7 @@ vocabulary-table th,
   cursor: pointer;
 }
 
-.confirm-delete-btn {
+.vocabularyTopic-confirm-delete-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -480,16 +484,16 @@ vocabulary-table th,
   cursor: pointer;
 }
 
-.cancel-btn:hover {
+.vocabularyTopic-cancel-btn:hover {
   background-color: #f3f4f6;
 }
 
-.confirm-delete-btn:hover {
+.vocabularyTopic-confirm-delete-btn:hover {
   background-color: #c82333;
 }
 
 /* Animation cho modal */
-.modal-content {
+.vocabularyTopic-modal-content {
   animation: modalFadeIn 0.3s ease-out;
 }
 
@@ -504,13 +508,13 @@ vocabulary-table th,
   }
 }
 
-.pagination-buttons {
+.vocabularyTopic-pagination-buttons {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.page-btn {
+.vocabularyTopic-page-btn {
   padding: 6px 12px;
   border: 1px solid #dee2e6;
   background-color: white;
@@ -521,32 +525,32 @@ vocabulary-table th,
   font-size: 14px;
 }
 
-.page-btn:hover:not(:disabled) {
+.vocabularyTopic-page-btn:hover:not(:disabled) {
   background-color: #e9ecef;
   border-color: #dee2e6;
   color: #0a58ca;
 }
 
-.page-btn.active {
+.vocabularyTopic-page-btn.active {
   background-color: #0d6efd;
   border-color: #0d6efd;
   color: white;
 }
 
-.page-btn:disabled {
+.vocabularyTopic-page-btn:disabled {
   background-color: #e9ecef;
   color: #6c757d;
   cursor: not-allowed;
 }
 
-.page-dots {
+.vocabularyTopic-page-dots {
   padding: 6px 12px;
   color: #6c757d;
   font-weight: bold;
 }
 
 /* CSS cho add modal */
-.add-modal-overlay {
+.vocabularyTopic-add-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -559,7 +563,7 @@ vocabulary-table th,
   z-index: 1000;
 }
 
-.add-modal-content {
+.vocabularyTopic-add-modal-content {
   background-color: white;
   border-radius: 8px;
   width: 600px;
@@ -569,7 +573,7 @@ vocabulary-table th,
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.add-modal-header {
+.vocabularyTopic-add-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -577,7 +581,7 @@ vocabulary-table th,
   border-bottom: 1px solid #e0e0e0;
 }
 
-.add-modal-header h2 {
+.vocabularyTopic-add-modal-header h2 {
   margin: 0;
   font-size: 2rem;
   color: #3D3BF3;
@@ -586,7 +590,7 @@ vocabulary-table th,
 
 }
 
-.close-btn {
+.vocabularyTopic-close-btn {
   background: none;
   border: none;
   font-size: 2rem;
@@ -594,21 +598,21 @@ vocabulary-table th,
   color: #666;
 }
 
-.close-btn:hover {
+.vocabularyTopic-close-btn:hover {
   color: #ff0808;
 
 }
 
-.add-modal-body {
+.vocabularyTopic-add-modal-body {
   padding: 20px;
 }
 
-.form-group {
+.vocabularyTopic-form-group {
   margin-bottom: 20px;
   position: relative;
 }
 
-.form-group label {
+.vocabularyTopic-form-group label {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
@@ -620,7 +624,7 @@ vocabulary-table th,
   margin-left: 2px;
 }
 
-.form-group input[type="text"] {
+.vocabularyTopic-form-group input[type="text"] {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
@@ -629,29 +633,29 @@ vocabulary-table th,
   transition: border-color 0.3s;
 }
 
-.form-group input[type="text"]:focus {
+.vocabularyTopic-form-group input[type="text"]:focus {
   border-color: #4a90e2;
   outline: none;
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
-.form-group.has-error input[type="text"],
-.form-group.file-error {
+.vocabularyTopic-form-group.has-error input[type="text"],
+.vocabularyTopic-form-group.file-error {
   border-color: #e53935;
 }
 
-.input-error {
+.vocabularyTopic-input-error {
   border-color: #e53935 !important;
 }
 
-.error-message {
+.vocabularyTopic-error-message {
   color: #e53935;
   font-size: 5px;
   margin-top: 1px;
   display: block;
 }
 
-.image-preview {
+.vocabularyTopic-image-preview {
   margin-top: 10px;
   max-width: 100%;
   height: 150px;
@@ -663,16 +667,16 @@ vocabulary-table th,
   background-color: #f9f9f9;
 }
 
-.image-preview img {
+.vocabularyTopic-image-preview img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain;
+  object-fit: fill;
 }
-.file-upload-section {
+.vocabularyTopic-file-upload-section {
   margin-bottom: 20px;
 }
 
-.file-upload {
+.vocabularyTopic-file-upload {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -684,15 +688,15 @@ vocabulary-table th,
   margin-bottom: 15px;
 }
 
-.file-upload:hover {
+.vocabularyTopic-file-upload :hover {
   border-color: #4a90e2;
 }
 
-.file-upload.file-error {
+.vocabularyTopic-file-upload.vocabularyTopic-file-error {
   border-color: #e53935;
 }
 
-.file-upload label {
+.vocabularyTopic-file-upload label {
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -700,13 +704,13 @@ vocabulary-table th,
   color: #4a90e2;
 }
 
-.file-upload i {
+.vocabularyTopic-file-upload i {
   font-size: 2rem;
   margin-bottom: 8px;
   margin-right: 10px;
 }
 
-.file-upload .file-input {
+.vocabularyTopic-file-upload .vocabularyTopic-file-input {
   position: absolute;
   top: 0;
   left: 0;
@@ -731,13 +735,13 @@ input[type="file"]::file-selector-button {
   height: 0;
 }
 
-.file-info {
+.vocabularyTopic-file-info {
   margin-top: 10px;
   font-size: 1.2rem;
   color: #555;
 }
 
-.add-modal-footer {
+.vocabularyTopic-add-modal-footer {
   display: flex;
   justify-content: flex-end;
   padding: 16px 20px;
@@ -745,7 +749,7 @@ input[type="file"]::file-selector-button {
   gap: 10px;
 }
 
-.cancel-btn, .submit-btn {
+.vocabularyTopic-cancel-btn, .vocabularyTopic-submit-btn {
   padding: 10px 20px;
   border-radius: 4px;
   font-size: 1rem;
@@ -753,30 +757,30 @@ input[type="file"]::file-selector-button {
   transition: all 0.3s;
 }
 
-.cancel-btn {
+.vocabularyTopic-cancel-btn {
   background-color: #f5f5f5;
   border: 1px solid #ddd;
   color: #333;
 }
 
-.cancel-btn:hover {
+.vocabularyTopic-cancel-btn:hover {
   background-color: #e5e5e5;
 }
 
-.submit-btn {
+.vocabularyTopic-submit-btn {
   background-color: #4a90e2;
   border: 1px solid #4a90e2;
   font-size: 1.25rem;
   color: white;
 }
 
-.submit-btn:hover {
+.vocabularyTopic-submit-btn:hover {
   background-color: #3a7bc8;
 }
 
 /* Thiết lập chiều rộng cố định cho các cột */
-.vocabulary-table th,
-.vocabulary-table td {
+.vocabularyTopic-table th,
+.vocabularyTopic-table td {
   padding: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -784,13 +788,13 @@ input[type="file"]::file-selector-button {
 }
 
 /* Image upload styles */
-.image-upload-container {
+.vocabularyTopic-image-upload-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.file-input-label {
+.vocabularyTopic-file-input-label {
   display: inline-flex;
   align-items: center;
   padding: 8px 16px;
@@ -802,26 +806,26 @@ input[type="file"]::file-selector-button {
   width: fit-content;
 }
 
-.file-input-label:hover {
+.vocabularyTopic-file-input-label:hover {
   background-color: #0056b3;
 }
 
-.file-input-label i {
+.vocabularyTopic-file-input-label i {
   margin-right: 8px;
 }
 
-.file-name {
+.vocabularyTopic-file-name {
   margin-top: 8px;
   font-size: 0.9rem;
   color: #6c757d;
 }
 
-.image-preview {
+.vocabularyTopic-image-preview {
   margin-top: 10px;
   text-align: center;
 }
 
-.image-preview img {
+.vocabularyTopic-image-preview img {
   max-width: 100%;
   max-height: 200px;
   border: 1px solid #dee2e6;
@@ -887,11 +891,11 @@ input[type="file"]::file-selector-button {
 }
 
 /* CSS cho file upload section */
-.file-upload-section {
+.vocabularyTopic-file-upload-section {
   margin-bottom: 20px;
 }
 
-.file-upload {
+.vocabularyTopic-file-upload {
   position: relative;
   margin-bottom: 15px;
   border: 2px dashed #ddd;
@@ -901,15 +905,15 @@ input[type="file"]::file-selector-button {
   transition: border-color 0.3s;
 }
 
-.file-upload:hover {
+.vocabularyTopic-file-upload:hover {
   border-color: #3498db;
 }
 
-.file-upload.file-error {
+.vocabularyTopic-file-upload.vocabularyTopic-file-error {
   border-color: #e74c3c;
 }
 
-.file-upload label {
+.vocabularyTopic-file-upload label {
   display: block;
   font-weight: bold;
   margin-bottom: 10px;
@@ -917,25 +921,25 @@ input[type="file"]::file-selector-button {
   color: #3498db;
 }
 
-.file-upload label i {
+.vocabularyTopic-file-upload label i {
   margin-right: 10px;
   font-size: 1.2rem;
 }
 
-.file-upload .file-input {
+.vocabularyTopic-file-upload .vocabularyTopic-file-input {
   display: block;
   width: 100%;
   opacity: 0.8;
 }
 
-.file-upload .file-info {
+.vocabularyTopic-file-upload .vocabularyTopic-file-info {
   margin-top: 10px;
   font-style: italic;
   color: #555;
 }
 
 /* Add CSS for server error message */
-.server-error-message {
+.vocabularyTopic-server-error-message {
   background-color: #f8d7da;
   color: #721c24;
   padding: 10px;
@@ -946,7 +950,7 @@ input[type="file"]::file-selector-button {
 }
 
 /* Vocabulary images upload section */
-.vocabulary-images-upload {
+.vocabularyTopic-images-upload {
   margin-top: 15px;
   border-color: #4dbeff;
   background-color: #f0f9ff;
@@ -1012,17 +1016,17 @@ input[type="file"]::file-selector-button {
   cursor: not-allowed !important;
 }
 
-.file-input-label.disabled {
+.vocabularyTopic-file-input-label.disabled {
   pointer-events: none;
   opacity: 0.7;
 }
 
-.submit-btn:disabled {
+.vocabularyTopic-submit-btn:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.submit-btn i.fa-spinner {
+.vocabularyTopic-submit-btn i.fa-spinner {
   margin-right: 8px;
   animation: spin 1s infinite linear;
 }

@@ -9,6 +9,7 @@ import ManageStaff from './ManageStaff';
 import ManageLearn from './ManageLearner';
 import ManageGrammarTopic from './ManageGrammarTopic';
 import ManageVocabulary from './ManageVocabulary';
+import ManageTest from './ManageTest';
 
 
 const AdminLayout = ({ children }) => {
@@ -38,7 +39,7 @@ const AdminPage = () => {
         <Route path="/learner" element={<ManageLearn />} />
         <Route path="/grammar" element={<ManageGrammarTopic />} />
         <Route path="/vocabularyTopic/:id/vocabularies" element={<ManageVocabulary />} />
-        
+        <Route path="/test" element={<ManageTest />} /> 
       </Routes>
     </AdminLayout>
   );

@@ -19,44 +19,46 @@ export class TestController {
     this.questionController = new QuestionController();
     this.testCollectionRepository = new TestCollectionRepository();
   }
+  getRandomCompletions(): string {
+    // Random từ 5000 đến 50000
+    const num = Math.floor(Math.random() * (50000 - 5000) + 5000);
+    // Format số với dấu chấm phân cách hàng nghìn
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
   async getAllTests(req: Request, res: Response) {
     try {
-      // Lấy tất cả các test collection
-      const testCollections = await this.testCollectionRepository.findAll();
-      
-      // Lấy tất cả các test
+      // Lấy tất cả các bài test
       const tests = await this.testRepository.findAll();
-      
-      // Tạo mảng kết quả theo định dạng yêu cầu
-      const result = testCollections.map(collection => {
-        // Lọc các test thuộc collection này dựa vào testCollectionID
-        const collectionTests = tests.filter(test => test.testCollectionID === collection.id);
-        
-        // Format lại các test theo cấu trúc yêu cầu
-        const formattedTests = collectionTests.map(test => {
-          return {
-            id: test.id,
-            name: test.title,
-            completions: "10000"
-          };
+  
+      // Nhóm các bài test theo testCollection
+      const grouped: Record<string, any[]> = {};
+      tests.forEach(test => {
+        const collectionKey = test.testCollection || 'Khác';
+        if (!grouped[collectionKey]) {
+          grouped[collectionKey] = [];
+        }
+        grouped[collectionKey].push({
+          id: test.id,
+          name: test.title,
+          completions: this.getRandomCompletions()
         });
-        
-        // Trả về đối tượng theo cấu trúc yêu cầu
-        return {
-          id: collection.id,
-          title: collection.title,
-          tests: formattedTests
-        };
       });
-      
-      // Trả về kết quả dưới dạng JSON
+  
+      // Format lại thành mảng
+      const result = Object.entries(grouped).map(([title, tests], index) => ({
+        id: index + 1, // Tạo id tạm (auto-increment)
+        title,
+        tests
+      }));
+  
       return res.status(200).json(result);
     } catch (error) {
       console.error('Error in getAllTests:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
-  async getTestById(req: Request, res: Response) {
+  
+    async getTestById(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {

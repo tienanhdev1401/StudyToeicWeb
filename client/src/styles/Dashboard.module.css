@@ -13,6 +13,14 @@
     margin-bottom: 1rem;
   }
   
+  .dasboardHeaderTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 5rem;
+  }
+  
   /* Trong file Dashboard.module.css */
 
 .filters {

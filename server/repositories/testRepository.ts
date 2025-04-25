@@ -17,8 +17,10 @@ export class TestRepository {
       const test = new Test(
         Number(tests[0].id),
         tests[0].title,
+        tests[0].testCollection,
         Number(tests[0].duration)
       );
+      console.log('test:', test);
       return test;
 
     } catch (error) {
@@ -37,7 +39,7 @@ export class TestRepository {
       const testList = tests.map(row => new Test(
         Number(row.id),
         row.title,
-        row.testCollectionID,
+        row.testCollection,
         Number(row.duration)
       ));
       return testList;

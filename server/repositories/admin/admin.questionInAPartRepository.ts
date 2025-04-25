@@ -1,5 +1,5 @@
-import { QuestionInAPart } from '../models/QuestionInAPart';
-import db from '../config/db';
+import { QuestionInAPart } from '../../models/QuestionInAPart';
+import db from '../../config/db';
 
 export class QuestionInAPartRepository {
   async findByPartId(partId: number): Promise<QuestionInAPart[]> {
@@ -28,6 +28,7 @@ export class QuestionInAPartRepository {
       throw error;
     }
   }
+
   
   async deleteByPartId(partId: number): Promise<boolean> {
     try {

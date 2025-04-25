@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { VocabularyTopicRepository } from '../../repositories/admin/admin.vocabularyTopicRepository';
 import { VocabularyTopic } from '../../models/VocabularyTopic';
 import { Vocabulary } from '../../models/Vocabulary';
-import slugify from 'slugify';
 export class VocabularyTopicController {
   /**
    * Lấy tất cả chủ đề từ vựng kèm danh sách từ vựng
@@ -116,7 +115,6 @@ export class VocabularyTopicController {
         
         // Kiểm tra dữ liệu đầu vào
         console.log('req.body',req.body);
-        const slug = slugify(topicName, { lower: true, strict: true });
         // Tạo một đối tượng VocabularyTopic mới
         const newTopic = new VocabularyTopic(0, topicName,  imgUrl, [], [], new Date(), new Date()); 
 

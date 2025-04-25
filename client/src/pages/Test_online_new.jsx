@@ -11,14 +11,17 @@ const ToeicTest = () => {
   const [activeTab, setActiveTab] = useState('listening');
   const [openSection, setOpenSection] = useState(null);
   const [sections, setSections] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Thêm state loading
   useEffect(() => {
     const fetchTestData = async () => {
       try {
-        // Gọi API lấy dữ liệu
+        setIsLoading(true); // Bắt đầu loading
         const fetchedSections = await TestService.getAllTests();
-        setSections(fetchedSections); // Lưu dữ liệu vào state
+        setSections(fetchedSections);
       } catch (err) {
         console.error("Lỗi khi tải dữ liệu bài kiểm tra:", err);
+      } finally {
+        setIsLoading(false); // Kết thúc loading dù thành công hay thất bại
       }
     };
 
@@ -33,6 +36,18 @@ const ToeicTest = () => {
   return (
     <>
       <Header></Header>
+      {isLoading && (
+        <div id="preloader-active">
+          <div className="preloader d-flex align-items-center justify-content-center">
+            <div className="preloader-inner position-relative">
+              <div className="preloader-circle"></div>
+              <div className="preloader-img pere-text">
+                <img src="assets/img/logo/loder.png" alt="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
 
       <div className="toeic-container">
