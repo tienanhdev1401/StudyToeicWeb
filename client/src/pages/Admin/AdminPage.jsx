@@ -10,6 +10,7 @@ import ManageLearn from './ManageLearner';
 import ManageGrammarTopic from './ManageGrammarTopic';
 import ManageVocabulary from './ManageVocabulary';
 import ManageTest from './ManageTest';
+import NotFound from '../../components/404';
 
 
 const AdminLayout = ({ children }) => {
@@ -40,6 +41,7 @@ const AdminPage = () => {
         <Route path="/grammar" element={<ManageGrammarTopic />} />
         <Route path="/vocabularyTopic/:id/vocabularies" element={<ManageVocabulary />} />
         <Route path="/test" element={<ManageTest />} /> 
+        <Route path="*" element={<NotFound />} /> 
       </Routes>
     </AdminLayout>
   );

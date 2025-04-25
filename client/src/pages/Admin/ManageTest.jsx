@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../styles/ManageTest.css';
 import SuccessAlert from '../../components/SuccessAlert';
 import ErrorAlert from '../../components/ErrorAlert';
-
+import testService from '../../services/admin/admin.testService';
 const ManageTest = () => {
   const navigate = useNavigate();
   const [testList, setTestList] = useState([]);
@@ -35,24 +35,18 @@ const ManageTest = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   // Mẫu dữ liệu test tạm thời
-  const sampleTests = [
-    { id: 1, title: 'Full Test 1', description: 'Complete TOEIC test with listening and reading sections', collection: 'Full Test', numberOfAttempts: 10, averageScore: 80, createdAt: '2023-04-15' },
-    { id: 2, title: 'Listening Practice 1', description: 'Focused listening practice with Part 1 & 2', collection: 'Listening Practice', numberOfAttempts: 5, averageScore: 70, createdAt: '2023-04-20' },
-    { id: 3, title: 'Reading Section Test', description: 'Complete reading section practice', collection: 'Reading Section', numberOfAttempts: 3, averageScore: 65, createdAt: '2023-05-01' },
-    { id: 4, title: 'Grammar Focus Test', description: 'Grammar-focused test with Part 5 & 6', collection: 'Grammar Focus', numberOfAttempts: 2, averageScore: 55, createdAt: '2023-05-10' },
-    { id: 5, title: 'Mini Test 1', description: 'Short practice test with all sections', collection: 'Mini Test', numberOfAttempts: 1, averageScore: 45, createdAt: '2023-05-15' }
-  ];
+ 
 
   // Fetch data function
   const fetchTests = async () => {
     try {
       setIsLoading(true);
       // Trong thực tế, bạn sẽ gọi API ở đây    
-      // const data = await testService.getAllTests();
+      const data = await testService.getAllTests();
       
       // Sử dụng dữ liệu mẫu
       setTimeout(() => {
-        setTestList(sampleTests);
+        setTestList(data);
         setIsLoading(false);
       }, 500);
     } catch (err) {
@@ -143,8 +137,8 @@ const ManageTest = () => {
   // Filter data based on search term
   const filteredData = testList.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.level.toLowerCase().includes(searchTerm.toLowerCase())
+    item.testCollection.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.duration.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Sort data
