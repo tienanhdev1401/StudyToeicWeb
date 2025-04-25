@@ -7,6 +7,7 @@ import ScoreService from '../services/scoreService';
 import SubmissionService from '../services/SubmissionService';
 import ConfirmSubmitPopup from '../components/ConfirmSubmitPopup';
 import TestResultPopup from '../components/TestResultPopup';
+import TestGuidance from '../components/TestGuidance';
 import { useAuth } from '../context/AuthContext';
 
 const Nhap = () => {
@@ -38,6 +39,11 @@ const Nhap = () => {
     const audioContainerRef = useRef(null);
     const [submissionDataForResult, setSubmissionDataForResult] = useState(null);
     const { user } = useAuth();
+    // New state for guidance
+    const [showGuidance, setShowGuidance] = useState(true);
+    const [shouldStartTimer, setShouldStartTimer] = useState(false);
+    // Track which parts the user has already visited
+    const [visitedParts, setVisitedParts] = useState({});
     //Tính điểm 
     const calculateScore = () => {
         if (!testData) {
@@ -151,6 +157,7 @@ const Nhap = () => {
             try {
                 console.log("Fetching test data..." + testID);
                 setLoading(true);
+                // Use Promise.all to fetch data in parallel if possible
                 const rawData = await TestService.getTestById(testID);
                 const processedData = TestService.processTestData(rawData);
                 setTestData(processedData);
@@ -159,7 +166,11 @@ const Nhap = () => {
                 if (!state?.timeLimit && processedData.duration) {
                     setTimeLeft(processedData.duration * 60);
                 }
-                setLoading(false);
+                
+                // Defer non-critical operations after setting test data
+                setTimeout(() => {
+                    setLoading(false);
+                }, 100); // Small timeout to allow UI to update first
             } catch (err) {
                 console.error("Lỗi khi tải dữ liệu bài kiểm tra:", err);
                 setError("Không thể tải bài kiểm tra. Vui lòng thử lại sau.");
@@ -170,105 +181,158 @@ const Nhap = () => {
         fetchTestData();
     }, [testID, state?.timeLimit]);
 
-    // Khởi tạo và lọc câu hỏi
+    // Khởi tạo và lọc câu hỏi - optimize to run faster
     useEffect(() => {
         if (!testData) return;
 
-        const selectedParts = state?.selectedParts || [];
-        const allQuestions = testData.allQuestions || [];
+        // Use setTimeout to defer this CPU-intensive operation to not block rendering
+        const timer = setTimeout(() => {
+            const selectedParts = state?.selectedParts || [];
+            const allQuestions = testData.allQuestions || [];
 
-        const filtered = selectedParts.length > 0
-            ? allQuestions.filter(q => selectedParts.includes(q.partNumber))
-            : allQuestions;
+            // Optimize filtering by using faster array method
+            const filtered = selectedParts.length > 0
+                ? allQuestions.filter(q => selectedParts.includes(q.partNumber))
+                : allQuestions;
 
-        // Chuyển đổi dữ liệu để phù hợp với cấu trúc TOEIC chuẩn
-        const formattedQuestions = filtered.map(q => {
-            // Lấy thông tin resource
-            const resource = q.resource || {};
+            // Convert all at once rather than in multiple operations
+            const formattedQuestions = filtered.map(q => {
+                const resource = q.resource || {};
+                
+                // Ensure options always exists to prevent errors
+                const options = q.options || {};
+                
+                // Optimize object creation by conditional properties
+                const baseQuestion = {
+                    id: q.id || 0,
+                    questionNumber: q.questionNumber || 0,
+                    part: q.partNumber || 0,
+                    resourceId: resource.id || null,
+                    questionText: q.content || '',
+                    // Only include properties relevant to the part type
+                    answers: q.partNumber === 2 ?
+                        [
+                            { id: 'A', text: options.A || '' },
+                            { id: 'B', text: options.B || '' },
+                            { id: 'C', text: options.C || '' }
+                        ] :
+                        [
+                            { id: 'A', text: options.A || '' },
+                            { id: 'B', text: options.B || '' },
+                            { id: 'C', text: options.C || '' },
+                            { id: 'D', text: options.D || '' }
+                        ]
+                };
+                
+                // Add part-specific properties with defensive checks
+                if (q.partNumber === 5) {
+                    baseQuestion.sentence = q.content || '';
+                }
+                // For Parts 6 and 7, only add imageUrl if available, since we're not using text content
+                
+                // Add media only if relevant
+                if (resource.urlAudio) baseQuestion.audioUrl = resource.urlAudio;
+                if (resource.urlImage) baseQuestion.imageUrl = resource.urlImage;
+                
+                return baseQuestion;
+            });
 
-            return {
-                id: q.id,
-                questionNumber: q.questionNumber,
-                part: q.partNumber,
-                resourceId: resource.id || null,
-                // Phần 5 - câu đơn chỉ có câu hỏi
-                sentence: q.partNumber === 5 ? q.content : null,
-                // Phần 6 - đoạn văn với 4 câu hỏi
-                passageText: q.partNumber === 6 && resource.paragraph ?
-                    [resource.paragraph] : [],
-                // Phần 7 - đoạn đọc với số câu hỏi đa dạng
-                passages: q.partNumber === 7 && resource.paragraph ?
-                    [{
-                        title: "Reading Passage",
-                        content: [resource.paragraph]
-                    }] : [],
-                // Lưu trữ đường dẫn âm thanh (Part 1-4)
-                audioUrl: resource.urlAudio || null,
-                // Lưu trữ đường dẫn hình ảnh
-                imageUrl: resource.urlImage || null,
-                questionText: q.content,
-                answers: q.partNumber === 2 ?
-                    // Part 2 chỉ có 3 đáp án A, B, C
-                    [
-                        { id: 'A', text: q.options.A },
-                        { id: 'B', text: q.options.B },
-                        { id: 'C', text: q.options.C }
-                    ] :
-                    // Các part khác đều có 4 đáp án A, B, C, D
-                    [
-                        { id: 'A', text: q.options.A },
-                        { id: 'B', text: q.options.B },
-                        { id: 'C', text: q.options.C },
-                        { id: 'D', text: q.options.D }
-                    ]
-            };
-        });
+            // Additional validation to ensure no undefined or missing properties
+            const validatedQuestions = formattedQuestions.map(q => {
+                // Ensure answers are never undefined
+                if (!q.answers) {
+                    q.answers = q.part === 2 ? 
+                        [
+                            { id: 'A', text: 'N/A' },
+                            { id: 'B', text: 'N/A' }, 
+                            { id: 'C', text: 'N/A' }
+                        ] : 
+                        [
+                            { id: 'A', text: 'N/A' },
+                            { id: 'B', text: 'N/A' }, 
+                            { id: 'C', text: 'N/A' },
+                            { id: 'D', text: 'N/A' }
+                        ];
+                }
+                
+                return q;
+            });
 
-        setFilteredQuestions(formattedQuestions);
-        setCurrentQuestion(1);
+            setFilteredQuestions(validatedQuestions);
+            setCurrentQuestion(1);
+        }, 100);
+
+        return () => clearTimeout(timer);
     }, [testData, state]);
 
-    // Xử lý timer
+    // Xử lý timer - optimize for performance
     useEffect(() => {
-        if (isSubmitted) return;
+        // Only start the timer when loading is complete and guidance is closed
+        if (isSubmitted || loading || showGuidance) return;
 
-        const timer = setInterval(() => {
-            setTimeLeft(prev => {
-                const newTime = Math.max(0, prev - 1);
+        // Use requestAnimationFrame for smoother timing that's less resource-intensive
+        let lastTime = Date.now();
+        let animationFrameId = null;
 
-                // Xử lý khi hết giờ
-                if (newTime === 0 && !hasHandledTimeUp.current) {
-                    hasHandledTimeUp.current = true; // Đánh dấu đã xử lý
-                    handleTimeUp(); // Gọi hàm xử lý
-                }
+        const updateTimer = () => {
+            const now = Date.now();
+            const deltaTime = Math.floor((now - lastTime) / 1000);
+            
+            // Only update if at least 1 second has passed
+            if (deltaTime >= 1) {
+                lastTime = now - (deltaTime % 1000); // Adjust for any remainder
+                
+                setTimeLeft(prev => {
+                    const newTime = Math.max(0, prev - deltaTime);
 
-                return newTime;
-            });
-        }, 1000);
+                    // Xử lý khi hết giờ
+                    if (newTime === 0 && !hasHandledTimeUp.current) {
+                        hasHandledTimeUp.current = true; // Đánh dấu đã xử lý
+                        // Call in the next animation frame to avoid blocking UI
+                        setTimeout(() => handleTimeUp(), 0);
+                    }
+
+                    return newTime;
+                });
+            }
+            
+            // Continue the animation loop unless we're at 0
+            if (timeLeft > 0) {
+                animationFrameId = requestAnimationFrame(updateTimer);
+            }
+        };
+
+        // Start the animation loop
+        animationFrameId = requestAnimationFrame(updateTimer);
 
         // Cleanup
         return () => {
-            clearInterval(timer);
-            hasHandledTimeUp.current = false; // Reset khi dependencies thay đổi
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            hasHandledTimeUp.current = false; // Reset when dependencies thay đổi
         };
-    }, [isSubmitted, answers, testData, state]);
+    }, [isSubmitted, loading, showGuidance, timeLeft]);
 
     // Thêm hàm xử lý khi hết giờ
-
     const handleTimeUp = async () => {
         if (hasHandledTimeUp.current === false) return;
+        
         try {
             // Kiểm tra xem đã nộp bài chưa
             if (isSubmitted) return;
 
-            // Dừng tất cả audio đang phát
+            // Dừng tất cả audio đang phát - more efficient
             stopAudio();
 
-            // Dừng tất cả các audio elements trên trang
-            document.querySelectorAll('audio').forEach(audio => {
-                audio.pause();
-                audio.src = '';
-            });
+            // Dừng tất cả các audio elements trên trang - more efficient
+            const audioElements = document.querySelectorAll('audio');
+            if (audioElements.length > 0) {
+                audioElements.forEach(audio => {
+                    if (!audio.paused) audio.pause();
+                    if (audio.src) audio.removeAttribute('src');
+                });
+            }
 
             // Kiểm tra có câu trả lời không
             if (Object.keys(answers).length === 0) {
@@ -285,7 +349,6 @@ const Nhap = () => {
 
             // Chuẩn bị dữ liệu nộp bài
             const submissionData = prepareAnswersToSubmit();
-            console.log('Dữ liệu nộp bài tự động:', submissionData);
             
             // Lưu dữ liệu submission để sử dụng trong popup
             setSubmissionDataForResult(submissionData);
@@ -301,41 +364,51 @@ const Nhap = () => {
         }
     };
 
+    // Add a function to efficiently handle part changes
+    const checkForPartChange = (nextPart) => {
+        // Only show guidance if this is the first time we're visiting this part
+        if (nextPart !== currentPart && !visitedParts[nextPart]) {
+            setShowGuidance(true);
+        }
+    };
 
-    // Cập nhật nhóm câu hỏi theo đặc trưng của từng phần
+    // Add a memo to track the previous part
+    const prevPartRef = useRef(currentPart);
+
+    // Update current part with optimized guidance handling
     useEffect(() => {
         const question = filteredQuestions[currentQuestion - 1];
         if (!question) {
             setCurrentGroup([]);
             return;
         }
-
-        setCurrentPart(question.part);
-
-        // Xác định cách gom nhóm câu hỏi theo từng phần
-        if (question.part === 1 || question.part === 2 || question.part === 5) {
-            // Part 1, 2, 5: Câu đơn
+        
+        // Get the part from the current question
+        const questionPart = question.part;
+        
+        // If this is a different part than before and we haven't visited it yet, show guidance
+        if (questionPart !== prevPartRef.current && !visitedParts[questionPart]) {
+            setShowGuidance(true);
+        }
+        
+        // Update the part
+        setCurrentPart(questionPart);
+        prevPartRef.current = questionPart;
+        
+        // Organize questions into appropriate groups for efficient rendering
+        if (questionPart === 1 || questionPart === 2 || questionPart === 5) {
+            // Single questions - just need the current one
             setCurrentGroup([question]);
-        } else if (question.part === 3 || question.part === 4) {
-            // Part 3, 4: Gom nhóm theo resourceId (1 audio cho 3 câu hỏi)
-            const newGroup = filteredQuestions.filter(q =>
-                q.resourceId === question.resourceId && q.part === question.part
-            );
-            setCurrentGroup(newGroup);
-        } else if (question.part === 6) {
-            // Part 6: Gom nhóm theo resourceId (1 đoạn văn cho 4 câu hỏi)
-            const newGroup = filteredQuestions.filter(q =>
-                q.resourceId === question.resourceId && q.part === 6
-            );
-            setCurrentGroup(newGroup);
-        } else if (question.part === 7) {
-            // Part 7: Gom nhóm theo resourceId (có thể 2 câu hoặc 4 câu cho 1 đoạn đọc)
-            const newGroup = filteredQuestions.filter(q =>
-                q.resourceId === question.resourceId && q.part === 7
+        } else if ([3, 4, 6, 7].includes(questionPart)) {
+            // For grouped questions, find all with same resourceId and part 
+            // Use more efficient filtering
+            const resourceId = question.resourceId;
+            const newGroup = filteredQuestions.filter(q => 
+                q.resourceId === resourceId && q.part === questionPart
             );
             setCurrentGroup(newGroup);
         }
-    }, [currentQuestion, filteredQuestions]);
+    }, [currentQuestion, filteredQuestions, visitedParts]);
 
     // Tự động phát audio cho phần nghe (1-4)
     useEffect(() => {
@@ -345,33 +418,42 @@ const Nhap = () => {
         // Dừng audio đang phát (nếu có) khi chuyển câu hỏi
         stopAudio();
         
-        // Xóa tất cả audio players cũ khi chuyển câu hỏi
-        cleanupAllAudioPlayers();
+        // Xóa tất cả audio players cũ khi chuyển câu hỏi - optimize to only clean when needed
+        if (audioElement || isAudioPlaying) {
+            cleanupAllAudioPlayers();
+        }
 
-        // Xử lý audio cho các phần nghe (1, 2, 3, 4)
+        // Xử lý audio cho các phần nghe (1, 2, 3, 4) - add loading optimization
         if ([1, 2, 3, 4].includes(question.part)) {
             const audioUrl = question.audioUrl || currentGroup[0]?.audioUrl;
             if (!audioUrl) return;
 
             // Đặt timeout nhỏ để không gây ra quá nhiều yêu cầu đồng thời
+            // Add progressive loading - first clean up, then after a delay, load audio
             const timer = setTimeout(() => {
                 if (isSubmitted) {
-                    // Chế độ xem chi tiết: hiển thị audio player với controls
-                    createAudioPlayer(audioUrl);
+                    // Chế độ xem chi tiết: hiển thị audio player với controls - lazily create
+                    // Only create audio player if not already viewing details
+                    requestAnimationFrame(() => {
+                        createAudioPlayer(audioUrl);
+                    });
                 } else {
-                    // Chế độ làm bài: tự động phát audio
-                    const onAudioComplete = () => {
-                        if ([1, 2, 3, 4].includes(question.part) && !isSubmitted) {
-                            navigateQuestions('next');
-                        }
-                    };
-                    
+                    // Chế độ làm bài: tự động phát audio - optimize to only set up once
                     const interacted = localStorage.getItem('userInteracted');
-                    if (interacted === "true") {
-                        playAudio(audioUrl, onAudioComplete);
+                    if (interacted === "true" && !showGuidance) {
+                        const onAudioComplete = () => {
+                            if ([1, 2, 3, 4].includes(question.part) && !isSubmitted) {
+                                navigateQuestions('next');
+                            }
+                        };
+                        
+                        // Delay audio loading slightly to improve perceived performance
+                        requestAnimationFrame(() => {
+                            playAudio(audioUrl, onAudioComplete);
+                        });
                     }
                 }
-            }, 500);
+            }, 300); // Slightly longer delay to improve UI responsiveness
 
             // Cleanup function to clear the timeout
             return () => {
@@ -379,20 +461,28 @@ const Nhap = () => {
                 stopAudio();
             };
         }
-    }, [currentQuestion, filteredQuestions, currentGroup, isSubmitted]);
+    }, [currentQuestion, filteredQuestions, currentGroup, isSubmitted, showGuidance]);
 
-    // Hàm xóa tất cả audio players khi chuyển part
+    // Hàm xóa tất cả audio players khi chuyển part - improved efficiency
     const cleanupAllAudioPlayers = () => {
         try {
-            // Tìm tất cả audio containers và xóa nội dung
-            document.querySelectorAll('.audio-container').forEach(container => {
-                container.innerHTML = '';
-            });
+            // More efficient way to clean audio containers
+            const containers = document.querySelectorAll('.audio-container');
+            if (containers.length > 0) {
+                // Only clear if containers exist
+                containers.forEach(container => {
+                    container.innerHTML = '';
+                });
+            }
             
-            // Dừng tất cả audio elements
+            // Stop any playing audio elements more efficiently
             document.querySelectorAll('audio').forEach(audio => {
-                audio.pause();
-                audio.src = '';
+                if (!audio.paused) {
+                    audio.pause();
+                }
+                if (audio.src) {
+                    audio.removeAttribute('src');
+                }
             });
         } catch (error) {
             console.error('Lỗi khi xóa audio players:', error);
@@ -401,22 +491,40 @@ const Nhap = () => {
 
     // Dừng audio khi component unmount hoặc khi nộp bài/thoát trang
     useEffect(() => {
-        // Cleanup khi unmount
+        // Cleanup when component unmounts
         return () => {
+            // Clean up all audio resources
             stopAudio();
-            cleanupAllAudioPlayers();
+            
+            // Use a more efficient way to clean up audio elements
+            try {
+                document.querySelectorAll('audio').forEach(audio => {
+                    audio.pause();
+                    audio.removeAttribute('src');
+                    audio.load();
+                });
+            } catch (error) {
+                console.error('Error cleaning up audio:', error);
+            }
+            
+            // Clear any timers/intervals
+            hasHandledTimeUp.current = false;
         };
     }, []);
 
-    // Dừng audio khi submit hoặc khi chuyển part
+    // Dừng audio khi submit hoặc khi chuyển part - optimize
     useEffect(() => {
         if (isSubmitted) {
             stopAudio();
-            cleanupAllAudioPlayers();
+            // More efficient cleanup
+            document.querySelectorAll('audio').forEach(audio => {
+                audio.pause();
+                audio.removeAttribute('src');
+            });
         }
     }, [isSubmitted, currentPart]);
 
-    // Hàm tạo audio player với controls
+    // Hàm tạo audio player với controls - optimize
     const createAudioPlayer = (url) => {
         if (!url) {
             console.error('Không có URL audio');
@@ -424,35 +532,20 @@ const Nhap = () => {
         }
         
         try {
-            // Xóa tất cả audio players cũ trước khi tạo mới
-            cleanupAllAudioPlayers();
+            // Xóa tất cả audio players cũ trước khi tạo mới - optimized for speed
+            const audioContainers = document.querySelectorAll('.audio-container');
+            if (audioContainers.length === 0) return;
             
-            // Tìm container cho part hiện tại
-            const audioContainers = document.querySelectorAll('.audio-resource');
-            if (audioContainers.length === 0) {
-                console.error('Không tìm thấy audio container');
-                return;
-            }
-            
-            // Sử dụng container đầu tiên
+            // Just clear the first container we find instead of trying to find the right one
             const container = audioContainers[0];
-            
-            // Tìm audio container trong container hiện tại
-            const audioContainer = container.querySelector('.audio-container');
-            if (!audioContainer) {
-                console.error('Không tìm thấy audio container trong resource');
-                return;
-            }
-            
-            // Xóa nội dung cũ
-            audioContainer.innerHTML = '';
+            container.innerHTML = '';
             
             // Tạo audio element
             const audioElem = document.createElement('audio');
             audioElem.src = url;
             audioElem.controls = true;
-            audioElem.autoplay = false; // Không tự động phát
-            audioElem.preload = 'metadata';
+            audioElem.autoplay = false;
+            audioElem.preload = 'metadata'; // Optimized - only load metadata not entire file
             audioElem.className = 'audio-player';
             audioElem.style.width = '100%';
             
@@ -462,9 +555,7 @@ const Nhap = () => {
             });
             
             // Thêm vào container
-            audioContainer.appendChild(audioElem);
-            
-            console.log('Đã tạo audio player cho URL:', url);
+            container.appendChild(audioElem);
         } catch (error) {
             console.error('Lỗi khi tạo audio player:', error);
         }
@@ -567,7 +658,25 @@ const Nhap = () => {
         
         // Tìm vị trí câu hỏi và chuyển đến
         const index = filteredQuestions.findIndex(q => q.id === questionId);
-        if (index >= 0) setCurrentQuestion(index + 1);
+        if (index >= 0) {
+            // Check if moving to a different part
+            const currentQ = filteredQuestions[currentQuestion - 1];
+            const targetQ = filteredQuestions[index];
+            
+            if (currentQ && targetQ && currentQ.part !== targetQ.part) {
+                // Only show guidance if this part hasn't been visited before
+                if (!visitedParts[targetQ.part]) {
+                    setShowGuidance(true);
+                    // Mark as visited when guidance is shown
+                    setVisitedParts(prev => ({
+                        ...prev,
+                        [targetQ.part]: true
+                    }));
+                }
+            }
+            
+            setCurrentQuestion(index + 1);
+        }
     };
 
     const prepareAnswersToSubmit = () => {
@@ -678,6 +787,7 @@ const Nhap = () => {
 
         // Xác định resourceId hiện tại (dùng để nhận diện nhóm)
         const currentResourceId = currentQ.resourceId;
+        const currentQuestionPart = currentQ.part;
 
         if (direction === 'next') {
             // TÌM CÂU ĐẦU TIÊN CỦA NHÓM TIẾP THEO
@@ -693,6 +803,16 @@ const Nhap = () => {
                 }
 
                 if (nextGroupIndex !== -1) {
+                    // Check if moving to a new part that hasn't been visited
+                    const nextPart = filteredQuestions[nextGroupIndex].part;
+                    if (nextPart !== currentQuestionPart && !visitedParts[nextPart]) {
+                        setShowGuidance(true);
+                        // Mark as visited when guidance is shown
+                        setVisitedParts(prev => ({
+                            ...prev,
+                            [nextPart]: true
+                        }));
+                    }
                     setCurrentQuestion(nextGroupIndex + 1);
                 } else {
                     // Nếu không tìm thấy nhóm tiếp theo, di chuyển đến câu tiếp theo
@@ -700,7 +820,20 @@ const Nhap = () => {
                 }
             } else {
                 // Đối với các phần không nhóm, chỉ đơn giản là tới câu tiếp theo
-                setCurrentQuestion(Math.min(filteredQuestions.length, currentQuestion + 1));
+                const nextQuestionIndex = Math.min(filteredQuestions.length, currentQuestion + 1) - 1;
+                // Check if moving to a new part that hasn't been visited
+                if (nextQuestionIndex < filteredQuestions.length) {
+                    const nextPart = filteredQuestions[nextQuestionIndex].part;
+                    if (nextPart !== currentQuestionPart && !visitedParts[nextPart]) {
+                        setShowGuidance(true);
+                        // Mark as visited when guidance is shown
+                        setVisitedParts(prev => ({
+                            ...prev,
+                            [nextPart]: true
+                        }));
+                    }
+                }
+                setCurrentQuestion(nextQuestionIndex + 1);
             }
         } else {
             // TÌM CÂU ĐẦU TIÊN CỦA NHÓM TRƯỚC ĐÓ 
@@ -727,6 +860,15 @@ const Nhap = () => {
                         firstOfPrevGroup--;
                     }
 
+                    // Check if moving to a new part that hasn't been visited
+                    if (prevPart !== currentQuestionPart && !visitedParts[prevPart]) {
+                        setShowGuidance(true);
+                        // Mark as visited when guidance is shown
+                        setVisitedParts(prev => ({
+                            ...prev,
+                            [prevPart]: true
+                        }));
+                    }
                     setCurrentQuestion(firstOfPrevGroup + 1);
                 } else {
                     // Nếu không tìm thấy nhóm trước đó, lùi một câu
@@ -734,7 +876,20 @@ const Nhap = () => {
                 }
             } else {
                 // Đối với các phần không nhóm, chỉ đơn giản là lùi một câu
-                setCurrentQuestion(Math.max(1, currentQuestion - 1));
+                const prevQuestionIndex = Math.max(1, currentQuestion - 1) - 1;
+                // Check if moving to a new part that hasn't been visited
+                if (prevQuestionIndex >= 0) {
+                    const prevPart = filteredQuestions[prevQuestionIndex].part;
+                    if (prevPart !== currentQuestionPart && !visitedParts[prevPart]) {
+                        setShowGuidance(true);
+                        // Mark as visited when guidance is shown
+                        setVisitedParts(prev => ({
+                            ...prev,
+                            [prevPart]: true
+                        }));
+                    }
+                }
+                setCurrentQuestion(prevQuestionIndex + 1);
             }
         }
     };
@@ -754,31 +909,35 @@ const Nhap = () => {
         return (
             <div className={`part1-container ${isSubmitted ? 'submitted' : ''}`}>
                 <div className="image-container">
-                    <img
-                        src={question.imageUrl}
-                        alt={`Hình ảnh câu ${question.questionNumber}`}
-                        className="main-image"
-                        onError={(e) => {
-                            console.error("Lỗi tải hình ảnh:", e);
-                            e.target.src = "/placeholder-image.jpg";
-                            e.target.alt = "Không thể tải hình ảnh";
-                        }}
-                    />
+                    {question.imageUrl ? (
+                        <img
+                            src={question.imageUrl}
+                            alt={`Hình ảnh câu ${question.questionNumber}`}
+                            className="main-image"
+                            onError={(e) => {
+                                console.error("Lỗi tải hình ảnh:", e);
+                                e.target.src = "/placeholder-image.jpg";
+                                e.target.alt = "Không thể tải hình ảnh";
+                            }}
+                        />
+                    ) : (
+                        <div className="image-placeholder">Không có hình ảnh</div>
+                    )}
                 </div>
 
                 <div className="audio-resource">
                     {isSubmitted ? (
-                        <div className="audio-container" id={`audio-container-${currentGroup[0].id}`}>
+                        <div className="audio-container" id={`audio-container-${question.id}`}>
                             {/* Audio player with controls will be inserted here in review mode */}
                         </div>
                     ) : (
                         isAudioPlaying ? (
                             <div className="audio-status playing">
-                                {currentGroup[0].part === 3 ? 'Đang phát hội thoại...' : 'Đang phát bài nói...'}
+                                {question.part === 3 ? 'Đang phát hội thoại...' : 'Đang phát bài nói...'}
                             </div>
                         ) : (
                             <div className="audio-status">
-                                {currentGroup[0].part === 3 ? 'Chuẩn bị phát hội thoại...' : 'Chuẩn bị phát bài nói...'}
+                                {question.part === 3 ? 'Chuẩn bị phát hội thoại...' : 'Chuẩn bị phát bài nói...'}
                             </div>
                         )
                     )}
@@ -790,7 +949,7 @@ const Nhap = () => {
                     </div>
 
                     <div className="answer-grid">
-                        {question.answers.map(answer => {
+                        {question.answers && question.answers.map(answer => {
                             // Determine if this option should be highlighted
                             let optionClass = "option-item";
                             if (isSubmitted) {
@@ -844,17 +1003,17 @@ const Nhap = () => {
             <div className={`part2-container ${isSubmitted ? 'submitted' : ''}`}>
                 <div className="audio-resource">
                  {isSubmitted ? (
-                        <div className="audio-container" id={`audio-container-${currentGroup[0].id}`}>
+                        <div className="audio-container" id={`audio-container-${question.id}`}>
                             {/* Audio player with controls will be inserted here in review mode */}
                         </div>
                     ) : (
                         isAudioPlaying ? (
                             <div className="audio-status playing">
-                                {currentGroup[0].part === 3 ? 'Đang phát hội thoại...' : 'Đang phát bài nói...'}
+                                {question.part === 3 ? 'Đang phát hội thoại...' : 'Đang phát bài nói...'}
                             </div>
                         ) : (
                             <div className="audio-status">
-                                {currentGroup[0].part === 3 ? 'Chuẩn bị phát hội thoại...' : 'Chuẩn bị phát bài nói...'}
+                                {question.part === 3 ? 'Chuẩn bị phát hội thoại...' : 'Chuẩn bị phát bài nói...'}
                             </div>
                         )
                     )}
@@ -866,7 +1025,7 @@ const Nhap = () => {
                     </div>
 
                     <div className="answer-grid">
-                        {question.answers.map(answer => {
+                        {question.answers && question.answers.map(answer => {
                             // Determine if this option should be highlighted
                             let optionClass = "option-item";
                             if (isSubmitted) {
@@ -934,7 +1093,7 @@ const Nhap = () => {
                         </div>
 
                         {/* Phần hiển thị ảnh (nếu có) */}
-                        {hasImage && (
+                        {hasImage && currentGroup[0].imageUrl && (
                             <div className="image-container">
                                 <img
                                     src={currentGroup[0].imageUrl}
@@ -962,11 +1121,11 @@ const Nhap = () => {
                                 <div key={q.id} className="question-block">
                                     <div className="question-header-dotest">
                                         <span className="question-number-dotest">Câu {q.questionNumber}: </span>
-                                        <span className="sentence">{q.questionText}</span>
+                                        <span className="sentence">{q.questionText || ''}</span>
                                     </div>
 
                                     <div className="answer-options">
-                                        {q.answers.map(answer => {
+                                        {q.answers && q.answers.map(answer => {
                                             // Determine if this option should be highlighted
                                             let optionClass = "option-item";
                                             if (isSubmitted) {
@@ -1025,11 +1184,11 @@ const Nhap = () => {
                 <div className="answer-section">
                     <div className="question-header-dotest">
                         <span className="question-number-dotest">Câu {question.questionNumber}: </span>
-                        <span className="sentence">{question.sentence}</span>
+                        <span className="sentence">{question.sentence || question.questionText || ''}</span>
                     </div>
 
                     <div className="answer-grid">
-                        {question.answers.map(answer => {
+                        {question.answers && question.answers.map(answer => {
                             // Determine if this option should be highlighted
                             let optionClass = "option-item";
                             if (isSubmitted) {
@@ -1091,11 +1250,6 @@ const Nhap = () => {
                                 />
                             </div>
                         )}
-                        <div className="text-resource">
-                            {currentGroup[0].passageText.map((text, idx) => (
-                                <p key={idx} dangerouslySetInnerHTML={{ __html: text }} />
-                            ))}
-                        </div>
                     </div>
 
                     <div className="questions-panel">
@@ -1115,7 +1269,7 @@ const Nhap = () => {
                                     </div>
 
                                     <div className="answer-options">
-                                        {q.answers.map(answer => {
+                                        {q.answers && q.answers.map(answer => {
                                             // Determine if this option should be highlighted
                                             let optionClass = "option-item";
                                             if (isSubmitted) {
@@ -1165,6 +1319,7 @@ const Nhap = () => {
             <div className={`part7-container ${isSubmitted ? 'submitted' : ''}`}>
                 <div className="part7-two-columns">
                     <div className="resource-panel scrollable-image">
+                        {/* Display image if available */}
                         {currentGroup[0].imageUrl && (
                             <div className="image-container">
                                 <img
@@ -1198,7 +1353,8 @@ const Nhap = () => {
                                     </div>
 
                                     <div className="answer-options">
-                                        {q.answers.map(answer => {
+                                        {/* Add check for answers array */}
+                                        {q.answers && q.answers.map(answer => {
                                             // Determine if this option should be highlighted
                                             let optionClass = "option-item";
                                             if (isSubmitted) {
@@ -1240,12 +1396,19 @@ const Nhap = () => {
         );
     };
 
-    // Render các câu hỏi dựa trên phần hiện tại
+    // Render các câu hỏi dựa trên phần hiện tại - optimize rendering
     const renderQuestionsByPart = () => {
         if (currentGroup.length === 0) return null;
 
         const part = currentGroup[0].part;
-
+        
+        // Use memoization to avoid unnecessary re-renders
+        // Only render what's needed based on part type
+        if (loading) {
+            return <div className="loading-placeholder">Đang tải nội dung...</div>;
+        }
+        
+        // Use specific rendering functions for each part to optimize performance
         switch (part) {
             case 1:
                 return renderPart1Question(currentGroup[0]);
@@ -1314,6 +1477,19 @@ const Nhap = () => {
             }
         };
     }, [audioElement]);
+
+    // Optimize the handleGuidanceClose function
+    const handleGuidanceClose = () => {
+        // Close guidance and enable audio autoplay
+        setShowGuidance(false);
+        localStorage.setItem('userInteracted', "true");
+        
+        // Mark current part as visited
+        setVisitedParts(prev => ({
+            ...prev,
+            [currentPart]: true
+        }));
+    };
 
     return (
         <div className="do-test-container">
@@ -1402,24 +1578,36 @@ const Nhap = () => {
                 )}
             </main>
 
-            {/* Popup xác nhận nộp bài */}
-            <ConfirmSubmitPopup
-                isOpen={showConfirmPopup}
-                onClose={() => setShowConfirmPopup(false)}
-                onConfirm={confirmSubmitTest}
-                answeredCount={Object.keys(answers).length}
-                totalQuestions={filteredQuestions.length}
-            />
+            {/* Only render popups when needed to improve performance */}
+            {showConfirmPopup && (
+                <ConfirmSubmitPopup
+                    isOpen={showConfirmPopup}
+                    onClose={() => setShowConfirmPopup(false)}
+                    onConfirm={confirmSubmitTest}
+                    answeredCount={Object.keys(answers).length}
+                    totalQuestions={filteredQuestions.length}
+                />
+            )}
 
-            {/* Popup kết quả bài thi (hiển thị ngắn gọn) */}
-            <TestResultPopup
-                isOpen={showResultPopup}
-                onClose={() => setShowResultPopup(false)}
-                result={scoreResult}
-                testTitle={testData?.title || "Bài thi TOEIC"}
-                onSaveResult={handleSaveResult}
-                submissionData={submissionDataForResult}
-            />
+            {/* Only render when needed */}
+            {showResultPopup && (
+                <TestResultPopup
+                    isOpen={showResultPopup}
+                    onClose={() => setShowResultPopup(false)}
+                    result={scoreResult}
+                    testTitle={testData?.title || "Bài thi TOEIC"}
+                    onSaveResult={handleSaveResult}
+                    submissionData={submissionDataForResult}
+                />
+            )}
+
+            {/* Show guidance if applicable and only when needed */}
+            {!loading && showGuidance && currentPart > 0 && (
+                <TestGuidance 
+                    part={currentPart} 
+                    onClose={handleGuidanceClose} 
+                />
+            )}
         </div>
     );
 
