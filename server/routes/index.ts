@@ -13,8 +13,6 @@ import exerciseRouter from './exerciseRouter'
 import learningRouter from './learningGoalRouter'
 import commentRoutes from './commentRoutes'
 import wordNoteRoutes from './wordNoteRoutes'
-
-
 import questionRoutes from './questionRoutes';
 import testRoutes from './testRoutes';
 import submissionRoutes from './submissionRoutes';
@@ -35,6 +33,10 @@ function route(app: Application): void {
   app.use('/api/learning-goal',learningRouter)
   app.use('/api/comment', commentRoutes);
   app.use('/api/wordnote', wordNoteRoutes);
+  app.use('/api/exercise',exerciseRouter);
+  app.use('/api/question', questionRoutes);
+  app.use('/api/test', testRoutes);
+  app.use('/api/submissions', submissionRoutes);
   app.use('/', test);
 }
 
