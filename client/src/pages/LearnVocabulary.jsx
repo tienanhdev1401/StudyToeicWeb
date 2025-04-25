@@ -5,6 +5,7 @@ import '../styles/LearnVocabulary.css';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import VocabularyTopicService from '../services/vocabularyTopicService';
+import VocabularyService from '../services/vocabularyService';
 
 const ITEMS_PER_PAGE = 9;
 
@@ -20,12 +21,33 @@ const LearnVocabulary = () => {
         const fetchVocabularyTopics = async () => {
             try {
                 const data = await VocabularyTopicService.getAllVocabularyTopics();
-                setTopics(data.map(topic => ({
-                    id: topic.id,
-                    name: topic.topicName,
-                    wordCount: topic.vocabularies?.length || 0,
-                    image: topic.imageUrl || 'assets/img/gallery/testtopic.jpg'
-                })));
+                
+                // Tạo mảng promise để lấy số lượng từ vựng cho mỗi chủ đề
+                const topicsWithCount = await Promise.all(
+                    data.map(async (topic) => {
+                        try {
+                            // Lấy số lượng từ vựng cho mỗi chủ đề sử dụng API riêng
+                            const count = await VocabularyService.getVocabularyCountByTopicId(topic.id);
+                            return {
+                                id: topic.id,
+                                name: topic.topicName,
+                                wordCount: count, // Sử dụng count từ API thay vì đếm mảng
+                                image: topic.imageUrl || 'assets/img/gallery/testtopic.jpg'
+                            };
+                        } catch (err) {
+                            console.error(`Error fetching count for topic ${topic.id}:`, err);
+                            // Fallback: sử dụng độ dài mảng vocabularies nếu API bị lỗi
+                            return {
+                                id: topic.id,
+                                name: topic.topicName,
+                                wordCount: topic.vocabularies?.length || 0,
+                                image: topic.imageUrl || 'assets/img/gallery/testtopic.jpg'
+                            };
+                        }
+                    })
+                );
+                
+                setTopics(topicsWithCount);
                 setLoading(false);
             } catch (err) {
                 console.error('Error fetching vocabulary topics:', err);

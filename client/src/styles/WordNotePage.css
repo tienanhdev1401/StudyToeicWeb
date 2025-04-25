@@ -1,0 +1,241 @@
+.word-note-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 100px;
+}
+
+.word-note-header {
+    margin-bottom: 2rem;
+}
+
+.word-note-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.word-note-header-content h1 {
+    display: flex;
+    align-items: center;
+    color: #2c3e50;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.word-note-header-icon {
+    margin-right: 1rem;
+    color: #3498db;
+}
+
+.word-note-create-btn {
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+    background-color: #3498db;
+    border: none;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+
+.word-note-create-btn svg {
+    font-size: 1.5rem;
+}
+
+.word-note-search-bar {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.word-note-search-bar input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.word-note-search-bar input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.word-note-search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #95a5a6;
+}
+
+.word-note-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.word-note-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.word-note-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.word-note-card-header {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.word-note-card-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.25rem;
+}
+
+.word-note-card-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* Style chung cho các nút icon */
+.icon-button {
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    margin: 0;
+    cursor: pointer;
+    font-size: 1.3rem;
+    line-height: 1;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+/* Màu cho icon sửa */
+.edit-icon-btn {
+    color: #4285F4;
+}
+
+/* Màu cho icon xóa */
+.delete-icon-btn {
+    color: #EA4335;
+}
+
+.word-note-card-body {
+    padding: 1.5rem;
+}
+
+.word-note-card-body p {
+    margin: 0.5rem 0;
+    color: #7f8c8d;
+}
+
+.word-note-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    color: #95a5a6;
+}
+
+.word-note-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #bdc3c7;
+}
+
+.word-note-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.word-note-modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.word-note-modal-content h2 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
+.word-note-modal-content input {
+    margin-bottom: 1.5rem;
+}
+
+.word-note-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.word-note-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+@media (max-width: 768px) {
+    .word-note-container {
+        padding: 1rem;
+    }
+
+    .word-note-header-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .word-note-header-content h1 {
+        justify-content: center;
+    }
+
+    .word-note-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Thêm style cho tiêu đề có thể click */
+.word-note-title {
+    /* cursor: pointer; đã được thêm inline, có thể thêm ở đây nếu muốn */
+    transition: color 0.2s ease;
+}
+
+.word-note-title:hover {
+    color: #3498db; /* Đổi màu khi hover giống link */
+}
+
+.word-note-card-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.25rem;
+} 

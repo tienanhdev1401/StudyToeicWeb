@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser } from 'react-icons/fa';
+import { FaUser, FaBook } from 'react-icons/fa';
 
 const Header = ({ style, className }) => {
     const { isLoggedIn, user } = useAuth();
@@ -43,14 +43,25 @@ const Header = ({ style, className }) => {
                                                         </li>
                                                     )}
                                                     {isLoggedIn && (
-                                                        <li 
-                                                            className="user-icon-wrapper" 
-                                                            style={{ marginLeft: '30px' }}
-                                                        >
-                                                            <Link to="/profile" className="user-icon">
-                                                                <FaUser />
-                                                            </Link>
-                                                        </li>
+                                                        <>
+                                                            <li 
+                                                                className="notebook-icon-wrapper" 
+                                                                style={{ marginLeft: '30px' }}
+                                                            >
+                                                                <Link to="/word-note" className="notebook-icon" title="Sổ tay">
+                                                                    <FaBook />
+                                                                    <span style={{ marginLeft: '5px' }}>Sổ tay</span>
+                                                                </Link>
+                                                            </li>
+                                                            <li 
+                                                                className="user-icon-wrapper" 
+                                                                style={{ marginLeft: '30px' }}
+                                                            >
+                                                                <Link to="/profile" className="user-icon">
+                                                                    <FaUser />
+                                                                </Link>
+                                                            </li>
+                                                        </>
                                                     )}
                                                 </ul>
                                             </nav>
