@@ -28,6 +28,7 @@ import DictionaryPage from './pages/DictionaryPage';
 import Nhap from './pages/nhap';
 import WordNotePage from './pages/WordNotePage';
 import WordNoteDetail from './pages/WordNoteDetail';
+import ForgetPassword from './pages/ForgetPassword';
 // Gọi hàm này khi ứng dụng khởi động
 
 import {BrowserRouter,Routes,Route } from 'react-router-dom';
@@ -71,6 +72,7 @@ function App() {
             <Route path="/calculateScore" element={<TOEICCalculator/>}/>
             <Route path="/word-note" element={<WordNotePage />} />
             <Route path="/word-note/:wordNoteId" element={<WordNoteDetail />} />
+            <Route path="/forgetpassword" element={<ForgetPassword />} />
           </Routes>
         </UserProvider> {/* Đóng UserProvider */}
         </AuthProvider>
