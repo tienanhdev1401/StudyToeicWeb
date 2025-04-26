@@ -31,6 +31,8 @@ import NotFound from './components/404';
 import WordNotePage from './pages/WordNotePage';
 import WordNoteDetail from './pages/WordNoteDetail';
 import TawkChat from './components/TawkChat';
+import TestHistory from './pages/TestHistory';
+import TestHistoryDetail from './pages/TestHistoryDetail';
 // Gọi hàm này khi ứng dụng khởi động
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -74,10 +76,11 @@ function App() {
                 <Route path="/learn-vocabulary/:topicSlug/do-vocabulary-exercise" element={<DoVocabularyExercise />} />
                 <Route path="/exercise/:exerciseId" element={<DoGrammarExercise />} />
                 <Route path="/exercise/:exerciseId" element={<DoExercise />} />
-
                 <Route path="/calculateScore" element={<TOEICCalculator />} />
                 <Route path="/word-note" element={<WordNotePage />} />
                 <Route path="/word-note/:wordNoteId" element={<WordNoteDetail />} />
+                <Route path="/test-history" element={<TestHistory />} />
+                <Route path="/test-history/detail/:submissionId" element={<TestHistoryDetail />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               

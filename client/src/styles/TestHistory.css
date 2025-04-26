@@ -1,0 +1,234 @@
+.test-history-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.test-history-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.test-history-title {
+  font-size: 2.5rem;
+  color: #222;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.test-history-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.test-history-error {
+  background-color: #fff5f5;
+  border-left: 4px solid #ff5252;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  color: #d32f2f;
+}
+
+.test-history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.test-history-empty p {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.test-history-empty-button {
+  background-color: #ff5c00;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.test-history-empty-button:hover {
+  background-color: #e65100;
+}
+
+.test-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.test-history-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+
+.test-history-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.test-history-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.test-history-item-header:hover {
+  background-color: #f1f3f5;
+}
+
+.test-history-item-title {
+  flex: 1;
+}
+
+.test-history-item-title h2 {
+  font-size: 1.4rem;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.test-history-item-stats {
+  display: flex;
+  gap: 20px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.test-history-item-attempts {
+  display: flex;
+  align-items: center;
+}
+
+.test-history-item-high-score {
+  font-weight: 600;
+  color: #ff5c00;
+}
+
+.test-history-item-toggle {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s;
+}
+
+.test-history-item-toggle.expanded {
+  transform: rotate(180deg);
+}
+
+.test-history-item-content {
+  padding: 0;
+  max-height: 500px;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+.test-history-attempts-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+  padding: 12px 20px;
+  background-color: #f0f0f0;
+  font-weight: 600;
+  border-bottom: 1px solid #e0e0e0;
+  color: #555;
+}
+
+.test-history-attempt {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+  padding: 12px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.test-history-attempt:hover {
+  background-color: #f9f9f9;
+}
+
+.test-history-attempt:last-child {
+  border-bottom: none;
+}
+
+.test-history-attempt-date {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.test-history-attempt-score {
+  font-weight: 600;
+  color: #ff5c00;
+}
+
+.test-history-attempt-listening,
+.test-history-attempt-reading {
+  color: #555;
+}
+
+.test-history-attempt-time {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.test-history-attempt-actions {
+  text-align: center;
+}
+
+.test-history-view-button {
+  background-color: #ff5c00;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.test-history-view-button:hover {
+  background-color: #e65100;
+}
+
+@media (max-width: 768px) {
+  .test-history-container {
+    padding: 15px;
+    margin: 20px auto;
+  }
+
+  .test-history-title {
+    font-size: 2rem;
+  }
+
+  .test-history-item-title h2 {
+    font-size: 1.2rem;
+  }
+
+  .test-history-item-stats {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .test-history-attempts-header,
+  .test-history-attempt {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+
+  .test-history-attempt-listening,
+  .test-history-attempt-reading {
+    display: none;
+  }
+} 

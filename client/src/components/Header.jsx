@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaBook, FaSearch } from 'react-icons/fa';
+import { FaUser, FaBook, FaSearch, FaHistory } from 'react-icons/fa';
 import '../styles/Header.css';
 
 const Header = ({ style, className }) => {
@@ -106,6 +106,15 @@ const Header = ({ style, className }) => {
                                                                 <Link to="/word-note" className="notebook-icon" title="Sổ tay">
                                                                     <FaBook />
                                                                     <span style={{ marginLeft: '5px' }}>Sổ tay</span>
+                                                                </Link>
+                                                            </li>
+                                                            <li
+                                                                className="history-icon-wrapper"
+                                                                style={{ marginLeft: '30px' }}
+                                                            >
+                                                                <Link to="/test-history" className="history-icon" title="Lịch sử làm bài">
+                                                                    <FaHistory />
+                                                                    <span style={{ marginLeft: '5px' }}>Lịch sử</span>
                                                                 </Link>
                                                             </li>
                                                             <li
