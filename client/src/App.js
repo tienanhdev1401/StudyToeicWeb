@@ -30,6 +30,7 @@ import { TestProvider } from './context/TestContext';
 import NotFound from './components/404';
 import WordNotePage from './pages/WordNotePage';
 import WordNoteDetail from './pages/WordNoteDetail';
+import TawkChat from './components/TawkChat';
 // Gọi hàm này khi ứng dụng khởi động
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -79,6 +80,9 @@ function App() {
                 <Route path="/word-note/:wordNoteId" element={<WordNoteDetail />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              
+              {/* Add TawkChat component here so it's available on all pages */}
+              <TawkChat />
             </TestProvider>
           </UserProvider> {/* Đóng UserProvider */}
         </AuthProvider>
