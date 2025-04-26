@@ -459,81 +459,79 @@ const ProfilePage = () => {
                     {/* Learning Goal Section */}
                     <div className="learning-goal-section">
                         <h3 className="section-title">Mục tiêu học tập</h3>
-                        {!learningGoal ? (
-                            <div className="no-goal">
-                                <p>Bạn chưa thiết lập mục tiêu học tập</p>
-                                <button className="btn-primary" onClick={() => {
-                                    setIsEditingGoal(true);
-                                    setEditedGoal({
-                                        duration: 30,
-                                        scoreTarget: 500,
-                                        learnerId: user.id
-                                    });
-                                }}>
-                                    Thiết lập mục tiêu
-                                </button>
+                        {isEditingGoal ? (
+                            <div className="goal-edit-form">
+                                <div className="form-group">
+                                    <label>Thời gian (ngày):</label>
+                                    <input
+                                        type="text"
+                                        value={editedGoal?.duration ?? ''}
+                                        onChange={(e) => handleGoalChange('duration', e.target.value)}
+                                        className="edit-input"
+                                        placeholder="Ít nhất 30 ngày"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Điểm mục tiêu:</label>
+                                    <input
+                                        type="text"
+                                        value={editedGoal?.scoreTarget ?? ''}
+                                        onChange={(e) => handleGoalChange('scoreTarget', e.target.value)}
+                                        className="edit-input"
+                                        placeholder="Từ 300 đến 990"
+                                    />
+                                </div>
+                                <div className="goal-buttons">
+                                    <button
+                                        className="btn-primary"
+                                        onClick={handleGoalSave}
+                                        disabled={!editedGoal?.duration || !editedGoal?.scoreTarget}
+                                    >
+                                        {learningGoal ? 'Cập nhật' : 'Lưu mục tiêu'}
+                                    </button>
+                                    <button className="btn-secondary" onClick={() => {
+                                        setIsEditingGoal(false);
+                                        setEditedGoal(learningGoal || null);
+                                    }}>
+                                        Hủy
+                                    </button>
+                                </div>
                             </div>
                         ) : (
-                            <div className="goal-content">
-                                {isEditingGoal ? (
-                                    <div className="goal-edit-form">
-                                        <div className="form-group">
-                                            <label>Thời gian (ngày):</label>
-                                            <input
-                                                type="text"
-                                                value={editedGoal?.duration ?? ''}
-                                                onChange={(e) => handleGoalChange('duration', e.target.value)}
-                                                className="edit-input"
-                                                placeholder="Ít nhất 30 ngày"
-                                            />
+                            !learningGoal ? (
+                                <div className="no-goal">
+                                    <p>Bạn chưa thiết lập mục tiêu học tập</p>
+                                    <button className="btn-primary" onClick={() => {
+                                        setIsEditingGoal(true);
+                                        setEditedGoal({
+                                            duration: '',
+                                            scoreTarget: '',
+                                            learnerId: user.id
+                                        });
+                                    }}>
+                                        Thiết lập mục tiêu
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="goal-content">
+                                    <div className="goal-info">
+                                        <div className="goal-item">
+                                            <p className="goal-label">Thời gian:</p>
+                                            <p className="goal-value">{learningGoal?.duration} ngày</p>
                                         </div>
-                                        <div className="form-group">
-                                            <label>Điểm mục tiêu:</label>
-                                            <input
-                                                type="text"
-                                                value={editedGoal?.scoreTarget ?? ''}
-                                                onChange={(e) => handleGoalChange('scoreTarget', e.target.value)}
-                                                className="edit-input"
-                                                placeholder="Từ 300 đến 990"
-                                            />
-                                        </div>
-                                        <div className="goal-buttons">
-                                            <button
-                                                className="btn-primary"
-                                                onClick={handleGoalSave}
-                                                disabled={!editedGoal?.duration || !editedGoal?.scoreTarget}
-                                            >
-                                                {learningGoal ? 'Cập nhật' : 'Lưu mục tiêu'}
-                                            </button>
-                                            <button className="btn-secondary" onClick={() => {
-                                                setIsEditingGoal(false);
-                                                setEditedGoal(learningGoal || null);
-                                            }}>
-                                                Hủy
-                                            </button>
+                                        <div className="goal-item">
+                                            <p className="goal-label">Điểm mục tiêu:</p>
+                                            <p className="goal-value">{learningGoal?.scoreTarget} điểm</p>
                                         </div>
                                     </div>
-                                ) : (
-                                    <>
-                                        <div className="goal-info">
-                                            <div className="goal-item">
-                                                <p className="goal-label">Thời gian:</p>
-                                                <p className="goal-value">{learningGoal?.duration} ngày</p>
-                                            </div>
-                                            <div className="goal-item">
-                                                <p className="goal-label">Điểm mục tiêu:</p>
-                                                <p className="goal-value">{learningGoal?.scoreTarget} điểm</p>
-                                            </div>
-                                        </div>
-                                        <button className="btn-primary" onClick={() => {
-                                            setIsEditingGoal(true);
-                                            setEditedGoal({...learningGoal});
-                                        }}>
-                                            Chỉnh sửa mục tiêu
-                                        </button>
-                                    </>
-                                )}
-                            </div>
+                                    <button className="btn-primary" onClick={() => {
+                                        setIsEditingGoal(true);
+                                        setEditedGoal({...learningGoal});
+                                    }}>
+                                        Chỉnh sửa mục tiêu
+                                    </button>
+                                </div>
+                            )
                         )}
                     </div>
 
