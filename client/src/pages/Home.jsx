@@ -1,8 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import VocabularyTopicService from '../services/vocabularyTopicService';
+import GrammarTopicService from '../services/grammarTopicService';
 
 const Home = () => {
+    const [recentTopics, setRecentTopics] = useState([]);
+    const [grammarTopics, setGrammarTopics] = useState([]);
+
+    useEffect(() => {
+        const fetchTopics = async () => {
+            try {
+                const allTopics = await VocabularyTopicService.getAllVocabularyTopics();
+                // Lấy 8 chủ đề cuối cùng
+                setRecentTopics(allTopics.slice(-8));
+            } catch (error) {
+                setRecentTopics([]);
+            }
+        };
+        fetchTopics();
+
+        // Lấy 8 chủ đề grammar cuối cùng
+        const fetchGrammarTopics = async () => {
+            try {
+                const allGrammarTopics = await GrammarTopicService.getAllGrammarTopics();
+                setGrammarTopics(allGrammarTopics.slice(-8));
+            } catch (error) {
+                setGrammarTopics([]);
+            }
+        };
+        fetchGrammarTopics();
+    }, []);
+
     return (
         <div>
 
@@ -221,113 +250,131 @@ const Home = () => {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-lg-3 col-md-4 col-sm-6">
-                                <div className="single-topic text-center mb-30">
-                                    <div className="topic-img">
-                                        <img src="assets/img/gallery/topic1.png" alt="" />
-                                        <div className="topic-content-box">
-                                            <div className="topic-content">
-                                                <h3><a href="#">Programing</a></h3>
+                            {recentTopics.length > 0 ? recentTopics.map((topic) => (
+                                <div className="col-lg-3 col-md-4 col-sm-6" key={topic.id}>
+                                    <div className="single-topic text-center mb-30">
+                                        <div className="topic-img">
+                                            <img
+                                                src={topic.imageUrl}
+                                                alt={topic.topicName}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '180px',
+                                                    objectFit: 'cover',
+                                                    borderRadius: '12px'
+                                                }}
+                                            />
+                                            <div className="topic-content-box">
+                                                <div className="topic-content">
+                                                    <h3>
+                                                        <span
+                                                            style={{
+                                                                display: 'inline-block',
+                                                                background: 'rgba(255,255,255,0.8)',
+                                                                borderRadius: '8px',
+                                                                padding: '2px 12px',
+                                                                boxShadow: '0 2px 8px 0 rgba(0,0,0,0.04)'
+                                                            }}
+                                                        >
+                                                            <a
+                                                                href={`/learn-vocabulary/${topic.id}`}
+                                                                style={{
+                                                                    fontWeight: 'bold',
+                                                                    background: 'linear-gradient(90deg, rgb(192, 84, 255) 0%, rgb(82, 116, 255) 100%)',
+                                                                    WebkitBackgroundClip: 'text',
+                                                                    WebkitTextFillColor: 'transparent',
+                                                                    backgroundClip: 'text',
+                                                                    textFillColor: 'transparent',
+                                                                    fontSize: '1.2rem'
+                                                                }}
+                                                            >
+                                                                {topic.topicName}
+                                                            </a>
+                                                        </span>
+                                                    </h3>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="col-lg-3 col-md-4 col-sm-6">
-                                <div className="single-topic text-center mb-30">
-                                    <div className="topic-img">
-                                        <img src="assets/img/gallery/topic2.png" alt="" />
-                                        <div className="topic-content-box">
-                                            <div className="topic-content">
-                                                <h3><a href="#">Programing</a></h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-3 col-md-4 col-sm-6">
-                                <div className="single-topic text-center mb-30">
-                                    <div className="topic-img">
-                                        <img src="assets/img/gallery/topic3.png" alt="" />
-                                        <div className="topic-content-box">
-                                            <div className="topic-content">
-                                                <h3><a href="#">Programing</a></h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-3 col-md-4 col-sm-6">
-                                <div className="single-topic text-center mb-30">
-                                    <div className="topic-img">
-                                        <img src="assets/img/gallery/topic4.png" alt="" />
-                                        <div className="topic-content-box">
-                                            <div className="topic-content">
-                                                <h3><a href="#">Programing</a></h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-3 col-md-4 col-sm-6">
-                                <div className="single-topic text-center mb-30">
-                                    <div className="topic-img">
-                                        <img src="assets/img/gallery/topic5.png" alt="" />
-                                        <div className="topic-content-box">
-                                            <div className="topic-content">
-                                                <h3><a href="#">Programing</a></h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-3 col-md-4 col-sm-6">
-                                <div className="single-topic text-center mb-30">
-                                    <div className="topic-img">
-                                        <img src="assets/img/gallery/topic6.png" alt="" />
-                                        <div className="topic-content-box">
-                                            <div className="topic-content">
-                                                <h3><a href="#">Programing</a></h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-3 col-md-4 col-sm-6">
-                                <div className="single-topic text-center mb-30">
-                                    <div className="topic-img">
-                                        <img src="assets/img/gallery/topic7.png" alt="" />
-                                        <div className="topic-content-box">
-                                            <div className="topic-content">
-                                                <h3><a href="#">Programing</a></h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-3 col-md-4 col-sm-6">
-                                <div className="single-topic text-center mb-30">
-                                    <div className="topic-img">
-                                        <img src="assets/img/gallery/topic8.png" alt="" />
-                                        <div className="topic-content-box">
-                                            <div className="topic-content">
-                                                <h3><a href="#">Programing</a></h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            )) : (
+                                <div className="col-12 text-center">Đang tải chủ đề...</div>
+                            )}
                         </div>
                         <div className="row justify-content-center">
                             <div className="col-xl-12">
                                 <div className="section-tittle text-center mt-20">
-                                    <a href="/courses" className="border-btn">View More Subjects</a>
+                                    <a href="/learn-vocabulary" className="border-btn">View More Subjects</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 {/* top subjects End */}
+
+                {/* Grammar topics Area Start */}
+                <div className="grammar-area section-padding40">
+                    <div className="container">
+                        <div className="row justify-content-center">
+                            <div className="col-xl-7 col-lg-8">
+                                <div className="section-tittle text-center mb-55">
+                                    <h2>Explore Grammar Topics</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row justify-content-center" style={{ display: 'flex', flexWrap: 'wrap' }}>
+                            {grammarTopics.length > 0 && grammarTopics.map((topic, idx) => (
+                                <div
+                                    key={topic.id}
+                                    style={{
+                                        flex: '0 0 12.5%', // 1/8 chiều rộng
+                                        maxWidth: '12.5%',
+                                        padding: 8,
+                                        boxSizing: 'border-box',
+                                        minWidth: 120 // Đảm bảo không quá nhỏ trên màn hình nhỏ
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            background: 'linear-gradient(90deg, rgb(192, 84, 255), rgb(82, 116, 255))',
+                                            borderRadius: 12,
+                                            boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+                                            width: '100%',
+                                            minHeight: 80
+                                        }}
+                                    >
+                                        <a
+                                            href={`/grammar-topic/${topic.id}`}
+                                            style={{
+                                                fontWeight: 'bold',
+                                                color: '#fff',
+                                                fontSize: '2rem',
+                                                textAlign: 'center',
+                                                textDecoration: 'none',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                width: '100%',
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            <span style={{fontSize: '2.8rem', lineHeight: 1, marginRight: 4}}>
+                                                {topic.title && topic.title.charAt(0)}
+                                            </span>
+                                            <span style={{fontSize: '1.5rem', lineHeight: 1}}>
+                                                {topic.title && topic.title.slice(1)}
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                {/* Grammar topics Area End */}
+
                 {/*? About Area-3 Start */}
                 <section className="about-area3 fix">
                     <div className="support-wrapper align-items-center">
