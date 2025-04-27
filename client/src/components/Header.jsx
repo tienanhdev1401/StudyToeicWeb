@@ -26,11 +26,11 @@ const Header = ({ style, className }) => {
                                                     <li className="active" ><a href="/">Home</a></li>
                                                     <li><a href="/courses">Courses</a></li>
                                                     <li><a href="/about">About</a></li>
-                                                    <li><a href="#">Blog</a>
+                                                    <li><a href="#">Learn</a>
                                                         <ul className="submenu">
-                                                            <li><a href="/blog">Blog</a></li>
-                                                            <li><a href="/blog_details">Blog Details</a></li>
-                                                            <li><a href="/elements">Element</a></li>
+                                                            <li><a href="/learn-grammary">Learn Grammar</a></li>
+                                                            <li><a href="/learn-vocabulary">Learn Vocabulary</a></li>
+                                                            <li><a href="/toeic-exercise">Do Exercise</a></li>
                                                         </ul>
                                                     </li>
                                                     <li><a href="/contact">Contact</a></li>

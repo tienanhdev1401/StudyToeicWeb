@@ -304,7 +304,7 @@ const Home = () => {
                         <div className="row justify-content-center">
                             <div className="col-xl-12">
                                 <div className="section-tittle text-center mt-20">
-                                    <a href="/learn-vocabulary" className="border-btn">View More Subjects</a>
+                                    <a href="/learn-vocabulary" className="border-btn">View More Vocabulary Topics</a>
                                 </div>
                             </div>
                         </div>
@@ -370,6 +370,13 @@ const Home = () => {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                        <div className="row justify-content-center">
+                            <div className="col-xl-12">
+                                <div className="section-tittle text-center mt-20">
+                                    <a href="/learn-grammary" className="border-btn">View More Grammar Topics</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
