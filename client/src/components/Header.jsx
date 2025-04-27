@@ -59,9 +59,36 @@ const Header = ({ style, className }) => {
                                                     <li><a href="/about">About</a></li>
                                                     <li><a href="#">Learn</a>
                                                         <ul className="submenu">
-                                                            <li><a href="/learn-grammary">Learn Grammar</a></li>
-                                                            <li><a href="/learn-vocabulary">Learn Vocabulary</a></li>
-                                                            <li><a href="/toeic-exercise">Do Exercise</a></li>
+                                                            <li>
+                                                                <a href="#" onClick={e => {
+                                                                    e.preventDefault();
+                                                                    if (isLoggedIn) {
+                                                                        navigate('/learn-grammary');
+                                                                    } else {
+                                                                        navigate('/login');
+                                                                    }
+                                                                }}>Learn Grammar</a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#" onClick={e => {
+                                                                    e.preventDefault();
+                                                                    if (isLoggedIn) {
+                                                                        navigate('/learn-vocabulary');
+                                                                    } else {
+                                                                        navigate('/login');
+                                                                    }
+                                                                }}>Learn Vocabulary</a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#" onClick={e => {
+                                                                    e.preventDefault();
+                                                                    if (isLoggedIn) {
+                                                                        navigate('/toeic-exercise');
+                                                                    } else {
+                                                                        navigate('/login');
+                                                                    }
+                                                                }}>Do Exercise</a>
+                                                            </li>
                                                         </ul>
                                                     </li>
                                                     <li><a href="/contact">Contact</a></li>

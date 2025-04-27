@@ -21,6 +21,8 @@ const DoExercise = () => {
   const topicType = location.state?.topicType || 'Unknown';
   const topicId= location.state?.topicId;
 
+ 
+
   // Timer
   useEffect(() => {
     const timer = setInterval(() => {
@@ -31,6 +33,9 @@ const DoExercise = () => {
 
   // Fetch single exercise
   useEffect(() => {
+
+    console.log('topicId',topicId);
+    console.log('topicType',topicType);
     const fetchExercise = async () => {
       try {
         // Get exerciseId from navigation state or URL params
@@ -95,7 +100,7 @@ const DoExercise = () => {
     if (topicType === 'Vocabulary' && topicId) {
       navigate(`/learn-vocabulary/${topicId}`);
     } else if (topicType === 'Grammar' && topicId) {
-      navigate(`/learn-grammar/${topicId}`);
+      navigate(`/learn-grammary/${topicId}`);
     } else {
       navigate('/toeic-exercise');
     }

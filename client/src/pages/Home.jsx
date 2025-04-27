@@ -3,10 +3,14 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import VocabularyTopicService from '../services/vocabularyTopicService';
 import GrammarTopicService from '../services/grammarTopicService';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
     const [recentTopics, setRecentTopics] = useState([]);
     const [grammarTopics, setGrammarTopics] = useState([]);
+    const { isLoggedIn } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTopics = async () => {
@@ -145,7 +149,7 @@ const Home = () => {
                                     <div className="properties pb-20">
                                         <div className="properties__card">
                                             <div className="properties__img overlay1" style={{ height: "200px", overflow: "hidden" }}>
-                                                <a href={course.pageLink}>
+                                                <a href="#" onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate(course.pageLink); } else { navigate('/login'); } }}>
                                                     <img
                                                         src={course.image}
                                                         alt={course.title}
@@ -154,7 +158,7 @@ const Home = () => {
                                                 </a>
                                             </div>
                                             <div className="properties__caption">
-                                                <h3><a href={course.pageLink}>{course.title}</a></h3>
+                                                <h3><a href="#" onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate(course.pageLink); } else { navigate('/login'); } }}>{course.title}</a></h3>
                                                 <p>
                                                     {course.id === 1 && "Expand your word knowledge with interactive lessons and daily practice sessions."}
                                                     {course.id === 2 && "Master grammar rules through comprehensive guides and real-world examples."}
@@ -172,7 +176,7 @@ const Home = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <a href={course.pageLink} className="border-btn border-btn2 mt-3">
+                                                <a href="#" onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate(course.pageLink); } else { navigate('/login'); } }} className="border-btn border-btn2 mt-3">
                                                     Start Learning
                                                 </a>
                                             </div>
@@ -277,7 +281,7 @@ const Home = () => {
                                                             }}
                                                         >
                                                             <a
-                                                                href={`/learn-vocabulary/${topic.id}`}
+                                                                href="#" onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate(`/learn-vocabulary/${topic.id}`); } else { navigate('/login'); } }}
                                                                 style={{
                                                                     fontWeight: 'bold',
                                                                     background: 'linear-gradient(90deg, rgb(192, 84, 255) 0%, rgb(82, 116, 255) 100%)',
@@ -304,7 +308,7 @@ const Home = () => {
                         <div className="row justify-content-center">
                             <div className="col-xl-12">
                                 <div className="section-tittle text-center mt-20">
-                                    <a href="/learn-vocabulary" className="border-btn">View More Vocabulary Topics</a>
+                                    <a href="#" onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate('/learn-vocabulary'); } else { navigate('/login'); } }} className="border-btn">View More Vocabulary Topics</a>
                                 </div>
                             </div>
                         </div>
@@ -347,7 +351,7 @@ const Home = () => {
                                         }}
                                     >
                                         <a
-                                            href={`/grammar-topic/${topic.id}`}
+                                            href="#" onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate(`/grammar-topic/${topic.id}`); } else { navigate('/login'); } }}
                                             style={{
                                                 fontWeight: 'bold',
                                                 color: '#fff',
@@ -374,7 +378,7 @@ const Home = () => {
                         <div className="row justify-content-center">
                             <div className="col-xl-12">
                                 <div className="section-tittle text-center mt-20">
-                                    <a href="/learn-grammary" className="border-btn">View More Grammar Topics</a>
+                                    <a href="#" onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate('/learn-grammary'); } else { navigate('/login'); } }} className="border-btn">View More Grammar Topics</a>
                                 </div>
                             </div>
                         </div>
