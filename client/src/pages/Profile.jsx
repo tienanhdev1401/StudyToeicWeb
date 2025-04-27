@@ -9,44 +9,57 @@ import { useUser } from '../context/UserContext';
 import PasswordChangePopup from '../components/PasswordChangePopup';
 import userService from '../services/userService';
 import { getLearningGoalByLearnerId, createLearningGoal, updateLearningGoal } from '../services/learningGoalService';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ProfilePage = () => {
-    const { isLoggedIn, logout } = useAuth();
+    const { isLoggedIn, logout, refreshToken } = useAuth();
     const { user, loading, initialized, fetchUserProfile } = useUser();
     const navigate = useNavigate();
     const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedUser, setEditedUser] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
-    const [userProfile, setUserProfile] = useState(null);
     const [learningGoal, setLearningGoal] = useState(null);
     const [isEditingGoal, setIsEditingGoal] = useState(false);
     const [editedGoal, setEditedGoal] = useState(null);
     const [isSavingProfile, setIsSavingProfile] = useState(false);
+    const [pageLoading, setPageLoading] = useState(true);
 
-    console.log('TienAnh',user)
+    // Hàm để xử lý lỗi token hết hạn
+    const handleTokenRefresh = async () => {
+        try {
+            await refreshToken(); // Giả sử refreshToken được triển khai trong AuthContext
+            return true;
+        } catch (error) {
+            console.error('Không thể làm mới token:', error);
+            logout();
+            navigate('/login');
+            return false;
+        }
+    };
 
     useEffect(() => {
-        if (initialized && !loading && !isLoggedIn) {
-            navigate('/login');
+        if (initialized && !loading) {
+            if (!isLoggedIn) {
+                // Kiểm tra token trong localStorage và thử làm mới nếu có
+                const token = localStorage.getItem('token');
+                if (token) {
+                    handleTokenRefresh();
+                } else {
+                    navigate('/login');
+                }
+            } else {
+                fetchUserProfile(); // Load profile data on initial render
+                setPageLoading(false);
+            }
         }
     }, [isLoggedIn, loading, initialized, navigate]);
 
+    // Mỗi khi user thay đổi, cập nhật editedUser
     useEffect(() => {
-        const fetchUserProfile = async () => {
-            if (user && user.id) {
-                try {
-                    const response = await fetch(`/api/users/${user.id}`);
-                    const data = await response.json();
-                    setUserProfile(data);
-                } catch (error) {
-                    console.error('Error fetching user profile:', error);
-                }
-            }
-        };
-
         if (user) {
-            fetchUserProfile();
+            setEditedUser({ ...user });
+            setPageLoading(false);
         }
     }, [user]);
 
@@ -55,17 +68,27 @@ const ProfilePage = () => {
             if (user && user.id) {
                 try {
                     const response = await getLearningGoalByLearnerId(user.id);
-                    if (response.success) {
+                    if (response && response.success) {
                         setLearningGoal(response.data);
+                    } else {
+                        // Không có learning goal, set null
+                        setLearningGoal(null);
                     }
                 } catch (error) {
-                    console.error('Error fetching learning goal:', error);
+                    if (error.response && error.response.status === 404) {
+                     
+                        setLearningGoal(null);
+                    } else {
+                        console.error(error); // Chỉ log lỗi nếu KHÔNG phải 404
+                    }
                 }
             }
         };
-
+    
         fetchLearningGoal();
     }, [user]);
+    
+    
 
     useEffect(() => {
         // Cleanup function để xóa URL preview khi component unmount
@@ -76,26 +99,26 @@ const ProfilePage = () => {
         };
     }, [imagePreview]);
 
-    // Hiển thị loading spinner khi đang loading hoặc chưa initialized
-    // if (loading || !initialized) {
-    //     return (
-    //         <>
-    //             <Header />
-    //             <div className="containerprofile">
-    //                 <div className="loading-spinner">Loading...</div>
-    //             </div>
-    //             <Footer />
-    //         </>
-    //     );
-    // }
+    // Hiển thị loading spinner khi đang loading
+    if (pageLoading) {
+        return (
+            <>
+                <Header />
+                <div className="containerprofile">
+                    <LoadingSpinner />
+                </div>
+                <Footer />
+            </>
+        );
+    }
 
     // Return null nếu không có user sau khi đã load xong
     if (!user) {
         return null;
     }
 
-    const handleLogout = () => {
-        logout();
+    const handleLogout = async () => {
+        await logout();
         navigate('/');
     };
 
@@ -120,7 +143,7 @@ const ProfilePage = () => {
             }
 
             if (file.size > maxSize) {
-                alert('Kích thước file không được vượt quá 16MB');
+                alert('Kích thước file không được vượt quá 5MB');
                 return;
             }
 
@@ -139,10 +162,15 @@ const ProfilePage = () => {
 
     const handleEditToggle = () => {
         if (isEditing) {
+            // Cancel editing - reset to original values
             setImagePreview(null);
             setEditedUser({ ...user });
+            setIsEditing(false);
+        } else {
+            // Start editing - ensure we have the latest user data in the form
+            setEditedUser({ ...user });
+            setIsEditing(true);
         }
-        setIsEditing(!isEditing);
     };
 
     const handleSave = async () => {
@@ -438,17 +466,17 @@ const ProfilePage = () => {
                             <div className="info-item">
                                 <p className="info-label">Member Since:</p>
                                 <p className="info-value">
-                                    • {new Date(user.joinAt).toLocaleDateString()}
+                                    • {user.joinAt ? new Date(user.joinAt).toLocaleDateString() : 'Not Available'}
                                 </p>
                             </div>
                             <div className="info-item">
                                 <p className="info-label">Account Status:</p>
-                                •<p className="info-value badge">{user.status}</p>
+                                •<p className="info-value badge">{user.status || 'Active'}</p>
                             </div>
                             <div className="info-item">
                                 <p className="info-label">Last Updated:</p>
                                 <p className="info-value">
-                                    • {new Date(user.updatedAt).toLocaleDateString()}
+                                    • {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'Not Available'}
                                 </p>
                             </div>
                         </div>

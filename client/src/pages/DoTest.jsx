@@ -365,12 +365,7 @@ const DoTest = () => {
     };
 
     // Add a function to efficiently handle part changes
-    const checkForPartChange = (nextPart) => {
-        // Only show guidance if this is the first time we're visiting this part
-        if (nextPart !== currentPart && !visitedParts[nextPart]) {
-            setShowGuidance(true);
-        }
-    };
+  
 
     // Add a memo to track the previous part
     const prevPartRef = useRef(currentPart);
@@ -1069,6 +1064,8 @@ const DoTest = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
 
         const hasImage = currentGroup[0].imageUrl !== null;
+        // Lấy resource explanation từ testData
+        const resourceExplanation = isSubmitted && testData?.allQuestions?.find(q => q.id === currentGroup[0].id)?.resource?.explain_resource;
 
         return (
             <div className={`part3-4-container ${isSubmitted ? 'submitted' : ''}`}>
@@ -1104,6 +1101,14 @@ const DoTest = () => {
                                         e.target.style.display = "none";
                                     }}
                                 />
+                            </div>
+                        )}
+                        
+                        {/* Hiển thị giải thích cho resource nếu đã submit và có giải thích */}
+                        {isSubmitted && resourceExplanation && (
+                            <div className="resource-explanation-box">
+                                <div className="explanation-title">Giải thích tài liệu:</div>
+                                <div className="explanation-content" dangerouslySetInnerHTML={{ __html: resourceExplanation }} />
                             </div>
                         )}
                     </div>
@@ -1231,6 +1236,9 @@ const DoTest = () => {
     // Render Part 6 - 1 đoạn văn/ảnh cho 4 câu hỏi
     const renderPart6Questions = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
+        
+        // Lấy resource explanation từ testData
+        const resourceExplanation = isSubmitted && testData?.allQuestions?.find(q => q.id === currentGroup[0].id)?.resource?.explain_resource;
 
         return (
             <div className={`part6-container ${isSubmitted ? 'submitted' : ''}`}>
@@ -1248,6 +1256,14 @@ const DoTest = () => {
                                         e.target.alt = "Không thể tải hình ảnh";
                                     }}
                                 />
+                            </div>
+                        )}
+                        
+                        {/* Hiển thị giải thích cho resource nếu đã submit và có giải thích */}
+                        {isSubmitted && resourceExplanation && (
+                            <div className="resource-explanation-box">
+                                <div className="explanation-title">Giải thích tài liệu:</div>
+                                <div className="explanation-content" dangerouslySetInnerHTML={{ __html: resourceExplanation }} />
                             </div>
                         )}
                     </div>
@@ -1314,6 +1330,9 @@ const DoTest = () => {
     // Render Part 7 - Đa dạng (1 ảnh/đoạn đọc cho 2-4 câu hỏi)
     const renderPart7Questions = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
+        
+        // Lấy resource explanation từ testData
+        const resourceExplanation = isSubmitted && testData?.allQuestions?.find(q => q.id === currentGroup[0].id)?.resource?.explain_resource;
 
         return (
             <div className={`part7-container ${isSubmitted ? 'submitted' : ''}`}>
@@ -1332,6 +1351,14 @@ const DoTest = () => {
                                         e.target.alt = "Không thể tải hình ảnh";
                                     }}
                                 />
+                            </div>
+                        )}
+                        
+                        {/* Hiển thị giải thích cho resource nếu đã submit và có giải thích */}
+                        {isSubmitted && resourceExplanation && (
+                            <div className="resource-explanation-box">
+                                <div className="explanation-title">Giải thích tài liệu:</div>
+                                <div className="explanation-content" dangerouslySetInnerHTML={{ __html: resourceExplanation }} />
                             </div>
                         )}
                     </div>

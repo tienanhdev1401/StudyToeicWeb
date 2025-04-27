@@ -38,6 +38,25 @@ export const AuthProvider = ({ children }) => {
         setIsLoggedIn(true);
     };
 
+    // Hàm refresh token
+    const refreshToken = async () => {
+        // Implement refresh token logic here if you have a refresh token endpoint
+        // For now, we'll just check if the token exists and re-read user data
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const currentUser = getCurrentUser();
+                setUser(currentUser);
+                setIsLoggedIn(true);
+                return true;
+            } catch (error) {
+                throw new Error('Failed to refresh token');
+            }
+        } else {
+            throw new Error('No token available');
+        }
+    };
+
     // Hàm đăng xuất
     const logout = async () => {
         setIsLoading(true);
@@ -46,10 +65,14 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error('Lỗi đăng xuất:', error);
         } finally {
+            // Đảm bảo dữ liệu local storage được xóa sạch trước khi xóa state
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
             setUser(null);
-            console.log('Hunganh:',user)
             setIsLoggedIn(false);
             setIsLoading(false);
+            // Dispatch an event to notify other contexts of logout
+            window.dispatchEvent(new Event('user-logout'));
         }
     };
 
@@ -59,7 +82,8 @@ export const AuthProvider = ({ children }) => {
         isLoggedIn,
         isLoading,
         login,
-        logout
+        logout,
+        refreshToken
     };
 
     return (

@@ -584,6 +584,27 @@ input[type="radio"] {
     line-height: 1.6;
 }
 
+/* Resource explanation box styles */
+.resource-explanation-box {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid rgb(114, 116, 115);
+    border-radius: 8px;
+    background-color: #f0f2f5;
+}
+
+.resource-explanation-box .explanation-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #555555;
+}
+
+.resource-explanation-box .explanation-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+}
+
 .option-item.correct {
     background-color: rgba(46, 204, 113, 0.3);
     border-radius: 0.5rem;

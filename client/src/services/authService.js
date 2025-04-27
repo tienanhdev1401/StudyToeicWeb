@@ -13,10 +13,8 @@ export const loginUser = async (email, password) => {
     
     // Lưu thông tin người dùng và token
     localStorage.setItem('user', JSON.stringify(response.data.user));
-    
     localStorage.setItem('token', response.data.token);
    
-
     return response.data;
   } catch (error) {
     // Xử lý lỗi từ phía server
@@ -33,14 +31,12 @@ export const loginUser = async (email, password) => {
 // Cập nhật hàm logoutUser
 export const logoutUser = async () => {
   try {
+    // Attempt to call the logout endpoint if it exists
     await axios.post('/api/logout', {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
     });
-
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
   } catch (error) {
     // Nếu lỗi 401 thì không cần xử lý gì thêm
     if (error.response?.status === 401) {
@@ -48,9 +44,12 @@ export const logoutUser = async () => {
     } else {
       console.error('Lỗi khi logout:', error);
     }
+  } finally {
     // Vẫn xóa token để đăng xuất user
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    // Clear any cached states in session/local storage
+    sessionStorage.clear();
   }
 };
 

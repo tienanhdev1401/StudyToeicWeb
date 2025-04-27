@@ -44,7 +44,7 @@ const LearnGrammar = () => {
         //     .replace(/ /g, '-')
         //     .replace(/[^\w-]+/g, '');
         const topicId=topic.id
-        navigate(`/learn-grammar/${topicId}`);
+        navigate(`/learn-grammary/${topicId}`);
     };
 
     if (loading) {
