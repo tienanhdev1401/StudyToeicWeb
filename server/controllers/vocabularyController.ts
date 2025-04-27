@@ -58,7 +58,6 @@ export class VocabularyController {
     try {
       const topicId = parseInt(req.params.id);
       const vocabularies = await VocabularyRepository.getVocabulariesByTopicId(topicId);
-
       res.status(200).json({
         success: true,
         data: vocabularies,

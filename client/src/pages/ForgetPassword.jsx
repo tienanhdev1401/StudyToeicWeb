@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/Register.css';
+import '../styles/forgetPassword.css';
 import { useNavigate } from 'react-router-dom';
 import userService from '../services/userService';
 
@@ -84,31 +84,31 @@ const ForgetPassword = () => {
   };
 
   return (
-    <div className="register-container">
-      <div className="bg-overlay"></div>
-      <div className="floating-card">
+    <div className="forgetpassword-register-container">
+      <div className="forgetpassword-bg-overlay"></div>
+      <div className="forgetpassword-floating-card">
         {/* Left content section */}
-        <div className="content-section">
-          <div className="content-inner">
+        <div className="forgetpassword-content-section">
+          <div className="forgetpassword-content-inner">
             <h1>TOEIC ONLINE</h1>
             <p>Quên mật khẩu? Đặt lại mật khẩu mới cho tài khoản của bạn.</p>
-            <div className="illustration">
+            <div className="forgetpassword-illustration">
               <img src="/assets/img/education-illustration.png" alt="Education" />
             </div>
           </div>
-          <div className="deco-circle pink"></div>
-          <div className="deco-circle yellow"></div>
-          <div className="deco-circle blue"></div>
+          <div className="forgetpassword-deco-circle pink"></div>
+          <div className="forgetpassword-deco-circle yellow"></div>
+          <div className="forgetpassword-deco-circle blue"></div>
         </div>
         {/* Right form section */}
-        <div className="form-section">
+        <div className="forgetpassword-form-section">
           <h2>QUÊN MẬT KHẨU</h2>
-          <p className="subtitle">Nhập email để nhận mã xác thực và đặt lại mật khẩu</p>
+          <p className="forgetpassword-subtitle">Nhập email để nhận mã xác thực và đặt lại mật khẩu</p>
           <form onSubmit={handleSubmit}>
             {/* Email field */}
-            <div className="form-group">
-              <div className="input-wrapper">
-                <span className="input-icon">
+            <div className="forgetpassword-form-group">
+              <div className="forgetpassword-input-wrapper">
+                <span className="forgetpassword-input-icon">
                   <i className="fas fa-envelope"></i>
                 </span>
                 <input
@@ -116,19 +116,19 @@ const ForgetPassword = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="custom-input"
+                  className="forgetpassword-custom-input"
                   placeholder="Địa chỉ email"
                   required
                 />
-                <span className="input-check">
+                <span className="forgetpassword-input-check">
                   <i className="fas fa-check"></i>
                 </span>
               </div>
             </div>
             {/* OTP Section */}
-            <div className="form-group otp-group">
-              <div className="input-wrapper">
-                <span className="input-icon">
+            <div className="forgetpassword-form-group forgetpassword-otp-group">
+              <div className="forgetpassword-input-wrapper">
+                <span className="forgetpassword-input-icon">
                   <i className="fas fa-key"></i>
                 </span>
                 <input
@@ -141,14 +141,14 @@ const ForgetPassword = () => {
                       setFormData({ ...formData, otp: value });
                     }
                   }}
-                  className="custom-input"
+                  className="forgetpassword-custom-input"
                   placeholder="Nhập mã OTP"
                   required
                   maxLength={6}
                 />
                 <button
                   type="button"
-                  className="otp-btn"
+                  className="forgetpassword-otp-btn"
                   onClick={handleSendCode}
                   disabled={countdown > 0 || isLoading}
                 >
@@ -157,9 +157,9 @@ const ForgetPassword = () => {
               </div>
             </div>
             {/* New password */}
-            <div className="form-group">
-              <div className="input-wrapper">
-                <span className="input-icon">
+            <div className="forgetpassword-form-group">
+              <div className="forgetpassword-input-wrapper">
+                <span className="forgetpassword-input-icon">
                   <i className="fas fa-lock"></i>
                 </span>
                 <input
@@ -167,19 +167,19 @@ const ForgetPassword = () => {
                   name="newPassword"
                   value={formData.newPassword}
                   onChange={handleInputChange}
-                  className="custom-input"
+                  className="forgetpassword-custom-input"
                   placeholder="Mật khẩu mới"
                   required
                 />
-                <span className="input-toggle" onClick={togglePassword}>
+                <span className="forgetpassword-input-toggle" onClick={togglePassword}>
                   <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                 </span>
               </div>
             </div>
             {/* Confirm password */}
-            <div className="form-group">
-              <div className="input-wrapper">
-                <span className="input-icon">
+            <div className="forgetpassword-form-group">
+              <div className="forgetpassword-input-wrapper">
+                <span className="forgetpassword-input-icon">
                   <i className="fas fa-lock"></i>
                 </span>
                 <input
@@ -187,23 +187,23 @@ const ForgetPassword = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className="custom-input"
+                  className="forgetpassword-custom-input"
                   placeholder="Xác nhận mật khẩu mới"
                   required
                 />
-                <span className="input-toggle" onClick={toggleConfirmPassword}>
+                <span className="forgetpassword-input-toggle" onClick={toggleConfirmPassword}>
                   <i className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                 </span>
               </div>
             </div>
-            <button type="submit" className="submit-btn" disabled={isLoading}>
+            <button type="submit" className="forgetpassword-submit-btn" disabled={isLoading}>
               {isLoading ? (
-                <div className="spinner-border text-light" role="status">
-                  <span className="visually-hidden">Loading...</span>
+                <div className="forgetpassword-spinner-border text-light" role="status">
+                  <span className="visually-hidden"></span>
                 </div>
               ) : 'ĐỔI MẬT KHẨU'}
             </button>
-            <div className="login-link">
+            <div className="forgetpassword-login-link">
               Đã nhớ mật khẩu? <a href="/login">Đăng nhập ngay</a>
             </div>
           </form>

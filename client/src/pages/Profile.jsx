@@ -112,7 +112,7 @@ const ProfilePage = () => {
         if (file) {
             // Validate file
             const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            const maxSize = 5 * 1024 * 1024; // 5MB
+            const maxSize = 5 * 1024 * 1024; // ảnh max 5mb
 
             if (!validTypes.includes(file.type)) {
                 alert('Chỉ chấp nhận file ảnh JPG, PNG hoặc GIF');
@@ -537,7 +537,12 @@ const ProfilePage = () => {
 
                     {/* Account Statistics */}
                     <div className="account-statistics">
-                        <h3 className="section-title">Thống kê học tập</h3>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+                            <h3 className="section-title" style={{ margin: 0 }}>Thống kê học tập</h3>
+                            <a href="/test-history" className="btn-primary" style={{ minWidth: 150 }}>
+                                Xem lịch sử làm bài
+                            </a>
+                        </div>
                         <div className="statistics-grid">
                             <div className="stat-item">
                                 <p className="stat-label">Số chủ đề ngữ pháp đã học:</p>

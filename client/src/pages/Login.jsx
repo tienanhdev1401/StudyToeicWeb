@@ -71,12 +71,12 @@ const Login = () => {
             {/* Email field */}
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">
+                <span className="input-icon-login">
                   <i className="fas fa-envelope"></i>
                 </span>
                 <input
                   type="email"
-                  className="custom-input"
+                  className="custom-input-login"
                   placeholder="Email Address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -88,18 +88,18 @@ const Login = () => {
             {/* Password field */}
             <div className="form-group">
               <div className="input-wrapper">
-                <span className="input-icon">
+                <span className="input-icon-login">
                   <i className="fas fa-lock"></i>
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="custom-input"
+                  className="custom-input-login"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <span className="input-toggle" onClick={togglePassword}>
+                <span className="input-toggle-login" onClick={togglePassword}>
                   <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
                 </span>
               </div>
@@ -118,7 +118,7 @@ const Login = () => {
 
             <button
               type="submit"
-              className="submit-btn"
+              className="submit-btn-login"
               disabled={isLoading}
             >
               {isLoading ? (

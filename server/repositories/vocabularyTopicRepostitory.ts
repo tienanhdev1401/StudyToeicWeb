@@ -20,7 +20,7 @@ export class VocabularyTopicRepository {
     }
   
     const topicData = results[0] as any;
-    const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.imageUrl);
+    const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.imageUrl, [], [], topicData.createdAt, topicData.updatedAt);
   
     // Lấy danh sách vocabularies từ VocabularyRepository
     const vocabularies = await VocabularyRepository.getVocabulariesByTopicId(id);
@@ -38,7 +38,7 @@ export class VocabularyTopicRepository {
 
     // Tạo danh sách VocabularyTopic với vocabularyList rỗng
     const topicList = topics.map((topic: any) => 
-      new VocabularyTopic(topic.id, topic.topicName, topic.imageUrl)
+      new VocabularyTopic(topic.id, topic.topicName, topic.imageUrl, [], [], topic.createdAt, topic.updatedAt)
     );
 
     return topicList;
