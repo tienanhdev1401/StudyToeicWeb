@@ -814,23 +814,25 @@ const TestDetail = () => {
               
               <div className="test-detail-form-group">
                 <label htmlFor="explainDetail">Explanation:</label>
-                <textarea
-                  id="explainDetail"
-                  name="explainDetail"
+                <Editor
+                  apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
                   value={newQuestion.explainDetail}
-                  onChange={handleExplainDetailChange}
-                  rows={3}
-                  placeholder="Enter the explanation for the correct answer..."
+                  onEditorChange={value => setNewQuestion(prev => ({ ...prev, explainDetail: value }))}
+                  init={{
+                    height: 120,
+                    menubar: false,
+                    plugins: 'lists link',
+                    toolbar: 'undo redo | bold italic underline | forecolor | bullist numlist | removeformat',
+                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                  }}
                 />
+                {newQuestion.explainDetail && (
+                  <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
+                    <b>Preview:</b>
+                    <div dangerouslySetInnerHTML={{ __html: newQuestion.explainDetail }} />
+                  </div>
+                )}
               </div>
-              
-              {/* Preview for explainDetail */}
-              {explainDetailPreview && (
-                <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
-                  <b>Preview:</b>
-                  <div dangerouslySetInnerHTML={{ __html: explainDetailPreview }} />
-                </div>
-              )}
               
               <div className="test-detail-form-group">
                 <label htmlFor="explainResource">Translation/Explanation Resource:</label>
@@ -846,14 +848,13 @@ const TestDetail = () => {
                     content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                   }}
                 />
+                {newQuestion.explainResource && (
+                  <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
+                    <b>Preview:</b>
+                    <div dangerouslySetInnerHTML={{ __html: newQuestion.explainResource }} />
+                  </div>
+                )}
               </div>
-              
-              {newQuestion.explainResource && (
-                <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
-                  <b>Preview:</b>
-                  <div dangerouslySetInnerHTML={{ __html: newQuestion.explainResource }} />
-                </div>
-              )}
               
               <div className="test-detail-form-group">
                 <label htmlFor="optionA">Option A:</label>
@@ -1069,15 +1070,14 @@ const TestDetail = () => {
                       content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                     }}
                   />
+                  {sharedResource.explainResource && (
+                    <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
+                      <b>Preview:</b>
+                      <div dangerouslySetInnerHTML={{ __html: sharedResource.explainResource }} />
+                    </div>
+                  )}
                 </div>
               </div>
-              
-              {sharedResource.explainResource && (
-                <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
-                  <b>Preview:</b>
-                  <div dangerouslySetInnerHTML={{ __html: sharedResource.explainResource }} />
-                </div>
-              )}
               
               <div className="test-detail-questions-section">
                 <div className="test-detail-questions-header-with-add">
@@ -1183,13 +1183,28 @@ const TestDetail = () => {
                     
                     <div className="test-detail-form-group">
                       <label htmlFor={`explainDetail-${index}`}>Explanation (optional):</label>
-                      <textarea
-                        id={`explainDetail-${index}`}
+                      <Editor
+                        apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
                         value={question.explainDetail}
-                        onChange={(e) => handleBatchQuestionChange(index, 'explainDetail', e.target.value)}
-                        rows={2}
-                        placeholder="Enter explanation for this specific question..."
+                        onEditorChange={value => {
+                          const updatedQuestions = [...batchQuestions];
+                          updatedQuestions[index].explainDetail = value;
+                          setBatchQuestions(updatedQuestions);
+                        }}
+                        init={{
+                          height: 120,
+                          menubar: false,
+                          plugins: 'lists link',
+                          toolbar: 'undo redo | bold italic underline | forecolor | bullist numlist | removeformat',
+                          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                        }}
                       />
+                      {question.explainDetail && (
+                        <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
+                          <b>Preview:</b>
+                          <div dangerouslySetInnerHTML={{ __html: question.explainDetail }} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
