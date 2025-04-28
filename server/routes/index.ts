@@ -31,7 +31,7 @@ function route(app: Application): void {
   app.use('/api/admin/learner',adminLearnerRoutes)
   app.use('/api/admin/staff',adminStaffRoutes)
   app.use('/api/admin/exercise',adminExerciseRoutes)
-  app.use('/api/admin/exercise/questions',adminExerciseQuestionRoutes)
+  app.use('/api/admin/exercises',adminExerciseQuestionRoutes)
   app.use('/api/upload', uploadRouter);
   app.use('/api/exercise',exerciseRouter);
   app.use('/api/learning-goal',learningRouter)

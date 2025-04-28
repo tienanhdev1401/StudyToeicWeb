@@ -6,7 +6,7 @@ const ExercisesQuestionService = {
     getAllQuestionsByExerciseId: async (exerciseId) => {
        
       try {
-          const response = await axios.get(`${API_BASE_URL}/admin/exercise/${exerciseId}/questions`);
+          const response = await axios.get(`${API_BASE_URL}/admin/exercises/${exerciseId}/questions`);
           
           if (response.data.success) {
             console.log(response.data.data)
@@ -23,7 +23,7 @@ const ExercisesQuestionService = {
 
     getAllQuestions: async () => {
         try {
-          const response = await axios.get(`${API_BASE_URL}/admin/exercise/questions/all`);
+          const response = await axios.get(`${API_BASE_URL}/admin/exercises/questions/all`);
           if (response.data.success) {
             return response.data.data;
           } else {
@@ -38,7 +38,7 @@ const ExercisesQuestionService = {
     getQuestionsNotInExercise: async (exerciseId) => {
         try {
             console.log(`Fetching available questions for exercise ID ${exerciseId}...`);
-            const url = `${API_BASE_URL}/admin/exercise/${exerciseId}/available-questions`;
+            const url = `${API_BASE_URL}/admin/exercises/${exerciseId}/available-questions`;
             console.log('API URL:', url);
             
             const response = await axios.get(url);
@@ -72,7 +72,7 @@ const ExercisesQuestionService = {
     addQuestionToExercise: async (exerciseId, questionId) => {
         try {
             console.log(`Adding question ${questionId} to exercise ${exerciseId}...`);
-            const url = `${API_BASE_URL}/admin/exercise/${exerciseId}/questions`;
+            const url = `${API_BASE_URL}/admin/exercises/${exerciseId}/questions`;
             console.log('API URL:', url);
             console.log('Request body:', { questionId });
             
@@ -101,7 +101,7 @@ const ExercisesQuestionService = {
     
     removeQuestionFromExercise: async (exerciseId, questionId) => {
         try {
-            const response = await axios.delete(`${API_BASE_URL}/admin/exercise/${exerciseId}/questions/${questionId}`);
+            const response = await axios.delete(`${API_BASE_URL}/admin/exercises/${exerciseId}/questions/${questionId}`);
             if (response.data.success) {
                 return true;
             } else {
