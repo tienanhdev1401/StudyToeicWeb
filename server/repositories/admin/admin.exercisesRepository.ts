@@ -160,7 +160,7 @@ export class exercisesRepository {
       row.option_b,
       row.option_c,
       row.option_d,
-      row.ResourceId ? { id: row.ResourceId, paragraph: null, urlAudio: null, urlImage: null } : null
+      row.ResourceId ? { id: row.ResourceId, explain_resource: null, urlAudio: null, urlImage: null } : null
     ));
   }
 }
