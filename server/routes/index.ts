@@ -20,6 +20,7 @@ import questionRoutes from './questionRoutes';
 import testRoutes from './testRoutes';
 import submissionRoutes from './submissionRoutes';
 import test from './test'
+import adminQuestionRoutes from './admin/admin.questionRoutes';
 
 function route(app: Application): void {
   app.use('/api/user', userRouter);
@@ -29,6 +30,7 @@ function route(app: Application): void {
   app.use('/api/admin/vocabulary-topic',adminVocabularyTopicRoutes)
   app.use('/api/admin/vocabulary',adminVocabularyRoutes)
   app.use('/api/admin/test', adminTestRoutes)
+  app.use('/api/admin/question', adminQuestionRoutes)
   app.use('/api/grammar-topic',grammarTopicTopicRoutes)
   app.use('/api/admin/learner',adminLearnerRoutes)
   app.use('/api/admin/staff',adminStaffRoutes)

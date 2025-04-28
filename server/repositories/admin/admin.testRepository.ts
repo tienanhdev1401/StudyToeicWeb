@@ -3,7 +3,7 @@ import { Test } from '../../models/Test';
 import db from '../../config/db';
 
 export class TestRepository {
-  async findById(id: number): Promise<Test | null> {
+  static async findById(id: number): Promise<Test | null> {
     try {
       const [rows] = await db.query(
         'SELECT * FROM tests WHERE id = ?',
@@ -28,7 +28,8 @@ export class TestRepository {
       throw error;
     }
   }
-  async findAll(): Promise<Test[]> {
+
+  static async findAll(): Promise<Test[]> {
     try {
       const rows = await db.query('SELECT * FROM tests');
       // Chuyển đổi kết quả thành mảng
@@ -48,7 +49,8 @@ export class TestRepository {
       throw error;
     }
   } 
-async create(test: Test): Promise<Test> {
+  
+  static async create(test: Test): Promise<Test> {
     try {
       const result = await db.query(
         'INSERT INTO tests (title, testCollection, duration) VALUES (?, ?, ?)',
@@ -69,7 +71,7 @@ async create(test: Test): Promise<Test> {
     }
   }
   
-  async update(test: Test): Promise<Test> {
+  static async update(test: Test): Promise<Test> {
     try {
       await db.query(
         'UPDATE tests SET title = ?, testCollection = ?, duration = ? WHERE id = ?',
@@ -83,7 +85,7 @@ async create(test: Test): Promise<Test> {
     }
   }
   
-  async delete(id: number): Promise<boolean> {
+  static async delete(id: number): Promise<boolean> {
     try {
       const result = await db.query(
         'DELETE FROM tests WHERE id = ?',

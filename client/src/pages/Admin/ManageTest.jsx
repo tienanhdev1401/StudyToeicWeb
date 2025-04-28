@@ -43,14 +43,10 @@ const ManageTest = () => {
       setIsLoading(true);
       // Trong thực tế, bạn sẽ gọi API ở đây    
       const data = await testService.getAllTests();
-      
-      // Sử dụng dữ liệu mẫu
-      setTimeout(() => {
-        setTestList(data);
-        setIsLoading(false);
-      }, 500);
+      setTestList(data);
     } catch (err) {
       setError(err.message || 'Có lỗi xảy ra khi tải dữ liệu');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -72,36 +68,37 @@ const ManageTest = () => {
   };
 
   // Handle adding or updating a test
-  const handleAddOrUpdateTest = async (test, isEdit) => {
+  const handleAddOrUpdateTest = async (testData, isEdit) => {
     try {
       setIsSubmitting(true);
       
-      // Mô phỏng việc gọi API
-      await new Promise(resolve => setTimeout(resolve, 500));
+      let savedTest;
       
       if (isEdit) {
-        // Update test logic
+        // Update test using service
+        savedTest = await testService.updateTest(testData.id, testData);
+        // Update local state after successful API call
         setTestList(prevList => 
-          prevList.map(item => item.id === test.id ? test : item)
+          prevList.map(item => item.id === testData.id ? savedTest : item)
         );
         displaySuccessMessage('Test updated successfully!');
       } else {
-        // Add new test logic
-        const newTest = {
-          ...test,
-          id: Math.max(...testList.map(t => t.id), 0) + 1,
-          createdAt: new Date().toISOString().split('T')[0]
-        };
-        setTestList(prevList => [...prevList, newTest]);
+        // Add new test using service
+        savedTest = await testService.createTest(testData);
+        // Update local state after successful API call
+        setTestList(prevList => [...prevList, savedTest]);
         displaySuccessMessage('Test added successfully!');
       }
       
       setIsAddModalOpen(false);
       setEditMode(false);
       setTestToEdit(null);
+      
+      return savedTest;
     } catch (error) {
       console.error('Error:', error);
       displayErrorMessage(error.message || 'An error occurred. Please try again.');
+      throw error;
     } finally {
       setIsSubmitting(false);
     }
@@ -110,15 +107,19 @@ const ManageTest = () => {
   // Handle delete confirmation
   const handleDeleteConfirm = async () => {
     try {
-      // Mô phỏng việc gọi API
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
       if (itemToDelete) {
-        // Delete single item
+        console.log(itemToDelete.id);
+        // Delete single item using service
+        await testService.deleteTest(itemToDelete.id);
+        // Update local state after successful API call
         setTestList(prevList => prevList.filter(item => item.id !== itemToDelete.id));
         displaySuccessMessage(`Test "${itemToDelete.title}" deleted successfully`);
       } else {
-        // Delete multiple items
+        // Delete multiple items using service
+        for(const id of selectedItems){
+          await testService.deleteTest(id);
+        }
+        // Update local state after successful API call
         setTestList(prevList => prevList.filter(item => !selectedItems.includes(item.id)));
         displaySuccessMessage(`${selectedItems.length} tests deleted successfully`);
       }
@@ -138,7 +139,8 @@ const ManageTest = () => {
   const filteredData = testList.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.testCollection.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.duration.toLowerCase().includes(searchTerm.toLowerCase())
+    item.numberOfAttempts.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.averageScore.toString().toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Sort data
@@ -323,9 +325,13 @@ const ManageTest = () => {
               Title
               <i className={`fas ${sortField === 'title' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('collection')} className="manageTest-sortable">
+            <th onClick={() => handleSort('testCollection')} className="manageTest-sortable">
               Collection
-              <i className={`fas ${sortField === 'collection' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              <i className={`fas ${sortField === 'testCollection' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+            </th>
+            <th onClick={() => handleSort('duration')} className="manageTest-sortable">
+              Duration
+              <i className={`fas ${sortField === 'duration' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
             <th onClick={() => handleSort('numberOfAttempts')} className="manageTest-sortable">
               Number of Attempts
@@ -335,10 +341,7 @@ const ManageTest = () => {
               Average Score
               <i className={`fas ${sortField === 'averageScore' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('createdAt')} className="manageTest-sortable">
-              Date Created
-              <i className={`fas ${sortField === 'createdAt' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
-            </th>
+           
             <th>Action</th>
           </tr>
         </thead>
@@ -357,10 +360,14 @@ const ManageTest = () => {
                   </div>
                 </td>
                 <td>{item.title}</td>
-                <td>{item.collection}</td>
-                <td>{item.numberOfAttempts}</td>
-                <td>{item.averageScore}</td>
-                <td>{item.createdAt}</td>
+                <td>{item.testCollection }</td>
+                    <td>{item.duration}</td>
+                 
+                {/* <td>{item.numberOfAttempts}</td> */}
+                <td>100</td>
+                {/* <td>{item.averageScore}</td> */}
+                <td>550/990</td>
+                
                 <td>
                   <button 
                     className="manageTest-view-btn"
@@ -512,48 +519,86 @@ const ManageTest = () => {
 const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem = null, isSubmitting = false }) => {
   const [formData, setFormData] = useState({
     title: '',
-    description: '',
-    level: 'Intermediate',
-    duration: 120
+    testCollection: ''
   });
 
   const [errors, setErrors] = useState({
     title: '',
-    description: ''
+    testCollection: ''
   });
 
   const [touched, setTouched] = useState({
     title: false,
-    description: false
+    testCollection: false
   });
+
+  const [collections, setCollections] = useState([]);
+  const [isNewCollection, setIsNewCollection] = useState(false);
+  
+  // File upload states
+  const [testFile, setTestFile] = useState(null);
+  const [solutionFile, setSolutionFile] = useState(null);
+  const [fileErrors, setFileErrors] = useState({
+    testFile: '',
+    solutionFile: ''
+  });
+  const [uploadProgress, setUploadProgress] = useState({
+    testFile: 0,
+    solutionFile: 0
+  });
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Fetch test collections
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const collectionsData = await testService.getTestCollections();
+        setCollections(collectionsData);
+      } catch (error) {
+        console.error('Error fetching collections:', error);
+      }
+    };
+
+    fetchCollections();
+  }, []);
 
   // Initialize form data when editing an existing item
   useEffect(() => {
     if (isOpen && editMode && testItem) {
       setFormData({
         title: testItem.title || '',
-        description: testItem.description || '',
-        level: testItem.level || 'Intermediate',
-        duration: testItem.duration || 120
+        testCollection: testItem.testCollection || ''
       });
+      // Nếu đang chỉnh sửa, kiểm tra xem collection có trong danh sách không
+      // Nếu không thì chuyển sang chế độ new collection
+      if (collections.length > 0) {
+        const collectionExists = collections.some(c => c.title === testItem.testCollection);
+        setIsNewCollection(!collectionExists);
+      }
     } else if (isOpen && !editMode) {
       // Reset form for adding new item
       setFormData({
         title: '',
-        description: '',
-        level: 'Intermediate',
-        duration: 120
+        testCollection: ''
       });
       setErrors({
         title: '',
-        description: ''
+        testCollection: ''
       });
       setTouched({
         title: false,
-        description: false
+        testCollection: false
+      });
+      // Mặc định là chọn collection có sẵn
+      setIsNewCollection(false);
+      setTestFile(null);
+      setSolutionFile(null);
+      setFileErrors({
+        testFile: '',
+        solutionFile: ''
       });
     }
-  }, [isOpen, editMode, testItem]);
+  }, [isOpen, editMode, testItem, collections]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -580,8 +625,8 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
       errorMessage = 'Title is required';
     }
     
-    if (fieldName === 'description' && !value.trim()) {
-      errorMessage = 'Description is required';
+    if (fieldName === 'testCollection' && !value.trim()) {
+      errorMessage = 'Collection is required';
     }
     
     setErrors({ ...errors, [fieldName]: errorMessage });
@@ -591,40 +636,104 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
   const validateForm = () => {
     const newErrors = {
       title: !formData.title.trim() ? 'Title is required' : '',
-      description: !formData.description.trim() ? 'Description is required' : ''
+      testCollection: !formData.testCollection.trim() ? 'Collection is required' : ''
     };
     
     setErrors(newErrors);
     setTouched({
       title: true,
-      description: true
+      testCollection: true
     });
     
     return !Object.values(newErrors).some(error => error);
   };
 
+  const handleFileChange = (e, fileType) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (fileType === 'test') {
+        setTestFile(file);
+        setFileErrors({...fileErrors, testFile: ''});
+      } else {
+        setSolutionFile(file);
+        setFileErrors({...fileErrors, solutionFile: ''});
+      }
+    }
+  };
+
+  const validateFiles = () => {
+    const errors = {
+      testFile: '',
+      solutionFile: ''
+    };
+    
+    // In edit mode, files are optional
+    // if (!editMode) {
+    //   if (!testFile) {
+    //     errors.testFile = 'Test file is required';
+    //   } else if (!testFile.name.endsWith('.xlsx') && !testFile.name.endsWith('.xls')) {
+    //     errors.testFile = 'File must be Excel format (.xlsx or .xls)';
+    //   }
+      
+    //   if (!solutionFile) {
+    //     errors.solutionFile = 'Solution file is required';
+    //   } else if (!solutionFile.name.endsWith('.xlsx') && !solutionFile.name.endsWith('.xls')) {
+    //     errors.solutionFile = 'File must be Excel format (.xlsx or .xls)';
+    //   }
+    // } else {
+    //   // For edit mode, validate only if files are provided
+    //   if (testFile && !testFile.name.endsWith('.xlsx') && !testFile.name.endsWith('.xls')) {
+    //     errors.testFile = 'File must be Excel format (.xlsx or .xls)';
+    //   }
+      
+    //   if (solutionFile && !solutionFile.name.endsWith('.xlsx') && !solutionFile.name.endsWith('.xls')) {
+    //     errors.solutionFile = 'File must be Excel format (.xlsx or .xls)';
+    //   }
+    // }
+    
+    setFileErrors(errors);
+    return !errors.testFile && !errors.solutionFile;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    if (!validateForm() || !validateFiles()) {
       return;
     }
 
     try {
+      //setIsSubmitting(true);
+      
       // Prepare data for submission
       const testData = {
-        ...formData,
-        duration: Number(formData.duration)
+        ...formData
       };
 
       if (editMode && testItem) {
         testData.id = testItem.id;
-        testData.createdAt = testItem.createdAt;
       }
 
-      await onSubmit(testData, editMode);
+      // First create or update the test
+      const savedTest = await onSubmit(testData, editMode);
+      
+      // Then upload files if provided
+      setIsUploading(true);
+      
+      if (testFile) {
+        await testService.uploadExcelFile(savedTest.id, 'test', testFile);
+      }
+      
+      if (solutionFile) {
+        await testService.uploadExcelFile(savedTest.id, 'solution', solutionFile);
+      }
+      
+      setIsUploading(false);
     } catch (error) {
       console.error(`Error ${editMode ? 'updating' : 'adding'} test:`, error);
+      setIsUploading(false);
+    } finally {
+      //setIsSubmitting(false);
     }
   };
 
@@ -635,7 +744,7 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
       <div className="manageTest-add-modal-content">
         <div className="manageTest-add-modal-header">
           <h2>{editMode ? 'Edit Test' : 'Add New Test'}</h2>
-          <button type="button" className="manageTest-close-btn" onClick={onClose} disabled={isSubmitting}>
+          <button type="button" className="manageTest-close-btn" onClick={onClose} disabled={isSubmitting || isUploading}>
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -653,69 +762,153 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
                 required
                 placeholder="Enter test title"
                 className={errors.title && touched.title ? 'manageTest-input-error' : ''}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploading}
               />
               {errors.title && touched.title && (
                 <div className="manageTest-error-message">{errors.title}</div>
               )}
             </div>
             
-            <div className={`manageTest-form-group ${errors.description && touched.description ? 'has-error' : ''}`}>
-              <label htmlFor="description">Description <span className="required">*</span></label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                placeholder="Enter test description"
-                className={errors.description && touched.description ? 'manageTest-input-error' : ''}
-                disabled={isSubmitting}
-                rows={3}
-              ></textarea>
-              {errors.description && touched.description && (
-                <div className="manageTest-error-message">{errors.description}</div>
+            <div className={`manageTest-form-group ${errors.testCollection && touched.testCollection ? 'has-error' : ''}`}>
+              <label htmlFor="testCollection">Collection <span className="required">*</span></label>
+              <div className="collection-input-group">
+                <div className="collection-toggle">
+                  <button 
+                    type="button" 
+                    className={`collection-toggle-btn ${!isNewCollection ? 'active' : ''}`} 
+                    onClick={() => setIsNewCollection(false)}
+                    disabled={isSubmitting || isUploading || collections.length === 0}
+                  >
+                    Use Existing
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`collection-toggle-btn ${isNewCollection ? 'active' : ''}`} 
+                    onClick={() => setIsNewCollection(true)}
+                    disabled={isSubmitting || isUploading}
+                  >
+                    Create New
+                  </button>
+                </div>
+                
+                {isNewCollection ? (
+                  <input
+                    type="text"
+                    id="testCollection"
+                    name="testCollection"
+                    value={formData.testCollection}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    placeholder="Enter new collection name"
+                    className={errors.testCollection && touched.testCollection ? 'manageTest-input-error' : ''}
+                    disabled={isSubmitting || isUploading}
+                  />
+                ) : (
+                  <select
+                    id="testCollection"
+                    name="testCollection"
+                    value={formData.testCollection}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    className={errors.testCollection && touched.testCollection ? 'manageTest-input-error' : ''}
+                    disabled={isSubmitting || isUploading || collections.length === 0}
+                  >
+                    <option value="">Select a collection</option>
+                    {collections.map((collection) => (
+                      <option key={collection.id} value={collection.title}>
+                        {collection.title}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              {errors.testCollection && touched.testCollection && (
+                <div className="manageTest-error-message">{errors.testCollection}</div>
+              )}
+              {collections.length === 0 && !isNewCollection && (
+                <div className="manageTest-info-message">
+                  No collections available. Please create a new one.
+                </div>
+              )}
+            </div>
+            
+            
+            <div className="manageTest-form-group">
+              <label htmlFor="testFile">TOEIC Test Excel File {!editMode && <span className="required">*</span>}</label>
+              <div className="manageTest-file-upload-container">
+                <input
+                  type="file"
+                  id="testFile"
+                  accept=".xlsx,.xls"
+                  onChange={(e) => handleFileChange(e, 'test')}
+                  disabled={isSubmitting || isUploading}
+                  className={fileErrors.testFile ? 'manageTest-file-input-error' : ''}
+                />
+                <button 
+                  type="button"
+                  className="manageTest-file-upload-btn"
+                  onClick={() => document.getElementById('testFile').click()}
+                  disabled={isSubmitting || isUploading}
+                >
+                  <i className="fas fa-upload"></i> 
+                  {testFile ? testFile.name : 'Choose File'}
+                </button>
+              </div>
+              {fileErrors.testFile && (
+                <div className="manageTest-error-message">{fileErrors.testFile}</div>
+              )}
+              {isUploading && testFile && (
+                <div className="manageTest-upload-progress">
+                  <div className="manageTest-progress-bar" style={{ width: `${uploadProgress.testFile}%` }}></div>
+                  <span>{uploadProgress.testFile}%</span>
+                </div>
               )}
             </div>
             
             <div className="manageTest-form-group">
-              <label htmlFor="level">Level</label>
-              <select
-                id="level"
-                name="level"
-                value={formData.level}
-                onChange={handleChange}
-                disabled={isSubmitting}
-              >
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
+              <label htmlFor="solutionFile">TOEIC Solution Excel File {!editMode && <span className="required">*</span>}</label>
+              <div className="manageTest-file-upload-container">
+                <input
+                  type="file"
+                  id="solutionFile"
+                  accept=".xlsx,.xls"
+                  onChange={(e) => handleFileChange(e, 'solution')}
+                  disabled={isSubmitting || isUploading}
+                  className={fileErrors.solutionFile ? 'manageTest-file-input-error' : ''}
+                />
+                <button 
+                  type="button"
+                  className="manageTest-file-upload-btn"
+                  onClick={() => document.getElementById('solutionFile').click()}
+                  disabled={isSubmitting || isUploading}
+                >
+                  <i className="fas fa-upload"></i> 
+                  {solutionFile ? solutionFile.name : 'Choose File'}
+                </button>
+              </div>
+              {fileErrors.solutionFile && (
+                <div className="manageTest-error-message">{fileErrors.solutionFile}</div>
+              )}
+              {isUploading && solutionFile && (
+                <div className="manageTest-upload-progress">
+                  <div className="progress-bar" style={{ width: `${uploadProgress.solutionFile}%` }}></div>
+                  <span>{uploadProgress.solutionFile}%</span>
+                </div>
+              )}
             </div>
             
-            <div className="manageTest-form-group">
-              <label htmlFor="duration">Duration (minutes)</label>
-              <input
-                type="number"
-                id="duration"
-                name="duration"
-                value={formData.duration}
-                onChange={handleChange}
-                min={1}
-                disabled={isSubmitting}
-              />
-            </div>
             
             <div className="manageTest-add-modal-footer">
-              <button type="button" className="manageTest-cancel-btn" onClick={onClose} disabled={isSubmitting}>
+              <button type="button" className="manageTest-cancel-btn" onClick={onClose} disabled={isSubmitting || isUploading}>
                 Cancel
               </button>
-              <button type="submit" className="manageTest-submit-btn" disabled={isSubmitting}>
-                {isSubmitting ? (
+              <button type="submit" className="manageTest-submit-btn" disabled={isSubmitting || isUploading}>
+                {isSubmitting || isUploading ? (
                   <>
                     <i className="fas fa-spinner fa-spin"></i> 
-                    Loading...
+                    {isUploading ? 'Uploading...' : 'Processing...'}
                   </>
                 ) : (
                   editMode ? 'Save Changes' : 'Add Test'

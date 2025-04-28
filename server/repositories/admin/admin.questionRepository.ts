@@ -1,31 +1,49 @@
-
 import { TestCollection } from '../../models/TestCollection';
+import { Resource } from '../../models/Resource';
+import { Question } from '../../models/Question';
+import { ResourceRepository } from '../resourceRepository';
 import db from '../../config/db';
 
-export class TestCollectionRepository {
-    async findById(id: number): Promise<TestCollection | null> {
+export class QuestionRepository {
+    static async findById(id: number): Promise<Question | null> {
         try {
             const rows = await db.query(
-                'SELECT * FROM `test-collection` WHERE id = ?',
+                'SELECT * FROM questions WHERE id = ?',
                 [id]
             );
             
-            const testCollections = Array.isArray(rows) ? rows : [rows];
-            if (!testCollections.length) return null;
+            const questions = Array.isArray(rows) ? rows : [rows];
+            if (!questions.length) return null;
 
-            const testCollection = new TestCollection(
-                Number(testCollections[0].id),
-                testCollections[0].title,
+            const row = questions[0];
+            let resource = null;
+            if (row.ResourceId) {
+                try {
+                    resource = await ResourceRepository.findById(Number(row.ResourceId));
+                } catch (resourceError) {
+                    console.error(`Error fetching resource ${row.ResourceId}:`, resourceError);
+                    // Continue with null resource
+                }
+            }
+
+            return new Question(
+                Number(row.id),
+                row.content,
+                row.correct_answer,
+                row.explain_detail || '',
+                row.option_a || '',
+                row.option_b || '',
+                row.option_c || '',
+                row.option_d || '',
+                resource
             );
-            return testCollection;
-
         } catch (error) {
-            console.error('TestCollectionRepository.findById error:', error);
+            console.error('QuestionRepository.findById error:', error);
             throw error;
         }
     }
 
-    async findAll(): Promise<TestCollection[]> {
+    static async findAll(): Promise<TestCollection[]> {
         try {
             const rows = await db.query('SELECT DISTINCT testCollection FROM tests');
             
@@ -44,4 +62,113 @@ export class TestCollectionRepository {
         }
     }
     
+    static async create(question: Question, resourceId: number | null = null): Promise<Question> {
+        try {
+          const result = await db.query(
+            'INSERT INTO questions (content, correct_answer, explain_detail, option_a, option_b, option_c, option_d, ResourceId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+              question.content,
+              question.correctAnswer,
+              question.explainDetail || '',
+              question.optionA,
+              question.optionB,
+              question.optionC,
+              question.optionD,
+              resourceId
+            ]
+          );
+          
+          let insertId = null;
+          if (result && (result as any).insertId) {
+            insertId = (result as any).insertId;
+          }
+          
+          return {
+            ...question,
+            id: insertId
+          };
+        } catch (error) {
+          console.error('QuestionRepository.create error:', error);
+          throw error;
+        }
+      }
+    
+      static async update(question: Question, resourceId: number | null = null): Promise<void> {
+        try {
+          await db.query(
+            'UPDATE questions SET content = ?, correct_answer = ?, explain_detail = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?, ResourceId = ? WHERE id = ?',
+            [
+              question.content,
+              question.correctAnswer,
+              question.explainDetail || '',
+              question.optionA,
+              question.optionB,
+              question.optionC,
+              question.optionD,
+              resourceId !== undefined ? resourceId : question.resource?.id || null,
+              question.id
+            ]
+          );
+        } catch (error) {
+          console.error('QuestionRepository.update error:', error);
+          throw error;
+        }
+      }
+
+      static async delete(id: number): Promise<void> {
+        try {
+          await db.query('DELETE FROM questions WHERE id = ?', [id]);
+        } catch (error) {
+          console.error('QuestionRepository.delete error:', error);
+          throw error;
+        }
+      }
+
+      static async findByIds(ids: number[]): Promise<Question[]> {
+        try {
+          if (!ids.length) {
+            return [];
+          }
+          const placeholders = ids.map(() => '?').join(',');
+          const rows = await db.query(
+            `SELECT * FROM questions WHERE id IN (${placeholders})`,
+            ids
+          );
+          
+          // Handle empty result
+          if (!rows || (Array.isArray(rows) && rows.length === 0)) {
+            return [];
+          }
+          
+          const results = Array.isArray(rows) ? rows : [rows];
+          const questions = await Promise.all(results.map(async row => {
+            let resource = null;
+            if (row.ResourceId) {
+              try {
+                resource = await ResourceRepository.findById(Number(row.ResourceId));
+              } catch (resourceError) {
+                console.error(`Error fetching resource ${row.ResourceId}:`, resourceError);
+                // Continue with null resource
+              }
+            }
+            
+            return new Question(
+              Number(row.id),
+              row.content,
+              row.correct_answer,
+              row.explain_detail || '', 
+              row.option_a || '',     
+              row.option_b || '',      
+              row.option_c || '',     
+              row.option_d || '',    
+              resource
+            );
+          }));
+      
+          return questions;
+        } catch (error) {
+          console.error('QuestionRepository.findByIds error:', error);
+          throw error;
+        }
+      }
 }

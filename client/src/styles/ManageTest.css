@@ -1,4 +1,3 @@
-
 .manageTest-container {
     padding: 30px;
     font-family: 'Arial', sans-serif;
@@ -721,3 +720,120 @@
       width: 100%;
     }
   }
+
+.manageTest-file-upload-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.manageTest-file-upload-container input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  z-index: -1;
+}
+
+.manageTest-file-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #374151;
+  width: 100%;
+}
+
+.manageTest-file-upload-btn:hover:not(:disabled) {
+  background-color: #e5e7eb;
+}
+
+.manageTest-file-upload-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.manageTest-file-upload-btn i {
+  font-size: 16px;
+  color: #60a4fd;
+}
+
+.manageTest-file-input-error + .manageTest-file-upload-btn {
+  border-color: #ef4444;
+}
+
+.manageTest-upload-progress {
+  margin-top: 8px;
+  height: 6px;
+  width: 100%;
+  background-color: #e5e7eb;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.manageTest-progress-bar {
+  height: 100%;
+  background-color: #60a4fd;
+  transition: width 0.3s ease;
+}
+
+.manageTest-upload-progress span {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  font-size: 12px;
+  color: #60a4fd;
+}
+
+#testCollection  {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.manageTest-info-message {
+  color: #3b82f6;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.collection-toggle {
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  width: fit-content;
+  border: 1px solid #d1d5db;
+  margin-bottom: 10px;
+}
+
+.collection-toggle-btn {
+  padding: 8px 15px;
+  background-color: #f3f4f6;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.collection-toggle-btn.active {
+  background-color: #60a4fd;
+  color: white;
+}
+
+.collection-toggle-btn:hover:not(.active):not(:disabled) {
+  background-color: #e5e7eb;
+}
+
+.collection-toggle-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

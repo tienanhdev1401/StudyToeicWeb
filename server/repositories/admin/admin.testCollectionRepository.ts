@@ -3,7 +3,7 @@ import { TestCollection } from '../../models/TestCollection';
 import db from '../../config/db';
 
 export class TestCollectionRepository {
-    async findById(id: number): Promise<TestCollection | null> {
+    static async findById(id: number): Promise<TestCollection | null> {
         try {
             const rows = await db.query(
                 'SELECT * FROM `test-collection` WHERE id = ?',
@@ -25,7 +25,7 @@ export class TestCollectionRepository {
         }
     }
 
-    async findAll(): Promise<TestCollection[]> {
+    static async findAll(): Promise<TestCollection[]> {
         try {
             const rows = await db.query('SELECT DISTINCT testCollection FROM tests');
             

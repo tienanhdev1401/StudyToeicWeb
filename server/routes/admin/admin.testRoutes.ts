@@ -5,30 +5,32 @@ import { checkAuthenticated } from '../../middleware/authMiddleware';
 import { isAdmin } from '../../middleware/roleMiddleware';
 
 const router = Router();
-const adminTestController = new AdminTestController();
+
 
 // Middleware để kiểm tra xác thực và quyền admin
-// const adminAuthMiddleware = [checkAuthenticated, isAdmin];
+const adminAuthMiddleware = [checkAuthenticated, isAdmin];
 
-// Lấy tất cả bài test
-router.get('/', (req: Request, res: Response) => adminTestController.getAllTests(req, res));
 
 // Lấy bài test theo ID
-router.get('/:id', (req: Request, res: Response) => adminTestController.getTestById(req, res));
+router.get('/:id',  AdminTestController.getTestById);
 
 // Tạo mới bài test
-router.post('/', (req: Request, res: Response) => adminTestController.createTest(req, res));
+router.post('/', AdminTestController.createTest);
 
 // Cập nhật bài test
-router.put('/:id', (req: Request, res: Response) => adminTestController.updateTest(req, res));
+router.put('/:id',  AdminTestController.updateTest);
 
 // Xóa bài test
-router.delete('/:id', (req: Request, res: Response) => adminTestController.deleteTest(req, res));
+router.delete('/:id',  AdminTestController.deleteTest);
 
 // Thêm part vào bài test
-router.post('/:id/parts', (req: Request, res: Response) => adminTestController.addPartToTest(req, res));
+router.post('/:id/parts', AdminTestController.addPartToTest);
 
 // Lấy danh sách test collections
-router.get('/collections/all', (req: Request, res: Response) => adminTestController.getTestCollections(req, res));
+router.get('/collections/all',  AdminTestController.getTestCollections);
+
+
+// Lấy tất cả bài test
+router.get('/',  AdminTestController.getAllTests);
 
 export default router;

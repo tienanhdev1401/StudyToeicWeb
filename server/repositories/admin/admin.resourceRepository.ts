@@ -1,5 +1,5 @@
-import { Resource } from '../models/Resource';
-import db from '../config/db';
+import { Resource } from '../../models/Resource';
+import db from '../../config/db';
 
 export class ResourceRepository {
   static async findById(id: number): Promise<Resource | null> {
@@ -9,7 +9,7 @@ export class ResourceRepository {
         [id]
       );
 
-      if (results.length === 0) {
+      if (!results || results.length === 0) {
         return null;
       }
 
@@ -26,15 +26,20 @@ export class ResourceRepository {
     }
   }
 
+
   static async createResource(explainResource: string | null, audioUrl: string | null, imageUrl: string | null): Promise<number | null> {
     try {
-      const [result] = await db.query(
+      const result = await db.query(
         'INSERT INTO resources (explain_resource, urlAudio, urlImage) VALUES (?, ?, ?)',
         [explainResource || null, audioUrl || null, imageUrl || null]
       );
       
-      const insertResult = result as any;
-      return insertResult.insertId;
+      // Check if the result has the insertId property
+      if (result && (result as any).insertId) {
+        return (result as any).insertId;
+      }
+      
+      return null;
     } catch (error) {
       console.error('Error creating resource:', error);
       throw error;
