@@ -41,8 +41,9 @@ const questionService = {
 
   createQuestionByPartId: async (testId, partId, questionData) => {
     try {
-      console.log(partId, questionData);
+      
       const response = await axios.post(`${API_BASE_URL}/admin/question/parts/${partId}`, questionData);
+    
       return response.data;
     } catch (error) {
       console.error(`Error creating question for part ${partId}:`, error);

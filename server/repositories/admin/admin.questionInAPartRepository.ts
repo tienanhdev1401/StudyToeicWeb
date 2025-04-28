@@ -1,5 +1,6 @@
 import { QuestionInAPart } from '../../models/QuestionInAPart';
 import db from '../../config/db';
+import { QuestionRepository } from './admin.questionRepository';
 
 export class QuestionInAPartRepository {
   static async findByPartId(partId: number): Promise<QuestionInAPart[]> {
@@ -32,10 +33,39 @@ export class QuestionInAPartRepository {
   
   static async deleteByPartId(partId: number): Promise<boolean> {
     try {
+      // 1. Lấy tất cả các questionId thuộc partId này trước khi xóa
+      const rows = await db.query(
+        'SELECT QuestionId FROM questioninaparts WHERE PartId = ?',
+        [partId]
+      );
+      
+      // Chuyển đổi kết quả thành mảng questionIds
+      const questionInAParts = Array.isArray(rows) ? rows : [rows];
+      const questionIds = questionInAParts.map(row => row.QuestionId);
+      
+      // 2. Xóa liên kết trong bảng questioninaparts
       const result = await db.query(
         'DELETE FROM questioninaparts WHERE PartId = ?',
         [partId]
       );
+      
+      // 3. Kiểm tra và xóa những question không còn được sử dụng ở part nào
+      if (questionIds && questionIds.length > 0) {
+        for (const questionId of questionIds) {
+          // Kiểm tra xem question có còn ở part khác không
+          const [countRows] = await db.query(
+            'SELECT COUNT(*) as count FROM questioninaparts WHERE QuestionId = ?',
+            [questionId]
+          );
+          
+          const countResult = Array.isArray(countRows) ? countRows[0] : countRows;
+          // Nếu không còn part nào dùng question này, xóa question
+          if (countResult && Number(countResult.count) === 0) {
+            await QuestionRepository.delete(questionId);
+            console.log(`Deleted orphaned question: ${questionId}`);
+          }
+        }
+      }
       
       return result.affectedRows > 0;
     } catch (error) {

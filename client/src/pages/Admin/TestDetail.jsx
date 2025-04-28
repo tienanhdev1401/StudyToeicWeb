@@ -6,6 +6,7 @@ import questionService from '../../services/admin/admin.questionService';
 import SuccessAlert from '../../components/SuccessAlert';
 import ErrorAlert from '../../components/ErrorAlert';
 import { Editor } from '@tinymce/tinymce-react';
+import { parseQuestionExcel, isValidExcelFile } from '../../utils/excelUtils';
 
 // TOEIC part limits and question number ranges
 const TOEIC_PART_LIMITS = {
@@ -77,6 +78,9 @@ const TestDetail = () => {
   // Add state for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Add state for import excel modal
+  const [isImportExcelModalOpen, setIsImportExcelModalOpen] = useState(false);
 
   // Add functions to display alerts
   const displaySuccessMessage = (message) => {
@@ -614,6 +618,194 @@ const TestDetail = () => {
     return rangeWithDots;
   };
 
+  // Modal import excel cho câu hỏi
+  const ImportExcelModal = ({ isOpen, onClose, onImport }) => {
+    const [file, setFile] = useState(null);
+    const [questions, setQuestions] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+      if (!isOpen) {
+        setFile(null);
+        setQuestions([]);
+        setError('');
+      }
+    }, [isOpen]);
+
+    const handleFileChange = async (e) => {
+      const selectedFile = e.target.files[0];
+      if (!selectedFile) return;
+      if (!isValidExcelFile(selectedFile)) {
+        setError('Only Excel (.xlsx, .xls) or CSV (.csv) files are allowed');
+        setQuestions([]);
+        return;
+      }
+      setFile(selectedFile);
+      setIsLoading(true);
+      try {
+        const result = await parseQuestionExcel(selectedFile);
+        console.log(result);
+        setQuestions(result.questions || []);
+        setError('');
+      } catch (err) {
+        setError('Could not parse the file. Please check the format.');
+        setQuestions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (!file || questions.length === 0) {
+        setError('Please select a valid file with question data.');
+        return;
+      }
+      setIsLoading(true);
+      try {
+        await onImport(questions);
+        onClose();
+      } catch (err) {
+        setError(err.message || 'Failed to import questions.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+      <div className="test-detail-modal-overlay">
+        <div className="test-detail-modal-content" style={{ maxWidth: 600 }}>
+          <div className="test-detail-modal-header">
+            <h3>Import Questions from Excel</h3>
+            <button className="test-detail-modal-close-btn" onClick={onClose}>
+              <i className="fas fa-times"></i>
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className="test-detail-question-form">
+            <div className="test-detail-form-group">
+              <label htmlFor="excelFile">Select Excel File</label>
+              <input
+                type="file"
+                id="excelFile"
+                onChange={handleFileChange}
+                accept=".xlsx, .xls, .csv"
+              />
+              <div style={{ marginTop: 8 }}>
+                <a href="/templates/question_template.xlsx" download style={{ color: '#409efd', textDecoration: 'underline', fontSize: 13 }}>
+                  <i className="fas fa-download"></i> Download Template
+                </a>
+              </div>
+            </div>
+            {error && <div className="test-detail-form-error-message" style={{ marginBottom: 12 }}>{error}</div>}
+            {questions.length > 0 && (
+              <div style={{ margin: '12px 0' }}>
+                <b>Preview ({questions.length} questions):</b>
+                <div style={{ maxHeight: 200, overflowY: 'auto', marginTop: 8 }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Content</th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>Correct</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {questions.slice(0, 5).map((q, idx) => (
+                        <tr key={idx}>
+                          <td>{idx + 1}</td>
+                          <td>{q.content}</td>
+                          <td>{q.optionA}</td>
+                          <td>{q.optionB}</td>
+                          <td>{q.optionC}</td>
+                          <td>{q.optionD}</td>
+                          <td>{q.correctAnswer}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {questions.length > 5 && <div style={{ color: '#888', fontStyle: 'italic', marginTop: 4 }}>...and {questions.length - 5} more</div>}
+                </div>
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>
+              <button type="button" className="test-detail-cancel-btn" onClick={onClose} disabled={isLoading}>Cancel</button>
+              <button type="submit" className="test-detail-submit-btn" disabled={isLoading || questions.length === 0}>
+                {isLoading ? <><i className="fas fa-spinner fa-spin"></i> Importing...</> : 'Import Questions'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
+  // Hàm xử lý import câu hỏi từ excel cho part hiện tại (có validate số lượng tối đa)
+  // Hàm xử lý import câu hỏi từ excel cho part hiện tại (có validate số lượng tối đa)
+const handleImportQuestions = async (importedQuestions) => {
+  if (!activePart || !activePart.id) return;
+  const partLimit = TOEIC_PART_LIMITS[activePart.partNumber];
+  if (!partLimit) return;
+  const currentCount = questions.length;
+  const maxAllowed = partLimit.maxQuestions;
+  if (currentCount >= maxAllowed) {
+    displayErrorMessage(`Part ${activePart.partNumber} đã đủ số câu hỏi tối đa (${maxAllowed}). Không thể import thêm.`);
+    return;
+  }
+  // Chỉ lấy số lượng câu hỏi vừa đủ
+  const canImport = Math.min(importedQuestions.length, maxAllowed - currentCount);
+  if (canImport <= 0) {
+    displayErrorMessage(`Không còn chỗ để import câu hỏi mới cho part này.`);
+    return;
+  }
+  const questionsToImport = importedQuestions.slice(0, canImport);
+  if (questionsToImport.length < importedQuestions.length) {
+    displayErrorMessage(`Chỉ import được ${questionsToImport.length} câu hỏi, vì part này chỉ còn trống ${maxAllowed - currentCount} câu.`);
+  }
+
+  // Lấy số câu hỏi tiếp theo cho part
+  const nextQuestionNumber = getNextQuestionNumber(activePart.partNumber);
+  
+  // Thêm question number cho các câu hỏi được import
+  for (let i = 0; i < questionsToImport.length; i++) {
+    // Gán số thứ tự câu hỏi theo quy tắc của TOEIC
+    const questionNumber = nextQuestionNumber + i;
+    
+    // Kiểm tra nếu số câu hỏi vượt quá giới hạn cho phép
+    if (questionNumber > partLimit.end) {
+      displayErrorMessage(`Chỉ import được ${i} câu hỏi, vì số câu hỏi vượt quá giới hạn cho phép của Part ${activePart.partNumber}`);
+      // Chỉ import số câu hỏi không vượt quá giới hạn
+      questionsToImport.splice(i);
+      break;
+    }
+    
+    // Thêm thuộc tính questionNumber vào đối tượng câu hỏi
+    questionsToImport[i] = {
+      ...questionsToImport[i],
+      questionNumber: questionNumber,
+      explainDetail: formatExplainDetailToHtml(questionsToImport[i].explainDetail || '')
+    };
+    console.log(questionsToImport[i]);
+  }
+
+  // Tiến hành lưu từng câu hỏi vào database
+  for (const question of questionsToImport) {
+    console.log(question);
+    await questionService.createQuestionByPartId(id, activePart.id, question);
+  }
+  
+  // Sau khi import xong, reload lại danh sách câu hỏi
+  const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
+  setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
+  displaySuccessMessage(`Import thành công ${questionsToImport.length} câu hỏi!`);
+};
+
   if (loading) {
     return <div className="test-detail-loading">Loading test details...</div>;
   }
@@ -700,8 +892,8 @@ const TestDetail = () => {
         <div className="test-detail-questions-container">
           <div className="test-detail-questions-header">
             <h2>PART {activePart.partNumber}</h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginRight: 400 }}>
-              <label htmlFor="entriesSelect" style={{ fontSize: 14, color: '#555', marginTop: 4, color: '#a19d9b' }}>Show</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <label htmlFor="entriesSelect" style={{ fontSize: 14, marginTop: 4, color: '#a19d9b' }}>Show</label>
               <select
                 id="entriesSelect"
                 value={itemsPerPage}
@@ -713,10 +905,10 @@ const TestDetail = () => {
                   <option key={size} value={size}>{size}</option>
                 ))}
               </select>
-              <label htmlFor="entriesSelect" style={{ fontSize: 14, color: '#555', marginTop: 4, color: '#a19d9b' }}>entries</label>
+              <label htmlFor="entriesSelect" style={{ fontSize: 14,  marginTop: 4, color: '#a19d9b' }}>entries</label>
 
             </div>
-            <div className="test-detail-questions-actions">
+            <div className="test-detail-questions-action">
               <button 
                 className="test-detail-add-question-btn"
                 onClick={openQuestionModal}
@@ -728,6 +920,12 @@ const TestDetail = () => {
                 onClick={openBatchQuestionModal}
               >
                 <i className="fas fa-layer-group"></i> Add Group Questions
+              </button>
+              <button
+                className="test-detail-import-excel-btn"
+                onClick={() => setIsImportExcelModalOpen(true)}
+              >
+                <i className="fas fa-file-excel"></i> Import Excel
               </button>
             </div>
           </div>
@@ -1343,6 +1541,13 @@ const TestDetail = () => {
           </div>
         </div>
       )}
+
+      {/* Modal import excel */}
+      <ImportExcelModal
+        isOpen={isImportExcelModalOpen}
+        onClose={() => setIsImportExcelModalOpen(false)}
+        onImport={handleImportQuestions}
+      />
     </div>
   );
 };

@@ -420,11 +420,9 @@
 
 .test-detail-question-actions {
   display: flex;
+  flex-direction: row;
   gap: 10px;
-  justify-content: flex-end;
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #e5e7eb;
+  align-items: center;
 }
 
 .test-detail-edit-question-btn, .test-detail-delete-question-btn {
@@ -760,9 +758,23 @@
   max-height: 90vh;
 }
 
-.test-detail-questions-actions {
+.test-detail-questions-action {
   display: flex;
+  flex-direction: row;
   gap: 10px;
+  align-items: center;
+  min-width: 400px;
+}
+
+.test-detail-add-question-btn,
+.test-detail-add-batch-btn,
+.test-detail-import-excel-btn {
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .test-detail-add-batch-btn {
@@ -772,8 +784,6 @@
   border-radius: 4px;
   padding: 8px 15px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
   transition: background-color 0.2s;
 }
 
@@ -972,4 +982,41 @@
   font-size: 1.2rem;
     font-weight: 600;
     color: #9a9a9b;
+}
+
+/* Nút Import Excel */
+.test-detail-import-excel-btn {
+  background: #f7b731;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0 16px;
+  height: 38px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 180px;
+}
+
+.test-detail-import-excel-btn i {
+  font-size: 1.1em;
+  margin-right: 6px;
+}
+
+.test-detail-import-excel-btn:hover {
+  background: #ffd36b;
+  color: #b97b00;
+}
+
+@media (max-width: 768px) {
+  .test-detail-add-question-btn,
+  .test-detail-add-batch-btn,
+  .test-detail-import-excel-btn {
+    width: auto !important;
+    min-width: 0;
+    max-width: 100%;
+    display: inline-flex;
+  }
 } 

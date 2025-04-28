@@ -67,7 +67,7 @@ export class QuestionController {
 
   static async createQuestion(req: Request, res: Response) {
     try {
-      console.log(req.body);
+      console.log("req.body: ", req.body);
       const partId = parseInt(req.params.partId);
       if (isNaN(partId)) {
         return res.status(400).json({ error: 'ID phần không hợp lệ' });
@@ -82,13 +82,16 @@ export class QuestionController {
         correctAnswer,
         explainDetail,
         resourceData,
-        questionNumber
+        questionNumber,
+        audioUrl,
+        imageUrl,
+        explainResource
       } = req.body;
 
       // Validate required fields
-      if (!content || !optionA || !optionB || !optionC || !optionD || !correctAnswer) {
-        return res.status(400).json({ error: 'Thiếu thông tin câu hỏi bắt buộc' });
-      }
+      // if (!content || !optionA || !optionB || !optionC || !optionD || !correctAnswer) {
+      //   return res.status(400).json({ error: 'Thiếu thông tin câu hỏi bắt buộc' });
+      // }
 
       // Create resource if audio or image URL is provided
       let resourceId = null;
@@ -99,7 +102,14 @@ export class QuestionController {
             resourceData.audioUrl || null,
             resourceData.imageUrl || null
           );
-        }
+        } else if(audioUrl || imageUrl || explainResource) {
+            resourceId = await ResourceRepository.createResource(
+              explainResource || null,
+              audioUrl || null,
+              imageUrl || null
+            );
+          }
+        
       } catch (resourceError) {
         console.error('Error creating resource:', resourceError);
         // Continue without a resource if creation fails
