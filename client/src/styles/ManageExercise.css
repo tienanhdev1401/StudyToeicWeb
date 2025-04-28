@@ -1,0 +1,685 @@
+/* Exercise Management specific styles - Redesigned */
+.exercise-management-container {
+    padding: 30px;
+    font-family: 'Arial', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    font-size: 16px;
+  }
+  
+  .exercise-management-header-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .exercise-management-topic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .exercise-management-back-btn {
+    background-color: white;
+    border: 1px solid #c7c7c7;
+    padding: 8px 15px;
+    border-radius: 0.5rem;
+    margin-right: 20px;
+    cursor: pointer;
+    display: flex;
+    color: #303133;
+    align-items: center;
+    transition: all 0.2s;
+    font-size: 15px;
+  }
+  
+  .exercise-management-back-btn:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .exercise-management-back-btn i {
+    margin-right: 8px;
+  }
+  
+  .exercise-management-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .exercise-management-entries-select {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .exercise-management-entries-select p {
+    margin: 0;
+    color: #9a9a9b;
+    font-size: 1.25rem;
+  }
+  
+  .exercise-management-entries-dropdown {
+    padding: 6px 10px;
+    border: 1px solid #c7c7c7;
+    border-radius: 0.5rem;
+    background-color: white;
+    color: #303133;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  
+  .exercise-management-entries-dropdown:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+  
+  .exercise-management-action-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .exercise-management-search-box {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #c7c7c7;
+    border-radius: 0.5rem;
+    padding: 1px 16px;
+    width: 300px;
+    position: relative;
+  }
+  
+  .exercise-management-search-box i {
+    color: #9ca3af;
+    font-size: 1.25rem;
+    margin-right: 8px;
+  }
+  
+  .exercise-management-search-input {
+    flex-grow: 1;
+    width: 100%;
+    background: none;
+    border: none;
+    outline: none;
+    color: #1f2937;
+    padding: 8px 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    box-shadow: none;
+    font-size: 15px;
+  }
+  
+  .exercise-management-search-input:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+  
+  .exercise-management-add-btn, 
+  .exercise-management-trash-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  .exercise-management-add-btn {
+    background-color: gray;
+    color: white;
+  }
+  
+  .exercise-management-add-btn:hover {
+    background-color: green;
+  }
+  
+  .exercise-management-trash-btn {
+    background-color: #a5a7a8;
+    color: white;
+  }
+  
+  .exercise-management-trash-btn:hover {
+    background-color: #5a6268;
+  }
+  
+  .exercise-management-add-btn i, 
+  .exercise-management-trash-btn i {
+    font-size: 15px;
+  }
+  
+  .exercise-management-table {
+    margin-top: 20px;
+    width: 100%;
+    table-layout: fixed;
+    max-width: 1150px;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 80px;
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-size: 15px;
+  }
+  
+  .exercise-management-table th:first-child {
+    border-top-left-radius: 8px;
+  }
+  
+  .exercise-management-table th:last-child {
+    border-top-right-radius: 8px;
+  }
+  
+  .exercise-management-table tr:last-child td:first-child {
+    border-bottom-left-radius: 8px;
+  }
+  
+  .exercise-management-table tr:last-child td:last-child {
+    border-bottom-right-radius: 8px;
+  }
+  
+  .exercise-management-table th {
+    padding: 16px;
+    text-align: center;
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb;
+    color: #344054;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .exercise-management-table td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    font-size: 15px;
+  }
+  
+  .exercise-management-table tbody tr:hover {
+    background-color: #f9fafb;
+  }
+  
+  .exercise-management-table th.sortable {
+    cursor: pointer;
+    position: relative;
+    padding-right: 25px;
+  }
+  
+  .exercise-management-table th.sortable:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .exercise-management-table th.sortable i {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 15px;
+  }
+  
+  .exercise-management-table th.sortable:hover i {
+    color: #666;
+  }
+  
+  .exercise-management-table i.fa-sort-up,
+  .exercise-management-table i.fa-sort-down {
+    color: #333;
+  }
+  
+  .exercise-management-id-header, 
+  .exercise-management-id-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .exercise-management-name {
+    font-weight: 500;
+    color: #333;
+    font-size: 15px;
+  }
+  
+  .exercise-question-count-badge {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+  
+  .exercise-management-date {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
+  }
+  
+  /* Column width definitions for the exercise table */
+  .exercise-id-column {
+    width: 80px;
+  }
+  
+  .exercise-name-column {
+    width: 25%;
+  }
+  
+  .exercise-question-count-column {
+    width: 100px;
+    text-align: center;
+  }
+  
+  .exercise-created-column,
+  .exercise-updated-column {
+    width: 150px;
+    text-align: center;
+  }
+  
+  .exercise-actions-column {
+    width: 140px;
+    text-align: center;
+  }
+  
+  /* Date formatting */
+  .exercise-date-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .exercise-date-value {
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 15px;
+  }
+  
+  .exercise-time-value {
+    color: #718096;
+    font-size: 0.9rem;
+    margin-top: 3px;
+  }
+  
+  .exercise-management-view-btn, 
+  .exercise-management-edit-btn, 
+  .exercise-management-delete-btn {
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    margin-right: 5px;
+    background-color: transparent;
+    color: #858c97;
+    font-size: 15px;
+  }
+  
+  .exercise-management-view-btn:hover {
+    color: #17a2b8;
+  }
+  
+  .exercise-management-edit-btn:hover {
+    color: black;
+  }
+  
+  .exercise-management-delete-btn:hover {
+    color: red;
+  }
+  
+  .exercise-management-pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .exercise-management-page-btn {
+    padding: 6px 12px;
+    border: 1px solid #dee2e6;
+    background-color: white;
+    color: #0d6efd;
+    cursor: pointer;
+    min-width: 38px;
+    border-radius: 4px;
+    font-size: 15px;
+  }
+  
+  .exercise-management-page-btn:hover:not(:disabled) {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    color: #0a58ca;
+  }
+  
+  .exercise-management-page-btn.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+  }
+  
+  .exercise-management-page-btn:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  .exercise-management-page-dots {
+    padding: 6px 12px;
+    color: #6c757d;
+    font-weight: bold;
+  }
+  
+  .exercise-management-table-action-bar {
+    background-color: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-top: 20px;
+    padding: 12px 20px;
+  }
+  
+  .exercise-management-action-bar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .exercise-management-action-bar-content span {
+    color: #666;
+    font-weight: 500;
+    font-size: 15px;
+  }
+  
+  .exercise-management-delete-selected-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    font-size: 15px;
+  }
+  
+  .exercise-management-delete-selected-btn:hover {
+    background-color: #c82333;
+  }
+  
+  .exercise-management-delete-selected-btn i {
+    font-size: 15px;
+  }
+  
+  /* Modal styles for exercise management */
+  .exercise-management-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .exercise-management-modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: modalFadeIn 0.3s ease-out;
+  }
+  
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .exercise-management-modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .exercise-management-modal-header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #111827;
+  }
+  
+  .exercise-management-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #6b7280;
+    cursor: pointer;
+  }
+  
+  .exercise-management-modal-body {
+    padding: 24px;
+    color: #4b5563;
+    font-size: 15px;
+  }
+  
+  .exercise-management-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  
+  .exercise-management-cancel-btn {
+    padding: 8px 16px;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    color: #374151;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  
+  .exercise-management-save-btn,
+  .exercise-management-confirm-delete-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 15px;
+  }
+  
+  .exercise-management-save-btn {
+    background-color: #1976d2;
+    color: white;
+  }
+  
+  .exercise-management-confirm-delete-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .exercise-management-cancel-btn:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .exercise-management-save-btn:hover {
+    background-color: #1565c0;
+  }
+  
+  .exercise-management-confirm-delete-btn:hover {
+    background-color: #c82333;
+  }
+  
+  /* Form-specific styles for exercise management */
+  .exercise-management-form-group {
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .exercise-management-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+    font-size: 16px;
+  }
+  
+  .exercise-management-required {
+    color: #e53935;
+    margin-left: 2px;
+  }
+  
+  .exercise-management-form-group input, 
+  .exercise-management-form-group textarea,
+  .exercise-management-form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 15px;
+    transition: border-color 0.3s;
+  }
+  
+  .exercise-management-form-group input:focus, 
+  .exercise-management-form-group textarea:focus,
+  .exercise-management-form-group select:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+  
+  .exercise-management-form-group.has-error input, 
+  .exercise-management-form-group.has-error textarea,
+  .exercise-management-form-group.has-error select {
+    border-color: #e53935;
+  }
+  
+  .exercise-management-error-message {
+    color: #e53935;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  
+  .exercise-management-empty-table {
+    text-align: center;
+    padding: 40px 0;
+  }
+  
+  .exercise-management-empty-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: #666;
+    font-size: 16px;
+  }
+  
+  .exercise-management-empty-message i {
+    font-size: 3.5rem;
+    color: #d1d1d1;
+  }
+  
+  .exercise-management-empty-message p {
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  
+  .exercise-management-empty-message .exercise-management-add-btn {
+    max-width: 200px;
+  }
+  
+  /* Loading and error states */
+  .exercise-management-loading,
+  .exercise-management-error {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 20px;
+  }
+  
+  .exercise-management-loading {
+    color: #4a90e2;
+  }
+  
+  .exercise-management-error {
+    color: #e53935;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .exercise-management-container {
+      padding: 15px;
+      font-size: 15px;
+    }
+    
+    .exercise-management-table {
+      font-size: 14px;
+    }
+    
+    .exercise-management-table th,
+    .exercise-management-table td {
+      padding: 10px;
+    }
+    
+    .exercise-management-pagination {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .exercise-management-search-box {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    
+    .exercise-created-column,
+    .exercise-updated-column {
+      width: 120px;
+      text-align: center;
+    }
+
+    .exercise-management-date {
+      font-size: 0.9rem;
+      color: #666;
+      white-space: nowrap;
+    }
+    
+    .exercise-date-display {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .exercise-date-value,
+    .exercise-time-value {
+      font-size: 0.85rem;
+    }
+  }

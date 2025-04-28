@@ -8,6 +8,8 @@ import adminVocabularyRoutes from './admin/admin.vocabularyRoutes'
 import grammarTopicTopicRoutes from './grammarTopicRoutes'
 import adminLearnerRoutes from './admin/admin.LearnerRoutes'
 import adminStaffRoutes from './admin/admin.StaffRoutes'
+import adminExerciseRoutes from './admin/admin.exercisesRoutes'
+import adminExerciseQuestionRoutes from './admin/admin.exercisesQuestionRoutes'
 import uploadRouter from './uploadRouter';
 import exerciseRouter from './exerciseRouter'
 import questionRoutes from './questionRoutes';
@@ -24,6 +26,8 @@ function route(app: Application): void {
   app.use('/api/grammar-topic',grammarTopicTopicRoutes)
   app.use('/api/admin/learner',adminLearnerRoutes)
   app.use('/api/admin/staff',adminStaffRoutes)
+  app.use('/api/admin/exercise',adminExerciseRoutes)
+  app.use('/api/admin/exercise/questions',adminExerciseQuestionRoutes)
   app.use('/api/upload', uploadRouter);
   app.use('/api/exercise',exerciseRouter);
   app.use('/api/question', questionRoutes);
