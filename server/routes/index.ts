@@ -39,7 +39,7 @@ function route(app: Application): void {
   app.use('/api/question', questionRoutes);
   app.use('/api/test', testRoutes);
   app.use('/api/admin/exercise', adminExerciseRoutes);
- // app.use('/api/admin/exercises/:exerciseId/questions', adminExerciseQuestionRoutes);
+  app.use('/api/admin/exercise/', adminExerciseQuestionRoutes);
 
   app.use('/api/submissions', submissionRoutes);
   app.use('/', test);
