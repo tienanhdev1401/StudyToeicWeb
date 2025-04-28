@@ -131,4 +131,21 @@ export class PartRepository {
       throw error;
     }
   }
+
+  static async findByTestIdAndPartNumber(testId: number, partNumber: number): Promise<Part | null> {
+    try {
+      const results = await db.query(
+        'SELECT * FROM parts WHERE TestId = ? AND partNumber = ? LIMIT 1',
+        [testId, partNumber]
+      );
+      if (!results || !Array.isArray(results) || results.length === 0) {
+        return null;
+      }
+      const row = results[0];
+      return new Part(Number(row.id), Number(row.partNumber), Number(row.TestId));
+    } catch (error) {
+      console.error('PartRepository.findByTestIdAndPartNumber error:', error);
+      throw error;
+    }
+  }
 }

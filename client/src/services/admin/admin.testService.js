@@ -200,7 +200,26 @@ const testService = {
       }
     },
 
-    
+    importAllQuestions: async (testId, questions) => {
+      try {
+        const response = await axios.post(`${API_BASE_URL}/admin/test/import-questions/${testId}`, { questions });
+        return response.data;
+      } catch (error) {
+        console.error('Error importing all questions:', error);
+        throw error;
+      }
+    },
+
+    importAllQuestionsFile: async (testId, file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await axios.post(
+        `${API_BASE_URL}/admin/test/import-questions-file/${testId}`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      return response.data;
+    },
 }
 
 export default testService;

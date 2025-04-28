@@ -5,6 +5,12 @@ import { QuestionInAPartRepository } from '../../repositories/admin/admin.questi
 import { TestCollectionRepository } from '../../repositories/admin/admin.testCollectionRepository';
 import { Test } from '../../models/Test';
 import { Part } from '../../models/Part';
+import { ResourceRepository } from '../../repositories/admin/admin.resourceRepository';
+import { QuestionRepository } from '../../repositories/admin/admin.questionRepository';
+import { QuestionInAPart } from '../../models/QuestionInAPart';
+import { Question } from '../../models/Question';
+import * as XLSX from 'xlsx';
+import fs from 'fs';
 
 export class AdminTestController {
   
@@ -279,6 +285,160 @@ export class AdminTestController {
         success: false,
         message: 'Internal server error'
       });
+    }
+  }
+
+  static async importAllQuestions(req: Request, res: Response) {
+    try {
+      const testId = parseInt(req.params.testId);
+      const { questions } = req.body;
+      if (!Array.isArray(questions) || isNaN(testId)) {
+        return res.status(400).json({ error: 'Dữ liệu không hợp lệ' });
+      }
+
+      // Gom nhóm câu hỏi theo partNumber
+      const partMap: { [key: string]: any[] } = {};
+      for (const q of questions) {
+        if (!partMap[q.partNumber]) partMap[q.partNumber] = [];
+        partMap[q.partNumber].push(q);
+      }
+
+      // Tạo part nếu chưa có, sau đó tạo câu hỏi cho từng part
+      for (const partNumber in partMap) {
+        // Tạo part mới (hoặc lấy part đã có nếu muốn)
+        const part = await PartRepository.create(new Part(0, Number(partNumber), testId));
+        const partId = part.id;
+
+        // Gom nhóm các câu hỏi có cùng resource
+        const resourceGroups: { [key: string]: any[] } = {};
+        for (const q of partMap[partNumber]) {
+          const resourceKey = [
+            q.audioUrl || '',
+            q.imageUrl || '',
+            q.explainResource || ''
+          ].join('|');
+          if (!resourceGroups[resourceKey]) resourceGroups[resourceKey] = [];
+          resourceGroups[resourceKey].push(q);
+        }
+
+        // Với mỗi nhóm resource, chỉ tạo 1 resource, gán cho tất cả câu hỏi trong nhóm
+        let questionNumber = 1;
+        for (const resourceKey in resourceGroups) {
+          const group = resourceGroups[resourceKey];
+          let resourceId = null;
+          const firstQ = group[0];
+          if (firstQ.audioUrl || firstQ.imageUrl || firstQ.explainResource) {
+            resourceId = await ResourceRepository.createResource(
+              firstQ.explainResource || null,
+              firstQ.audioUrl || null,
+              firstQ.imageUrl || null
+            );
+          }
+          for (const q of group) {
+            const question = new Question(
+              0,
+              q.content,
+              q.correctAnswer,
+              q.explainDetail || '',
+              q.optionA,
+              q.optionB,
+              q.optionC,
+              q.optionD,
+              null
+            );
+            const savedQuestion = await QuestionRepository.create(question, resourceId);
+            await QuestionInAPartRepository.create(new QuestionInAPart(partId, savedQuestion.id, questionNumber));
+            questionNumber++;
+          }
+        }
+      }
+
+      return res.status(200).json({ success: true, message: 'Import thành công!' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Lỗi khi import câu hỏi' });
+    }
+  }
+
+  static async importAllQuestionsFromFile(req: Request, res: Response) {
+    try {
+      const testId = parseInt(req.params.testId);
+      if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+      // Đọc file Excel
+      const workbook = XLSX.readFile(req.file.path);
+      const sheetName = workbook.SheetNames[0];
+      const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
+
+      // Xử lý giống như logic importAllQuestions
+      // Gom nhóm câu hỏi theo partNumber
+      const partMap: { [key: string]: any[] } = {};
+      for (const q of data as any[]) {
+        if (!partMap[q.partNumber]) partMap[q.partNumber] = [];
+        partMap[q.partNumber].push(q);
+      }
+
+      // Quy định số bắt đầu cho từng part TOEIC
+      const TOEIC_PART_LIMITS: { [key: string]: { start: number, end: number } } = {
+        1: { start: 1, end: 6 },
+        2: { start: 7, end: 31 },
+        3: { start: 32, end: 70 },
+        4: { start: 71, end: 100 },
+        5: { start: 101, end: 130 },
+        6: { start: 131, end: 146 },
+        7: { start: 147, end: 200 }
+      };
+      for (const partNumber in partMap) {
+        const part = await PartRepository.findByTestIdAndPartNumber(testId, Number(partNumber));
+        if (!part) continue;
+        const partId = part.id;
+        const resourceGroups: { [key: string]: any[] } = {};
+        for (const q of partMap[partNumber]) {
+          const resourceKey = [
+            q.audio_url || '',
+            q.image_url || '',
+            q.explain_resource || ''
+          ].join('|');
+          if (!resourceGroups[resourceKey]) resourceGroups[resourceKey] = [];
+          resourceGroups[resourceKey].push(q);
+        }
+        // Đánh số questionNumber đúng chuẩn TOEIC
+        let questionNumber = TOEIC_PART_LIMITS[partNumber]?.start || 1;
+        for (const resourceKey in resourceGroups) {
+          const group = resourceGroups[resourceKey];
+          let resourceId = null;
+          const firstQ = group[0];
+          if (firstQ.audio_url || firstQ.image_url || firstQ.explain_resource) {
+            resourceId = await ResourceRepository.createResource(
+              firstQ.explain_resource || null,
+              firstQ.audio_url || null,
+              firstQ.image_url || null
+            );
+          }
+          for (const q of group) {
+            const question = new Question(
+              0,
+              q.content,
+              q.correct_answer,
+              q.explain_detail || '',
+              q.option_a,
+              q.option_b,
+              q.option_c,
+              q.option_d,
+              null
+            );
+            const savedQuestion = await QuestionRepository.create(question, resourceId);
+            await QuestionInAPartRepository.create(new QuestionInAPart(partId, savedQuestion.id, questionNumber));
+            questionNumber++;
+          }
+        }
+      }
+      // Xóa file tạm
+      fs.unlinkSync(req.file.path);
+      return res.status(200).json({ success: true, message: 'Import thành công!' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Lỗi khi import file Excel' });
     }
   }
 }

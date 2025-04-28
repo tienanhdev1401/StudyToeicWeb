@@ -70,6 +70,14 @@ const TestDetail = () => {
   // Add state for explainDetail preview
   const [explainDetailPreview, setExplainDetailPreview] = useState('');
 
+  // Add state for delete confirmation modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [questionIdToDelete, setQuestionIdToDelete] = useState(null);
+
+  // Add state for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   // Add functions to display alerts
   const displaySuccessMessage = (message) => {
     setSuccessMessage(message);
@@ -384,28 +392,38 @@ const TestDetail = () => {
     }
   };
 
-  const handleDeleteQuestion = async (questionId) => {
-    if (!activePart || !activePart.id) {
+  // Function to open the delete modal
+  const openDeleteModal = (questionId) => {
+    setQuestionIdToDelete(questionId);
+    setShowDeleteModal(true);
+  };
+
+  // Function to close the delete modal
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setQuestionIdToDelete(null);
+  };
+
+  // Update handleDeleteQuestion to use modal
+  const handleDeleteQuestion = async () => {
+    if (!activePart || !activePart.id || !questionIdToDelete) {
+      closeDeleteModal();
       return;
     }
-
-    if (window.confirm("Are you sure you want to delete this question? This action cannot be undone.")) {
-      try {
-        await questionService.deleteQuestionByPartId(activePart.id, questionId);
-        
-        // Refresh the questions list
-        const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
-        setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
-        
-        // Display success message
-        displaySuccessMessage('Question deleted successfully');
-      } catch (err) {
-        console.error('Error deleting question:', err);
-        alert(`Failed to delete question: ${err.message || 'Unknown error'}`);
-        
-        // Display error message
-        displayErrorMessage('Failed to delete question');
-      }
+    try {
+      await questionService.deleteQuestionByPartId(activePart.id, questionIdToDelete);
+      // Refresh the questions list
+      const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
+      setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
+      // Display success message
+      displaySuccessMessage('Question deleted successfully');
+    } catch (err) {
+      console.error('Error deleting question:', err);
+      alert(`Failed to delete question: ${err.message || 'Unknown error'}`);
+      // Display error message
+      displayErrorMessage('Failed to delete question');
+    } finally {
+      closeDeleteModal();
     }
   };
 
@@ -571,6 +589,31 @@ const TestDetail = () => {
     }
   };
 
+  // Hàm tạo mảng số trang với dấu ... (giống ManageVocabulary)
+  const getPageNumbers = (currentPage, totalPages) => {
+    const delta = 1; // Số trang hiển thị ở hai bên trang hiện tại
+    const range = [];
+    const rangeWithDots = [];
+    range.push(1);
+    for (let i = currentPage - delta; i <= currentPage + delta; i++) {
+      if (i > 1 && i < totalPages) {
+        range.push(i);
+      }
+    }
+    if (totalPages > 1) {
+      range.push(totalPages);
+    }
+    let prev = 0;
+    for (const i of range) {
+      if (prev + 1 < i) {
+        rangeWithDots.push('...');
+      }
+      rangeWithDots.push(i);
+      prev = i;
+    }
+    return rangeWithDots;
+  };
+
   if (loading) {
     return <div className="test-detail-loading">Loading test details...</div>;
   }
@@ -656,7 +699,23 @@ const TestDetail = () => {
       {activePart && (
         <div className="test-detail-questions-container">
           <div className="test-detail-questions-header">
-            <h2>Part {activePart.partNumber}: {activePart.title || ''}</h2>
+            <h2>PART {activePart.partNumber}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginRight: 400 }}>
+              <label htmlFor="entriesSelect" style={{ fontSize: 14, color: '#555', marginTop: 4, color: '#a19d9b' }}>Show</label>
+              <select
+                id="entriesSelect"
+                value={itemsPerPage}
+                onChange={e => setItemsPerPage(Number(e.target.value))}
+                className="test-detail-items-per-page-select"
+                style={{ minWidth: 70 }}
+              >
+                {[5, 10, 20, 50, 100].map(size => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
+              <label htmlFor="entriesSelect" style={{ fontSize: 14, color: '#555', marginTop: 4, color: '#a19d9b' }}>entries</label>
+
+            </div>
             <div className="test-detail-questions-actions">
               <button 
                 className="test-detail-add-question-btn"
@@ -673,97 +732,102 @@ const TestDetail = () => {
             </div>
           </div>
           
-          <div className="test-detail-description">
-            <p>{activePart.description || 'No description available'}</p>
-          </div>
+         
 
           {questionLoading ? (
             <div className="test-detail-questions-loading">Loading questions...</div>
           ) : (
             <div className="test-detail-questions">
               {questions && questions.length > 0 ? (
-                questions.map((question, index) => (
-                  question && question.id ? (
-                    <div key={question.id} className="test-detail-question-card">
-                      <div className="test-detail-question-number">Question {question.questionNumber || index + 1}</div>
-                      <div className="test-detail-question-content">
-                        {question.resource && question.resource.audioUrl && (
-                          <div className="test-detail-question-audio">
-                            <audio controls>
-                              <source src={question.resource.audioUrl} type="audio/mpeg" />
-                              Your browser does not support the audio element.
-                            </audio>
-                          </div>
-                        )}
-                        
-                        {question.resource && question.resource.imageUrl && (
-                          <div className="test-detail-question-image">
-                            <img src={question.resource.imageUrl} alt={`Question ${question.questionNumber || index + 1}`} />
-                          </div>
-                        )}
-                        
-                        <div className="test-detail-question-text">
-                          <p>{question.content || 'No content available'}</p>
+                questions
+                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  .map((question, index) => (
+                    question && question.id ? (
+                      <div key={question.id} className="test-detail-question-card">
+                        <div className="test-detail-question-number">Question {question.questionNumber || index + 1}</div>
+                        <div className="test-detail-question-content">
+                          {question.resource && question.resource.audioUrl && (
+                            <div className="test-detail-question-audio">
+                              <audio controls>
+                                <source src={question.resource.audioUrl} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                              </audio>
+                            </div>
+                          )}
                           
-                          {question.resource && question.resource.explainResource && (
-                            <div className="test-detail-question-paragraph">
-                              <p><i>{question.resource.explainResource}</i></p>
+                          {question.resource && question.resource.imageUrl && (
+                            <div className="test-detail-question-image">
+                              <img src={question.resource.imageUrl} alt={`Question ${question.questionNumber || index + 1}`} />
+                            </div>
+                          )}
+                          
+                          <div className="test-detail-question-text">
+                            <p>{question.content || 'No content available'}</p>
+                          </div>
+                          
+                          <div className="test-detail-options">
+                            {question.optionA && (
+                              <div className={`test-detail-option ${question.correctAnswer === 'A' ? 'correct' : ''}`}>
+                                <span className="test-detail-option-letter">A</span>
+                                <span className="test-detail-option-text">{question.optionA}</span>
+                              </div>
+                            )}
+                            {question.optionB && (
+                              <div className={`test-detail-option ${question.correctAnswer === 'B' ? 'correct' : ''}`}>
+                                <span className="test-detail-option-letter">B</span>
+                                <span className="test-detail-option-text">{question.optionB}</span>
+                              </div>
+                            )}
+                            {question.optionC && (
+                              <div className={`test-detail-option ${question.correctAnswer === 'C' ? 'correct' : ''}`}>
+                                <span className="test-detail-option-letter">C</span>
+                                <span className="test-detail-option-text">{question.optionC}</span>
+                              </div>
+                            )}
+                            {question.optionD && (
+                              <div className={`test-detail-option ${question.correctAnswer === 'D' ? 'correct' : ''}`}>
+                                <span className="test-detail-option-letter">D</span>
+                                <span className="test-detail-option-text">{question.optionD}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {question.explainDetail && (
+                            <div className="test-detail-question-explanation">
+                              <h4>giải thích đáp án:</h4>
+                              <div dangerouslySetInnerHTML={{ __html: question.explainDetail }} />
                             </div>
                           )}
                         </div>
                         
-                        <div className="test-detail-options">
-                          {question.optionA && (
-                            <div className={`test-detail-option ${question.correctAnswer === 'A' ? 'correct' : ''}`}>
-                              <span className="test-detail-option-letter">A</span>
-                              <span className="test-detail-option-text">{question.optionA}</span>
-                            </div>
-                          )}
-                          {question.optionB && (
-                            <div className={`test-detail-option ${question.correctAnswer === 'B' ? 'correct' : ''}`}>
-                              <span className="test-detail-option-letter">B</span>
-                              <span className="test-detail-option-text">{question.optionB}</span>
-                            </div>
-                          )}
-                          {question.optionC && (
-                            <div className={`test-detail-option ${question.correctAnswer === 'C' ? 'correct' : ''}`}>
-                              <span className="test-detail-option-letter">C</span>
-                              <span className="test-detail-option-text">{question.optionC}</span>
-                            </div>
-                          )}
-                          {question.optionD && (
-                            <div className={`test-detail-option ${question.correctAnswer === 'D' ? 'correct' : ''}`}>
-                              <span className="test-detail-option-letter">D</span>
-                              <span className="test-detail-option-text">{question.optionD}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {question.explainDetail && (
-                          <div className="test-detail-question-explanation">
-                            <h4>Explanation:</h4>
-                            <div dangerouslySetInnerHTML={{ __html: question.explainDetail }} />
+                        {question.resource && question.resource.explainResource && (
+                          <div className="test-detail-question-text">
+                            <div className="test-detail-question-paragraph">
+                            <p>Dịch và giải thích:</p>
+                            <p dangerouslySetInnerHTML={{ __html: question.resource.explainResource }} />
                           </div>
+                          </div>
+                          
                         )}
+                          
+                          
+                          <div className="test-detail-question-actions">
+                            <button 
+                              className="test-detail-edit-question-btn"
+                              onClick={() => openEditQuestionModal(question)}
+                            >
+                              <i className="fas fa-edit"></i> Edit
+                            </button>
+                            <button 
+                              className="test-detail-delete-question-btn"
+                              onClick={() => openDeleteModal(question.id)}
+                            >
+                              <i className="fas fa-trash"></i> Delete
+                            </button>
+                          </div>
                       </div>
-                      
-                      <div className="test-detail-question-actions">
-                        <button 
-                          className="test-detail-edit-question-btn"
-                          onClick={() => openEditQuestionModal(question)}
-                        >
-                          <i className="fas fa-edit"></i> Edit
-                        </button>
-                        <button 
-                          className="test-detail-delete-question-btn"
-                          onClick={() => handleDeleteQuestion(question.id)}
-                        >
-                          <i className="fas fa-trash"></i> Delete
-                        </button>
-                      </div>
-                    </div>
-                  ) : null
-                ))
+                    ) : null
+                  ))
               ) : (
                 <div className="test-detail-no-questions">
                   <i className="fas fa-question-circle"></i>
@@ -776,6 +840,41 @@ const TestDetail = () => {
                   </button>
                 </div>
               )}
+            </div>
+          )}
+          {/* Pagination controls */}
+          {questions.length > 0 && (
+            <div className="test-detail-pagination-flex">
+              <span className="test-detail-pagination-info">
+                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, questions.length)} of {questions.length} entries
+              </span>
+              <div className="test-detail-pagination-buttons">
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="test-detail-page-btn"
+                >
+                  Previous
+                </button>
+                {getPageNumbers(currentPage, Math.ceil(questions.length / itemsPerPage)).map((item, idx) => (
+                  item === '...'
+                    ? <span key={`dots-${idx}`} className="test-detail-page-dots">...</span>
+                    : <button
+                        key={item}
+                        onClick={() => setCurrentPage(item)}
+                        className={`test-detail-page-btn${currentPage === item ? ' active' : ''}`}
+                      >
+                        {item}
+                      </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === Math.ceil(questions.length / itemsPerPage)}
+                  className="test-detail-page-btn"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -1227,6 +1326,20 @@ const TestDetail = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.3)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="modal-content" style={{ background: '#fff', padding: 24, borderRadius: 8, minWidth: 320, boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+            <h3>Xác nhận xóa câu hỏi</h3>
+            <p>Bạn có chắc chắn muốn xóa câu hỏi này? Hành động này không thể hoàn tác.</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>
+              <button onClick={closeDeleteModal} style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#ccc', color: '#222', cursor: 'pointer' }}>Hủy</button>
+              <button onClick={handleDeleteQuestion} style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#d32f2f', color: '#fff', cursor: 'pointer' }}>Xác nhận xóa</button>
+            </div>
           </div>
         </div>
       )}

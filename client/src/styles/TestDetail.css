@@ -230,8 +230,9 @@
 
 .test-detail-questions-header h2 {
   margin: 0;
-  color: #374151;
-  font-size: 1.75rem;
+  color:#409efd ;
+  font-size: 2.75rem;
+
 }
 
 .test-detail-add-question-btn {
@@ -899,4 +900,76 @@
   color: #0050b3;
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+/* Phân trang cho TestDetail */
+.test-detail-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 16px;
+  gap: 8px;
+}
+
+.test-detail-pagination span {
+  font-size: 14px;
+  color: #555;
+}
+
+.test-detail-pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.test-detail-page-btn {
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  color: #333;
+  padding: 6px 14px;
+  border-radius: 4px;
+  margin: 0 2px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.test-detail-page-btn:hover {
+  background: #e3effc;
+  color: #409efd;
+}
+
+.test-detail-page-btn.active {
+  background: #409efd;
+  color: #fff;
+  border: 1px solid #409efd;
+}
+
+.test-detail-page-btn:disabled {
+  background: #f0f0f0;
+  color: #aaa;
+  border: 1px solid #e0e0e0;
+  cursor: not-allowed;
+}
+
+.test-detail-items-per-page-select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #d0d0d0;
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+/* Flex phân trang: info trái, nút phải */
+.test-detail-pagination-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  gap: 8px;
+}
+
+.test-detail-pagination-info {
+  font-size: 1.2rem;
+    font-weight: 600;
+    color: #9a9a9b;
 } 

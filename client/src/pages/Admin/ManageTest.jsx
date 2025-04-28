@@ -4,6 +4,8 @@ import '../../styles/ManageTest.css';
 import SuccessAlert from '../../components/SuccessAlert';
 import ErrorAlert from '../../components/ErrorAlert';
 import testService from '../../services/admin/admin.testService';
+import { parseQuestionExcel } from '../../utils/excelUtils';
+
 const ManageTest = () => {
   const navigate = useNavigate();
   const [testList, setTestList] = useState([]);
@@ -548,6 +550,11 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
   });
   const [isUploading, setIsUploading] = useState(false);
 
+  const [questionExcelFile, setQuestionExcelFile] = useState(null);
+  const [parsedQuestions, setParsedQuestions] = useState([]);
+
+  const [isExcelImporting, setIsExcelImporting] = useState(false);
+
   // Fetch test collections
   useEffect(() => {
     const fetchCollections = async () => {
@@ -695,43 +702,42 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
     return !errors.testFile && !errors.solutionFile;
   };
 
+  const handleQuestionExcelFileChange = (e) => {
+    const file = e.target.files[0];
+    setQuestionExcelFile(file);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm() || !validateFiles()) {
       return;
     }
-
     try {
       //setIsSubmitting(true);
-      
       // Prepare data for submission
       const testData = {
         ...formData
       };
-
       if (editMode && testItem) {
         testData.id = testItem.id;
       }
-
       // First create or update the test
       const savedTest = await onSubmit(testData, editMode);
-      
       // Then upload files if provided
       setIsUploading(true);
       
-      if (testFile) {
-        await testService.uploadExcelFile(savedTest.id, 'test', testFile);
+      // Import all questions if Excel file is provided
+      if (questionExcelFile) {
+        setIsExcelImporting(true);
+        await testService.importAllQuestionsFile(savedTest.id, questionExcelFile);
+        setIsExcelImporting(false);
       }
-      
-      if (solutionFile) {
-        await testService.uploadExcelFile(savedTest.id, 'solution', solutionFile);
-      }
-      
       setIsUploading(false);
+      onClose && onClose();
     } catch (error) {
       console.error(`Error ${editMode ? 'updating' : 'adding'} test:`, error);
       setIsUploading(false);
+      setIsExcelImporting(false);
     } finally {
       //setIsSubmitting(false);
     }
@@ -835,7 +841,7 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
             </div>
             
             
-            <div className="manageTest-form-group">
+            {/* <div className="manageTest-form-group">
               <label htmlFor="testFile">TOEIC Test Excel File {!editMode && <span className="required">*</span>}</label>
               <div className="manageTest-file-upload-container">
                 <input
@@ -865,9 +871,9 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
                   <span>{uploadProgress.testFile}%</span>
                 </div>
               )}
-            </div>
+            </div> */}
             
-            <div className="manageTest-form-group">
+            {/* <div className="manageTest-form-group">
               <label htmlFor="solutionFile">TOEIC Solution Excel File {!editMode && <span className="required">*</span>}</label>
               <div className="manageTest-file-upload-container">
                 <input
@@ -897,8 +903,35 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
                   <span>{uploadProgress.solutionFile}%</span>
                 </div>
               )}
-            </div>
+            </div> */}
             
+            <div className="manageTest-form-group">
+              <label htmlFor="questionExcelFile">Import All Questions (Excel)</label>
+              <div className="manageTest-file-upload-container">
+                <input
+                  type="file"
+                  id="questionExcelFile"
+                  accept=".xlsx,.xls"
+                  onChange={handleQuestionExcelFileChange}
+                  disabled={isSubmitting || isUploading || isExcelImporting}
+                />
+                <button 
+                  type="button"
+                  className="manageTest-file-upload-btn"
+                  onClick={() => document.getElementById('questionExcelFile').click()}
+                  disabled={isSubmitting || isUploading || isExcelImporting}
+                >
+                  <i className="fas fa-upload"></i> 
+                  {questionExcelFile ? 'Change File' : 'Choose File'}
+                </button>
+                {questionExcelFile && <span className="manageTest-file-name">{questionExcelFile.name}</span>}
+              </div>
+              {isExcelImporting && (
+                <div className="manageTest-import-progress">
+                  <i className="fas fa-spinner fa-spin"></i> Importing questions from Excel...
+                </div>
+              )}
+            </div>
             
             <div className="manageTest-add-modal-footer">
               <button type="button" className="manageTest-cancel-btn" onClick={onClose} disabled={isSubmitting || isUploading}>
