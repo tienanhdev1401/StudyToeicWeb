@@ -9,11 +9,15 @@ import { useAuth } from '../context/AuthContext';
 function Stmquizzes() {
   const [showSelectPart, setShowSelectPart,setUserInteracted] = useState(false);
   const { isLoggedIn, user } = useAuth();
+  const [selectedTime, setSelectedTime] = useState(120); 
   const [showLoginPopup, setShowLoginPopup] = useState(!isLoggedIn); // Set initial state based on login status
   const [selectedParts, setSelectedParts] = useState([]);
   const { testId } = useParams();
   const navigate = useNavigate();
 
+  const handleTimeChange = (event) => {
+    setSelectedTime(Number(event.target.value));
+  };
   // Add useEffect to handle login state changes
   useEffect(() => {
     setShowLoginPopup(!isLoggedIn);
@@ -31,9 +35,11 @@ function Stmquizzes() {
     // Sử dụng testId lấy từ URL để điều hướng
     //navigate(`/Dotest/${testId}`
     localStorage.setItem('userInteracted', 'true');
-    navigate(`/nhap/${testId}`, {
+    navigate(`/DoTest/${testId}`, {
       state: {
-        selectedParts: selectedParts.length > 0 ? selectedParts : [1, 2, 3, 4, 5, 6, 7]
+        
+        selectedParts: selectedParts.length > 0 ? selectedParts : [1, 2, 3, 4, 5, 6, 7],
+        timeLimit: selectedTime * 60 
       }
     });
   };
@@ -77,8 +83,9 @@ function Stmquizzes() {
 
           <div className={`time-selector ${showSelectPart ? '' : 'hidden'}`}>
             <label>Chọn thời gian làm bài:</label>
-            <select>
+            <select value={selectedTime} onChange={handleTimeChange}>
               <option value="120">2 giờ</option>
+              <option value="0.3">test phút</option>
               <option value="5">5 phút</option>
               <option value="10">10 phút</option>
               <option value="15">15 phút</option>

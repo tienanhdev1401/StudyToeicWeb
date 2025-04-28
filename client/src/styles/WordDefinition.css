@@ -1,0 +1,108 @@
+.word-definition {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.word-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.word-header h2 {
+  font-size: 4.5rem;
+  color: #333;
+  margin-right: 15px;
+  margin-bottom: 0;
+}
+
+.phonetic {
+  font-size: 1.5rem;
+  color: #666;
+  margin-right: 15px;
+}
+
+.audio-button {
+  background: #706cfc;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.audio-button:hover {
+  background: #706cfc;
+  transform: scale(1.05);
+}
+
+.origin {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.origin h3 {
+  font-size: 1.2rem;
+  color: #444;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.meanings {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.meaning {
+  border-left: 3px solid #706cfc;
+  padding-left: 20px;
+}
+
+.part-of-speech {
+  color: #706cfc;
+  font-size: 2rem;
+  font-style: italic;
+  margin-bottom: 15px;
+}
+
+.definitions {
+  padding-left: 20px;
+}
+
+.definitions li {
+  margin-bottom: 15px;
+}
+
+.definition {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.example {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 8px;
+  padding-left: 10px;
+  border-left: 2px solid #ddd;
+  line-height: 1.4;
+}
+
+.synonyms, .antonyms {
+  margin-top: 8px;
+  font-size: 0.95rem;
+}
+
+.synonyms span, .antonyms span {
+  font-weight: 600;
+  color: #555;
+} 

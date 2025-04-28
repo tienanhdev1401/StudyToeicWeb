@@ -156,6 +156,25 @@ const userService = {
       console.error('Profile update error:', error);
       throw error;
     }
+  },
+
+  resetPassword: async ({ email, otp, newPassword }) => {
+    try {
+      const response = await axios.post(`${API_URL}/reset-password`, {
+        email,
+        otp,
+        newPassword
+      });
+      if (response.status >= 200 && response.status < 300) {
+        return response.data;
+      }
+      throw new Error(response.data.message || 'Đổi mật khẩu thất bại');
+    } catch (error) {
+      const errorMessage = error.response?.data?.error
+        || error.response?.data?.message
+        || 'Không thể kết nối đến server';
+      throw new Error(errorMessage);
+    }
   }
 };
 

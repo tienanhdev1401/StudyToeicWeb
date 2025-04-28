@@ -1,0 +1,166 @@
+.confirm-submit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.confirm-submit-popup {
+  background-color: white;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: confirm-submit-popup-appear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+@keyframes confirm-submit-popup-appear {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.confirm-submit-header {
+  background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.confirm-submit-title {
+  margin: 0;
+  font-size: 2rem;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-submit-close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+  padding: 0;
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.confirm-submit-close-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: rotate(90deg);
+}
+
+.confirm-submit-content {
+  padding: 25px 20px;
+}
+
+.confirm-submit-completion-status {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-weight: 500;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #e9ecef;
+}
+
+.confirm-submit-completion-status strong {
+  color: #3498db;
+  font-size: 1.2rem;
+}
+
+.confirm-submit-warning-message {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: #856404;
+  border-radius: 6px;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.confirm-submit-message {
+  color: #495057;
+  line-height: 1.6;
+  background-color: #f8f9fa;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid #6c757d;
+  font-weight: 400;
+}
+
+.confirm-submit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 18px 20px;
+  border-top: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+}
+
+.confirm-submit-cancel-btn, .confirm-submit-submit-btn {
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1.25rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.confirm-submit-cancel-btn {
+  background-color: #f1f2f6;
+  color: #2c3e50;
+  border: 1px solid #dfe4ea;
+}
+
+.confirm-submit-cancel-btn:hover {
+  background-color: #dfe4ea;
+  transform: translateY(-2px);
+}
+
+.confirm-submit-submit-btn {
+  background: linear-gradient(135deg, #ff5e62, #ff9966);
+  color: white;
+  border: none;
+}
+
+.confirm-submit-submit-btn:hover {
+  background: linear-gradient(135deg, #ff4757, #ff9966);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 94, 98, 0.3);
+}
+
+@media (max-width: 576px) {
+  .confirm-submit-popup {
+    width: 95%;
+  }
+  
+  .confirm-submit-actions {
+    flex-direction: column;
+  }
+  
+  .confirm-submit-cancel-btn, .confirm-submit-submit-btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}

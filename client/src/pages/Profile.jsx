@@ -8,29 +8,87 @@ import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
 import PasswordChangePopup from '../components/PasswordChangePopup';
 import userService from '../services/userService';
+import { getLearningGoalByLearnerId, createLearningGoal, updateLearningGoal } from '../services/learningGoalService';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ProfilePage = () => {
-    const { isLoggedIn, logout } = useAuth();
-    const { user, loading, fetchUserProfile } = useUser();
+    const { isLoggedIn, logout, refreshToken } = useAuth();
+    const { user, loading, initialized, fetchUserProfile } = useUser();
     const navigate = useNavigate();
     const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedUser, setEditedUser] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [learningGoal, setLearningGoal] = useState(null);
+    const [isEditingGoal, setIsEditingGoal] = useState(false);
+    const [editedGoal, setEditedGoal] = useState(null);
+    const [isSavingProfile, setIsSavingProfile] = useState(false);
+    const [pageLoading, setPageLoading] = useState(true);
 
-    console.log('TienAnh',user)
+    // Hàm để xử lý lỗi token hết hạn
+    const handleTokenRefresh = async () => {
+        try {
+            await refreshToken(); // Giả sử refreshToken được triển khai trong AuthContext
+            return true;
+        } catch (error) {
+            console.error('Không thể làm mới token:', error);
+            logout();
+            navigate('/login');
+            return false;
+        }
+    };
 
     useEffect(() => {
-        if (!loading && !isLoggedIn) {
-            navigate('/login');
+        if (initialized && !loading) {
+            if (!isLoggedIn) {
+                // Kiểm tra token trong localStorage và thử làm mới nếu có
+                const token = localStorage.getItem('token');
+                if (token) {
+                    handleTokenRefresh();
+                } else {
+                    navigate('/login');
+                }
+            } else {
+                fetchUserProfile(); // Load profile data on initial render
+                setPageLoading(false);
+            }
         }
-    }, [isLoggedIn, loading, navigate]);
+    }, [isLoggedIn, loading, initialized, navigate]);
 
+    // Mỗi khi user thay đổi, cập nhật editedUser
     useEffect(() => {
         if (user) {
             setEditedUser({ ...user });
+            setPageLoading(false);
         }
     }, [user]);
+
+    useEffect(() => {
+        const fetchLearningGoal = async () => {
+            if (user && user.id) {
+                try {
+                    const response = await getLearningGoalByLearnerId(user.id);
+                    if (response && response.success) {
+                        setLearningGoal(response.data);
+                    } else {
+                        // Không có learning goal, set null
+                        setLearningGoal(null);
+                    }
+                } catch (error) {
+                    if (error.response && error.response.status === 404) {
+                     
+                        setLearningGoal(null);
+                    } else {
+                        console.error(error); // Chỉ log lỗi nếu KHÔNG phải 404
+                    }
+                }
+            }
+        };
+    
+        fetchLearningGoal();
+    }, [user]);
+    
+    
 
     useEffect(() => {
         // Cleanup function để xóa URL preview khi component unmount
@@ -41,10 +99,26 @@ const ProfilePage = () => {
         };
     }, [imagePreview]);
 
-    if (!user) return null;
+    // Hiển thị loading spinner khi đang loading
+    if (pageLoading) {
+        return (
+            <>
+                <Header />
+                <div className="containerprofile">
+                    <LoadingSpinner />
+                </div>
+                <Footer />
+            </>
+        );
+    }
 
-    const handleLogout = () => {
-        logout();
+    // Return null nếu không có user sau khi đã load xong
+    if (!user) {
+        return null;
+    }
+
+    const handleLogout = async () => {
+        await logout();
         navigate('/');
     };
 
@@ -69,7 +143,7 @@ const ProfilePage = () => {
             }
 
             if (file.size > maxSize) {
-                alert('Kích thước file không được vượt quá 16MB');
+                alert('Kích thước file không được vượt quá 5MB');
                 return;
             }
 
@@ -88,13 +162,19 @@ const ProfilePage = () => {
 
     const handleEditToggle = () => {
         if (isEditing) {
+            // Cancel editing - reset to original values
             setImagePreview(null);
             setEditedUser({ ...user });
+            setIsEditing(false);
+        } else {
+            // Start editing - ensure we have the latest user data in the form
+            setEditedUser({ ...user });
+            setIsEditing(true);
         }
-        setIsEditing(!isEditing);
     };
 
     const handleSave = async () => {
+        setIsSavingProfile(true); // Start loading
         try {
             console.log('Saving profile with editedUser:', editedUser);
             await userService.updateProfile(editedUser);
@@ -106,9 +186,12 @@ const ProfilePage = () => {
                 URL.revokeObjectURL(imagePreview);
                 setImagePreview(null);
             }
+            alert('Profile cập nhật thành công!'); // Success message
         } catch (error) {
             console.error('Error saving profile:', error);
             alert('Failed to save changes');
+        } finally {
+            setIsSavingProfile(false); // Stop loading regardless of success or failure
         }
     };
 
@@ -118,6 +201,101 @@ const ProfilePage = () => {
             [field]: value
         }));
     };
+
+    const handleGoalEdit = () => {
+        setIsEditingGoal(true);
+        setEditedGoal({ ...learningGoal });
+    };
+
+    const handleGoalChange = (field, value) => {
+        // Allow empty input to clear the field
+        if (value === '') {
+            setEditedGoal(prev => ({
+                ...prev,
+                [field]: ''
+            }));
+            return;
+        }
+
+        const numValue = Number(value);
+
+        // Basic type check
+        if (isNaN(numValue) || !Number.isInteger(numValue)) {
+            // Optionally provide feedback or just ignore invalid non-numeric/non-integer input
+            return; 
+        }
+
+        // Apply constraints
+        if (field === 'duration') {
+            if (numValue >= 30) {
+                setEditedGoal(prev => ({
+                    ...prev,
+                    [field]: numValue // Store as number if valid
+                }));
+            } else if (value.length <= String(numValue).length && numValue >= 0 && numValue < 30) {
+                // Allow typing numbers less than 30, but don't update state if it *becomes* less than 30
+                // This prevents blocking typing '1' or '2' on the way to '30'
+                setEditedGoal(prev => ({ ...prev, [field]: value }));
+            } else if (numValue < 0) {
+                // Prevent negative numbers explicitly
+                return;
+            }
+        } else if (field === 'scoreTarget') {
+            if (numValue >= 300 && numValue <= 990) {
+                setEditedGoal(prev => ({
+                    ...prev,
+                    [field]: numValue // Store as number if valid
+                }));
+            } else if (value.length <= String(numValue).length && numValue >= 0 && numValue < 300) {
+                 // Allow typing numbers less than 300
+                 setEditedGoal(prev => ({ ...prev, [field]: value }));
+            } else if (numValue > 990 || numValue < 0) {
+                 // Prevent numbers outside 0-990 range (negative handled above)
+                 return;
+            }
+        }
+    };
+
+    const handleGoalSave = async () => {
+        // Validate before saving - ensure values meet the criteria finally
+        const finalDuration = Number(editedGoal.duration);
+        const finalScoreTarget = Number(editedGoal.scoreTarget);
+
+        if (isNaN(finalDuration) || !Number.isInteger(finalDuration) || finalDuration < 30) {
+            alert('Thời gian phải là số nguyên từ 30 ngày trở lên.');
+            return;
+        }
+
+        if (isNaN(finalScoreTarget) || !Number.isInteger(finalScoreTarget) || finalScoreTarget < 300 || finalScoreTarget > 990) {
+            alert('Điểm mục tiêu phải là số nguyên từ 300 đến 990.');
+            return;
+        }
+
+        try {
+            let response;
+            const goalData = {
+                duration: finalDuration,
+                scoreTarget: finalScoreTarget,
+                learnerId: user.id
+            };
+
+            if (learningGoal) {
+                response = await updateLearningGoal(learningGoal.id, goalData);
+            } else {
+                response = await createLearningGoal(goalData);
+            }
+
+            if (response.success) {
+                setLearningGoal(response.data);
+                setIsEditingGoal(false);
+                alert(learningGoal ? 'Cập nhật mục tiêu thành công!' : 'Tạo mục tiêu thành công!');
+            }
+        } catch (error) {
+            console.error('Error saving learning goal:', error);
+            alert('Có lỗi xảy ra khi lưu mục tiêu học tập');
+        }
+    };
+
     return (
         <>
             <Header />
@@ -151,7 +329,7 @@ const ProfilePage = () => {
                             <p className="profile-title">TOEIC Learner</p>
                             <div className="profile-buttons">
                                 <button
-                                    className="btn-primary"
+                                    className={`btn-primary ${isSavingProfile ? 'is-loading' : ''}`}
                                     onClick={() => {
                                         if (isEditing) {
                                             handleSave();
@@ -159,8 +337,9 @@ const ProfilePage = () => {
                                             handleEditToggle();
                                         }
                                     }}
+                                    disabled={isSavingProfile} // Disable button when loading
                                 >
-                                    {isEditing ? 'SAVE' : 'EDIT PROFILE'}
+                                    <span className="btn-text">{isEditing ? 'SAVE' : 'EDIT PROFILE'}</span>
                                 </button>
                                 <button
                                     className="btn-secondary"
@@ -287,18 +466,123 @@ const ProfilePage = () => {
                             <div className="info-item">
                                 <p className="info-label">Member Since:</p>
                                 <p className="info-value">
-                                    • {new Date(user.joinAt).toLocaleDateString()}
+                                    • {user.joinAt ? new Date(user.joinAt).toLocaleDateString() : 'Not Available'}
                                 </p>
                             </div>
                             <div className="info-item">
                                 <p className="info-label">Account Status:</p>
-                                •<p className="info-value badge">{user.status}</p>
+                                •<p className="info-value badge">{user.status || 'Active'}</p>
                             </div>
                             <div className="info-item">
                                 <p className="info-label">Last Updated:</p>
                                 <p className="info-value">
-                                    • {new Date(user.updatedAt).toLocaleDateString()}
+                                    • {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'Not Available'}
                                 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid-container">
+                    {/* Learning Goal Section */}
+                    <div className="learning-goal-section">
+                        <h3 className="section-title">Mục tiêu học tập</h3>
+                        {isEditingGoal ? (
+                            <div className="goal-edit-form">
+                                <div className="form-group">
+                                    <label>Thời gian (ngày):</label>
+                                    <input
+                                        type="text"
+                                        value={editedGoal?.duration ?? ''}
+                                        onChange={(e) => handleGoalChange('duration', e.target.value)}
+                                        className="edit-input"
+                                        placeholder="Ít nhất 30 ngày"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Điểm mục tiêu:</label>
+                                    <input
+                                        type="text"
+                                        value={editedGoal?.scoreTarget ?? ''}
+                                        onChange={(e) => handleGoalChange('scoreTarget', e.target.value)}
+                                        className="edit-input"
+                                        placeholder="Từ 300 đến 990"
+                                    />
+                                </div>
+                                <div className="goal-buttons">
+                                    <button
+                                        className="btn-primary"
+                                        onClick={handleGoalSave}
+                                        disabled={!editedGoal?.duration || !editedGoal?.scoreTarget}
+                                    >
+                                        {learningGoal ? 'Cập nhật' : 'Lưu mục tiêu'}
+                                    </button>
+                                    <button className="btn-secondary" onClick={() => {
+                                        setIsEditingGoal(false);
+                                        setEditedGoal(learningGoal || null);
+                                    }}>
+                                        Hủy
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            !learningGoal ? (
+                                <div className="no-goal">
+                                    <p>Bạn chưa thiết lập mục tiêu học tập</p>
+                                    <button className="btn-primary" onClick={() => {
+                                        setIsEditingGoal(true);
+                                        setEditedGoal({
+                                            duration: '',
+                                            scoreTarget: '',
+                                            learnerId: user.id
+                                        });
+                                    }}>
+                                        Thiết lập mục tiêu
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="goal-content">
+                                    <div className="goal-info">
+                                        <div className="goal-item">
+                                            <p className="goal-label">Thời gian:</p>
+                                            <p className="goal-value">{learningGoal?.duration} ngày</p>
+                                        </div>
+                                        <div className="goal-item">
+                                            <p className="goal-label">Điểm mục tiêu:</p>
+                                            <p className="goal-value">{learningGoal?.scoreTarget} điểm</p>
+                                        </div>
+                                    </div>
+                                    <button className="btn-primary" onClick={() => {
+                                        setIsEditingGoal(true);
+                                        setEditedGoal({...learningGoal});
+                                    }}>
+                                        Chỉnh sửa mục tiêu
+                                    </button>
+                                </div>
+                            )
+                        )}
+                    </div>
+
+                    {/* Account Statistics */}
+                    <div className="account-statistics">
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+                            <h3 className="section-title" style={{ margin: 0 }}>Thống kê học tập</h3>
+                            <a href="/test-history" className="btn-primary" style={{ minWidth: 150 }}>
+                                Xem lịch sử làm bài
+                            </a>
+                        </div>
+                        <div className="statistics-grid">
+                            <div className="stat-item">
+                                <p className="stat-label">Số chủ đề ngữ pháp đã học:</p>
+                                <p className="stat-value">0/50</p>
+                            </div>
+                            <div className="stat-item">
+                                <p className="stat-label">Số bài tập đã hoàn thành:</p>
+                                <p className="stat-value">0/100</p>
+                            </div>
+                            <div className="stat-item">
+                                <p className="stat-label">Điểm TOEIC hiện tại:</p>
+                                <p className="stat-value">Chưa có</p>
                             </div>
                         </div>
                     </div>

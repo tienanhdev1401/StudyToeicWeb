@@ -15,8 +15,10 @@ class Database {
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE,
       waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0
+      connectionLimit: 20,
+      queueLimit: 0,
+      connectTimeout: 60000,       // Tăng timeout lên 60 giây
+      typeCast: true               // Bật type casting
     });
     console.log('Khởi tạo pool kết nối database');
   }

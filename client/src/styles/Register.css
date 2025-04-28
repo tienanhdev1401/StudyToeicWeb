@@ -145,7 +145,7 @@
   position: relative;
 }
 
-.input-icon {
+.input-icon-login {
   position: absolute;
   top: 50%;
   left: 15px;
@@ -165,7 +165,7 @@
   transition: opacity 0.3s ease;
 }
 
-.input-toggle {
+.input-toggle-login {
   position: absolute;
   top: 50%;
   right: 15px;
@@ -175,9 +175,12 @@
   font-size: 1.1rem;
 }
 
-.custom-input {
+.custom-input-login {
   width: 100%;
-  padding: 14px 45px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-left: 25px;
+  text-indent: 25px;
   background-color: rgba(147, 51, 234, 0.1);
   border: none;
   border-radius: 8px;
@@ -188,12 +191,13 @@
   transition: all 0.3s ease;
 }
 
-.custom-input:focus {
+
+.custom-input-login:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.5);
 }
 
-.custom-input:valid + .input-check {
+.custom-input-login:valid + .input-check {
   opacity: 1;
 }
 
@@ -228,7 +232,7 @@
 }
 
 /* Submit button */
-.submit-btn {
+.submit-btn-login {
   width: 100%;
   padding: 15px;
   background: #9333ea;

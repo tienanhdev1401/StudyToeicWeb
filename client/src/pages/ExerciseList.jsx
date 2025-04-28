@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import GrammarTopicService from '../services/grammarTopicService';
+import LoadingSpinner from '../components/LoadingSpinner';
 import VocabularyTopicService from '../services/vocabularyTopicService'
 
 const GrammarCard = ({ name, stats, progress, isExpanded, onToggle, gradientClass, exercises }) => {
@@ -11,7 +12,7 @@ const GrammarCard = ({ name, stats, progress, isExpanded, onToggle, gradientClas
 
     const toggleExpand = (e) => {
         e.stopPropagation();
-        onToggle(name);
+        onToggle(name); // Just pass the name to the parent handler
     };
 
     const handleExerciseClick = (e, exercise) => {
@@ -61,7 +62,7 @@ const GrammarCard = ({ name, stats, progress, isExpanded, onToggle, gradientClas
                 </div>
                 
                 {isExpanded && (
-                    <div className="mt-4 border-t pt-4">
+                    <div className="slide-animate mt-4 border-t pt-4">
                         <h4 className="font-bold mb-2">Danh sách bài tập:</h4>
                         <ul className="space-y-2">
                             {exercises && exercises.map((exercise, index) => (
@@ -82,92 +83,91 @@ const GrammarCard = ({ name, stats, progress, isExpanded, onToggle, gradientClas
     );
 };
 
-const VocabularyCard = ({ part, stats, progress, isExpanded, onToggle }) => {
+// Update the VocabularyCard component similarly
+const VocabularyCard = ({ name, stats, progress, isExpanded, onToggle, gradientClass, exercises }) => {
     const navigate = useNavigate();
-    
-    const handlePartClick = () => {
-        navigate(`/toeic-exercise/part-${part.split('-')[1]}`);
-    };
-    
+
     const toggleExpand = (e) => {
         e.stopPropagation();
-        onToggle(part);
+        onToggle(name); // Just pass the name to the parent handler
     };
-  
+
+    const handleExerciseClick = (e, exercise) => {
+        e.stopPropagation();
+        navigate(`/exercise/${exercise.id}`, {
+            state: {
+                topicId: exercise.vocabularyTopicId,
+                topicName: name,
+                topicType: 'Vocabulary'
+            }
+        });
+    };
+
     return (
-      <div 
-        className={`de-card ${part} cursor-pointer`} 
-        onClick={handlePartClick}
-      >
-        <div>
-          <h2 className="text-8xl font-bold text-white mb-2">Part {part.split('-')[1]}</h2>
-          <p className="text-white text-opacity-75 mb-4">TOEIC® VOCABULARY</p>
-        </div>
-        <div className="de-card-content">
-          <div>
-            {stats.map((item, index) => (
-              <p key={index} className="text-gray-700 mb-2">
-                <i className={`fas ${item.icon} text-orange-500 mr-2`}></i>
-                {item.value}
-              </p>
-            ))}
-          </div>
-          <div>
-            <div className="flex items-center mb-2">
-              <div className="de-progress-bar">
-                <div className="de-progress-fill" style={{ width: `${progress}%` }}></div>
-              </div>
-            </div>
-            <p className="text-green-500 font-bold">{progress === 4 ? '1/26' : '0/26'} bài hoàn thành</p>
-            
-            <button 
-                onClick={toggleExpand}
-                className="mt-4 flex items-center justify-between w-full text-orange-500 bg-orange-50 px-4 py-2 rounded-lg"
-            >
-                <span>1 TEST ĐẦU VÀO</span>
-                <div className="flex items-center">
-                    <span className="text-gray-600 mr-4">13.348 lượt hoàn thành</span>
-                    <i className={`fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        <div className={`de-card ${gradientClass}`}>
+            <div className="flex justify-between items-start">
+                <div>
+                    <h2 className="text-white text-4xl font-bold mb-2">{name}</h2>
+                    <p className="text-white text-sm mb-4">TOEIC® VOCABULARY</p>
                 </div>
-            </button>
+                <button 
+                    onClick={toggleExpand}
+                    className="text-white text-2xl mt-2"
+                >
+                    <i className={`fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+                </button>
+            </div>
             
-            {isExpanded && (
-                <div className="mt-4 bg-gray-50 rounded-lg p-4">
-                    <h4 className="font-bold mb-3 text-lg">TEST ĐẦU VÀO (3)</h4>
-                    <ul className="space-y-3">
-                        <li className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
-                            <div className="flex items-center">
-                                <i className="far fa-file-alt mr-3 text-orange-500"></i>
-                                <span>Bài kiểm tra 1</span>
-                            </div>
-                            <span className="text-gray-500">30 câu hỏi</span>
-                        </li>
-                        <li className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
-                            <div className="flex items-center">
-                                <i className="far fa-file-alt mr-3 text-orange-500"></i>
-                                <span>Bài kiểm tra 2</span>
-                            </div>
-                            <span className="text-gray-500">30 câu hỏi</span>
-                        </li>
-                        <li className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
-                            <div className="flex items-center">
-                                <i className="far fa-file-alt mr-3 text-orange-500"></i>
-                                <span>Bài kiểm tra 3</span>
-                            </div>
-                            <span className="text-gray-500">30 câu hỏi</span>
-                        </li>
+            <div className="de-card-content">
+                <div>
+                    <ul className="text-gray-600 mb-4">
+                        {stats.map((item, index) => (
+                            <li key={index} className="flex items-center mb-2">
+                                <i className={`fas ${item.icon} text-orange-500 mr-2`}></i>
+                                {item.value}
+                            </li>
+                        ))}
                     </ul>
                 </div>
-            )}
-          </div>
+                <div>
+                    <div className="flex items-center mb-2">
+                        <div className="de-progress-bar">
+                            <div className="de-progress-fill" style={{ width: `${progress}%` }}></div>
+                        </div>
+                    </div>
+                    <p className="text-green-500 text-sm">{progress === 4 ? '1/26' : '0/26'} bài hoàn thành</p>
+                </div>
+                
+                {isExpanded && (
+                    <div className="slide-animate mt-4 border-t pt-4">
+                        <h4 className="font-bold mb-2">Danh sách bài tập:</h4>
+                        <ul className="space-y-2">
+                            {exercises && exercises.map((exercise, index) => (
+                                <li 
+                                    key={index} 
+                                    className="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded transition-all"
+                                    onClick={(e) => handleExerciseClick(e, exercise)}
+                                >
+                                    <i className="far fa-file-alt mr-2 text-orange-500"></i>
+                                    Bài tập {index + 1}: {exercise.exerciseName}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
         </div>
-      </div>
     );
 };
 
+// ===== MODIFY THE MAIN COMPONENT =====
+
 const ExerciseList = () => {
     const [activeTab, setActiveTab] = useState('grammar');
-    const [expandedId, setExpandedId] = useState(null);
+    
+    // Single string state to track the currently expanded topic
+    const [expandedTopicName, setExpandedTopicName] = useState(null);
+    
     const [grammarTopics, setGrammarTopics] = useState([]);
     const [vocabularyTopics, setVocabularyTopics] = useState([]);
     const [loading, setLoading] = useState({
@@ -246,6 +246,9 @@ const ExerciseList = () => {
             }
         };
 
+        // Reset expanded topic when switching tabs
+        setExpandedTopicName(null);
+
         if (activeTab === 'grammar') {
             fetchGrammarTopics();
         } else {
@@ -253,34 +256,24 @@ const ExerciseList = () => {
         }
     }, [activeTab]);
 
+    // Simplified toggle function - if already expanded, close it. Otherwise expand it.
     const handleToggle = (topicName) => {
-        setExpandedId(expandedId === topicName ? null : topicName);
+        console.log('Toggle called with:', topicName);
+        console.log('Current expanded topic:', expandedTopicName);
+        
+        if (expandedTopicName === topicName) {
+            setExpandedTopicName(null);
+        } else {
+            setExpandedTopicName(topicName);
+        }
     };
 
     if (loading.grammar && activeTab === 'grammar') return (
-        <div id="preloader-active">
-            <div className="preloader d-flex align-items-center justify-content-center">
-                <div className="preloader-inner position-relative">
-                    <div className="preloader-circle"></div>
-                    <div className="preloader-img pere-text">
-                        <img src="assets/img/logo/loder.png" alt=""/>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <LoadingSpinner />
     );
 
     if (loading.vocabulary && activeTab === 'vocabulary') return (
-        <div id="preloader-active">
-            <div className="preloader d-flex align-items-center justify-content-center">
-                <div className="preloader-inner position-relative">
-                    <div className="preloader-circle"></div>
-                    <div className="preloader-img pere-text">
-                        <img src="assets/img/logo/loder.png" alt=""/>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <LoadingSpinner />
     );
     
     if (error.grammar && activeTab === 'grammar') return <div className="text-center mt-8 text-red-500">{error.grammar}</div>;
@@ -295,14 +288,20 @@ const ExerciseList = () => {
                         <a 
                             href="#" 
                             className={`de-tab-item ${activeTab === 'grammar' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('grammar')}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setActiveTab('grammar');
+                            }}
                         >
                             Ngữ pháp
                         </a>
                         <a 
                             href="#" 
                             className={`de-tab-item ${activeTab === 'vocabulary' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('vocabulary')}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setActiveTab('vocabulary');
+                            }}
                         >
                             Từ vựng
                         </a>
@@ -317,7 +316,7 @@ const ExerciseList = () => {
                                 <GrammarCard 
                                     key={index} 
                                     {...item} 
-                                    isExpanded={expandedId === item.name}
+                                    isExpanded={expandedTopicName === item.name}
                                     onToggle={handleToggle}
                                 />
                             ))}
@@ -330,10 +329,10 @@ const ExerciseList = () => {
                         <h1 className="de-section-title">Luyện Từ Vựng</h1>
                         <div className="de-grid-reading">
                             {vocabularyTopics.map((item, index) => (
-                                <GrammarCard 
+                                <VocabularyCard 
                                     key={index} 
                                     {...item} 
-                                    isExpanded={expandedId === item.name}
+                                    isExpanded={expandedTopicName === item.name}
                                     onToggle={handleToggle}
                                 />
                             ))}

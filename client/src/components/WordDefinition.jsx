@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/WordDefinition.css';
 
 const WordDefinition = ({ entry }) => {
   const playAudio = () => {

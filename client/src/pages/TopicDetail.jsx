@@ -4,10 +4,13 @@ import Footer from '../components/Footer';
 import '../styles/TopicDetail.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import VocabularyTopicService from '../services/vocabularyTopicService';
+import CommentService from '../services/commentService';
+import { useAuth } from '../context/AuthContext';
+import { FaPlay, FaComment, FaPaperPlane, FaEdit, FaTrash } from 'react-icons/fa';
 
 const TopicDetail = () => {
 
-    const {topicId } = useParams();
+    const { topicSlug, topicId } = useParams();
 
     const [isFlipped, setIsFlipped] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
@@ -18,6 +21,14 @@ const TopicDetail = () => {
     const [flashCards, setFlashCards] = useState([]);
     const [termsData, setTermsData] = useState([]);
     const scrollContainerRef = useRef(null);
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+    const [commentLoading, setCommentLoading] = useState(false);
+    const [editingComment, setEditingComment] = useState(null);
+    const [editContent, setEditContent] = useState('');
+    const [relatedTopics, setRelatedTopics] = useState([]);
+    const [loadingRelatedTopics, setLoadingRelatedTopics] = useState(false);
+    const { user } = useAuth();
 
     const navigate = useNavigate();
     
@@ -25,7 +36,6 @@ const TopicDetail = () => {
     useEffect(() => {
         const fetchTopicData = async () => {
             try {
-                console.log("Fetching topic data for ID:", topicId);
                 const data = await VocabularyTopicService.getVocabularyTopicById(topicId);
                 setTopic(data);
                 
@@ -59,6 +69,10 @@ const TopicDetail = () => {
                     setTermsData(terms);
                 }
                 
+                // Fetch comments
+                const commentsResponse = await CommentService.getCommentsByVocabularyTopicId(topicId);
+                setComments(commentsResponse.data);
+                
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -67,7 +81,31 @@ const TopicDetail = () => {
             }
         };
 
+        // Fetch related topics (all other vocabulary topics)
+        const fetchRelatedTopics = async () => {
+            setLoadingRelatedTopics(true);
+            try {
+                const allTopics = await VocabularyTopicService.getAllVocabularyTopics();
+                // Filter out the current topic and transform to the format needed for studyCards
+                const otherTopics = allTopics
+                    .filter(t => t.id != topicId) // Use != instead of !== for possible string/number comparison
+                    .map(topic => ({
+                        id: topic.id,
+                        title: topic.topicName,
+                        image: topic.imageUrl,
+                        button: true
+                    }));
+                
+                setRelatedTopics(otherTopics);
+            } catch (error) {
+                console.error('Error fetching related topics:', error);
+            } finally {
+                setLoadingRelatedTopics(false);
+            }
+        };
+
         fetchTopicData();
+        fetchRelatedTopics();
     }, [topicId]);
 
     const handleScroll = (direction) => {
@@ -99,7 +137,9 @@ const TopicDetail = () => {
             }
     
             // Navigate to exercise page with the first exercise
-            navigate(`/exercise/${exercises[0].id}`, {
+            const randomIndex = Math.floor(Math.random() * exercises.length);
+            const randomExercise = exercises[randomIndex];
+            navigate(`/exercise/${randomExercise.id}`, {
                 state: {
                     topicId: topic.id,
                     topicName: topic.topicName,
@@ -112,18 +152,117 @@ const TopicDetail = () => {
         }
     };
 
-    if (loading)return (
-        <div id="preloader-active">
-            <div className="preloader d-flex align-items-center justify-content-center">
-                <div className="preloader-inner position-relative">
-                    <div className="preloader-circle"></div>
-                    <div className="preloader-img pere-text">
-                        <img src="assets/img/logo/loder.png" alt=""/>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+    const handleTopicCardClick = (topicId) => {
+        navigate(`/learn-vocabulary/${topicId}`);
+    };
+
+    // Xử lý bình luận
+    const handleCommentSubmit = async (e) => {
+        e.preventDefault();
+        
+        // Validate nội dung comment
+        if (!newComment.trim()) {
+            alert('Vui lòng nhập nội dung bình luận');
+            return;
+        }
+
+        // Validate user đăng nhập
+        if (!user) {
+            alert('Vui lòng đăng nhập để bình luận');
+            return;
+        }
+        
+        setCommentLoading(true);
+        try {
+            const commentData = {
+                content: newComment.trim(),
+                userId: user.id,
+                VocabularyTopicId: parseInt(topicId)
+            };
+            console.log(commentData);
+            const response = await CommentService.createComment(commentData);
+            
+            if (response.success) {
+                // Thêm comment mới vào đầu danh sách
+                setComments([response.data, ...comments]);
+                setNewComment(''); // Reset form
+                alert('Thêm bình luận thành công');
+            }
+        } catch (error) {
+            console.error('Lỗi khi thêm bình luận:', error);
+            alert(error.response?.data?.message || 'Lỗi khi thêm bình luận');
+        } finally {
+            setCommentLoading(false);
+        }
+    };
+
+    const handleEditClick = (comment) => {
+        setEditingComment(comment);
+        setEditContent(comment.content);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingComment(null);
+        setEditContent('');
+    };
+
+    const handleUpdateComment = async () => {
+        if (!editContent.trim() || !editingComment) {
+            alert('Vui lòng nhập nội dung bình luận');
+            return;
+        }
+        
+        setCommentLoading(true);
+        try {
+            // Tạo đối tượng comment cần cập nhật
+            const commentToUpdate = {
+                ...editingComment,
+                content: editContent.trim(),
+                updatedAt: new Date()
+            };
+            
+            const response = await CommentService.updateComment(commentToUpdate);
+            
+            if (response.success) {
+                // Cập nhật state comments với comment đã được cập nhật
+                setComments(comments.map(c => 
+                    c.id === editingComment.id ? response.data : c
+                ));
+                setEditingComment(null);
+                setEditContent('');
+                alert('Cập nhật bình luận thành công');
+            }
+        } catch (error) {
+            console.error('Lỗi khi cập nhật bình luận:', error);
+            alert(error.response?.data?.message || 'Lỗi khi cập nhật bình luận');
+        } finally {
+            setCommentLoading(false);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        if (!window.confirm('Bạn có chắc chắn muốn xóa bình luận này?')) return;
+        
+        try {
+            const response = await CommentService.deleteComment(commentId);
+            
+            if (response.success) {
+                // Xóa comment khỏi state
+                setComments(comments.filter(c => c.id !== commentId));
+                alert('Xóa bình luận thành công');
+            }
+        } catch (error) {
+            console.error('Lỗi khi xóa bình luận:', error);
+            alert(error.response?.data?.message || 'Lỗi khi xóa bình luận');
+        }
+    };
+
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateString).toLocaleDateString('vi-VN', options);
+    };
+
+    if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
     if (!topic) return <div>No data found</div>;
     if (!flashCards || flashCards.length === 0) return <div>No flashcards available</div>;
@@ -155,9 +294,12 @@ const TopicDetail = () => {
                     <div className="td-rating-section">
                         <div className="td-features-grid">
                             {featuresData.map((feature, index) => (
-                                <div key={index} className="td-feature-card" 
-                                    onClick={handlePracticeClick}
-                                    style={{ cursor: 'pointer' }}>
+                                <div
+                                    key={index}
+                                    className="td-feature-card"
+                                    onClick={feature.label === 'Test' ? handlePracticeClick : undefined}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <i className={`fas fa-${feature.icon} td-feature-icon`}></i>
                                     <span className="td-feature-label">{feature.label}</span>
                                 </div>
@@ -268,23 +410,42 @@ const TopicDetail = () => {
                             </button>
 
                             <div className="td-card-carousel" ref={scrollContainerRef}>
-                                {studyCards.map((card, index) => (
-                                    <div key={index} className="td-study-card">
-                                        <h3 className="td-card-title">{card.title}</h3>
-                                        <div className="td-term-count">{card.terms}</div>
-                                        <div className="td-user-profile">
-                                            <img
-                                                src={card.avatar}
-                                                alt={card.user}
-                                                className="td-user-avatar"
-                                            />
-                                            <span className="td-username">{card.user}</span>
+                                {loadingRelatedTopics ? (
+                                    <div className="td-loading">Đang tải chủ đề liên quan...</div>
+                                ) : relatedTopics.length === 0 ? (
+                                    <div className="td-no-topics">Không có chủ đề liên quan</div>
+                                ) : (
+                                    relatedTopics.map((card, index) => (
+                                        <div 
+                                            key={index} 
+                                            className="td-study-card" 
+                                            onClick={() => handleTopicCardClick(card.id)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            {card.image && (
+                                                <div className="td-topic-image-container">
+                                                    <img 
+                                                        src={card.image} 
+                                                        alt={card.title}
+                                                        className="td-topic-image"
+                                                    />
+                                                </div>
+                                            )}
+                                            <div className="td-topic-content">
+                                                <h3 className="td-card-title">{card.title}</h3>
+                                                <button 
+                                                    className="td-preview-btn"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleTopicCardClick(card.id);
+                                                    }}
+                                                >
+                                                    Xem
+                                                </button>
+                                            </div>
                                         </div>
-                                        {card.button && (
-                                            <button className="td-preview-btn">Preview</button>
-                                        )}
-                                    </div>
-                                ))}
+                                    ))
+                                )}
                             </div>
 
                             <button
@@ -353,6 +514,119 @@ const TopicDetail = () => {
                             </div>
                         </section>
                     )}
+
+                    {/* Comments Section */}
+                    <div className="comments-section">
+                        <h3 className="comments-title">
+                            <FaComment /> Bình luận ({comments.length})
+                        </h3>
+                        
+                        {user && (
+                            <div className="comment-form">
+                                {editingComment ? (
+                                    <>
+                                        <textarea
+                                            value={editContent}
+                                            onChange={(e) => setEditContent(e.target.value)}
+                                            placeholder="Chỉnh sửa bình luận của bạn..."
+                                            className="comment-input"
+                                            rows="3"
+                                            required
+                                        />
+                                        <div className="comment-form-buttons">
+                                            <button 
+                                                onClick={handleUpdateComment}
+                                                className="submit-comment-button"
+                                                disabled={commentLoading}
+                                            >
+                                                {commentLoading ? 'Đang xử lý...' : (
+                                                    <>
+                                                        <FaPaperPlane /> Cập nhật
+                                                    </>
+                                                )}
+                                            </button>
+                                            <button 
+                                                onClick={handleCancelEdit}
+                                                className="cancel-button"
+                                                type="button"
+                                            >
+                                                Hủy
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <form onSubmit={handleCommentSubmit}>
+                                        <textarea
+                                            value={newComment}
+                                            onChange={(e) => setNewComment(e.target.value)}
+                                            placeholder="Viết bình luận của bạn..."
+                                            className="comment-input"
+                                            rows="3"
+                                            required
+                                        />
+                                        <div className="comment-form-buttons">
+                                            <button 
+                                                type="submit"
+                                                className="submit-comment-button"
+                                                disabled={commentLoading}
+                                            >
+                                                {commentLoading ? 'Đang gửi...' : (
+                                                    <>
+                                                        <FaPaperPlane /> Gửi
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </form>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="comments-list">
+                            {comments.length === 0 ? (
+                                <p className="no-comments">Chưa có bình luận nào</p>
+                            ) : (
+                                comments.map(comment => (
+                                    <div key={comment.id} className="comment-item">
+                                        <div className="comment-header">
+                                            <div className="comment-user-info">
+                                                <img 
+                                                    src={comment.user.avatar} 
+                                                    alt={comment.user.fullname}
+                                                    className="comment-user-avatar"
+                                                />
+                                                <span className="comment-author">
+                                                    {comment.user.fullname}
+                                                </span>
+                                            </div>
+                                            <span className="comment-date">
+                                                {formatDate(comment.createdAt)}
+                                            </span>
+                                        </div>
+                                        <div className="comment-content">
+                                            {comment.content}
+                                        </div>
+                                        {user && user.id === comment.user.id && (
+                                            <div className="comment-actions">
+                                                <button 
+                                                    onClick={() => handleEditClick(comment)}
+                                                    className="edit-button"
+                                                >
+                                                    <FaEdit /> Chỉnh sửa
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDeleteComment(comment.id)}
+                                                    className="delete-button"
+                                                >
+                                                    <FaTrash /> Xóa
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
                 </div>
             </main>
 
@@ -361,50 +635,12 @@ const TopicDetail = () => {
     );
 };
 
-// Dữ liệu mẫu (you might want to move these to a separate file)
+// Dữ liệu mẫu cho thanh công cụ tính năng
 const featuresData = [
     { label: 'Flashcards', icon: 'book' },
     { label: 'Learn', icon: 'sync-alt' },
     { label: 'Test', icon: 'file-alt' },
     { label: 'Match', icon: 'comments' }
-];
-
-const studyCards = [
-    {
-        title: 'Triết học cơ bản',
-        terms: '168 terms',
-        user: 'philosophy_student',
-        avatar: 'https://placehold.co/32x32',
-        button: true
-    },
-    {
-        title: 'Triết học cơ bản',
-        terms: '168 terms',
-        user: 'philosophy_student',
-        avatar: 'https://placehold.co/32x32',
-        button: true
-    },
-    {
-        title: 'Triết học cơ bản',
-        terms: '168 terms',
-        user: 'philosophy_student',
-        avatar: 'https://placehold.co/32x32',
-        button: true
-    },
-    {
-        title: 'Triết học cơ bản',
-        terms: '168 terms',
-        user: 'philosophy_student',
-        avatar: 'https://placehold.co/32x32',
-        button: true
-    },
-    {
-        title: 'Triết học cơ bản',
-        terms: '168 terms',
-        user: 'philosophy_student',
-        avatar: 'https://placehold.co/32x32',
-        button: true
-    },
 ];
 
 export default TopicDetail;
