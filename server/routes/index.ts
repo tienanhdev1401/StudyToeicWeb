@@ -15,6 +15,8 @@ import commentRoutes from './commentRoutes'
 import wordNoteRoutes from './wordNoteRoutes'
 import questionRoutes from './questionRoutes';
 import testRoutes from './testRoutes';
+import adminExerciseRoutes from './admin/admin.exercisesRoutes'
+import adminExerciseQuestionRoutes from './admin/admin.exercisesQuestionRoutes'
 import submissionRoutes from './submissionRoutes';
 import test from './test'
 
@@ -36,6 +38,9 @@ function route(app: Application): void {
   app.use('/api/exercise',exerciseRouter);
   app.use('/api/question', questionRoutes);
   app.use('/api/test', testRoutes);
+  app.use('/api/admin/exercise', adminExerciseRoutes);
+ // app.use('/api/admin/exercises/:exerciseId/questions', adminExerciseQuestionRoutes);
+
   app.use('/api/submissions', submissionRoutes);
   app.use('/', test);
 }
