@@ -69,6 +69,16 @@ const questionService = {
       throw error;
     }
   },
+
+  createResource: async (resourceData) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/admin/resource`, resourceData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating resource:', error);
+      throw error;
+    }
+  },
 };
 
 export default questionService;

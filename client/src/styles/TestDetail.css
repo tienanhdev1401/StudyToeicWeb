@@ -703,4 +703,200 @@
   .test-detail-cancel-btn, .test-detail-submit-btn {
     width: 100%;
   }
+}
+
+.test-detail-input-with-preview {
+  display: flex;
+  gap: 10px;
+}
+
+.test-detail-input-with-preview input,
+.test-detail-input-with-preview textarea {
+  flex: 1;
+}
+
+.test-detail-preview-btn {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  height: fit-content;
+}
+
+.test-detail-preview-btn-textarea {
+  align-self: flex-start;
+  margin-top: 5px;
+}
+
+.test-detail-preview-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.test-detail-preview-container {
+  margin-top: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #f9fafb;
+}
+
+.test-detail-audio-preview {
+  width: 100%;
+}
+
+.test-detail-image-preview {
+  max-width: 100%;
+  max-height: 300px;
+  display: block;
+  margin: 0 auto;
+}
+
+.test-detail-batch-modal {
+  width: 95%;
+  max-width: 1000px;
+  max-height: 90vh;
+}
+
+.test-detail-questions-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.test-detail-add-batch-btn {
+  background-color: #4263eb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.test-detail-add-batch-btn:hover {
+  background-color: #3049c5;
+}
+
+.test-detail-add-batch-btn i {
+  margin-right: 5px;
+}
+
+.test-detail-shared-resource-section {
+  background-color: #f0f8ff;
+  border: 1px solid #d0e2ff;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.test-detail-shared-resource-section h4 {
+  margin: 0 0 15px 0;
+  color: #4263eb;
+  display: flex;
+  align-items: center;
+}
+
+.test-detail-questions-section {
+  margin-bottom: 20px;
+}
+
+.test-detail-questions-header-with-add {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.test-detail-questions-header-with-add h4 {
+  margin: 0;
+  color: #374151;
+}
+
+.test-detail-add-question-to-batch-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.test-detail-add-question-to-batch-btn:hover {
+  background-color: #218838;
+}
+
+.test-detail-add-question-to-batch-btn i {
+  margin-right: 5px;
+}
+
+.test-detail-batch-question {
+  background-color: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.test-detail-batch-question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.test-detail-batch-question-header h5 {
+  margin: 0;
+  color: #4263eb;
+  font-size: 1rem;
+}
+
+.test-detail-remove-question-btn {
+  background-color: #fee2e2;
+  color: #ef4444;
+  border: none;
+  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.test-detail-remove-question-btn:hover {
+  background-color: #fecaca;
+}
+
+.test-detail-form-info-box {
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.test-detail-form-info-box i {
+  margin-right: 10px;
+  color: #1890ff;
+  font-size: 1.2rem;
+  margin-top: 3px;
+}
+
+.test-detail-form-info-box p {
+  margin: 0;
+  color: #0050b3;
+  font-size: 0.9rem;
+  line-height: 1.5;
 } 

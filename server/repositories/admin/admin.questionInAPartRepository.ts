@@ -113,7 +113,7 @@ export class QuestionInAPartRepository {
 
   static async findByPartIdAndQuestionId(partId: number, questionId: number): Promise<QuestionInAPart | null> {
     try {
-      const [rows] = await db.query(
+      const rows = await db.query(
         'SELECT * FROM questioninaparts WHERE PartId = ? AND QuestionId = ?',
         [partId, questionId]
       );

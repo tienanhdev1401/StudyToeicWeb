@@ -3,6 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import '../../styles/TestDetail.css';
 import testService from '../../services/admin/admin.testService';
 import questionService from '../../services/admin/admin.questionService';
+import SuccessAlert from '../../components/SuccessAlert';
+import ErrorAlert from '../../components/ErrorAlert';
+import { Editor } from '@tinymce/tinymce-react';
+
+// TOEIC part limits and question number ranges
+const TOEIC_PART_LIMITS = {
+  1: { start: 1, end: 6, maxQuestions: 6 },
+  2: { start: 7, end: 32, maxQuestions: 25 },
+  3: { start: 32, end: 69, maxQuestions: 37 },
+  4: { start: 70, end: 100, maxQuestions: 30 },
+  5: { start: 101, end: 130, maxQuestions: 30 },
+  6: { start: 131, end: 146, maxQuestions: 16 },
+  7: { start: 147, end: 200, maxQuestions: 54 }
+};
 
 const TestDetail = () => {
   const { id } = useParams();
@@ -14,6 +28,7 @@ const TestDetail = () => {
   const [questions, setQuestions] = useState([]);
   const [questionLoading, setQuestionLoading] = useState(false);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [isBatchQuestionModalOpen, setIsBatchQuestionModalOpen] = useState(false);
   const [newQuestion, setNewQuestion] = useState({
     content: '',
     explainDetail: '',
@@ -26,9 +41,55 @@ const TestDetail = () => {
     audioUrl: '',
     imageUrl: '',
   });
+  const [batchQuestions, setBatchQuestions] = useState([
+    {
+      content: '',
+      explainDetail: '',
+      optionA: '',
+      optionB: '',
+      optionC: '',
+      optionD: '',
+      correctAnswer: 'A',
+    }
+  ]);
+  const [sharedResource, setSharedResource] = useState({
+    explainResource: '',
+    audioUrl: '',
+    imageUrl: '',
+  });
   const [editingQuestionId, setEditingQuestionId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  
+  // Add state for alerts
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Add state for explainDetail preview
+  const [explainDetailPreview, setExplainDetailPreview] = useState('');
+
+  // Add functions to display alerts
+  const displaySuccessMessage = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessAlert(true);
+    
+    // Auto-hide success alert after 3 seconds
+    setTimeout(() => {
+      setShowSuccessAlert(false);
+    }, 3000);
+  };
+  
+  const displayErrorMessage = (message) => {
+    setErrorMessage(message);
+    setShowErrorAlert(true);
+    
+    // Auto-hide error alert after 5 seconds
+    setTimeout(() => {
+      setShowErrorAlert(false);
+    }, 5000);
+  };
 
   // Fetch test details
   useEffect(() => {
@@ -87,6 +148,33 @@ const TestDetail = () => {
     }
   };
 
+  // Format explainDetail to HTML for preview and saving
+  function formatExplainDetailToHtml(text) {
+    if (!text) return '';
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+    if (lines.length === 0) return '';
+
+    // Dòng đầu là câu hỏi
+    const question = lines[0];
+    // Các dòng sau là đáp án
+    const options = lines.slice(1).map(line => {
+      // Đáp án đúng có &larr; hoặc Đáp án đúng
+      if (line.includes('&larr;') || line.toLowerCase().includes('đáp án đúng')) {
+        return `<li><span style="color: green; font-weight: bold;">${line}</span></li>`;
+      }
+      return `<li>${line}</li>`;
+    });
+
+    return `<p><strong>${question}</strong></p>\n<ul>\n${options.join('\n')}\n</ul>`;
+  }
+
+  // Update preview when explainDetail changes
+  const handleExplainDetailChange = (e) => {
+    const value = e.target.value;
+    setNewQuestion(prev => ({ ...prev, explainDetail: value }));
+    setExplainDetailPreview(formatExplainDetailToHtml(value));
+  };
+
   const openQuestionModal = () => {
     setEditingQuestionId(null);
     setNewQuestion({
@@ -101,12 +189,12 @@ const TestDetail = () => {
       audioUrl: '',
       imageUrl: '',
     });
+    setExplainDetailPreview('');
     setSubmitError(null);
     setIsQuestionModalOpen(true);
   };
 
   const openEditQuestionModal = (question) => {
-    console.log(question);
     setEditingQuestionId(question.id);
     setNewQuestion({
       content: question.content || '',
@@ -121,6 +209,7 @@ const TestDetail = () => {
       imageUrl: question.resource?.urlImage || '',
       questionNumber: question.questionNumber
     });
+    setExplainDetailPreview(formatExplainDetailToHtml(question.explainDetail || ''));
     setSubmitError(null);
     setIsQuestionModalOpen(true);
   };
@@ -138,6 +227,70 @@ const TestDetail = () => {
     }));
   };
 
+  const getNextQuestionNumber = (partNumber) => {
+    const partLimit = TOEIC_PART_LIMITS[partNumber];
+    if (!partLimit) return 1;
+
+    // Find the highest question number in the current part
+    const partQuestions = questions.filter(q => {
+      const qNumber = q.questionNumber || 0;
+      return qNumber >= partLimit.start && qNumber <= partLimit.end;
+    });
+
+    if (partQuestions.length === 0) {
+      return partLimit.start;
+    }
+
+    const maxNumber = Math.max(...partQuestions.map(q => q.questionNumber || 0));
+    return maxNumber + 1;
+  };
+
+  const validateQuestionNumber = (partNumber, questionNumber) => {
+    const partLimit = TOEIC_PART_LIMITS[partNumber];
+    if (!partLimit) return false;
+
+    return questionNumber >= partLimit.start && questionNumber <= partLimit.end;
+  };
+
+  const validatePartQuestionCount = (partNumber) => {
+    const partLimit = TOEIC_PART_LIMITS[partNumber];
+    if (!partLimit) return false;
+
+    const partQuestions = questions.filter(q => {
+      const qNumber = q.questionNumber || 0;
+      return qNumber >= partLimit.start && qNumber <= partLimit.end;
+    });
+
+    return partQuestions.length < partLimit.maxQuestions;
+  };
+
+  // Add this new function before handleQuestionSubmit
+  const formatExplainDetail = (question) => {
+    const { content, optionA, optionB, optionC, optionD, correctAnswer } = question;
+    
+    // Format the question content
+    const formattedContent = `<p><strong>${content}</strong></p>`;
+    
+    // Format options with correct answer highlighted
+    const options = [
+      { letter: 'A', text: optionA },
+      { letter: 'B', text: optionB },
+      { letter: 'C', text: optionC },
+      { letter: 'D', text: optionD }
+    ];
+    
+    const formattedOptions = options.map(option => {
+      const isCorrect = option.letter === correctAnswer;
+      if (isCorrect) {
+        return `<li><span style="color: green; font-weight: bold;">(${option.letter}) ${option.text} &larr; Đáp án đúng</span></li>`;
+      }
+      return `<li>(${option.letter}) ${option.text}</li>`;
+    }).join('\n');
+    
+    // Combine content and options with HTML formatting
+    return `${formattedContent}\n<ul>\n${formattedOptions}\n</ul>`;
+  };
+
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     if (!activePart || !activePart.id) {
@@ -148,6 +301,15 @@ const TestDetail = () => {
     try {
       setSubmitting(true);
       setSubmitError(null);
+
+      // Validate part question count
+      if (!validatePartQuestionCount(activePart.partNumber)) {
+        setSubmitError(`Part ${activePart.partNumber} has reached its maximum question limit of ${TOEIC_PART_LIMITS[activePart.partNumber].maxQuestions} questions`);
+        return;
+      }
+
+      // Get next question number for the part
+      const nextQuestionNumber = getNextQuestionNumber(activePart.partNumber);
       
       if (editingQuestionId) {
         // Update existing question
@@ -158,7 +320,7 @@ const TestDetail = () => {
           optionC: newQuestion.optionC,
           optionD: newQuestion.optionD,
           correctAnswer: newQuestion.correctAnswer,
-          explainDetail: newQuestion.explainDetail,
+          explainDetail: formatExplainDetailToHtml(newQuestion.explainDetail),
           resourceData: {
             explainResource: newQuestion.explainResource,
             audioUrl: newQuestion.audioUrl,
@@ -167,6 +329,12 @@ const TestDetail = () => {
           questionNumber: newQuestion.questionNumber
         };
 
+        // Validate question number for update
+        if (!validateQuestionNumber(activePart.partNumber, questionData.questionNumber)) {
+          setSubmitError(`Question number must be between ${TOEIC_PART_LIMITS[activePart.partNumber].start} and ${TOEIC_PART_LIMITS[activePart.partNumber].end} for Part ${activePart.partNumber}`);
+          return;
+        }
+
         await questionService.updateQuestionByPartId(
           activePart.id,
           editingQuestionId,
@@ -174,11 +342,6 @@ const TestDetail = () => {
         );
       } else {
         // Create new question
-        // Determine the next question number
-        const nextQuestionNumber = questions.length > 0 
-          ? Math.max(...questions.map(q => q.questionNumber || 0)) + 1 
-          : 1;
-        
         const questionData = {
           content: newQuestion.content,
           optionA: newQuestion.optionA,
@@ -186,7 +349,7 @@ const TestDetail = () => {
           optionC: newQuestion.optionC,
           optionD: newQuestion.optionD,
           correctAnswer: newQuestion.correctAnswer,
-          explainDetail: newQuestion.explainDetail,
+          explainDetail: formatExplainDetailToHtml(newQuestion.explainDetail),
           resourceData: {
             explainResource: newQuestion.explainResource,
             audioUrl: newQuestion.audioUrl,
@@ -203,11 +366,19 @@ const TestDetail = () => {
       const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
       setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
       
-      // Close the modal
-      closeQuestionModal();
+      // Display success message BEFORE closing the modal
+      displaySuccessMessage(editingQuestionId ? 'Question updated successfully' : 'Question added successfully');
+      
+      // Close the modal after a short delay to ensure the alert is visible
+      setTimeout(() => {
+        closeQuestionModal();
+      }, 500);
     } catch (err) {
       console.error(`Error ${editingQuestionId ? 'updating' : 'creating'} question:`, err);
       setSubmitError(err.message || `Failed to ${editingQuestionId ? 'update' : 'create'} question`);
+      
+      // Display error message
+      displayErrorMessage('Failed to save question');
     } finally {
       setSubmitting(false);
     }
@@ -225,10 +396,178 @@ const TestDetail = () => {
         // Refresh the questions list
         const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
         setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
+        
+        // Display success message
+        displaySuccessMessage('Question deleted successfully');
       } catch (err) {
         console.error('Error deleting question:', err);
         alert(`Failed to delete question: ${err.message || 'Unknown error'}`);
+        
+        // Display error message
+        displayErrorMessage('Failed to delete question');
       }
+    }
+  };
+
+  const openBatchQuestionModal = () => {
+    setBatchQuestions([
+      {
+        content: '',
+        explainDetail: '',
+        optionA: '',
+        optionB: '',
+        optionC: '',
+        optionD: '',
+        correctAnswer: 'A',
+      }
+    ]);
+    setSharedResource({
+      explainResource: '',
+      audioUrl: '',
+      imageUrl: '',
+    });
+    setSubmitError(null);
+    setIsBatchQuestionModalOpen(true);
+  };
+
+  const closeBatchQuestionModal = () => {
+    setIsBatchQuestionModalOpen(false);
+  };
+
+  const handleBatchQuestionChange = (index, field, value) => {
+    const updatedQuestions = [...batchQuestions];
+    updatedQuestions[index] = {
+      ...updatedQuestions[index],
+      [field]: value
+    };
+    setBatchQuestions(updatedQuestions);
+  };
+
+  const handleSharedResourceChange = (e) => {
+    const { name, value } = e.target;
+    setSharedResource(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const addQuestionToBatch = () => {
+    setBatchQuestions([
+      ...batchQuestions,
+      {
+        content: '',
+        explainDetail: '',
+        optionA: '',
+        optionB: '',
+        optionC: '',
+        optionD: '',
+        correctAnswer: 'A',
+      }
+    ]);
+  };
+
+  const removeQuestionFromBatch = (index) => {
+    if (batchQuestions.length > 1) {
+      const updatedQuestions = [...batchQuestions];
+      updatedQuestions.splice(index, 1);
+      setBatchQuestions(updatedQuestions);
+    }
+  };
+
+  const handleBatchQuestionSubmit = async (e) => {
+    e.preventDefault();
+    if (!activePart || !activePart.id) {
+      setSubmitError('No active part selected');
+      return;
+    }
+
+    // Validate all questions in batch
+    const hasEmptyFields = batchQuestions.some(q => 
+      !q.content || !q.optionA || !q.optionB || !q.optionC || !q.optionD
+    );
+
+    if (hasEmptyFields) {
+      setSubmitError('All questions must have content and options filled');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      setSubmitError(null);
+
+      // Validate part question count for batch
+      const partLimit = TOEIC_PART_LIMITS[activePart.partNumber];
+      const currentQuestionCount = questions.filter(q => {
+        const qNumber = q.questionNumber || 0;
+        return qNumber >= partLimit.start && qNumber <= partLimit.end;
+      }).length;
+
+      if (currentQuestionCount + batchQuestions.length > partLimit.maxQuestions) {
+        setSubmitError(`Cannot add ${batchQuestions.length} questions. Part ${activePart.partNumber} can only have ${partLimit.maxQuestions} questions total.`);
+        return;
+      }
+      
+      // Create shared resource first if any resource data is provided
+      let resourceId = null;
+      if (sharedResource.explainResource || sharedResource.audioUrl || sharedResource.imageUrl) {
+        const resourceResponse = await questionService.createResource({
+          explainResource: sharedResource.explainResource,
+          audioUrl: sharedResource.audioUrl,
+          imageUrl: sharedResource.imageUrl
+        });
+        resourceId = resourceResponse.data?.id;
+      }
+      
+      // Get next question number for the part
+      const nextQuestionNumber = getNextQuestionNumber(activePart.partNumber);
+      
+      // Create all questions with shared resource
+      for (let i = 0; i < batchQuestions.length; i++) {
+        const q = batchQuestions[i];
+        const questionNumber = nextQuestionNumber + i;
+
+        // Validate question number
+        if (!validateQuestionNumber(activePart.partNumber, questionNumber)) {
+          setSubmitError(`Question number ${questionNumber} is outside the valid range for Part ${activePart.partNumber}`);
+          return;
+        }
+
+        const questionData = {
+          content: q.content,
+          optionA: q.optionA,
+          optionB: q.optionB,
+          optionC: q.optionC,
+          optionD: q.optionD,
+          correctAnswer: q.correctAnswer,
+          explainDetail: formatExplainDetailToHtml(q.explainDetail),
+          resourceData: resourceId ? {
+            resourceId: resourceId
+          } : null,
+          questionNumber: questionNumber
+        };
+        
+        await questionService.createQuestionByPartId(id, activePart.id, questionData);
+      }
+      
+      // Refresh the questions list
+      const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
+      setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
+      
+      // Display success message BEFORE closing the modal
+      displaySuccessMessage(`${batchQuestions.length} questions added successfully`);
+      
+      // Close the modal after a short delay to ensure the alert is visible
+      setTimeout(() => {
+        closeBatchQuestionModal();
+      }, 500);
+    } catch (err) {
+      console.error('Error creating batch questions:', err);
+      setSubmitError(err.message || 'Failed to create questions');
+      
+      // Display error message
+      displayErrorMessage('Failed to save batch questions');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -246,6 +585,19 @@ const TestDetail = () => {
 
   return (
     <div className="test-detail-container">
+     {/* Add alert components */}
+     <SuccessAlert 
+        show={showSuccessAlert} 
+        message={successMessage} 
+        onClose={() => setShowSuccessAlert(false)} 
+      />
+      
+      <ErrorAlert 
+        show={showErrorAlert} 
+        message={errorMessage} 
+        onClose={() => setShowErrorAlert(false)} 
+      />
+
       <div className="test-detail-header">
         <button 
           className="test-detail-back-btn" 
@@ -305,12 +657,20 @@ const TestDetail = () => {
         <div className="test-detail-questions-container">
           <div className="test-detail-questions-header">
             <h2>Part {activePart.partNumber}: {activePart.title || ''}</h2>
-            <button 
-              className="test-detail-add-question-btn"
-              onClick={openQuestionModal}
-            >
-              <i className="fas fa-plus"></i> Add Question
-            </button>
+            <div className="test-detail-questions-actions">
+              <button 
+                className="test-detail-add-question-btn"
+                onClick={openQuestionModal}
+              >
+                <i className="fas fa-plus"></i> Add Question
+              </button>
+              <button 
+                className="test-detail-add-batch-btn"
+                onClick={openBatchQuestionModal}
+              >
+                <i className="fas fa-layer-group"></i> Add Group Questions
+              </button>
+            </div>
           </div>
           
           <div className="test-detail-description">
@@ -382,7 +742,7 @@ const TestDetail = () => {
                         {question.explainDetail && (
                           <div className="test-detail-question-explanation">
                             <h4>Explanation:</h4>
-                            <p>{question.explainDetail}</p>
+                            <div dangerouslySetInnerHTML={{ __html: question.explainDetail }} />
                           </div>
                         )}
                       </div>
@@ -458,23 +818,42 @@ const TestDetail = () => {
                   id="explainDetail"
                   name="explainDetail"
                   value={newQuestion.explainDetail}
-                  onChange={handleQuestionChange}
+                  onChange={handleExplainDetailChange}
                   rows={3}
                   placeholder="Enter the explanation for the correct answer..."
                 />
               </div>
               
+              {/* Preview for explainDetail */}
+              {explainDetailPreview && (
+                <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
+                  <b>Preview:</b>
+                  <div dangerouslySetInnerHTML={{ __html: explainDetailPreview }} />
+                </div>
+              )}
+              
               <div className="test-detail-form-group">
                 <label htmlFor="explainResource">Translation/Explanation Resource:</label>
-                <textarea
-                  id="explainResource"
-                  name="explainResource"
+                <Editor
+                  apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
                   value={newQuestion.explainResource}
-                  onChange={handleQuestionChange}
-                  rows={3}
-                  placeholder="Enter translation or additional explanation..."
+                  onEditorChange={value => setNewQuestion(prev => ({ ...prev, explainResource: value }))}
+                  init={{
+                    height: 120,
+                    menubar: false,
+                    plugins: 'lists link',
+                    toolbar: 'undo redo | bold italic underline | forecolor | bullist numlist | removeformat',
+                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                  }}
                 />
               </div>
+              
+              {newQuestion.explainResource && (
+                <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
+                  <b>Preview:</b>
+                  <div dangerouslySetInnerHTML={{ __html: newQuestion.explainResource }} />
+                </div>
+              )}
               
               <div className="test-detail-form-group">
                 <label htmlFor="optionA">Option A:</label>
@@ -554,6 +933,14 @@ const TestDetail = () => {
                   onChange={handleQuestionChange}
                   placeholder="Enter audio URL if applicable..."
                 />
+                {newQuestion.audioUrl && (
+                  <div className="test-detail-preview-container">
+                    <audio controls className="test-detail-audio-preview">
+                      <source src={newQuestion.audioUrl} type="audio/mpeg" />
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                )}
               </div>
               
               <div className="test-detail-form-group">
@@ -566,6 +953,15 @@ const TestDetail = () => {
                   onChange={handleQuestionChange}
                   placeholder="Enter image URL if applicable..."
                 />
+                {newQuestion.imageUrl && (
+                  <div className="test-detail-preview-container">
+                    <img 
+                      src={newQuestion.imageUrl} 
+                      alt="Question image preview" 
+                      className="test-detail-image-preview"
+                    />
+                  </div>
+                )}
               </div>
               
               <div className="test-detail-form-actions">
@@ -582,6 +978,237 @@ const TestDetail = () => {
                   disabled={submitting}
                 >
                   {submitting ? 'Saving...' : editingQuestionId ? 'Update Question' : 'Save Question'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Batch Question Modal */}
+      {isBatchQuestionModalOpen && (
+        <div className="test-detail-modal-overlay">
+          <div className="test-detail-modal-content test-detail-batch-modal">
+            <div className="test-detail-modal-header">
+              <h3>Add Multiple Questions with Shared Resource</h3>
+              <button className="test-detail-modal-close-btn" onClick={closeBatchQuestionModal}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <form onSubmit={handleBatchQuestionSubmit} className="test-detail-question-form">
+              {submitError && (
+                <div className="test-detail-form-error-message">
+                  <i className="fas fa-exclamation-circle"></i> {submitError}
+                </div>
+              )}
+              
+              <div className="test-detail-form-info-box">
+                <i className="fas fa-info-circle"></i>
+                <p>
+                  Create multiple questions sharing the same resources. Ideal for Part 3, 4, 6, and 7 
+                  where multiple questions reference the same audio, image, or passage.
+                </p>
+              </div>
+              
+              <div className="test-detail-shared-resource-section">
+                <h4>Shared Resource</h4>
+                
+                <div className="test-detail-form-group">
+                  <label htmlFor="batchAudioUrl">Shared Audio URL (optional):</label>
+                  <input
+                    type="text"
+                    id="batchAudioUrl"
+                    name="audioUrl"
+                    value={sharedResource.audioUrl}
+                    onChange={handleSharedResourceChange}
+                    placeholder="Enter shared audio URL..."
+                  />
+                  {sharedResource.audioUrl && (
+                    <div className="test-detail-preview-container">
+                      <audio controls className="test-detail-audio-preview">
+                        <source src={sharedResource.audioUrl} type="audio/mpeg" />
+                        Your browser does not support the audio element.
+                      </audio>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="test-detail-form-group">
+                  <label htmlFor="batchImageUrl">Shared Image URL (optional):</label>
+                  <input
+                    type="text"
+                    id="batchImageUrl"
+                    name="imageUrl"
+                    value={sharedResource.imageUrl}
+                    onChange={handleSharedResourceChange}
+                    placeholder="Enter shared image URL..."
+                  />
+                  {sharedResource.imageUrl && (
+                    <div className="test-detail-preview-container">
+                      <img 
+                        src={sharedResource.imageUrl} 
+                        alt="Shared resource preview" 
+                        className="test-detail-image-preview"
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="test-detail-form-group">
+                  <label htmlFor="batchExplainResource">Shared Text/Passage (optional):</label>
+                  <Editor
+                    apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
+                    value={sharedResource.explainResource}
+                    onEditorChange={value => setSharedResource(prev => ({ ...prev, explainResource: value }))}
+                    init={{
+                      height: 120,
+                      menubar: false,
+                      plugins: 'lists link',
+                      toolbar: 'undo redo | bold italic underline | forecolor | bullist numlist | removeformat',
+                      content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                    }}
+                  />
+                </div>
+              </div>
+              
+              {sharedResource.explainResource && (
+                <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
+                  <b>Preview:</b>
+                  <div dangerouslySetInnerHTML={{ __html: sharedResource.explainResource }} />
+                </div>
+              )}
+              
+              <div className="test-detail-questions-section">
+                <div className="test-detail-questions-header-with-add">
+                  <h4>Questions</h4>
+                  <button 
+                    type="button" 
+                    className="test-detail-add-question-to-batch-btn"
+                    onClick={addQuestionToBatch}
+                  >
+                    <i className="fas fa-plus"></i> Add Question
+                  </button>
+                </div>
+                
+                {batchQuestions.map((question, index) => (
+                  <div key={index} className="test-detail-batch-question">
+                    <div className="test-detail-batch-question-header">
+                      <h5>Question {index + 1}</h5>
+                      {batchQuestions.length > 1 && (
+                        <button 
+                          type="button"
+                          className="test-detail-remove-question-btn"
+                          onClick={() => removeQuestionFromBatch(index)}
+                        >
+                          <i className="fas fa-times"></i>
+                        </button>
+                      )}
+                    </div>
+                    
+                    <div className="test-detail-form-group">
+                      <label htmlFor={`content-${index}`}>Question Content:</label>
+                      <textarea
+                        id={`content-${index}`}
+                        value={question.content}
+                        onChange={(e) => handleBatchQuestionChange(index, 'content', e.target.value)}
+                        required
+                        rows={3}
+                        placeholder="Enter the question text here..."
+                      />
+                    </div>
+                    
+                    <div className="test-detail-form-group">
+                      <label htmlFor={`optionA-${index}`}>Option A:</label>
+                      <input
+                        type="text"
+                        id={`optionA-${index}`}
+                        value={question.optionA}
+                        onChange={(e) => handleBatchQuestionChange(index, 'optionA', e.target.value)}
+                        required
+                        placeholder="Enter option A..."
+                      />
+                    </div>
+                    
+                    <div className="test-detail-form-group">
+                      <label htmlFor={`optionB-${index}`}>Option B:</label>
+                      <input
+                        type="text"
+                        id={`optionB-${index}`}
+                        value={question.optionB}
+                        onChange={(e) => handleBatchQuestionChange(index, 'optionB', e.target.value)}
+                        required
+                        placeholder="Enter option B..."
+                      />
+                    </div>
+                    
+                    <div className="test-detail-form-group">
+                      <label htmlFor={`optionC-${index}`}>Option C:</label>
+                      <input
+                        type="text"
+                        id={`optionC-${index}`}
+                        value={question.optionC}
+                        onChange={(e) => handleBatchQuestionChange(index, 'optionC', e.target.value)}
+                        required
+                        placeholder="Enter option C..."
+                      />
+                    </div>
+                    
+                    <div className="test-detail-form-group">
+                      <label htmlFor={`optionD-${index}`}>Option D:</label>
+                      <input
+                        type="text"
+                        id={`optionD-${index}`}
+                        value={question.optionD}
+                        onChange={(e) => handleBatchQuestionChange(index, 'optionD', e.target.value)}
+                        required
+                        placeholder="Enter option D..."
+                      />
+                    </div>
+                    
+                    <div className="test-detail-form-group">
+                      <label htmlFor={`correctAnswer-${index}`}>Correct Answer:</label>
+                      <select
+                        id={`correctAnswer-${index}`}
+                        value={question.correctAnswer}
+                        onChange={(e) => handleBatchQuestionChange(index, 'correctAnswer', e.target.value)}
+                        required
+                      >
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                      </select>
+                    </div>
+                    
+                    <div className="test-detail-form-group">
+                      <label htmlFor={`explainDetail-${index}`}>Explanation (optional):</label>
+                      <textarea
+                        id={`explainDetail-${index}`}
+                        value={question.explainDetail}
+                        onChange={(e) => handleBatchQuestionChange(index, 'explainDetail', e.target.value)}
+                        rows={2}
+                        placeholder="Enter explanation for this specific question..."
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="test-detail-form-actions">
+                <button 
+                  type="button" 
+                  className="test-detail-cancel-btn"
+                  onClick={closeBatchQuestionModal}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="test-detail-submit-btn"
+                  disabled={submitting}
+                >
+                  {submitting ? 'Saving...' : `Save ${batchQuestions.length} Questions`}
                 </button>
               </div>
             </form>

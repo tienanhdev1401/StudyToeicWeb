@@ -267,6 +267,8 @@ export class QuestionController {
       const partId = parseInt(req.params.partId);
       const questionId = parseInt(req.params.questionId);
 
+      console.log("partid: ", partId + "questionid " +questionId);
+
       if (isNaN(partId) || isNaN(questionId)) {
         return res.status(400).json({ error: 'ID không hợp lệ' });
       }
