@@ -38,7 +38,7 @@ const TestDetail = () => {
     optionC: '',
     optionD: '',
     correctAnswer: 'A',
-    explainResource: '',
+    explain_resource: '',
     audioUrl: '',
     imageUrl: '',
   });
@@ -197,7 +197,7 @@ const TestDetail = () => {
       optionC: '',
       optionD: '',
       correctAnswer: 'A',
-      explainResource: '',
+      explain_resource: '',
       audioUrl: '',
       imageUrl: '',
     });
@@ -216,7 +216,7 @@ const TestDetail = () => {
       optionC: question.optionC || '',
       optionD: question.optionD || '',
       correctAnswer: question.correctAnswer || 'A',
-      explainResource: question.resource?.explainResource || '',
+      explainResource: question.resource?.explain_resource || '',
       audioUrl: question.resource?.urlAudio || '',
       imageUrl: question.resource?.urlImage || '',
       questionNumber: question.questionNumber
@@ -314,8 +314,8 @@ const TestDetail = () => {
       setSubmitting(true);
       setSubmitError(null);
 
-      // Validate part question count
-      if (!validatePartQuestionCount(activePart.partNumber)) {
+      // Only validate question count when creating new question
+      if (!editingQuestionId && !validatePartQuestionCount(activePart.partNumber)) {
         setSubmitError(`Part ${activePart.partNumber} has reached its maximum question limit of ${TOEIC_PART_LIMITS[activePart.partNumber].maxQuestions} questions`);
         return;
       }
@@ -334,7 +334,7 @@ const TestDetail = () => {
           correctAnswer: newQuestion.correctAnswer,
           explainDetail: formatExplainDetailToHtml(newQuestion.explainDetail),
           resourceData: {
-            explainResource: newQuestion.explainResource,
+            explainResource: newQuestion.explain_resource,
             audioUrl: newQuestion.audioUrl,
             imageUrl: newQuestion.imageUrl
           },
@@ -363,7 +363,7 @@ const TestDetail = () => {
           correctAnswer: newQuestion.correctAnswer,
           explainDetail: formatExplainDetailToHtml(newQuestion.explainDetail),
           resourceData: {
-            explainResource: newQuestion.explainResource,
+            explainResource: newQuestion.explain_resource,
             audioUrl: newQuestion.audioUrl,
             imageUrl: newQuestion.imageUrl
           },
@@ -998,11 +998,11 @@ const handleImportQuestions = async (importedQuestions) => {
                           )}
                         </div>
                         
-                        {question.resource && question.resource.explainResource && (
+                        {question.resource && question.resource.explain_resource && (
                           <div className="test-detail-question-text">
                             <div className="test-detail-question-paragraph">
                             <p>Dịch và giải thích:</p>
-                            <p dangerouslySetInnerHTML={{ __html: question.resource.explainResource }} />
+                            <p dangerouslySetInnerHTML={{ __html: question.resource.explain_resource }} />
                           </div>
                           </div>
                           
@@ -1135,8 +1135,8 @@ const handleImportQuestions = async (importedQuestions) => {
                 <label htmlFor="explainResource">Translation/Explanation Resource:</label>
                 <Editor
                   apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
-                  value={newQuestion.explainResource}
-                  onEditorChange={value => setNewQuestion(prev => ({ ...prev, explainResource: value }))}
+                  value={newQuestion.explain_resource}
+                  onEditorChange={value => setNewQuestion(prev => ({ ...prev, explain_resource: value }))}
                   init={{
                     height: 120,
                     menubar: false,
@@ -1145,10 +1145,10 @@ const handleImportQuestions = async (importedQuestions) => {
                     content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                   }}
                 />
-                {newQuestion.explainResource && (
+                {newQuestion.explain_resource && (
                   <div style={{ marginTop: '8px', background: '#f6f6f6', padding: '8px', borderRadius: '4px' }}>
                     <b>Preview:</b>
-                    <div dangerouslySetInnerHTML={{ __html: newQuestion.explainResource }} />
+                    <div dangerouslySetInnerHTML={{ __html: newQuestion.explain_resource }} />
                   </div>
                 )}
               </div>

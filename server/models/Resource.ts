@@ -1,17 +1,17 @@
 export class Resource {
     public id: number;
-    public explainResource: string | null;
+    public explain_resource: string | null;
     public urlAudio: string | null;
     public urlImage: string | null;
 
     constructor(
         id: number,
-        explainResource: string | null,
+        explain_resource: string | null,
         urlAudio: string | null,
         urlImage: string | null,
     ) {
         this.id = id;
-        this.explainResource = explainResource;
+        this.explain_resource = explain_resource;
         this.urlAudio = urlAudio;
         this.urlImage = urlImage;
     }

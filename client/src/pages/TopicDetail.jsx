@@ -137,7 +137,9 @@ const TopicDetail = () => {
             }
     
             // Navigate to exercise page with the first exercise
-            navigate(`/exercise/${exercises[0].id}`, {
+            const randomIndex = Math.floor(Math.random() * exercises.length);
+            const randomExercise = exercises[randomIndex];
+            navigate(`/exercise/${randomExercise.id}`, {
                 state: {
                     topicId: topic.id,
                     topicName: topic.topicName,
@@ -292,9 +294,12 @@ const TopicDetail = () => {
                     <div className="td-rating-section">
                         <div className="td-features-grid">
                             {featuresData.map((feature, index) => (
-                                <div key={index} className="td-feature-card" 
-                                    onClick={handlePracticeClick}
-                                    style={{ cursor: 'pointer' }}>
+                                <div
+                                    key={index}
+                                    className="td-feature-card"
+                                    onClick={feature.label === 'Test' ? handlePracticeClick : undefined}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <i className={`fas fa-${feature.icon} td-feature-icon`}></i>
                                     <span className="td-feature-label">{feature.label}</span>
                                 </div>

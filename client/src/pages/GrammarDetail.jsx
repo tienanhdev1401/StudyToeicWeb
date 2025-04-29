@@ -53,8 +53,10 @@ const GrammarDetail = () => {
                 alert('Không có bài tập cho chủ đề này');
                 return;
             }
-    
-            navigate(`/exercise/${exercises[0].id}`, {
+
+            const randomIndex = Math.floor(Math.random() * exercises.length);
+            const randomExercise = exercises[randomIndex];
+            navigate(`/exercise/${randomExercise.id}`, {
                 state: {
                     topicId: topic.id,
                     topicName: topic.title,

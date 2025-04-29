@@ -7,6 +7,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [initialized, setInitialized] = useState(false);
 
   // Fetch profile khi component được mount
   useEffect(() => {
@@ -14,6 +15,19 @@ export const UserProvider = ({ children }) => {
     if (token) {
       fetchUserProfile();
     }
+    setInitialized(true);
+
+    // Listen for logout events
+    const handleLogout = () => {
+      clearUser();
+    };
+
+    window.addEventListener('user-logout', handleLogout);
+    
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('user-logout', handleLogout);
+    };
   }, []);
 
   const fetchUserProfile = async () => {
@@ -28,6 +42,10 @@ export const UserProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearUser = () => {
+    setUser(null);
   };
 
   const sendVerificationCode = async (email) => {
@@ -82,11 +100,13 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider value={{ 
       user, 
       loading, 
-      error, 
+      error,
+      initialized,
       sendVerificationCode, 
       changePassword,
       register,
-      fetchUserProfile
+      fetchUserProfile,
+      clearUser
     }}>
       {children}
     </UserContext.Provider>

@@ -5,13 +5,13 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import TestService from '../services/TestService';
 import ScoreService from '../services/scoreService';
 import SubmissionService from '../services/SubmissionService';
+import TestHistoryService from '../services/TestHistoryService';
 import ConfirmSubmitPopup from '../components/ConfirmSubmitPopup';
 import TestResultPopup from '../components/TestResultPopup';
-import TestGuidance from '../components/TestGuidance';
 import { useAuth } from '../context/AuthContext';
 
-const DoTest = () => {
-    const { testID } = useParams();
+const TestHistoryDetail = () => {
+    const { submissionId } = useParams();
     const { state } = useLocation();
     const navigate = useNavigate();
     const [currentPart, setCurrentPart] = useState(5);
@@ -22,6 +22,7 @@ const DoTest = () => {
     const [answers, setAnswers] = useState({});
     const [currentGroup, setCurrentGroup] = useState([]);
     const [testData, setTestData] = useState(null);
+    const [submissionData, setSubmissionData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [scoreResult, setScoreResult] = useState(null);
@@ -30,18 +31,15 @@ const DoTest = () => {
     const [audioElement, setAudioElement] = useState(null);
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [showResultPopup, setShowResultPopup] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(true); // Set to true since we're viewing a submission
     const hasHandledTimeUp = useRef(false);
     // New state variables for showing explanations
-    const [showExplanations, setShowExplanations] = useState(false);
+    const [showExplanations, setShowExplanations] = useState(true); // Set to true to show explanations
     const [correctAnswers, setCorrectAnswers] = useState({});
     // Ref for audio container
     const audioContainerRef = useRef(null);
     const [submissionDataForResult, setSubmissionDataForResult] = useState(null);
     const { user } = useAuth();
-    // New state for guidance
-    const [showGuidance, setShowGuidance] = useState(true);
-    const [shouldStartTimer, setShouldStartTimer] = useState(false);
     // Track which parts the user has already visited
     const [visitedParts, setVisitedParts] = useState({});
     //Tính điểm 
@@ -66,7 +64,7 @@ const DoTest = () => {
                     part6: { correct: 0, total: 0 },
                     part7: { correct: 0, total: 0 },
                 },
-                testId: testID
+                testId: submissionData?.TestId
             };
         }
 
@@ -148,38 +146,59 @@ const DoTest = () => {
             readingScore,
             totalScore,
             partDetails,
-            testId: testID
+            testId: submissionData?.TestId
         };
     };
     // Tải dữ liệu từ API
     useEffect(() => {
-        const fetchTestData = async () => {
+        const fetchSubmissionData = async () => {
             try {
-                console.log("Fetching test data..." + testID);
+                console.log("Fetching submission data..." + submissionId);
                 setLoading(true);
-                // Use Promise.all to fetch data in parallel if possible
-                const rawData = await TestService.getTestById(testID);
-                const processedData = TestService.processTestData(rawData);
+                
+                // Get both submission and test data
+                const result = await TestHistoryService.getSubmissionDetail(submissionId);
+                const { submission, testInfo } = result;
+                
+                setSubmissionData(submission);
+                
+                // Process the test data
+                const processedData = TestService.processTestData(testInfo);
                 setTestData(processedData);
-
-                // Khởi tạo thời gian nếu có
-                if (!state?.timeLimit && processedData.duration) {
-                    setTimeLeft(processedData.duration * 60);
+                
+                // Load user answers from submission
+                if (submission && submission.userAnswer) {
+                    try {
+                        // Parse user answers if it's a string
+                        const userAnswers = typeof submission.userAnswer === 'string' 
+                            ? JSON.parse(submission.userAnswer) 
+                            : submission.userAnswer;
+                            
+                        // Format answers into the expected format {questionId: selectedAnswer}
+                        const formattedAnswers = {};
+                        userAnswers.forEach(answer => {
+                            formattedAnswers[answer.questionId] = answer.selectedAnswer;
+                        });
+                        
+                        setAnswers(formattedAnswers);
+                    } catch (error) {
+                        console.error("Error parsing user answers:", error);
+                    }
                 }
                 
-                // Defer non-critical operations after setting test data
+                // Set timeout to allow UI to update
                 setTimeout(() => {
                     setLoading(false);
-                }, 100); // Small timeout to allow UI to update first
+                }, 100);
             } catch (err) {
-                console.error("Lỗi khi tải dữ liệu bài kiểm tra:", err);
-                setError("Không thể tải bài kiểm tra. Vui lòng thử lại sau.");
+                console.error("Lỗi khi tải dữ liệu chi tiết:", err);
+                setError("Không thể tải chi tiết bài làm. Vui lòng thử lại sau.");
                 setLoading(false);
             }
         };
 
-        fetchTestData();
-    }, [testID, state?.timeLimit]);
+        fetchSubmissionData();
+    }, [submissionId]);
 
     // Khởi tạo và lọc câu hỏi - optimize to run faster
     useEffect(() => {
@@ -260,117 +279,52 @@ const DoTest = () => {
 
             setFilteredQuestions(validatedQuestions);
             setCurrentQuestion(1);
+            
+            // Calculate and set score result after loading question data
+            if (submissionData) {
+                // Use submission score data to create a score result object
+                const result = {
+                    listeningCorrect: 0, // These will be calculated if needed
+                    readingCorrect: 0,
+                    listeningTotal: validatedQuestions.filter(q => q.part <= 4).length,
+                    readingTotal: validatedQuestions.filter(q => q.part >= 5).length,
+                    listeningScore: submissionData.listeningScore || 0,
+                    readingScore: submissionData.readingScore || 0,
+                    totalScore: submissionData.totalscore || 0,
+                    partDetails: {
+                        part1: { correct: 0, total: validatedQuestions.filter(q => q.part === 1).length },
+                        part2: { correct: 0, total: validatedQuestions.filter(q => q.part === 2).length },
+                        part3: { correct: 0, total: validatedQuestions.filter(q => q.part === 3).length },
+                        part4: { correct: 0, total: validatedQuestions.filter(q => q.part === 4).length },
+                        part5: { correct: 0, total: validatedQuestions.filter(q => q.part === 5).length },
+                        part6: { correct: 0, total: validatedQuestions.filter(q => q.part === 6).length },
+                        part7: { correct: 0, total: validatedQuestions.filter(q => q.part === 7).length },
+                    },
+                    testId: submissionData.TestId
+                };
+                
+                setScoreResult(result);
+                
+                // Get correct answers for all questions
+                const correctAnswersMap = {};
+                validatedQuestions.forEach(question => {
+                    const originalQuestion = testData.allQuestions.find(q => q.id === question.id);
+                    if (originalQuestion) {
+                        correctAnswersMap[question.id] = originalQuestion.correctAnswer;
+                    }
+                });
+                
+                setCorrectAnswers(correctAnswersMap);
+            }
         }, 100);
 
         return () => clearTimeout(timer);
-    }, [testData, state]);
+    }, [testData, state, submissionData]);
 
     // Xử lý timer - optimize for performance
-    useEffect(() => {
-        // Only start the timer when loading is complete and guidance is closed
-        if (isSubmitted || loading || showGuidance) return;
-
-        // Use requestAnimationFrame for smoother timing that's less resource-intensive
-        let lastTime = Date.now();
-        let animationFrameId = null;
-
-        const updateTimer = () => {
-            const now = Date.now();
-            const deltaTime = Math.floor((now - lastTime) / 1000);
-            
-            // Only update if at least 1 second has passed
-            if (deltaTime >= 1) {
-                lastTime = now - (deltaTime % 1000); // Adjust for any remainder
-                
-                setTimeLeft(prev => {
-                    const newTime = Math.max(0, prev - deltaTime);
-
-                    // Xử lý khi hết giờ
-                    if (newTime === 0 && !hasHandledTimeUp.current) {
-                        hasHandledTimeUp.current = true; // Đánh dấu đã xử lý
-                        // Call in the next animation frame to avoid blocking UI
-                        setTimeout(() => handleTimeUp(), 0);
-                    }
-
-                    return newTime;
-                });
-            }
-            
-            // Continue the animation loop unless we're at 0
-            if (timeLeft > 0) {
-                animationFrameId = requestAnimationFrame(updateTimer);
-            }
-        };
-
-        // Start the animation loop
-        animationFrameId = requestAnimationFrame(updateTimer);
-
-        // Cleanup
-        return () => {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-            hasHandledTimeUp.current = false; // Reset when dependencies thay đổi
-        };
-    }, [isSubmitted, loading, showGuidance, timeLeft]);
-
-    // Thêm hàm xử lý khi hết giờ
-    const handleTimeUp = async () => {
-        if (hasHandledTimeUp.current === false) return;
-        
-        try {
-            // Kiểm tra xem đã nộp bài chưa
-            if (isSubmitted) return;
-
-            // Dừng tất cả audio đang phát - more efficient
-            stopAudio();
-
-            // Dừng tất cả các audio elements trên trang - more efficient
-            const audioElements = document.querySelectorAll('audio');
-            if (audioElements.length > 0) {
-                audioElements.forEach(audio => {
-                    if (!audio.paused) audio.pause();
-                    if (audio.src) audio.removeAttribute('src');
-                });
-            }
-
-            // Kiểm tra có câu trả lời không
-            if (Object.keys(answers).length === 0) {
-                alert('Bạn chưa trả lời câu hỏi nào.');
-                return;
-            }
-
-            // Đánh dấu đã nộp bài
-            setIsSubmitted(true);
-
-            // Tính điểm
-            const result = calculateScore();
-            setScoreResult(result);
-
-            // Chuẩn bị dữ liệu nộp bài
-            const submissionData = prepareAnswersToSubmit();
-            
-            // Lưu dữ liệu submission để sử dụng trong popup
-            setSubmissionDataForResult(submissionData);
-
-            // Hiển thị popup kết quả ngắn gọn
-            setShowResultPopup(true);
-        } catch (error) {
-            console.error('Lỗi khi nộp bài tự động:', error);
-            alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
-        }
-        finally {
-            hasHandledTimeUp.current = true; // Đảm bảo đánh dấu đã xử lý
-        }
-    };
-
-    // Add a function to efficiently handle part changes
-  
-
-    // Add a memo to track the previous part
-    const prevPartRef = useRef(currentPart);
-
-    // Update current part with optimized guidance handling
+    // No need for timer implementation in review mode
+    
+    // Update current part without guidance handling
     useEffect(() => {
         const question = filteredQuestions[currentQuestion - 1];
         if (!question) {
@@ -381,14 +335,8 @@ const DoTest = () => {
         // Get the part from the current question
         const questionPart = question.part;
         
-        // If this is a different part than before and we haven't visited it yet, show guidance
-        if (questionPart !== prevPartRef.current && !visitedParts[questionPart]) {
-            setShowGuidance(true);
-        }
-        
         // Update the part
         setCurrentPart(questionPart);
-        prevPartRef.current = questionPart;
         
         // Organize questions into appropriate groups for efficient rendering
         if (questionPart === 1 || questionPart === 2 || questionPart === 5) {
@@ -403,7 +351,7 @@ const DoTest = () => {
             );
             setCurrentGroup(newGroup);
         }
-    }, [currentQuestion, filteredQuestions, visitedParts]);
+    }, [currentQuestion, filteredQuestions]);
 
     // Tự động phát audio cho phần nghe (1-4)
     useEffect(() => {
@@ -435,7 +383,7 @@ const DoTest = () => {
                 } else {
                     // Chế độ làm bài: tự động phát audio - optimize to only set up once
                     const interacted = localStorage.getItem('userInteracted');
-                    if (interacted === "true" && !showGuidance) {
+                    if (interacted === "true") {
                         const onAudioComplete = () => {
                             if ([1, 2, 3, 4].includes(question.part) && !isSubmitted) {
                                 navigateQuestions('next');
@@ -456,7 +404,7 @@ const DoTest = () => {
                 stopAudio();
             };
         }
-    }, [currentQuestion, filteredQuestions, currentGroup, isSubmitted, showGuidance]);
+    }, [currentQuestion, filteredQuestions, currentGroup, isSubmitted]);
 
     // Hàm xóa tất cả audio players khi chuyển part - improved efficiency
     const cleanupAllAudioPlayers = () => {
@@ -654,22 +602,6 @@ const DoTest = () => {
         // Tìm vị trí câu hỏi và chuyển đến
         const index = filteredQuestions.findIndex(q => q.id === questionId);
         if (index >= 0) {
-            // Check if moving to a different part
-            const currentQ = filteredQuestions[currentQuestion - 1];
-            const targetQ = filteredQuestions[index];
-            
-            if (currentQ && targetQ && currentQ.part !== targetQ.part) {
-                // Only show guidance if this part hasn't been visited before
-                if (!visitedParts[targetQ.part]) {
-                    setShowGuidance(true);
-                    // Mark as visited when guidance is shown
-                    setVisitedParts(prev => ({
-                        ...prev,
-                        [targetQ.part]: true
-                    }));
-                }
-            }
-            
             setCurrentQuestion(index + 1);
         }
     };
@@ -690,7 +622,7 @@ const DoTest = () => {
 
         // Dữ liệu gửi lên server
         return {
-            TestId: parseInt(testID),
+            TestId: parseInt(submissionData?.TestId),
             score: scoreResult?.totalScore || 0,
             completionTime: state?.timeLimit ? state.timeLimit - timeLeft : 7200 - timeLeft,
             tittle: testData?.title || "Bài thi TOEIC",
@@ -756,8 +688,8 @@ const DoTest = () => {
         // Xóa tất cả audio players
         cleanupAllAudioPlayers();
         
-        // Chuyển hướng về trang test-online-new
-        navigate('/test-online-new');
+        // Chuyển hướng về trang test-history
+        navigate('/test-history');
     };
 
     const handleSaveResult = async (response) => {
@@ -798,16 +730,6 @@ const DoTest = () => {
                 }
 
                 if (nextGroupIndex !== -1) {
-                    // Check if moving to a new part that hasn't been visited
-                    const nextPart = filteredQuestions[nextGroupIndex].part;
-                    if (nextPart !== currentQuestionPart && !visitedParts[nextPart]) {
-                        setShowGuidance(true);
-                        // Mark as visited when guidance is shown
-                        setVisitedParts(prev => ({
-                            ...prev,
-                            [nextPart]: true
-                        }));
-                    }
                     setCurrentQuestion(nextGroupIndex + 1);
                 } else {
                     // Nếu không tìm thấy nhóm tiếp theo, di chuyển đến câu tiếp theo
@@ -816,18 +738,6 @@ const DoTest = () => {
             } else {
                 // Đối với các phần không nhóm, chỉ đơn giản là tới câu tiếp theo
                 const nextQuestionIndex = Math.min(filteredQuestions.length, currentQuestion + 1) - 1;
-                // Check if moving to a new part that hasn't been visited
-                if (nextQuestionIndex < filteredQuestions.length) {
-                    const nextPart = filteredQuestions[nextQuestionIndex].part;
-                    if (nextPart !== currentQuestionPart && !visitedParts[nextPart]) {
-                        setShowGuidance(true);
-                        // Mark as visited when guidance is shown
-                        setVisitedParts(prev => ({
-                            ...prev,
-                            [nextPart]: true
-                        }));
-                    }
-                }
                 setCurrentQuestion(nextQuestionIndex + 1);
             }
         } else {
@@ -855,15 +765,6 @@ const DoTest = () => {
                         firstOfPrevGroup--;
                     }
 
-                    // Check if moving to a new part that hasn't been visited
-                    if (prevPart !== currentQuestionPart && !visitedParts[prevPart]) {
-                        setShowGuidance(true);
-                        // Mark as visited when guidance is shown
-                        setVisitedParts(prev => ({
-                            ...prev,
-                            [prevPart]: true
-                        }));
-                    }
                     setCurrentQuestion(firstOfPrevGroup + 1);
                 } else {
                     // Nếu không tìm thấy nhóm trước đó, lùi một câu
@@ -872,18 +773,6 @@ const DoTest = () => {
             } else {
                 // Đối với các phần không nhóm, chỉ đơn giản là lùi một câu
                 const prevQuestionIndex = Math.max(1, currentQuestion - 1) - 1;
-                // Check if moving to a new part that hasn't been visited
-                if (prevQuestionIndex >= 0) {
-                    const prevPart = filteredQuestions[prevQuestionIndex].part;
-                    if (prevPart !== currentQuestionPart && !visitedParts[prevPart]) {
-                        setShowGuidance(true);
-                        // Mark as visited when guidance is shown
-                        setVisitedParts(prev => ({
-                            ...prev,
-                            [prevPart]: true
-                        }));
-                    }
-                }
                 setCurrentQuestion(prevQuestionIndex + 1);
             }
         }
@@ -1064,6 +953,7 @@ const DoTest = () => {
         if (!currentGroup || currentGroup.length === 0) return null;
 
         const hasImage = currentGroup[0].imageUrl !== null;
+        
         // Lấy resource explanation từ testData
         const resourceExplanation = isSubmitted && testData?.allQuestions?.find(q => q.id === currentGroup[0].id)?.resource?.explain_resource;
 
@@ -1104,7 +994,7 @@ const DoTest = () => {
                             </div>
                         )}
                         
-                        {/* Hiển thị giải thích cho resource nếu đã submit và có giải thích */}
+                        {/* Hiển thị giải thích tài liệu nếu có */}
                         {isSubmitted && resourceExplanation && (
                             <div className="resource-explanation-box">
                                 <div className="explanation-title">Giải thích tài liệu:</div>
@@ -1259,7 +1149,7 @@ const DoTest = () => {
                             </div>
                         )}
                         
-                        {/* Hiển thị giải thích cho resource nếu đã submit và có giải thích */}
+                        {/* Hiển thị giải thích tài liệu nếu có */}
                         {isSubmitted && resourceExplanation && (
                             <div className="resource-explanation-box">
                                 <div className="explanation-title">Giải thích tài liệu:</div>
@@ -1354,7 +1244,7 @@ const DoTest = () => {
                             </div>
                         )}
                         
-                        {/* Hiển thị giải thích cho resource nếu đã submit và có giải thích */}
+                        {/* Hiển thị giải thích tài liệu nếu có */}
                         {isSubmitted && resourceExplanation && (
                             <div className="resource-explanation-box">
                                 <div className="explanation-title">Giải thích tài liệu:</div>
@@ -1505,42 +1395,26 @@ const DoTest = () => {
         };
     }, [audioElement]);
 
-    // Optimize the handleGuidanceClose function
-    const handleGuidanceClose = () => {
-        // Close guidance and enable audio autoplay
-        setShowGuidance(false);
-        localStorage.setItem('userInteracted', "true");
-        
-        // Mark current part as visited
-        setVisitedParts(prev => ({
-            ...prev,
-            [currentPart]: true
-        }));
-    };
-
     return (
         <div className="do-test-container">
             <header className="test-header">
                 <div className="header-content_white">
                     <span className="test-title">
-                        {testData ? testData.title : 'Đề thi thử TOEIC'}
+                        {submissionData ? `Chi tiết bài làm: ${submissionData.tittle}` : 'Chi tiết bài làm'}
                     </span>
                     <div className="header-controls">
-                        {isSubmitted ? (
-                            <button
-                                className="exit-button"
-                                onClick={handleExitClick}
-                            >
-                                Thoát
-                            </button>
-                        ) : (
-                            <button className="submit-button" onClick={handleSubmitTest}>Nộp bài</button>
-                        )}
-                        <div className="timer-dotest">{formatTime(timeLeft)}</div>
                         <button
-                            className={`panel-toggle ${!isSubmitted && currentPart <= 4 ? 'disabled' : ''}`}
+                            className="exit-button"
+                            onClick={handleExitClick}
+                        >
+                            Quay lại
+                        </button>
+                        <div className="timer-dotest">
+                            {submissionData ? `Thời gian làm bài: ${TestHistoryService.formatCompletionTime(submissionData.completionTime)}` : ''}
+                        </div>
+                        <button
+                            className="panel-toggle"
                             onClick={() => setShowPanel(!showPanel)}
-                            disabled={!isSubmitted && currentPart <= 4}
                         >
                             <i className="fas fa-bars"></i>
                         </button>
@@ -1564,7 +1438,7 @@ const DoTest = () => {
                             <div className="word-counter">
                                 {Object.keys(answers).length}/{filteredQuestions.length}
                             </div>
-                            {isSubmitted && scoreResult && (
+                            {scoreResult && (
                                 <div className="score-summary">
                                     <span>Điểm: {scoreResult.totalScore} (Listening: {scoreResult.listeningScore}, Reading: {scoreResult.readingScore})</span>
                                 </div>
@@ -1622,23 +1496,13 @@ const DoTest = () => {
                     isOpen={showResultPopup}
                     onClose={() => setShowResultPopup(false)}
                     result={scoreResult}
-                    testTitle={testData?.title || "Bài thi TOEIC"}
+                    testTitle={submissionData?.tittle || "Bài thi TOEIC"}
                     onSaveResult={handleSaveResult}
                     submissionData={submissionDataForResult}
                 />
             )}
-
-            {/* Show guidance if applicable and only when needed */}
-            {!loading && showGuidance && currentPart > 0 && (
-                <TestGuidance 
-                    part={currentPart} 
-                    onClose={handleGuidanceClose} 
-                />
-            )}
         </div>
     );
-
-
 };
 
-export default DoTest;
+export default TestHistoryDetail;

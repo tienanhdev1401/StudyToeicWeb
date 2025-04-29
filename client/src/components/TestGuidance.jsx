@@ -7,7 +7,7 @@ const TestGuidance = ({ part, onClose }) => {
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
     const audioRef = useRef(null);
     const timerRef = useRef(null);
-    const hasAttemptedPlay = useRef(false); // Track if we've already tried to play
+    const hasAttemptedPlay = useRef(false); 
 
     // Content for each part's guidance
     const guidanceContent = {

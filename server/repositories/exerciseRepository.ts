@@ -198,7 +198,7 @@ export class ResourceRepository {
   static async findById(id: number): Promise<Resource | null> {
     try {
       const results = await database.query(
-        'SELECT id, explainResource, urlAudio, urlImage FROM resources WHERE id = ? LIMIT 1',
+        'SELECT id,explain_resource,urlAudio, urlImage FROM resources WHERE id = ? LIMIT 1',
         [id]
       );
 
@@ -209,7 +209,7 @@ export class ResourceRepository {
       const row = results[0];
       return new Resource(
         row.id,
-        row.explanResource,
+        row.explain_resource,
         row.urlAudio,
         row.urlImage
       );

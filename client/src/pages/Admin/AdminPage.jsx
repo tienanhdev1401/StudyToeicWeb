@@ -9,9 +9,13 @@ import ManageStaff from './ManageStaff';
 import ManageLearn from './ManageLearner';
 import ManageGrammarTopic from './ManageGrammarTopic';
 import ManageVocabulary from './ManageVocabulary';
+
 import ManageTest from './ManageTest';
 import NotFound from '../../components/404';
 import TestDetail from './TestDetail';
+import ManageExercise from './ManageExercise';
+import ManageExerciseQuestion from './ManageExerciseQuestion';
+
 
 const AdminLayout = ({ children }) => {
   return (
@@ -40,9 +44,14 @@ const AdminPage = () => {
         <Route path="/learner" element={<ManageLearn />} />
         <Route path="/grammar" element={<ManageGrammarTopic />} />
         <Route path="/vocabularyTopic/:id/vocabularies" element={<ManageVocabulary />} />
+
         <Route path="/test" element={<ManageTest />} /> 
         <Route path="/test/:id" element={<TestDetail />} />
         <Route path="*" element={<NotFound />} /> 
+
+        <Route path="/exercise" element={<ManageExercise />} />
+        <Route path="/exercise/:id/questions" element={<ManageExerciseQuestion />} />
+
       </Routes>
     </AdminLayout>
   );

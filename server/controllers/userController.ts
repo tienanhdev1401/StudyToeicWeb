@@ -64,6 +64,12 @@ export class UserController {
         res.status(400).json({ error: 'Vui lòng nhập email' });
         return;
       }
+      // Kiểm tra email đã tồn tại chưa
+      const user = await authRepository.findByEmail(email);
+      if (!user) {
+        res.status(404).json({ error: 'Email chưa được đăng ký tài khoản' });
+        return;
+      }
       // Tạo mã OTP
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -242,6 +248,7 @@ export class UserController {
       res.status(500).json({ error: 'Lỗi máy chủ' });
     }
   }
+
   async updateProfile(req: Request, res: Response): Promise<void> {
     try {
       // Lấy token từ header
@@ -302,6 +309,64 @@ export class UserController {
     } catch (error) {
       console.error('Update profile error:', error);
       res.status(500).json({ error: 'Server error when updating profile' });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, otp, newPassword } = req.body;
+      if (!email || !otp || !newPassword) {
+        res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin' });
+        return;
+      }
+      // Kiểm tra mã OTP
+      const otpData = otpStore.get(email);
+      if (!otpData) {
+        res.status(400).json({
+          success: false,
+          message: 'Bạn cần gửi mã xác thực trước'
+        });
+        return;
+      }
+      // Kiểm tra mã OTP có hết hạn không
+      if (new Date() > otpData.expires) {
+        otpStore.delete(email);
+        res.status(400).json({
+          success: false,
+          message: 'Mã xác thực đã hết hạn, vui lòng yêu cầu mã mới'
+        });
+        return;
+      }
+      // Kiểm tra mã xác thực
+      if (otp !== otpData.otp) {
+        res.status(401).json({
+          success: false,
+          message: 'Mã xác thực không đúng'
+        });
+        return;
+      }
+      // Tìm người dùng theo email
+      const user = await authRepository.findByEmail(email);
+      if (!user) {
+        res.status(404).json({ error: 'Người dùng không tồn tại' });
+        return;
+      }
+      // Mã hóa mật khẩu mới
+      const hashedNewPassword = await authRepository.hashPassword(newPassword);
+      // Cập nhật mật khẩu
+      if (!user.id) {
+        throw new Error('User ID không hợp lệ');
+      }
+      await userRepository.updatePassword(user.id, hashedNewPassword);
+      // Xóa mã OTP sau khi đổi mật khẩu thành công
+      otpStore.delete(email);
+      res.status(200).json({
+        success: true,
+        message: 'Đổi mật khẩu thành công'
+      });
+    } catch (error) {
+      console.error('Lỗi reset mật khẩu:', error);
+      res.status(500).json({ error: 'Lỗi máy chủ' });
     }
   }
 }
