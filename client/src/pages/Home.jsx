@@ -16,8 +16,8 @@ const Home = () => {
         const fetchTopics = async () => {
             try {
                 const allTopics = await VocabularyTopicService.getAllVocabularyTopics();
-                // Lấy 8 chủ đề cuối cùng
-                setRecentTopics(allTopics.slice(-8));
+                // Lấy 4 chủ đề cuối cùng
+                setRecentTopics(allTopics.slice(-4));
             } catch (error) {
                 setRecentTopics([]);
             }
@@ -28,7 +28,7 @@ const Home = () => {
         const fetchGrammarTopics = async () => {
             try {
                 const allGrammarTopics = await GrammarTopicService.getAllGrammarTopics();
-                setGrammarTopics(allGrammarTopics.slice(-8));
+                setGrammarTopics(allGrammarTopics.slice(-4));
             } catch (error) {
                 setGrammarTopics([]);
             }
