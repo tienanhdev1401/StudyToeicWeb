@@ -1,101 +1,104 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/footer.css';
 
 const Footer = () => {
+    const currentYear = new Date().getFullYear();
+
     return (
-        <div>
-            <footer>
-            <div className="footer-wrappper footer-bg">
-                {/* Footer Start*/}
-                <div className="footer-area footer-padding">
-                    <div className="container">
-                        <div className="row justify-content-between">
-                            <div className="col-xl-4 col-lg-5 col-md-4 col-sm-6">
-                                <div className="single-footer-caption mb-50">
-                                    <div className="single-footer-caption mb-30">
-                                        {/* logo */}
-                                        <div className="footer-logo mb-25">
-                                            <a href="/"><img alt="" src={`${process.env.PUBLIC_URL}/assets/img/logo/logo2_footer.png`} /></a>
-                                        </div>
-                                        <div className="footer-tittle">
-                                            <div className="footer-pera">
-                                                <p>The automated process starts as soon as your clothes go into the machine.</p>
-                                            </div>
-                                        </div>
-                                        {/* social */}
-                                        <div className="footer-social">
-                                            <a href="#"><i className="fab fa-twitter"></i></a>
-                                            <a href="https://bit.ly/sai4ull"><i className="fab fa-facebook-f"></i></a>
-                                            <a href="#"><i className="fab fa-pinterest-p"></i></a>
-                                        </div>
-                                    </div>
+        <footer className="modern-footer">
+            <div className="footer-top-area">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-4 col-md-6 mb-5 mb-lg-0">
+                            <div className="footer-widget">
+                                <div className="footer-logo mb-4">
+                                    <Link to="/">
+                                        <img src="/assets/img/logo/logo2_footer.png" alt="TOEIC Learning" className="img-fluid" />
+                                    </Link>
+                                </div>
+                                <h3 className="text-white mb-4">TOEIC Learning Platform</h3>
+                                <p className="mb-4">Nền tảng học tiếng Anh TOEIC hiệu quả, được phát triển bởi các chuyên gia hàng đầu để giúp bạn đạt điểm cao trong kỳ thi TOEIC.</p>
+                                <div className="footer-social-links">
+                                    <a href="#" className="social-link"><i className="fab fa-facebook-f"></i></a>
+                                    <a href="#" className="social-link"><i className="fab fa-twitter"></i></a>
+                                    <a href="#" className="social-link"><i className="fab fa-instagram"></i></a>
+                                    <a href="#" className="social-link"><i className="fab fa-linkedin-in"></i></a>
                                 </div>
                             </div>
-                            <div className="col-xl-2 col-lg-3 col-md-4 col-sm-5">
-                                <div className="single-footer-caption mb-50">
-                                    <div className="footer-tittle">
-                                        <h4>Our solutions</h4>
-                                        <ul>
-                                            <li><a href="#">Design & creatives</a></li>
-                                            <li><a href="#">Telecommunication</a></li>
-                                            <li><a href="#">Restaurant</a></li>
-                                            <li><a href="#">Programing</a></li>
-                                            <li><a href="#">Architecture</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+                        </div>
+                        
+                        <div className="col-lg-2 col-md-6 mb-5 mb-lg-0">
+                            <div className="footer-widget">
+                                <h4 className="footer-widget-title">Khám Phá</h4>
+                                <ul className="footer-links">
+                                    <li><Link to="/test-online-new">Thi thử ngay</Link></li>
+                                    <li><Link to="/toeic-exercise">Bài Luyện Tập</Link></li>
+                                    <li><Link to="/learn-vocabulary">Từ Vựng TOEIC</Link></li>
+                                    <li><Link to="/grammar">Ngữ Pháp</Link></li>
+                                    <li><Link to="/blog">Blog</Link></li>
+                                </ul>
                             </div>
-                            <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
-                                <div className="single-footer-caption mb-50">
-                                    <div className="footer-tittle">
-                                        <h4>Support</h4>
-                                        <ul>
-                                            <li><a href="#">Design & creatives</a></li>
-                                            <li><a href="#">Telecommunication</a></li>
-                                            <li><a href="#">Restaurant</a></li>
-                                            <li><a href="#">Programing</a></li>
-                                            <li><a href="#">Architecture</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+                        </div>
+
+                        <div className="col-lg-3 col-md-6 mb-5 mb-lg-0">
+                            <div className="footer-widget">
+                                <h4 className="footer-widget-title">Thông Tin</h4>
+                                <ul className="footer-links">
+                                    <li><Link to="/about">Về Chúng Tôi</Link></li>
+                                    <li><Link to="/contact">Liên Hệ</Link></li>
+                                    <li><Link to="/faq">FAQ</Link></li>
+                                    <li><Link to="/terms">Điều Khoản Sử Dụng</Link></li>
+                                    <li><Link to="/privacy">Chính Sách Bảo Mật</Link></li>
+                                </ul>
                             </div>
-                            <div className="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-                                <div className="single-footer-caption mb-50">
-                                    <div className="footer-tittle">
-                                        <h4>Company</h4>
-                                        <ul>
-                                            <li><a href="#">Design & creatives</a></li>
-                                            <li><a href="#">Telecommunication</a></li>
-                                            <li><a href="#">Restaurant</a></li>
-                                            <li><a href="#">Programing</a></li>
-                                            <li><a href="#">Architecture</a></li>
-                                        </ul>
+                        </div>
+
+                        <div className="col-lg-3 col-md-6">
+                            <div className="footer-widget">
+                                <h4 className="footer-widget-title">Liên Hệ</h4>
+                                <div className="contact-info-footer">
+                                    <div className="contact-item mb-3">
+                                        <i className="fas fa-map-marker-alt"></i>
+                                        <span>1 Võ Văn Ngân, Thủ Đức, TP. Hồ Chí Minh</span>
+                                    </div>
+                                    <div className="contact-item mb-3">
+                                        <i className="fas fa-phone-alt"></i>
+                                        <span>+84 123 456 789</span>
+                                    </div>
+                                    <div className="contact-item mb-3">
+                                        <i className="fas fa-envelope"></i>
+                                        <span>contact@toeiconline.com</span>
+                                    </div>
+                                    <div className="contact-item">
+                                        <i className="fas fa-clock"></i>
+                                        <span>Thứ 2 - Thứ 6: 8:00 - 22:00</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {/* footer-bottom area */}
-                <div className="footer-bottom-area">
-                    <div className="container">
-                        <div className="footer-border">
-                            <div className="row d-flex align-items-center">
-                                <div className="col-xl-12 ">
-                                    <div className="footer-copy-right text-center">
-                                        <p>
-                                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i className="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* Footer End*/}
             </div>
-        </footer> 
-            
-        </div>
+
+            <div className="footer-bottom-area">
+                <div className="container">
+                    <div className="row align-items-center">
+                        <div className="col-md-6">
+                            <div className="copyright">
+                                <p>© {currentYear} TOEIC Learning Platform. Đã đăng ký bản quyền.</p>
+                            </div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="footer-bottom-links text-md-end">
+                                <span>Được phát triển bởi </span>
+                                <span className="dev-team">Nhóm 4 Sinh Viên Đại Học Sư Phạm Kỹ Thuật TP. HCM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
     );
 }
 

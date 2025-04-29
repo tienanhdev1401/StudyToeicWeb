@@ -31,7 +31,6 @@ const Contact = () => {
                                     <div class="col-xl-8 col-lg-11 col-md-12">
                                         <div class="hero__caption hero__caption2">
                                             <h1 data-animation="bounceIn" data-delay="0.2s">Contact us</h1>
-
                                         </div>
                                     </div>
                                 </div>
@@ -43,35 +42,19 @@ const Contact = () => {
                 <section className="contact-section">
                     <div className="container">
                         <div className="d-none d-sm-block mb-5 pb-4">
-                        <div id="map" style={{ height: '480px', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{ height: '100%', width: '100%', position: 'absolute', top: '0px', left: '0px', backgroundColor: 'rgb(229, 227, 223)' }}>
-                            {/* Google Maps iframe and other elements */}
+                            {/* Google Maps iframe embedding */}
+                            <div style={{ width: '100%', height: '480px' }}>
+                                <iframe 
+                                    title="Our Location"
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.485398611068!2d106.76973851411706!3d10.85045636070329!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752763f23816ab%3A0x282f711441b6916f!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBTxrAgcGjhuqFtIEvhu7kgdGh14bqtdCBUaMOgbmggcGjhu5EgSOG7kyBDaMOtIE1pbmg!5e0!3m2!1sen!2s!4v1654959777599!5m2!1sen!2s"
+                                    width="100%" 
+                                    height="100%" 
+                                    style={{ border: 0 }} 
+                                    allowFullScreen=""
+                                    loading="lazy" 
+                                    referrerPolicy="no-referrer-when-downgrade">
+                                </iframe>
                             </div>
-                        </div>
-                        <script>
-                            {`
-                            function initMap() {
-                                var uluru = { lat: -25.363, lng: 131.044 };
-                                var grayStyles = [
-                                {
-                                    featureType: "all",
-                                    stylers: [{ saturation: -90 }, { lightness: 50 }]
-                                },
-                                {
-                                    elementType: 'labels.text.fill',
-                                    stylers: [{ color: '#ccdee9' }]
-                                }
-                                ];
-                                var map = new google.maps.Map(document.getElementById('map'), {
-                                center: { lat: -31.197, lng: 150.744 },
-                                zoom: 9,
-                                styles: grayStyles,
-                                scrollwheel: false
-                                });
-                            }
-                            `}
-                        </script>
-                        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpfS1oRGreGSBU5HHjMmQ3o5NLw7VdJ6I&callback=initMap"></script>
                         </div>
                         <div className="row">
                         <div className="col-12">
@@ -137,7 +120,7 @@ const Contact = () => {
                             <div className="form-group mt-3">
                                 <button type="submit" className="button button-contactForm boxed-btn">
                                 Send
-                                </button>
+                                </button>button button-contactForm boxed-btn
                             </div>
                             </form>
                         </div>
@@ -145,21 +128,21 @@ const Contact = () => {
                             <div className="media contact-info">
                             <span className="contact-info__icon"><i className="ti-home"></i></span>
                             <div className="media-body">
-                                <h3>Buttonwood, California.</h3>
-                                <p>Rosemead, CA 91770</p>
+                                <h3>1 Võ Văn Ngân</h3>
+                                <p>Thủ Đức, Hồ Chí Minh City, Vietnam</p>
                             </div>
                             </div>
                             <div className="media contact-info">
                             <span className="contact-info__icon"><i className="ti-tablet"></i></span>
                             <div className="media-body">
-                                <h3>+1 253 565 2365</h3>
+                                <h3>+1 234 567 890</h3>
                                 <p>Mon to Fri 9am to 6pm</p>
                             </div>
                             </div>
                             <div className="media contact-info">
                             <span className="contact-info__icon"><i className="ti-email"></i></span>
                             <div className="media-body">
-                                <h3>support@colorlib.com</h3>
+                                <h3>contact@gmail.com</h3>
                                 <p>Send us your query anytime!</p>
                             </div>
                             </div>
@@ -173,12 +156,7 @@ const Contact = () => {
             <div id="back-top" >
                 <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
             </div>
-
-        
-
-            </div>
-            
-   
+        </div>
     );
 }
 

@@ -1,0 +1,226 @@
+/* Modern Footer Styles */
+.modern-footer {
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    color: #f8f9fa;
+}
+
+/* Footer Top Area */
+.footer-top-area {
+    background: linear-gradient(135deg, #303952 0%, #1e272e 100%);
+    padding: 80px 0 50px;
+    position: relative;
+}
+
+.footer-top-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+}
+
+/* Footer Widget Styles */
+.footer-widget {
+    margin-bottom: 30px;
+}
+
+.footer-logo img {
+    max-height: 60px;
+    filter: brightness(1.2);
+    transition: transform 0.3s ease;
+}
+
+.footer-logo img:hover {
+    transform: scale(1.05);
+}
+
+.footer-widget h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    position: relative;
+    color: #eeebeb;
+}
+
+.footer-widget p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.8;
+    margin-bottom: 25px;
+}
+
+.footer-widget-title {
+    font-size: 20px;
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.footer-widget-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    border-radius: 2px;
+}
+
+/* Footer Links */
+.footer-links {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 12px;
+    position: relative;
+    padding-left: 15px;
+    transition: all 0.3s ease;
+}
+
+.footer-links li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #6a11cb;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.footer-links li:hover {
+    padding-left: 20px;
+}
+
+.footer-links li:hover::before {
+    color: #2575fc;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+/* Social Links */
+.footer-social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: #fff;
+}
+
+/* Contact Info */
+.contact-info-footer {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    gap: 15px;
+}
+
+.contact-item i {
+    color: #6a11cb;
+    font-size: 16px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover i {
+    color: #2575fc;
+}
+
+.contact-item span {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+}
+
+/* Footer Bottom Area */
+.footer-bottom-area {
+    background: #1a1d24;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.copyright p {
+    margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.footer-bottom-links {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.dev-team {
+    font-weight: 600;
+    color: #6a11cb;
+    margin-left: 5px;
+    transition: color 0.3s ease;
+}
+
+.dev-team:hover {
+    color: #2575fc;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .footer-top-area {
+        padding: 60px 0 30px;
+    }
+    
+    .footer-bottom-area {
+        text-align: center;
+    }
+    
+    .footer-bottom-links {
+        margin-top: 10px;
+        text-align: center !important;
+    }
+    
+    .footer-widget-title {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .contact-item {
+        align-items: flex-start;
+    }
+    
+    .contact-item i {
+        margin-top: 5px;
+        min-width: 20px;
+    }
+} 

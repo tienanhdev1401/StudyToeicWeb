@@ -853,11 +853,7 @@ const Home = () => {
                                     }}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            if (isLoggedIn) {
                                                 navigate(`/Stm_Quizzes/${test.id}`);
-                                            } else {
-                                                navigate('/login');
-                                            }
                                         }}
                                         onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-8px)' }}
                                         onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)' }}>
@@ -910,11 +906,7 @@ const Home = () => {
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
-                                                    if (isLoggedIn) {
                                                         navigate(`/Stm_Quizzes/${test.id}`);
-                                                    } else {
-                                                        navigate('/login');
-                                                    }
                                                 }}
                                             >
                                                 Bắt đầu làm bài
@@ -927,7 +919,7 @@ const Home = () => {
                         <div className="row justify-content-center">
                             <div className="col-xl-12">
                                 <div className="section-tittle text-center mt-20">
-                                    <a href="#" onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate('/test-online-new'); } else { navigate('/login'); } }} className="border-btn">
+                                    <a href="#" onClick={e => { e.preventDefault(); navigate('/test-online-new'); }} className="border-btn">
                                         Xem tất cả bài thi thử
                                     </a>
                                 </div>

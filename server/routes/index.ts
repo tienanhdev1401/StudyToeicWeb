@@ -20,8 +20,6 @@ import commentRoutes from './commentRoutes'
 import wordNoteRoutes from './wordNoteRoutes'
 import questionRoutes from './questionRoutes';
 import testRoutes from './testRoutes';
-import adminExerciseRoutes from './admin/admin.exercisesRoutes'
-import adminExerciseQuestionRoutes from './admin/admin.exercisesQuestionRoutes'
 import submissionRoutes from './submissionRoutes';
 import test from './test'
 import adminQuestionRoutes from './admin/admin.questionRoutes';
