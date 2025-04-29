@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaRedo } from 'react-icons/fa';
 import ExerciseService from '../services/exerciseService';
 import '../styles/DoGrammarExercise.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
 const DoExercise = () => {
@@ -119,7 +120,7 @@ const DoExercise = () => {
     return `${mins}:${secs}`;
   };
 
-  if (loading) return <div>Đang tải bài tập...</div>;
+  if (loading) return <LoadingSpinner />;
   if (!exercise) return <div>Không tìm thấy bài tập.</div>;
   if (!exercise.questions || exercise.questions.length === 0) return <div>Bài tập không có câu hỏi.</div>;
 

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import VocabularyTopicService from '../services/vocabularyTopicService';
 import VocabularyService from '../services/vocabularyService';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ITEMS_PER_PAGE = 9;
 
@@ -83,13 +84,7 @@ const LearnVocabulary = () => {
         return (
             <div>
                 <Header />
-                <main className="container">
-                    <div className="text-center py-5">
-                        <div className="spinner-border text-primary" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                </main>
+                <LoadingSpinner />
                 <Footer />
             </div>
         );

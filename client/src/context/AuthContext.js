@@ -34,7 +34,8 @@ export const AuthProvider = ({ children }) => {
 
     // Hàm đăng nhập
     const login = (userData) => {
-        setUser(userData);
+        // Đảm bảo lưu đúng thông tin user, không phải toàn bộ userData
+        setUser(userData.user || userData);
         setIsLoggedIn(true);
     };
 

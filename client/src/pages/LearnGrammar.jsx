@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import { isGrammarCompleted } from '../data/mockLearningProcess';
 import { useAuth } from '../context/AuthContext';
 import GrammarTopicService from '../services/grammarTopicService';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const LearnGrammar = () => {
     const navigate = useNavigate();
@@ -51,10 +52,7 @@ const LearnGrammar = () => {
         return (
             <>
                 <Header />
-                <div className="loading-container">
-                    <div className="loader"></div>
-                    <p>Loading grammar topics...</p>
-                </div>
+                <LoadingSpinner />
                 <Footer />
             </>
         );

@@ -3,16 +3,19 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import VocabularyTopicService from '../services/vocabularyTopicService';
 import GrammarTopicService from '../services/grammarTopicService';
+import TestService from '../services/TestService';
 import { useAuth } from '../context/AuthContext';
+import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { getLearningGoalByLearnerId } from '../services/learningGoalService';
 
 const Home = () => {
     const [recentTopics, setRecentTopics] = useState([]);
     const [grammarTopics, setGrammarTopics] = useState([]);
     const [practiceTests, setPracticeTests] = useState([]);
-    const [userProgress, setUserProgress] = useState({
+    const [userProgress] = useState({
         vocabLearned: 120,
         vocabTotal: 600,
         grammarCompleted: 4,
@@ -21,7 +24,12 @@ const Home = () => {
         lastScore: 650,
         studyStreak: 5
     });
+    const [learningGoal, setLearningGoal] = useState(null);
+    const [goalProgress, setGoalProgress] = useState(0);
+    const [daysRemaining, setDaysRemaining] = useState(0);
+    
     const { isLoggedIn, user } = useAuth();
+    const { user: userDetails } = useUser();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -50,158 +58,79 @@ const Home = () => {
         // Lấy 4 bài test mới nhất
         const fetchPracticeTests = async () => {
             try {
-                // Thay thế API endpoint thực tế của bạn
-                const response = await fetch('/api/practice-tests');
-                if (response.ok) {
-                    const data = await response.json();
-                    setPracticeTests(data.slice(0, 4)); // Lấy 4 bài test đầu tiên
-                } else {
-                    // Nếu API không có sẵn, sử dụng dữ liệu mẫu
-                    setPracticeTests([
-                        {
-                            id: 1,
-                            title: "Full Test",
-                            image: "assets/img/gallery/fulltest.jpg",
-                            description: "Đề thi đầy đủ 200 câu như TOEIC thật",
-                            time: "2 giờ",
-                            level: "All levels",
-                            pageLink: "/toeic-exercise/full-test"
-                        },
-                        {
-                            id: 2,
-                            title: "Mini Test",
-                            image: "assets/img/gallery/minitest.jpg",
-                            description: "Bài thi rút gọn 100 câu, hoàn thành trong 1 giờ",
-                            time: "1 giờ",
-                            level: "Intermediate",
-                            pageLink: "/toeic-exercise/mini-test"
-                        },
-                        {
-                            id: 3,
-                            title: "Part Practice",
-                            image: "assets/img/gallery/partpractice.jpg",
-                            description: "Luyện tập từng phần riêng biệt",
-                            time: "15-30 phút",
-                            level: "Beginner",
-                            pageLink: "/toeic-exercise/part-practice"
-                        },
-                        {
-                            id: 4,
-                            title: "Weak Point Fix",
-                            image: "assets/img/gallery/weakpoint.jpg", 
-                            description: "Tập trung vào các phần làm chưa tốt",
-                            time: "30 phút",
-                            level: "All levels",
-                            pageLink: "/toeic-exercise/weak-point"
+                const allTests = await TestService.getAllTests();
+                if (allTests && allTests.length > 0) {
+                    // Lấy tất cả các bài test từ tất cả các collections
+                    let allTestItems = [];
+                    allTests.forEach(collection => {
+                        if (collection.tests && collection.tests.length > 0) {
+                            // Thêm tên collection vào mỗi test
+                            const testsWithCollection = collection.tests.map(test => ({
+                                ...test,
+                                collectionName: collection.title
+                            }));
+                            allTestItems = [...allTestItems, ...testsWithCollection];
                         }
-                    ]);
-                }
+                    });
+                    
+                    // Sắp xếp theo số lượt hoàn thành (giả định completions là số lượt hoàn thành)
+                    allTestItems.sort((a, b) => {
+                        const completionsA = parseInt(a.completions?.replace(/\./g, '')) || 0;
+                        const completionsB = parseInt(b.completions?.replace(/\./g, '')) || 0;
+                        return completionsB - completionsA; // Sắp xếp giảm dần
+                    });
+                    
+                    // Lấy 4 bài test có nhiều lượt hoàn thành nhất
+                    const topTests = allTestItems.slice(0, 4);
+                    
+                    // Map dữ liệu bài test để phù hợp với cấu trúc hiện tại
+                    const formattedTests = topTests.map(test => ({
+                        id: test.id,
+                        title: test.name,
+                        description: `Bài kiểm tra TOEIC ${test.collectionName}`,
+                        time: `120 phút`,
+                        completions: test.completions
+                    }));
+                    
+                    setPracticeTests(formattedTests);
+                } 
             } catch (error) {
-                // Xử lý lỗi và sử dụng dữ liệu mẫu
-                setPracticeTests([
-                    {
-                        id: 1,
-                        title: "Full Test",
-                        image: "assets/img/gallery/fulltest.jpg",
-                        description: "Đề thi đầy đủ 200 câu như TOEIC thật",
-                        time: "2 giờ",
-                        level: "All levels",
-                        pageLink: "/toeic-exercise/full-test"
-                    },
-                    {
-                        id: 2,
-                        title: "Mini Test",
-                        image: "assets/img/gallery/minitest.jpg",
-                        description: "Bài thi rút gọn 100 câu, hoàn thành trong 1 giờ",
-                        time: "1 giờ",
-                        level: "Intermediate",
-                        pageLink: "/toeic-exercise/mini-test"
-                    },
-                    {
-                        id: 3,
-                        title: "Part Practice",
-                        image: "assets/img/gallery/partpractice.jpg",
-                        description: "Luyện tập từng phần riêng biệt",
-                        time: "15-30 phút",
-                        level: "Beginner",
-                        pageLink: "/toeic-exercise/part-practice"
-                    },
-                    {
-                        id: 4,
-                        title: "Weak Point Fix",
-                        image: "assets/img/gallery/weakpoint.jpg", 
-                        description: "Tập trung vào các phần làm chưa tốt",
-                        time: "30 phút",
-                        level: "All levels",
-                        pageLink: "/toeic-exercise/weak-point"
-                    }
-                ]);
+                console.error('Lỗi khi tải dữ liệu bài kiểm tra:', error);
             }
         };
         fetchPracticeTests();
-    }, []);
-
-    const learningPaths = [
-        {
-            id: 1,
-            title: "Beginner (400-500)",
-            description: "Xây dựng nền tảng từ vựng và ngữ pháp căn bản để đạt mục tiêu 400-500 điểm TOEIC.",
-            image: "assets/img/toeic/path-beginner.jpg",
-            color: "#4CAF50",
-            stats: "2 tháng • 40 bài học"
-        },
-        {
-            id: 2,
-            title: "Intermediate (500-700)",
-            description: "Tăng cường kỹ năng đọc và nghe, mở rộng vốn từ vựng chuyên ngành để đạt 500-700 điểm.",
-            image: "assets/img/toeic/path-intermediate.jpg",
-            color: "#2196F3",
-            stats: "3 tháng • 60 bài học"
-        },
-        {
-            id: 3,
-            title: "Advanced (700-850)",
-            description: "Chinh phục các kỹ thuật làm bài nâng cao và từ vựng phức tạp để đạt 700-850 điểm.",
-            image: "assets/img/toeic/path-advanced.jpg",
-            color: "#FF9800",
-            stats: "4 tháng • 75 bài học"
-        },
-        {
-            id: 4,
-            title: "Expert (850-990)",
-            description: "Hoàn thiện chiến lược làm bài và kỹ năng ngôn ngữ để đạt điểm tối đa gần 990.",
-            image: "assets/img/toeic/path-expert.jpg",
-            color: "#F44336",
-            stats: "3 tháng • 50 bài học"
-        }
-    ];
-
-    const testimonials = [
-        {
-            id: 1,
-            name: "Nguyễn Thanh Hà",
-            score: 915,
-            avatar: "assets/img/testimonials/user1.jpg",
-            quote: "Tôi đã tăng 250 điểm sau 3 tháng học tập với lộ trình Advanced. Các bài tập thực hành rất sát với đề thi thật!",
-            position: "Marketing Specialist"
-        },
-        {
-            id: 2,
-            name: "Trần Minh Hoàng",
-            score: 875,
-            avatar: "assets/img/testimonials/user2.jpg",
-            quote: "Phương pháp học từ vựng theo chủ đề và các bài thi thử giúp tôi tự tin hơn rất nhiều khi thi thật.",
-            position: "IT Engineer"
-        },
-        {
-            id: 3,
-            name: "Phạm Thu Trang",
-            score: 950,
-            avatar: "assets/img/testimonials/user3.jpg",
-            quote: "Từ 650 lên 950 chỉ trong 6 tháng! Bí quyết là làm đều đặn các bài kiểm tra và ôn luyện hàng ngày.",
-            position: "Finance Analyst"
-        }
-    ];
+        
+        // Fetch user learning goal if logged in
+        const fetchLearningGoal = async () => {
+            if (userDetails && userDetails.id) {
+                try {
+                    const response = await getLearningGoalByLearnerId(userDetails.id);
+                    if (response.success && response.data) {
+                        setLearningGoal(response.data);
+                        
+                        // Calculate progress
+                        const createdDate = new Date(response.data.createdAt || new Date());
+                        const targetDuration = response.data.duration; // in days
+                        const currentDate = new Date();
+                        
+                        // Calculate days elapsed
+                        const daysElapsed = Math.floor((currentDate - createdDate) / (1000 * 60 * 60 * 24));
+                        
+                        // Calculate progress percentage
+                        const progressPercentage = Math.min(100, Math.round((daysElapsed / targetDuration) * 100));
+                        setGoalProgress(progressPercentage);
+                        
+                        // Calculate days remaining
+                        const remaining = Math.max(0, targetDuration - daysElapsed);
+                        setDaysRemaining(remaining);
+                    }
+                } catch (error) {
+                    console.error('Error fetching learning goal:', error);
+                }
+            }
+        };
+        fetchLearningGoal();
+    }, [userDetails]);
 
     return (
         <div>
@@ -211,7 +140,7 @@ const Home = () => {
                 {/* Hero Section - TOEIC Focus */}
                 <section className="slider-area">
                     <div className="slider-active">
-                        <div className="single-slider slider-height d-flex align-items-center" 
+                        <div className="single-slider slider-height d-flex align-items-center"
                             style={{
                                 background: 'linear-gradient(90deg, rgba(41,19,107,1) 0%, rgba(69,39,160,1) 100%)',
                                 color: 'white'
@@ -231,13 +160,13 @@ const Home = () => {
                                                 #1 TOEIC Preparation Platform
                                             </span>
                                             <h1 data-animation="fadeInLeft" data-delay="0.2s">
-                                                Get Your <span style={{color: '#FFC107'}}>TOEIC 900+</span><br />With Our Proven Method
+                                                Get Your <span style={{ color: '#FFC107' }}>TOEIC 900+</span><br />With Our Proven Method
                                             </h1>
                                             <p data-animation="fadeInLeft" data-delay="0.4s">
                                                 Nâng cao kỹ năng tiếng Anh và đạt điểm TOEIC mục tiêu với các khóa học, bài tập và đề thi thử được thiết kế chuyên biệt
                                             </p>
                                             <div className="d-flex gap-3">
-                                                <a href="#" className="btn" 
+                                                <a href="#" className="btn"
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         if (isLoggedIn) {
@@ -247,21 +176,21 @@ const Home = () => {
                                                         }
                                                     }}
                                                     style={{
-                                                        background: '#FFC107', 
+                                                        background: '#FFC107',
                                                         color: '#333',
                                                         fontWeight: 'bold'
                                                     }}
                                                 >
                                                     Bắt đầu ngay
                                                 </a>
-                                                <a href="#toeic-overview" className="btn hero-btn" style={{background: 'rgba(255,255,255,0.15)'}}>
+                                                <a href="#toeic-overview" className="btn hero-btn" style={{ background: 'rgba(255,255,255,0.15)' }}>
                                                     Tìm hiểu TOEIC
                                                 </a>
-                                        </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col-xl-6 col-lg-5 d-none d-lg-block">
-                                        <img src="assets/img/gallery/toeic_hero.png" alt="TOEIC Preparation" 
+                                        <img src="assets/img/hero/h1_hero.png" alt="TOEIC Preparation"
                                             style={{
                                                 maxWidth: '100%',
                                                 filter: 'drop-shadow(0px 10px 20px rgba(0,0,0,0.15))'
@@ -276,8 +205,8 @@ const Home = () => {
 
                 {/* User Dashboard - For logged in users */}
                 {isLoggedIn && (
-                    <section className="user-dashboard py-5" style={{backgroundColor: "#f8f9fa"}}>
-                    <div className="container">
+                    <section className="user-dashboard py-5" style={{ backgroundColor: "#f8f9fa" }}>
+                        <div className="container">
                             <div className="row justify-content-center">
                                 <div className="col-xl-10">
                                     <div className="card border-0 shadow-sm">
@@ -300,13 +229,13 @@ const Home = () => {
                                                                             textColor: '#2196F3',
                                                                         })}
                                                                     />
-                                    </div>
+                                                                </div>
                                                                 <div className="ms-3">
                                                                     <p className="mb-0 small">Từ vựng đã học</p>
                                                                     <p className="mb-0 small text-muted">{userProgress.vocabLearned}/{userProgress.vocabTotal} từ</p>
-                                    </div>
-                                </div>
-                            </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                         <div className="col-md-6">
                                                             <div className="d-flex align-items-center p-3 bg-light rounded">
                                                                 <div style={{ width: 50, height: 50 }}>
@@ -319,46 +248,87 @@ const Home = () => {
                                                                             textColor: '#4CAF50',
                                                                         })}
                                                                     />
-                                    </div>
+                                                                </div>
                                                                 <div className="ms-3">
                                                                     <p className="mb-0 small">Ngữ pháp đã học</p>
                                                                     <p className="mb-0 small text-muted">{userProgress.grammarCompleted}/{userProgress.grammarTotal} chủ đề</p>
-                                    </div>
-                                </div>
-                            </div>
-                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     
                                                     <div className="mt-4">
                                                         <a href="#" onClick={e => { e.preventDefault(); navigate('/resume-learning'); }} 
                                                            className="btn btn-primary me-2">
                                                             <i className="fas fa-play-circle me-2"></i>Tiếp tục học
                                                         </a>
-                                                        <a href="#" onClick={e => { e.preventDefault(); navigate('/practice-test'); }} 
+                                                        <a href="#" onClick={e => { e.preventDefault(); navigate('/test-online-new'); }} 
                                                            className="btn btn-outline-primary">
                                                             <i className="fas fa-tasks me-2"></i>Làm bài thi thử
                                                         </a>
-                                    </div>
-                                </div>
+                                                    </div>
+                                                </div>
                                                 <div className="col-md-4 mt-4 mt-md-0">
                                                     <div className="card h-100 border-0 bg-primary bg-gradient text-white">
                                                         <div className="card-body text-center p-4">
-                                                            <div className="mb-3">
-                                                                <i className="fas fa-chart-line fa-3x"></i>
-                            </div>
-                                                            <h3 className="mb-3">{userProgress.lastScore}</h3>
-                                                            <p className="mb-1">Điểm TOEIC dự đoán</p>
-                                                            <p className="small mb-0">Dựa trên bài thi gần nhất</p>
-                                                            <hr className="my-3" />
-                                                            <div className="d-flex justify-content-center align-items-center">
-                                                                <div className="text-center me-3">
-                                                                    <h5 className="mb-0">{userProgress.studyStreak}</h5>
-                                                                    <small>Ngày học liên tiếp</small>
-                        </div>
-                                                                <div className="text-center">
-                                                                    <h5 className="mb-0">{userProgress.testsCompleted}</h5>
-                                                                    <small>Bài thi đã hoàn thành</small>
-                    </div>
-                </div>
+                                                            {learningGoal ? (
+                                                                <>
+                                                                    <h2 className="mb-3" style={{ color: '#FF9800', fontWeight: 'bold' }}>Lộ trình học tập</h2>
+                                                                    <div className="d-flex justify-content-center mb-3">
+                                                                        <div style={{ width: 120, height: 120 }}>
+                                                                            <CircularProgressbar
+                                                                                value={goalProgress}
+                                                                                text={`${goalProgress}%`}
+                                                                                styles={buildStyles({
+                                                                                    textSize: '16px',
+                                                                                    pathColor: '#ffffff',
+                                                                                    textColor: '#ffffff',
+                                                                                    trailColor: 'rgba(241, 236, 236, 0.3)',
+                                                                                })}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="mb-2">
+                                                                        <div className="d-flex justify-content-between">
+                                                                            <span>Điểm mục tiêu:</span>
+                                                                            <strong>{learningGoal.scoreTarget}</strong>
+                                                                        </div>
+                                                                        <div className="d-flex justify-content-between">
+                                                                            <span>Thời gian đặt ra:</span>
+                                                                            <strong>{learningGoal.duration} ngày</strong>
+                                                                        </div>
+                                                                        <div className="d-flex justify-content-between">
+                                                                            <span>Ngày bắt đầu:</span>
+                                                                            <strong>{new Date(learningGoal.createdAt).toLocaleDateString()}</strong>
+                                                                        </div>
+                                                                        <div className="d-flex justify-content-between">
+                                                                            <span>Còn lại:</span>
+                                                                            <strong>{daysRemaining} ngày</strong>
+                                                                        </div>
+                                                                    </div>
+                                                                    <a href="#" 
+                                                                       onClick={e => { e.preventDefault(); navigate('/profile'); }} 
+                                                                       className="btn btn-sm btn-light mt-2">
+                                                                        Cập nhật mục tiêu
+                                                                    </a>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <div className="mb-3">
+                                                                        <i className="fas fa-bullseye fa-3x"></i>
+                                                                    </div>
+                                                                    <h2 className="mb-3" style={{ color: '#FF9800', fontWeight: 'bold' }}>Chưa có mục tiêu</h2>
+                                                                    <p className="mb-3">Hãy đặt mục tiêu học tập để theo dõi tiến độ và đạt kết quả tốt hơn</p>
+                                                                    
+                                                                    <a href="#" 
+                                                                       onClick={e => { e.preventDefault(); navigate('/profile'); }} 
+                                                                       className="btn btn-light btn-lg fw-bold mt-2" 
+                                                                       style={{ borderRadius: '30px', padding: '10px 25px' }}>
+                                                                        <i className="fas fa-flag-checkered me-2"></i>
+                                                                        Tạo mục tiêu ngay
+                                                                    </a>
+                                                                </>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -372,7 +342,7 @@ const Home = () => {
                 )}
 
                 {/* TOEIC Overview */}
-                <section className="about-area1 fix pt-60 pb-60" id="toeic-overview" style={{background: '#f7f9fc'}}>
+                <section className="about-area1 fix pt-60 pb-60" id="toeic-overview" style={{ background: '#f7f9fc' }}>
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-xl-7 col-lg-8">
@@ -384,7 +354,7 @@ const Home = () => {
                         </div>
                         <div className="row">
                             <div className="col-lg-6 mb-4">
-                                <div className="card h-100" style={{borderRadius: '15px', border: 'none', boxShadow: '0 5px 20px rgba(0,0,0,0.05)'}}>
+                                <div className="card h-100" style={{ borderRadius: '15px', border: 'none', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
                                     <div className="card-body">
                                         <div className="d-flex align-items-center mb-3">
                                             <span style={{
@@ -397,19 +367,19 @@ const Home = () => {
                                                 justifyContent: 'center',
                                                 marginRight: '15px'
                                             }}>
-                                                <i className="fas fa-headphones" style={{color: '#4527A0', fontSize: '1.5rem'}}></i>
+                                                <i className="fas fa-headphones" style={{ color: '#4527A0', fontSize: '1.5rem' }}></i>
                                             </span>
-                                            <h3 style={{margin: 0, fontSize: '1.5rem', fontWeight: '600'}}>Listening Section</h3>
+                                            <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '600' }}>Listening Section</h3>
                                         </div>
                                         <p>100 câu hỏi - 45 phút</p>
-                                        <ul style={{paddingLeft: '20px'}}>
+                                        <ul style={{ paddingLeft: '20px' }}>
                                             <li className="mb-2">Part 1: Mô tả hình ảnh (6 câu)</li>
                                             <li className="mb-2">Part 2: Hỏi - Đáp (25 câu)</li>
                                             <li className="mb-2">Part 3: Đoạn hội thoại (39 câu)</li>
                                             <li className="mb-2">Part 4: Bài nói ngắn (30 câu)</li>
                                         </ul>
                                         <div className="mt-3">
-                                            <a href="#" className="text-primary" style={{fontWeight: '500', textDecoration: 'none'}} 
+                                            <a href="#" className="text-primary" style={{ fontWeight: '500', textDecoration: 'none' }}
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     if (isLoggedIn) {
@@ -420,13 +390,13 @@ const Home = () => {
                                                 }}
                                             >
                                                 Luyện tập Listening <i className="fas fa-arrow-right ml-1"></i>
-                                                </a>
-                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="col-lg-6 mb-4">
-                                <div className="card h-100" style={{borderRadius: '15px', border: 'none', boxShadow: '0 5px 20px rgba(0,0,0,0.05)'}}>
+                                <div className="card h-100" style={{ borderRadius: '15px', border: 'none', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
                                     <div className="card-body">
                                         <div className="d-flex align-items-center mb-3">
                                             <span style={{
@@ -439,18 +409,18 @@ const Home = () => {
                                                 justifyContent: 'center',
                                                 marginRight: '15px'
                                             }}>
-                                                <i className="fas fa-book-open" style={{color: '#4527A0', fontSize: '1.5rem'}}></i>
+                                                <i className="fas fa-book-open" style={{ color: '#4527A0', fontSize: '1.5rem' }}></i>
                                             </span>
-                                            <h3 style={{margin: 0, fontSize: '1.5rem', fontWeight: '600'}}>Reading Section</h3>
+                                            <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '600' }}>Reading Section</h3>
                                         </div>
                                         <p>100 câu hỏi - 75 phút</p>
-                                        <ul style={{paddingLeft: '20px'}}>
+                                        <ul style={{ paddingLeft: '20px' }}>
                                             <li className="mb-2">Part 5: Câu không hoàn chỉnh (30 câu)</li>
                                             <li className="mb-2">Part 6: Đoạn văn không hoàn chỉnh (16 câu)</li>
                                             <li className="mb-2">Part 7: Đọc hiểu (54 câu)</li>
                                         </ul>
                                         <div className="mt-3">
-                                            <a href="#" className="text-primary" style={{fontWeight: '500', textDecoration: 'none'}} 
+                                            <a href="#" className="text-primary" style={{ fontWeight: '500', textDecoration: 'none' }}
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     if (isLoggedIn) {
@@ -461,35 +431,35 @@ const Home = () => {
                                                 }}
                                             >
                                                 Luyện tập Reading <i className="fas fa-arrow-right ml-1"></i>
-                                                </a>
-                                            </div>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                             <div className="col-12 text-center mt-3">
-                                <div className="score-scale p-4 mt-2" style={{borderRadius: '15px', background: 'white', boxShadow: '0 5px 20px rgba(0,0,0,0.05)'}}>
-                                    <h4 style={{fontWeight: '600', fontSize: '1.2rem', marginBottom: '15px'}}>Thang điểm TOEIC</h4>
+                                <div className="score-scale p-4 mt-2" style={{ borderRadius: '15px', background: 'white', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+                                    <h4 style={{ fontWeight: '600', fontSize: '1.2rem', marginBottom: '15px' }}>Thang điểm TOEIC</h4>
                                     <div className="d-flex justify-content-between flex-wrap">
-                                        <div className="score-level px-3 py-2 mb-2" style={{borderRadius: '10px', background: '#FFF3E0', minWidth: '150px'}}>
+                                        <div className="score-level px-3 py-2 mb-2" style={{ borderRadius: '10px', background: '#FFF3E0', minWidth: '150px' }}>
                                             <p className="mb-0"><strong>10 - 250</strong>: Beginner</p>
-                        </div>
-                                        <div className="score-level px-3 py-2 mb-2" style={{borderRadius: '10px', background: '#E1F5FE', minWidth: '150px'}}>
+                                        </div>
+                                        <div className="score-level px-3 py-2 mb-2" style={{ borderRadius: '10px', background: '#E1F5FE', minWidth: '150px' }}>
                                             <p className="mb-0"><strong>255 - 400</strong>: Elementary</p>
-                    </div>
-                                        <div className="score-level px-3 py-2 mb-2" style={{borderRadius: '10px', background: '#E8F5E9', minWidth: '150px'}}>
+                                        </div>
+                                        <div className="score-level px-3 py-2 mb-2" style={{ borderRadius: '10px', background: '#E8F5E9', minWidth: '150px' }}>
                                             <p className="mb-0"><strong>405 - 600</strong>: Intermediate</p>
-                </div>
-                                        <div className="score-level px-3 py-2 mb-2" style={{borderRadius: '10px', background: '#EDE7F6', minWidth: '150px'}}>
+                                        </div>
+                                        <div className="score-level px-3 py-2 mb-2" style={{ borderRadius: '10px', background: '#EDE7F6', minWidth: '150px' }}>
                                             <p className="mb-0"><strong>605 - 780</strong>: Advanced</p>
-                            </div>
-                                        <div className="score-level px-3 py-2 mb-2" style={{borderRadius: '10px', background: '#FFEBEE', minWidth: '150px'}}>
+                                        </div>
+                                        <div className="score-level px-3 py-2 mb-2" style={{ borderRadius: '10px', background: '#FFEBEE', minWidth: '150px' }}>
                                             <p className="mb-0"><strong>785 - 990</strong>: Proficient</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                                </div>
-                                </div>
-                            </div>
-                                </div>
+                        </div>
+                    </div>
                 </section>
 
                 {/* Learning Paths Section */}
@@ -502,7 +472,7 @@ const Home = () => {
                                     <p>Chọn lộ trình phù hợp với mục tiêu điểm số của bạn</p>
                                 </div>
                             </div>
-                                </div>
+                        </div>
                         <div className="row">
                             {[
                                 {
@@ -552,26 +522,26 @@ const Home = () => {
                             ].map((path) => (
                                 <div className="col-lg-3 col-md-6 mb-4" key={path.id}>
                                     <div className="card h-100" style={{
-                                        borderRadius: '15px', 
-                                        border: 'none', 
+                                        borderRadius: '15px',
+                                        border: 'none',
                                         boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
                                         transition: 'transform 0.3s',
                                         cursor: 'pointer'
                                     }}
-                                    onMouseOver={(e) => {e.currentTarget.style.transform = 'translateY(-10px)'}}
-                                    onMouseOut={(e) => {e.currentTarget.style.transform = 'translateY(0)'}}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        if (isLoggedIn) {
-                                            navigate(path.pageLink);
-                                        } else {
-                                            navigate('/login');
-                                        }
-                                    }}>
+                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-10px)' }}
+                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)' }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (isLoggedIn) {
+                                                navigate(path.pageLink);
+                                            } else {
+                                                navigate('/login');
+                                            }
+                                        }}>
                                         <div style={{
-                                            height: '8px', 
-                                            background: path.textColor, 
-                                            borderTopLeftRadius: '15px', 
+                                            height: '8px',
+                                            background: path.textColor,
+                                            borderTopLeftRadius: '15px',
                                             borderTopRightRadius: '15px'
                                         }}></div>
                                         <div className="card-body">
@@ -586,21 +556,21 @@ const Home = () => {
                                                     justifyContent: 'center',
                                                     marginRight: '15px'
                                                 }}>
-                                                    <i className={path.icon} style={{color: path.textColor, fontSize: '1.5rem'}}></i>
+                                                    <i className={path.icon} style={{ color: path.textColor, fontSize: '1.5rem' }}></i>
                                                 </span>
-                                                <h3 style={{margin: 0, fontSize: '1.3rem', fontWeight: '600'}}>{path.title}</h3>
-                                </div>
-                                            <p style={{height: '80px'}}>{path.description}</p>
+                                                <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: '600' }}>{path.title}</h3>
+                                            </div>
+                                            <p style={{ height: '80px' }}>{path.description}</p>
                                             <div className="mt-3">
-                                                <span className="badge me-2" style={{background: path.color, color: path.textColor}}>
+                                                <span className="badge me-2" style={{ background: path.color, color: path.textColor }}>
                                                     {path.level}
                                                 </span>
-                                                <span className="badge" style={{background: path.color, color: path.textColor}}>
+                                                <span className="badge" style={{ background: path.color, color: path.textColor }}>
                                                     {path.duration}
                                                 </span>
-                            </div>
+                                            </div>
                                             <div className="mt-3 text-end">
-                                                <a href="#" style={{color: path.textColor, fontWeight: '500', textDecoration: 'none'}}
+                                                <a href="#" style={{ color: path.textColor, fontWeight: '500', textDecoration: 'none' }}
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
@@ -613,9 +583,9 @@ const Home = () => {
                                                 >
                                                     Xem lộ trình <i className="fas fa-arrow-right ml-1"></i>
                                                 </a>
-                        </div>
-                                </div>
-                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -623,7 +593,7 @@ const Home = () => {
                 </section>
 
                 {/* Vocabulary Topics Section */}
-                <div className="topic-area section-padding40" style={{background: '#f7f9fc'}}>
+                <div className="topic-area section-padding20" style={{ background: '#f7f9fc' }}>
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-xl-7 col-lg-8">
@@ -645,9 +615,9 @@ const Home = () => {
                                         cursor: 'pointer',
                                         background: 'white'
                                     }}
-                                    onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate(`/learn-vocabulary/${topic.id}`); } else { navigate('/login'); } }}
-                                    onMouseOver={e => e.currentTarget.style.transform = 'translateY(-8px)'}
-                                    onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                        onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate(`/learn-vocabulary/${topic.id}`); } else { navigate('/login'); } }}
+                                        onMouseOver={e => e.currentTarget.style.transform = 'translateY(-8px)'}
+                                        onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                                     >
                                         <div className="topic-img position-relative">
                                             <div style={{
@@ -683,11 +653,11 @@ const Home = () => {
                                                 textAlign: 'left'
                                             }}>
                                                 <h3 style={{ color: 'white', fontSize: '1.3rem', fontWeight: '600', marginBottom: '5px' }}>
-                                                                {topic.topicName}
-                                                    </h3>
+                                                    {topic.topicName}
+                                                </h3>
                                                 <div style={{ display: 'flex', alignItems: 'center', color: 'white' }}>
-                                                    <span className="badge" style={{ 
-                                                        background: 'rgba(255,255,255,0.2)', 
+                                                    <span className="badge" style={{
+                                                        background: 'rgba(255,255,255,0.2)',
                                                         color: 'white',
                                                         borderRadius: '20px',
                                                         padding: '4px 10px',
@@ -697,22 +667,22 @@ const Home = () => {
                                                         Part {Math.floor(Math.random() * 7) + 1}
                                                     </span>
                                                     <span style={{ fontSize: '0.85rem' }}>
-                                                        <i className="fas fa-book-open" style={{ marginRight: '5px' }}></i> 
+                                                        <i className="fas fa-book-open" style={{ marginRight: '5px' }}></i>
                                                         {Math.floor(Math.random() * 20) + 10} từ mới
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div style={{padding: '15px'}}>
-                                            <div className="progress-info mb-2" style={{display: 'flex', justifyContent: 'space-between'}}>
-                                                <span style={{fontSize: '0.85rem', color: '#666'}}>Tiến độ học</span>
-                                                <span style={{fontSize: '0.85rem', fontWeight: '500'}}>{Math.floor(Math.random() * 70) + 30}%</span>
+                                        <div style={{ padding: '15px' }}>
+                                            <div className="progress-info mb-2" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <span style={{ fontSize: '0.85rem', color: '#666' }}>Tiến độ học</span>
+                                                <span style={{ fontSize: '0.85rem', fontWeight: '500' }}>{Math.floor(Math.random() * 70) + 30}%</span>
                                             </div>
-                                            <div className="progress" style={{height: '8px', borderRadius: '4px', background: '#f0f0f0'}}>
+                                            <div className="progress" style={{ height: '8px', borderRadius: '4px', background: '#f0f0f0' }}>
                                                 <div
                                                     className="progress-bar"
                                                     role="progressbar"
-                                                    style={{ 
+                                                    style={{
                                                         width: `${Math.floor(Math.random() * 70) + 30}%`,
                                                         background: 'linear-gradient(90deg, rgb(192, 84, 255) 0%, rgb(82, 116, 255) 100%)',
                                                         borderRadius: '4px'
@@ -752,9 +722,9 @@ const Home = () => {
                         <div className="row">
                             {grammarTopics.length > 0 && grammarTopics.map((topic) => (
                                 <div className="col-lg-3 col-md-6 col-sm-6 mb-4" key={topic.id}>
-                                <div
-                                        className="grammar-card" 
-                                    style={{
+                                    <div
+                                        className="grammar-card"
+                                        style={{
                                             background: 'white',
                                             borderRadius: '16px',
                                             overflow: 'hidden',
@@ -767,7 +737,7 @@ const Home = () => {
                                             transform: 'translateY(0)',
                                             border: '1px solid rgba(0,0,0,0.05)'
                                         }}
-                                        onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate(`/grammar-topic/${topic.id}`); } else { navigate('/login'); } }}
+                                        onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate(`/learn-grammary/${topic.id}`); } else { navigate('/login'); } }}
                                         onMouseOver={e => e.currentTarget.style.transform = 'translateY(-8px)'}
                                         onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                                     >
@@ -788,8 +758,8 @@ const Home = () => {
                                                     height: '50px',
                                                     borderRadius: '10px',
                                                     background: 'linear-gradient(135deg, rgba(192, 84, 255, 0.1), rgba(82, 116, 255, 0.1))',
-                                                display: 'flex',
-                                                alignItems: 'center',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
                                                     justifyContent: 'center',
                                                     marginBottom: '15px'
                                                 }}>
@@ -801,13 +771,13 @@ const Home = () => {
                                                         backgroundClip: 'text',
                                                         fontWeight: 'bold'
                                                     }}>
-                                                {topic.title && topic.title.charAt(0)}
-                                            </span>
+                                                        {topic.title && topic.title.charAt(0)}
+                                                    </span>
                                                 </div>
                                                 <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '5px' }}>
                                                     {topic.title}
                                                 </h3>
-                                                <div style={{display: 'flex', marginBottom: '10px'}}>
+                                                <div style={{ display: 'flex', marginBottom: '10px' }}>
                                                     <span className="badge me-2" style={{
                                                         background: 'rgba(192, 84, 255, 0.1)',
                                                         color: 'rgb(192, 84, 255)',
@@ -816,7 +786,7 @@ const Home = () => {
                                                         fontSize: '0.75rem'
                                                     }}>
                                                         Part 5
-                                            </span>
+                                                    </span>
                                                     <span className="badge" style={{
                                                         background: 'rgba(82, 116, 255, 0.1)',
                                                         color: 'rgb(82, 116, 255)',
@@ -831,10 +801,10 @@ const Home = () => {
                                                     {Math.floor(Math.random() * 8) + 3} bài học • {Math.floor(Math.random() * 15) + 5} bài tập
                                                 </p>
                                             </div>
-                                            <div style={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                marginTop: '10px', 
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                marginTop: '10px',
                                                 color: 'rgb(82, 116, 255)',
                                                 fontSize: '0.9rem',
                                                 fontWeight: '500'
@@ -860,7 +830,7 @@ const Home = () => {
                 </div>
 
                 {/* Practice Tests Section */}
-                <section className="about-area1 fix pt-60 pb-60" style={{background: '#f7f9fc'}}>
+                <section className="about-area1 fix pt-60 pb-60" style={{ background: '#f7f9fc' }}>
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-xl-7 col-lg-8">
@@ -880,50 +850,53 @@ const Home = () => {
                                         background: 'white',
                                         transition: 'all 0.3s ease',
                                         cursor: 'pointer'
-                                    }} 
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        if (isLoggedIn) {
-                                            navigate(test.pageLink);
-                                        } else {
-                                            navigate('/login');
-                                        }
                                     }}
-                                    onMouseOver={(e) => {e.currentTarget.style.transform = 'translateY(-8px)'}}
-                                    onMouseOut={(e) => {e.currentTarget.style.transform = 'translateY(0)'}}>
-                                        <div style={{position: 'relative', height: '160px'}}>
-                                            <img 
-                                                src={test.image} 
-                                                alt={test.title}
-                                                style={{width: '100%', height: '100%', objectFit: 'cover'}}
-                                            />
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (isLoggedIn) {
+                                                navigate(`/Stm_Quizzes/${test.id}`);
+                                            } else {
+                                                navigate('/login');
+                                            }
+                                        }}
+                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-8px)' }}
+                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)' }}>
+                                        <div style={{ padding: '20px' }}>
                                             <div style={{
-                                                position: 'absolute',
-                                                bottom: '15px',
-                                                left: '15px',
-                                                background: 'rgba(0,0,0,0.7)',
-                                                color: 'white',
-                                                padding: '5px 15px',
-                                                borderRadius: '20px',
-                                                fontSize: '1rem',
-                                                fontWeight: '600'
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                marginBottom: '15px'
                                             }}>
-                                                {test.title}
+                                                <h4 style={{
+                                                    margin: 0,
+                                                    fontSize: '1.75rem',
+                                                    fontWeight: '600',
+                                                    color: '#4527A0'
+                                                }}>{test.title}</h4>
+                                                <span style={{
+                                                    background: 'rgba(69,39,160,0.1)',
+                                                    color: '#4527A0',
+                                                    padding: '4px 10px',
+                                                    borderRadius: '20px',
+                                                    fontSize: '1.5rem',
+                                                    fontWeight: '500'
+                                                }}></span>
                                             </div>
-                                        </div>
-                                        <div style={{padding: '15px'}}>
-                                            <p style={{marginBottom: '10px', fontSize: '0.95rem'}}>{test.description}</p>
-                                            <div style={{display: 'flex', marginBottom: '15px'}}>
-                                                <div style={{marginRight: '15px'}}>
-                                                    <i className="far fa-clock" style={{color: '#666', marginRight: '5px'}}></i>
-                                                    <span style={{fontSize: '0.85rem', color: '#666'}}>{test.time}</span>
+                                            <p style={{ marginBottom: '15px', fontSize: '0.95rem', minHeight: '40px' }}>{test.description}</p>
+                                            <div style={{ display: 'flex', marginBottom: '15px' }}>
+                                                <div style={{ marginRight: '15px' }}>
+                                                    <i className="far fa-clock" style={{ color: '#666', marginRight: '5px' }}></i>
+                                                    <span style={{ fontSize: '1.2rem', color: '#666' }}>{test.time}</span>
                                                 </div>
-                                                <div>
-                                                    <i className="fas fa-signal" style={{color: '#666', marginRight: '5px'}}></i>
-                                                    <span style={{fontSize: '0.85rem', color: '#666'}}>{test.level}</span>
-                                                </div>
+                                                {test.completions && (
+                                                    <div style={{ marginLeft: 'auto' }}>
+                                                        <i className="fas fa-users" style={{ color: '#666', marginRight: '5px' }}></i>
+                                                        <span style={{ fontSize: '1.2rem', color: '#666' }}>{test.completions} lượt thi</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <a href="#" 
+                                            <a href="#"
                                                 style={{
                                                     display: 'inline-block',
                                                     background: 'linear-gradient(90deg, rgb(192, 84, 255) 0%, rgb(82, 116, 255) 100%)',
@@ -932,13 +905,13 @@ const Home = () => {
                                                     borderRadius: '8px',
                                                     fontWeight: '500',
                                                     textDecoration: 'none',
-                                                    fontSize: '0.9rem'
+                                                    fontSize: '1.5rem'
                                                 }}
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     if (isLoggedIn) {
-                                                        navigate(test.pageLink);
+                                                        navigate(`/Stm_Quizzes/${test.id}`);
                                                     } else {
                                                         navigate('/login');
                                                     }
@@ -951,65 +924,74 @@ const Home = () => {
                                 </div>
                             ))}
                         </div>
+                        <div className="row justify-content-center">
+                            <div className="col-xl-12">
+                                <div className="section-tittle text-center mt-20">
+                                    <a href="#" onClick={e => { e.preventDefault(); if (isLoggedIn) { navigate('/test-online-new'); } else { navigate('/login'); } }} className="border-btn">
+                                        Xem tất cả bài thi thử
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
                 {/* Study Progress and Dashboard */}
-                <section className="about-area3 fix pt-60 pb-60">
+                <section className="about-area3 fix pt-30 pb-30">
                     <div className="container">
                         <div className="row">
                             {/* Study Progress */}
                             <div className="col-lg-6 mb-4">
-                                <div className="card h-100" style={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.08)'}}>
+                                <div className="card h-100" style={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.08)' }}>
                                     <div className="card-body">
-                                        <h3 style={{fontSize: '1.5rem', fontWeight: '600', marginBottom: '20px'}}>
-                                            <i className="fas fa-chart-line" style={{color: '#4527A0', marginRight: '10px'}}></i> 
+                                        <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '20px' }}>
+                                            <i className="fas fa-chart-line" style={{ color: '#4527A0', marginRight: '10px' }}></i>
                                             Tiến độ học tập
                                         </h3>
-                                        
+
                                         {/* Progress Bars */}
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between align-items-center mb-2">
-                                                <h5 style={{margin: 0, fontSize: '1rem'}}>TOEIC Listening</h5>
-                                                <span style={{fontWeight: '500'}}>65%</span>
-                                </div>
-                                            <div className="progress" style={{height: '10px', borderRadius: '5px'}}>
-                                                <div className="progress-bar" style={{width: '65%', background: '#4527A0', borderRadius: '5px'}}></div>
-                            </div>
-                        </div>
-                                        
+                                                <h5 style={{ margin: 0, fontSize: '1rem' }}>TOEIC Listening</h5>
+                                                <span style={{ fontWeight: '500' }}>65%</span>
+                                            </div>
+                                            <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
+                                                <div className="progress-bar" style={{ width: '65%', background: '#4527A0', borderRadius: '5px' }}></div>
+                                            </div>
+                                        </div>
+
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between align-items-center mb-2">
-                                                <h5 style={{margin: 0, fontSize: '1rem'}}>TOEIC Reading</h5>
-                                                <span style={{fontWeight: '500'}}>42%</span>
-                                    </div>
-                                            <div className="progress" style={{height: '10px', borderRadius: '5px'}}>
-                                                <div className="progress-bar" style={{width: '42%', background: '#4527A0', borderRadius: '5px'}}></div>
-                                    </div>
-                                </div>
-                                        
+                                                <h5 style={{ margin: 0, fontSize: '1rem' }}>TOEIC Reading</h5>
+                                                <span style={{ fontWeight: '500' }}>42%</span>
+                                            </div>
+                                            <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
+                                                <div className="progress-bar" style={{ width: '42%', background: '#4527A0', borderRadius: '5px' }}></div>
+                                            </div>
+                                        </div>
+
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between align-items-center mb-2">
-                                                <h5 style={{margin: 0, fontSize: '1rem'}}>Vocabulary</h5>
-                                                <span style={{fontWeight: '500'}}>78%</span>
-                            </div>
-                                            <div className="progress" style={{height: '10px', borderRadius: '5px'}}>
-                                                <div className="progress-bar" style={{width: '78%', background: '#4527A0', borderRadius: '5px'}}></div>
-                                    </div>
-                                    </div>
-                                        
+                                                <h5 style={{ margin: 0, fontSize: '1rem' }}>Vocabulary</h5>
+                                                <span style={{ fontWeight: '500' }}>78%</span>
+                                            </div>
+                                            <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
+                                                <div className="progress-bar" style={{ width: '78%', background: '#4527A0', borderRadius: '5px' }}></div>
+                                            </div>
+                                        </div>
+
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between align-items-center mb-2">
-                                                <h5 style={{margin: 0, fontSize: '1rem'}}>Grammar</h5>
-                                                <span style={{fontWeight: '500'}}>53%</span>
-                                </div>
-                                            <div className="progress" style={{height: '10px', borderRadius: '5px'}}>
-                                                <div className="progress-bar" style={{width: '53%', background: '#4527A0', borderRadius: '5px'}}></div>
-                            </div>
-                                    </div>
+                                                <h5 style={{ margin: 0, fontSize: '1rem' }}>Grammar</h5>
+                                                <span style={{ fontWeight: '500' }}>53%</span>
+                                            </div>
+                                            <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
+                                                <div className="progress-bar" style={{ width: '53%', background: '#4527A0', borderRadius: '5px' }}></div>
+                                            </div>
+                                        </div>
 
                                         <div className="text-center mt-4">
-                                            <a href="#" className="btn" 
+                                            <a href="#" className="btn"
                                                 style={{
                                                     background: '#4527A0',
                                                     color: 'white',
@@ -1027,20 +1009,20 @@ const Home = () => {
                                             >
                                                 Xem báo cáo chi tiết
                                             </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                                    </div>
 
                             {/* Quick Dashboard */}
                             <div className="col-lg-6 mb-4">
-                                <div className="card h-100" style={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.08)'}}>
+                                <div className="card h-100" style={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.08)' }}>
                                     <div className="card-body">
-                                        <h3 style={{fontSize: '1.5rem', fontWeight: '600', marginBottom: '20px'}}>
-                                            <i className="fas fa-tachometer-alt" style={{color: '#4527A0', marginRight: '10px'}}></i>
+                                        <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '20px' }}>
+                                            <i className="fas fa-tachometer-alt" style={{ color: '#4527A0', marginRight: '10px' }}></i>
                                             Dashboard
                                         </h3>
-                                        
+
                                         <div className="row mb-4">
                                             <div className="col-6 mb-4">
                                                 <div style={{
@@ -1049,10 +1031,10 @@ const Home = () => {
                                                     padding: '15px',
                                                     height: '100%'
                                                 }}>
-                                                    <h5 style={{fontSize: '0.9rem', color: '#666', marginBottom: '5px'}}>Từ vựng đã học</h5>
-                                                    <h3 style={{fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0'}}>480</h3>
-                                    </div>
-                                </div>
+                                                    <h5 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>Từ vựng đã học</h5>
+                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>480</h3>
+                                                </div>
+                                            </div>
                                             <div className="col-6 mb-4">
                                                 <div style={{
                                                     background: 'rgba(69,39,160,0.05)',
@@ -1060,8 +1042,8 @@ const Home = () => {
                                                     padding: '15px',
                                                     height: '100%'
                                                 }}>
-                                                    <h5 style={{fontSize: '0.9rem', color: '#666', marginBottom: '5px'}}>Bài tập đã làm</h5>
-                                                    <h3 style={{fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0'}}>68</h3>
+                                                    <h5 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>Bài tập đã làm</h5>
+                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>68</h3>
                                                 </div>
                                             </div>
                                             <div className="col-6">
@@ -1071,8 +1053,8 @@ const Home = () => {
                                                     padding: '15px',
                                                     height: '100%'
                                                 }}>
-                                                    <h5 style={{fontSize: '0.9rem', color: '#666', marginBottom: '5px'}}>Thời gian học</h5>
-                                                    <h3 style={{fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0'}}>42h</h3>
+                                                    <h5 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>Thời gian học</h5>
+                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>42h</h3>
                                                 </div>
                                             </div>
                                             <div className="col-6">
@@ -1082,14 +1064,14 @@ const Home = () => {
                                                     padding: '15px',
                                                     height: '100%'
                                                 }}>
-                                                    <h5 style={{fontSize: '0.9rem', color: '#666', marginBottom: '5px'}}>Điểm dự đoán</h5>
-                                                    <h3 style={{fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0'}}>650</h3>
+                                                    <h5 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>Điểm dự đoán</h5>
+                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>650</h3>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <h4 style={{fontSize: '1.1rem', fontWeight: '600', marginBottom: '15px'}}>Tiếp tục học</h4>
-                                        
+                                        <h4 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '15px' }}>Tiếp tục học</h4>
+
                                         <div className="continue-learning p-3 mb-3" style={{
                                             background: 'rgba(69,39,160,0.05)',
                                             borderRadius: '12px',
@@ -1097,13 +1079,13 @@ const Home = () => {
                                             alignItems: 'center',
                                             cursor: 'pointer'
                                         }}
-                                        onClick={(e) => {
-                                            if (isLoggedIn) {
-                                                navigate('/learn-vocabulary/1');
-                                            } else {
-                                                navigate('/login');
-                                            }
-                                        }}>
+                                            onClick={(e) => {
+                                                if (isLoggedIn) {
+                                                    navigate('/learn-vocabulary/1');
+                                                } else {
+                                                    navigate('/login');
+                                                }
+                                            }}>
                                             <div style={{
                                                 width: '40px',
                                                 height: '40px',
@@ -1114,12 +1096,12 @@ const Home = () => {
                                                 justifyContent: 'center',
                                                 marginRight: '15px'
                                             }}>
-                                                <i className="fas fa-book" style={{color: 'white'}}></i>
+                                                <i className="fas fa-book" style={{ color: 'white' }}></i>
                                             </div>
                                             <div>
-                                                <h5 style={{margin: 0, fontSize: '1rem', fontWeight: '500'}}>Từ vựng về Office Equipment</h5>
-                                                <div style={{height: '4px', background: '#e0e0e0', borderRadius: '2px', marginTop: '8px', width: '100%'}}>
-                                                    <div style={{height: '100%', width: '65%', background: '#4527A0', borderRadius: '2px'}}></div>
+                                                <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '500' }}>Từ vựng về Office Equipment</h5>
+                                                <div style={{ height: '4px', background: '#e0e0e0', borderRadius: '2px', marginTop: '8px', width: '100%' }}>
+                                                    <div style={{ height: '100%', width: '65%', background: '#4527A0', borderRadius: '2px' }}></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1129,45 +1111,45 @@ const Home = () => {
                         </div>
                     </div>
                 </section>
-                
+
                 {/* Success Stories Section */}
-                <section className="team-area section-padding40" style={{background: '#f7f9fc'}}>
+                <section className="team-area section-padding40" style={{ background: '#f7f9fc' }}>
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-xl-7 col-lg-8">
                                 <div className="section-tittle text-center mb-55">
                                     <h2>Chia sẻ từ học viên</h2>
                                     <p>Những câu chuyện thành công từ các học viên đã đạt điểm TOEIC cao</p>
+                                </div>
                             </div>
                         </div>
-                                </div>
                         <div className="row">
                             {[
                                 {
                                     id: 1,
-                                    name: "Nguyễn Văn A",
-                                    avatar: "assets/img/gallery/user1.jpg",
+                                    name: "Trần Phan Tiến Anh",
+                                    avatar: "assets/img/gallery/testimonial.png",
                                     score: "950/990",
                                     review: "Tôi đã tăng 200 điểm TOEIC sau 3 tháng học tập với nền tảng này. Phương pháp học rất hiệu quả."
                                 },
                                 {
                                     id: 2,
-                                    name: "Trần Thị B",
-                                    avatar: "assets/img/gallery/user2.jpg",
+                                    name: "Phan Hùng Anh",
+                                    avatar: "assets/img/gallery/team1.png",
                                     score: "890/990",
                                     review: "Các bài tập và đề thi thử giúp tôi làm quen với format bài thi thật. Đặc biệt phần nghe rất tốt."
                                 },
                                 {
                                     id: 3,
-                                    name: "Lê Văn C",
-                                    avatar: "assets/img/gallery/user3.jpg",
+                                    name: "Hồ Kim Trí",
+                                    avatar: "assets/img/gallery/team2.png",
                                     score: "845/990",
                                     review: "Từ vựng theo chủ đề và ngữ pháp trọng tâm giúp tôi tiết kiệm thời gian ôn luyện rất nhiều."
                                 },
                                 {
                                     id: 4,
-                                    name: "Phạm Thị D",
-                                    avatar: "assets/img/gallery/user4.jpg",
+                                    name: "Nguyễn Hiếu Nghĩa",
+                                    avatar: "assets/img/gallery/team3.png",
                                     score: "905/990",
                                     review: "Lộ trình học được cá nhân hóa giúp tôi tập trung vào những điểm yếu của mình. Thực sự hiệu quả!"
                                 }
@@ -1181,8 +1163,8 @@ const Home = () => {
                                         background: 'white'
                                     }}>
                                         <div className="text-center mb-3">
-                                            <img 
-                                                src={story.avatar} 
+                                            <img
+                                                src={story.avatar}
                                                 alt={story.name}
                                                 style={{
                                                     width: '80px',
@@ -1192,9 +1174,9 @@ const Home = () => {
                                                     border: '3px solid #4527A0'
                                                 }}
                                             />
-                            </div>
+                                        </div>
                                         <div className="text-center mb-3">
-                                            <h4 style={{fontSize: '1.2rem', fontWeight: '600', marginBottom: '5px'}}>{story.name}</h4>
+                                            <h4 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '5px' }}>{story.name}</h4>
                                             <div style={{
                                                 display: 'inline-block',
                                                 background: 'linear-gradient(90deg, rgb(192, 84, 255) 0%, rgb(82, 116, 255) 100%)',
@@ -1242,37 +1224,34 @@ const Home = () => {
                     <div className="container">
                         <div className="row align-items-center">
                             <div className="col-lg-8">
-                                <div style={{color: 'white'}}>
-                                    <h2 style={{color: 'white', fontSize: '2.2rem', fontWeight: '700', marginBottom: '15px'}}>
+                                <div style={{ color: 'white' }}>
+                                    <h2 style={{ color: 'white', fontSize: '2.2rem', fontWeight: '700', marginBottom: '15px' }}>
                                         Sẵn sàng chinh phục TOEIC?
                                     </h2>
-                                    <p style={{fontSize: '1.1rem', opacity: '0.9', marginBottom: '20px'}}>
-                                        Đăng ký ngay để bắt đầu lộ trình học cá nhân hóa và đạt được điểm TOEIC mục tiêu của bạn!
-                                    </p>
-                                    <a href="#" className="btn" 
+                                    <a href="#" className="btn"
                                         style={{
                                             background: '#FFC107',
                                             color: '#333',
                                             fontWeight: '600',
                                             padding: '12px 30px',
                                             borderRadius: '8px',
-                                            fontSize: '1.1rem'
+                                            fontSize: '1.5rem'
                                         }}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             if (!isLoggedIn) {
                                                 navigate('/register');
                                             } else {
-                                                navigate('/dashboard');
+                                                navigate('/test-online-new');
                                             }
                                         }}
                                     >
-                                        {isLoggedIn ? 'Vào Dashboard' : 'Đăng ký miễn phí'}
+                                        {isLoggedIn ? 'Thi Thử miễn phí ngay!' : 'Đăng ký miễn phí!'}
                                     </a>
-            </div>
+                                </div>
                             </div>
                             <div className="col-lg-4 d-none d-lg-block">
-                                <img src="assets/img/gallery/toeic_cta.png" alt="TOEIC Success" style={{maxWidth: '100%'}} />
+
                             </div>
                         </div>
                     </div>

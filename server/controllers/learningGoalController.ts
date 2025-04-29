@@ -55,9 +55,9 @@ export class LearningGoalController {
           message: 'Learner already has a learning goal'
         });
       }
-
       // Tạo mới learning goal
-      const newGoal = new LearningGoal(0, duration, scoreTarget, learnerId);
+      const createdAt = new Date();
+      const newGoal = new LearningGoal(0, duration, scoreTarget, createdAt, learnerId);
       const createdGoal = await LearningGoalRepository.createLearningGoal(newGoal);
       
       return res.status(201).json({
@@ -102,6 +102,7 @@ export class LearningGoalController {
         Number(id),
         duration,
         scoreTarget,
+        existingGoal.createdAt,
         learnerId
       );
 

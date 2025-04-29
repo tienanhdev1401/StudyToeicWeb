@@ -1,18 +1,27 @@
-// Login.jsx
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../services/authService';
-import '../styles/Login.css';
+import { loginUser } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
+import '../../styles/Login.css';
 
-const Login = () => {
+const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth(); // Lấy hàm login từ AuthContext
+  const navigate = useNavigate();
+  const { login, user, isLoggedIn } = useAuth();
+
+  // Redirect if already logged in as admin or staff
+  useEffect(() => {
+    if (isLoggedIn && user && (user.role === 'admin' || user.role === 'staff')) {
+      navigate('/admin/dashboard');
+    } else if (isLoggedIn && user) {
+      // If logged in but not admin/staff, show error
+      setError("Bạn không có quyền truy cập trang quản trị");
+    }
+  }, [isLoggedIn, user, navigate]);
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
@@ -25,8 +34,20 @@ const Login = () => {
   
     try {
       const userData = await loginUser(email, password);
-      login(userData);
-      navigate('/');
+      
+      // Kiểm tra role của user đăng nhập
+      if (userData.user && (userData.user.role === 'admin' || userData.user.role === 'staff')) {
+        // Đảm bảo gọi login với đúng dữ liệu
+        login(userData);
+        console.log("Đăng nhập thành công:", userData.user);
+        
+        // Redirect sau khi login
+        setTimeout(() => {
+          navigate('/admin/dashboard');
+        }, 500);
+      } else {
+        setError("Bạn không có quyền truy cập khu vực quản trị");
+      }
     } catch (err) {
       if (err.response && err.response.status === 401) {
         setError("Email hoặc mật khẩu không chính xác");
@@ -37,7 +58,6 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
-    
   };
 
   return (
@@ -48,10 +68,10 @@ const Login = () => {
         {/* Left content section */}
         <div className="content-section-login-page">
           <div className="content-inner-login-page">
-            <h1>TOEIC ONLINE</h1>
-            <p>Join our learning platform today and get access to thousands of lesson. Start your learning journey with us!</p>
+            <h1>ADMIN PORTAL</h1>
+            <p>Đăng nhập để quản lý nội dung hệ thống TOEIC ONLINE.</p>
             <div className="illustration-login-page">
-              <img src="/assets/img/education-illustration.png" alt="Education" />
+              <img src="/assets/img/education-illustration.png" alt="Admin" />
             </div>
           </div>
 
@@ -62,8 +82,8 @@ const Login = () => {
 
         {/* Right form section */}
         <div className="form-section-login-page">
-          <h2>USER LOGIN</h2>
-          <p className="subtitle-login-page">Welcome to the website</p>
+          <h2>ADMIN LOGIN</h2>
+          <p className="subtitle-login-page">Đăng nhập hệ thống quản trị</p>
 
           {error && <div className="error-message-login-page">{error}</div>}
 
@@ -105,17 +125,6 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Remember me & Forgot password */}
-            <div className="form-group-login-page flex-login-page justify-between-login-page items-center-login-page">
-              <label className="terms-group-login-page">
-                <input type="checkbox" />
-                <span>Remember me</span>
-              </label>
-              <a href="/forgetpassword" className="text-purple-600-login-page hover:underline text-sm-login-page">
-                Forgot password?
-              </a>
-            </div>
-
             <button
               type="submit"
               className="submit-btn-login-page"
@@ -129,7 +138,7 @@ const Login = () => {
             </button>
 
             <div className="login-link-login-page">
-              Don't have an account? <a href="/register">Create Account</a>
+              <a href="/">Quay lại trang chủ</a>
             </div>
           </form>
         </div>
@@ -138,4 +147,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin; 

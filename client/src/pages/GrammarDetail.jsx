@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import GrammarTopicService from '../services/grammarTopicService';
 import CommentService from '../services/commentService';
 import { useAuth } from '../context/AuthContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const GrammarDetail = () => {
     const { topicId } = useParams();
@@ -178,10 +179,7 @@ const GrammarDetail = () => {
         return (
             <>
                 <Header />
-                <div className="loading-container">
-                    <div className="loader"></div>
-                    <p>Loading grammar topic...</p>
-                </div>
+                <LoadingSpinner />
                 <Footer />
             </>
         );

@@ -7,7 +7,7 @@ export class LearningGoalRepository {
   static async getLearningGoalByLearnerId(learnerId: number): Promise<LearningGoal | null> {
     try {
       const results = await database.query(
-        'SELECT id, duration, scoreTarget, learnerId FROM learninggoals WHERE learnerId = ? LIMIT 1',
+        'SELECT id, duration, scoreTarget,createdAt, learnerId FROM learninggoals WHERE learnerId = ? LIMIT 1',
         [learnerId]
       );
 
@@ -16,7 +16,7 @@ export class LearningGoalRepository {
       }
 
       const row = results[0];
-      return new LearningGoal(row.id, row.duration, row.scoreTarget, row.learnerId);
+      return new LearningGoal(row.id, row.duration, row.scoreTarget, row.createdAt, row.learnerId);
     } catch (error) {
       console.error(`Error getting learning goal for learner ${learnerId}:`, error);
       throw error;
@@ -36,6 +36,7 @@ export class LearningGoalRepository {
         result.insertId,
         learningGoal.duration,
         learningGoal.scoreTarget,
+        learningGoal.createdAt,
         learningGoal.learnerId
       );
     } catch (error) {

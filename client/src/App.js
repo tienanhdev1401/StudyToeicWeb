@@ -16,15 +16,15 @@ import LearnVocabulary from './pages/LearnVocabulary';
 import LearnGrammary from './pages/LearnGrammar';
 import TopicDetail from './pages/TopicDetail';
 import Admin from './pages/admin/AdminPage';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminRoute from './components/AdminRoute';
 import ExerciseList from './pages/ExerciseList';
 import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
 import GrammarDetail from './pages/GrammarDetail';
 import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
-
 import DictionaryPage from './pages/DictionaryPage';
-import Nhap from './pages/nhap';
 import { TestProvider } from './context/TestContext';
 import NotFound from './components/404';
 import WordNotePage from './pages/WordNotePage';
@@ -69,9 +69,16 @@ function App() {
                 <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
                 <Route path="/Dotest/:testID" element={<Dotest />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/admin/*" element={<Admin />} />
+                
+                {/* Admin Routes */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin/*" element={
+                  <AdminRoute>
+                    <Admin />
+                  </AdminRoute>
+                } />
+                
                 <Route path="/dictionary" element={<DictionaryPage />} />
-                <Route path="/nhap/:testID" element={<Nhap />} />
                 <Route path="/learn-vocabulary/:topicId" element={<TopicDetail />} />
                 <Route path="/exercise/:exerciseId" element={<DoExercise />} />
                 <Route path="/calculateScore" element={<TOEICCalculator />} />

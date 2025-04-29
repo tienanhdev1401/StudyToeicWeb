@@ -12,7 +12,7 @@ const GrammarCard = ({ id, name, stats, progress, isExpanded, onToggle, gradient
 
     const toggleExpand = (e) => {
         e.stopPropagation();
-        onToggle(id); // Truyền id thay vì name
+        onToggle(id); 
     };
 
     const handleExerciseClick = (e, exercise) => {
@@ -85,10 +85,9 @@ const GrammarCard = ({ id, name, stats, progress, isExpanded, onToggle, gradient
 
 const VocabularyCard = ({ id, name, stats, progress, isExpanded, onToggle, gradientClass, exercises }) => {
     const navigate = useNavigate();
-
     const toggleExpand = (e) => {
         e.stopPropagation();
-        onToggle(id); // Truyền id thay vì name
+        onToggle(id);
     };
 
     const handleExerciseClick = (e, exercise) => {
@@ -221,8 +220,8 @@ const ExerciseList = () => {
                     topics.map(async (topic, index) => {
                         const exercises = await VocabularyTopicService.getExercisesForVocabularyTopic(topic.id);
                         return {
-                            id: topic.id || `vocabulary-${index}`, // Đảm bảo có id duy nhất
-                            name: topic.title,
+                            id: topic.id || `vocabulary-${index}`,
+                            name: topic.topicName,
                             stats: [
                                 { icon: 'fa-file-alt', value: `${exercises.length} bài tập` },
                                 { icon: 'fa-eye', value: '71350 lượt xem' }

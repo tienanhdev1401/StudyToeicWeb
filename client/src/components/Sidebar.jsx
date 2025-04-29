@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Sidebar.module.css';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [openSubmenus, setOpenSubmenus] = useState({});
+  const { user } = useAuth();
+  
+  const isAdmin = user && user.role === 'admin';
 
   const toggleSubmenu = (menu) => {
     setOpenSubmenus((prev) => ({
@@ -19,34 +23,41 @@ const Sidebar = () => {
     navigate(path);
   };
 
-  const menuItems = [
-    { key: 'dashboard', label: 'Dashboard', icon: 'fas fa-th-large', path: '/admin/dashboard' },
-    { key: 'calendar', label: 'Calendar', icon: 'fas fa-calendar', path: '/admin/calendar' },
-    {
-      key: 'content',
-      label: 'Content',
-      icon: 'fas fa-tasks',
-      subMenu: [
-        { key: 'vocabulary', label: 'Vocabulary', path: '/admin/vocabularyTopic' },
-        { key: 'grammar', label: 'Grammar', path: '/admin/grammar' },
-        { key: 'exercise', label: 'Exercise', path: '/admin/exercise' },
-        { key: 'test', label: 'Test', path: '/admin/test' },
-        { key: 'question', label: 'Question', path: '/admin/question' },
-      ],
-    },
-    {
-      key: 'users',
-      label: 'Users',
-      icon: 'fas fa-users',
-      subMenu: [
-        { key: 'learner', label: 'Learner', path: '/admin/learner' },
-        { key: 'staff', label: 'Staff', path: '/admin/staff' },
-      ],
-    },
-    { key: 'tables', label: 'Tables', icon: 'fas fa-table', path: '/admin/tables' },
-    { key: 'pages', label: 'Pages', icon: 'fas fa-file', path: '/admin/pages' },
-    { key: 'chat', label: 'Chat', icon: 'fas fa-comment-dots', path: '/admin/chat' },
-  ];
+  const generateMenuItems = () => {
+    const baseMenuItems = [
+      { key: 'dashboard', label: 'Dashboard', icon: 'fas fa-th-large', path: '/admin/dashboard' },
+      { key: 'calendar', label: 'Calendar', icon: 'fas fa-calendar', path: '/admin/calendar' },
+      {
+        key: 'content',
+        label: 'Content',
+        icon: 'fas fa-tasks',
+        subMenu: [
+          { key: 'vocabulary', label: 'Vocabulary', path: '/admin/vocabularyTopic' },
+          { key: 'grammar', label: 'Grammar', path: '/admin/grammar' },
+          { key: 'exercise', label: 'Exercise', path: '/admin/exercise' },
+          { key: 'test', label: 'Test', path: '/admin/test' },
+          { key: 'question', label: 'Question', path: '/admin/question' },
+        ],
+      },
+      {
+        key: 'users',
+        label: 'Users',
+        icon: 'fas fa-users',
+        subMenu: [
+          { key: 'learner', label: 'Learner', path: '/admin/learner' },
+          // Chỉ hiển thị mục Staff nếu người dùng là admin
+          ...(isAdmin ? [{ key: 'staff', label: 'Staff', path: '/admin/staff' }] : []),
+        ],
+      },
+      { key: 'tables', label: 'Tables', icon: 'fas fa-table', path: '/admin/tables' },
+      { key: 'pages', label: 'Pages', icon: 'fas fa-file', path: '/admin/pages' },
+      { key: 'chat', label: 'Chat', icon: 'fas fa-comment-dots', path: '/admin/chat' },
+    ];
+    
+    return baseMenuItems;
+  };
+
+  const menuItems = generateMenuItems();
 
   return (
     <div className={styles.sidebar}>
