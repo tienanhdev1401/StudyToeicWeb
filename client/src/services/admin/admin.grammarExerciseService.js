@@ -2,43 +2,41 @@ import axios from "axios";
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
-const ExercisesQuestionService = {
-    getAllQuestionsByExerciseId: async (exerciseId) => {
-       
-      try {
-          const response = await axios.get(`${API_BASE_URL}/admin/exercises/${exerciseId}/questions`);
+const grammarExerciseService = {
+    getAllExercises: async () => {
+        try {
+          const response = await axios.get(`${API_BASE_URL}/admin/grammars/exercises/all`);
           
           if (response.data.success) {
-            console.log(response.data.data)
-
-            return response.data.data; // Returns the array of questions in the exercise
+            return response.data.data; // Returns the array of exercises
           } else {
-            throw new Error(response.data.message || 'Failed to fetch questions');
+            throw new Error(response.data.message || 'Failed to fetch exercises');
           }
         } catch (error) {
-          console.error('Error fetching questions:', error);
+          console.error('Error fetching exercises:', error);
           throw error; // Re-throw the error for the component to handle
         }
     },
 
-    getAllQuestions: async () => {
+    getExercisesByGrammarTopicId: async (grammarTopicId) => {
         try {
-          const response = await axios.get(`${API_BASE_URL}/admin/exercises/questions/all`);
+          const response = await axios.get(`${API_BASE_URL}/admin/grammars/${grammarTopicId}/exercises`);
+          
           if (response.data.success) {
-            return response.data.data;
+            return response.data.data; // Returns the array of exercises for the grammar topic
           } else {
-            throw new Error(response.data.message || 'Failed to fetch all questions');
+            throw new Error(response.data.message || 'Failed to fetch exercises for grammar topic');
           }
         } catch (error) {
-          console.error('Error fetching all questions:', error);
+          console.error('Error fetching exercises for grammar topic:', error);
           throw error;
         }
     },
     
-    getQuestionsNotInExercise: async (exerciseId) => {
+    getExercisesNotInGrammarTopic: async (grammarTopicId) => {
         try {
-            console.log(`Fetching available questions for exercise ID ${exerciseId}...`);
-            const url = `${API_BASE_URL}/admin/exercises/${exerciseId}/available-questions`;
+            console.log(`Fetching available exercises for grammar topic ID ${grammarTopicId}...`);
+            const url = `${API_BASE_URL}/admin/grammars/${grammarTopicId}/available-exercises`;
             console.log('API URL:', url);
             
             const response = await axios.get(url);
@@ -47,10 +45,10 @@ const ExercisesQuestionService = {
             if (response.data.success) {
                 return response.data.data;
             } else {
-                throw new Error(response.data.message || 'Failed to fetch available questions');
+                throw new Error(response.data.message || 'Failed to fetch available exercises');
             }
         } catch (error) {
-            console.error('Error fetching available questions:', error);
+            console.error('Error fetching available exercises:', error);
             // Enhanced error logging
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -69,23 +67,23 @@ const ExercisesQuestionService = {
         }
     },
     
-    addQuestionToExercise: async (exerciseId, questionId) => {
+    addExerciseToGrammarTopic: async (grammarTopicId, exerciseId) => {
         try {
-            console.log(`Adding question ${questionId} to exercise ${exerciseId}...`);
-            const url = `${API_BASE_URL}/admin/exercises/${exerciseId}/questions`;
+            console.log(`Adding exercise ${exerciseId} to grammar topic ${grammarTopicId}...`);
+            const url = `${API_BASE_URL}/admin/grammars/${grammarTopicId}/exercises`;
             console.log('API URL:', url);
-            console.log('Request body:', { questionId });
+            console.log('Request body:', { exerciseId });
             
-            const response = await axios.post(url, { questionId });
+            const response = await axios.post(url, { exerciseId });
             console.log('API Response:', response);
             
             if (response.data.success) {
                 return true;
             } else {
-                throw new Error(response.data.message || 'Failed to add question to exercise');
+                throw new Error(response.data.message || 'Failed to add exercise to grammar topic');
             }
         } catch (error) {
-            console.error('Error adding question to exercise:', error);
+            console.error('Error adding exercise to grammar topic:', error);
             // Enhanced error logging
             if (error.response) {
                 console.error('Error response data:', error.response.data);
@@ -99,19 +97,19 @@ const ExercisesQuestionService = {
         }
     },
     
-    removeQuestionFromExercise: async (exerciseId, questionId) => {
+    removeExerciseFromGrammarTopic: async (grammarTopicId, exerciseId) => {
         try {
-            const response = await axios.delete(`${API_BASE_URL}/admin/exercises/${exerciseId}/questions/${questionId}`);
+            const response = await axios.delete(`${API_BASE_URL}/admin/grammars/${grammarTopicId}/exercises/${exerciseId}`);
             if (response.data.success) {
                 return true;
             } else {
-                throw new Error(response.data.message || 'Failed to remove question from exercise');
+                throw new Error(response.data.message || 'Failed to remove exercise from grammar topic');
             }
         } catch (error) {
-            console.error('Error removing question from exercise:', error);
+            console.error('Error removing exercise from grammar topic:', error);
             throw error;
         }
     }
 };
 
-export default ExercisesQuestionService;
+export default grammarExerciseService;

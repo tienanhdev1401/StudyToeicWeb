@@ -1,325 +1,370 @@
-.grammar-container {
+/* Grammar Topic Management styles */
+.ManageGrammarTopic-container {
   padding: 30px;
   font-family: 'Arial', sans-serif;
-  max-width: 1400px; /* Tăng max-width */
+  max-width: 1200px;
   margin: 0 auto;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  font-size: 16px;
 }
 
-h1 {
-  font-size: 30px;
+.ManageGrammarTopic-header-title {
+  font-size: 32px;
   font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
 }
 
-.header-section {
+.ManageGrammarTopic-topic-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  margin-top: 100dp;
 }
 
-.entries-select {
+.ManageGrammarTopic-back-btn {
+  background-color: white;
+  border: 1px solid #c7c7c7;
+  padding: 8px 15px;
+  border-radius: 0.5rem;
+  margin-right: 20px;
+  cursor: pointer;
+  display: flex;
+  color: #303133;
+  align-items: center;
+  transition: all 0.2s;
+  font-size: 15px;
+}
 
+.ManageGrammarTopic-back-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.ManageGrammarTopic-back-btn i {
+  margin-right: 8px;
+}
+
+.ManageGrammarTopic-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ManageGrammarTopic-entries-select {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.entries-dropdown {
+.ManageGrammarTopic-entries-select p {
+  margin: 0;
+  color: #9a9a9b;
+  font-size: 1.25rem;
+}
+
+.ManageGrammarTopic-entries-dropdown {
   padding: 6px 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #c7c7c7;
+  border-radius: 0.5rem;
   background-color: white;
   color: #303133;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
 }
 
-.entries-dropdown:focus {
+.ManageGrammarTopic-entries-dropdown:focus {
   outline: none;
   border-color: #007bff;
 }
 
+.ManageGrammarTopic-action-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
-.search-box {
+.ManageGrammarTopic-search-box {
   display: flex;
   align-items: center;
   background-color: white;
   border: 1px solid #c7c7c7;
   border-radius: 0.5rem;
-  padding: 6px 16px;
+  padding: 1px 16px;
   width: 300px;
   position: relative;
 }
 
-.search-box i {
-  position: static;
+.ManageGrammarTopic-search-box i {
   color: #9ca3af;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   margin-right: 8px;
-  font-size: 1.75rem;
 }
 
-.search-input {
+.ManageGrammarTopic-search-input {
   flex-grow: 1;
   width: 100%;
   background: none;
   border: none;
   outline: none;
   color: #1f2937;
-  padding-left: 8px;
+  padding: 8px 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none;
+  font-size: 15px;
 }
 
-.grammar-table {
+.ManageGrammarTopic-search-input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.ManageGrammarTopic-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  background-color: gray;
+  color: white;
+}
+
+.ManageGrammarTopic-add-btn:hover {
+  background-color: green;
+}
+
+.ManageGrammarTopic-add-btn i {
+  font-size: 15px;
+}
+
+.ManageGrammarTopic-table {
   margin-top: 20px;
   width: 100%;
-  min-width: 1000px;
+  table-layout: fixed;
+  max-width: 1150px;
   border-collapse: separate;
   border-spacing: 0;
   margin-bottom: 80px;
-  background-color: white !important;
+  background-color: #ffffff !important;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 15px;
 }
 
-.grammar-table th:first-child {
+.ManageGrammarTopic-table th:first-child {
   border-top-left-radius: 8px;
 }
 
-.grammar-table th:last-child {
+.ManageGrammarTopic-table th:last-child {
   border-top-right-radius: 8px;
 }
 
-.grammar-table tr:last-child td:first-child {
+.ManageGrammarTopic-table tr:last-child td:first-child {
   border-bottom-left-radius: 8px;
 }
 
-.grammar-table tr:last-child td:last-child {
+.ManageGrammarTopic-table tr:last-child td:last-child {
   border-bottom-right-radius: 8px;
 }
 
-.grammar-table th {
+.ManageGrammarTopic-table th {
   padding: 16px;
   text-align: center;
-  background-color: white !important;
+  background-color: #ffffff !important;
   border: 1px solid #e5e7eb;
   color: #344054;
   font-weight: 600;
+  font-size: 16px;
 }
 
-.grammar-table td {
+.ManageGrammarTopic-table td {
   padding: 16px;
   text-align: left;
-  border: 1px solid #e5e7eb;
-  background-color: white !important;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  font-size: 15px;
 }
 
-.grammar-table tbody {
+.ManageGrammarTopic-table tbody tr:hover {
   background-color: #f9fafb;
 }
 
-/* Remove duplicate th styles */
-.grammar-table th {
-  border-bottom: 2px solid #e5e7eb;
+.ManageGrammarTopic-table th.sortable {
+  cursor: pointer;
+  position: relative;
+  padding-right: 25px;
 }
 
-.status-badge {
-  padding: 4px 8px;
+.ManageGrammarTopic-table th.sortable:hover {
+  background-color: #f5f5f5;
+}
+
+.ManageGrammarTopic-table th.sortable i {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 15px;
+}
+
+.ManageGrammarTopic-table th.sortable:hover i {
+  color: #666;
+}
+
+.ManageGrammarTopic-table i.fa-sort-up,
+.ManageGrammarTopic-table i.fa-sort-down {
+  color: #333;
+}
+
+.ManageGrammarTopic-id-header, 
+.ManageGrammarTopic-id-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ManageGrammarTopic-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 15px;
+}
+
+.ManageGrammarTopic-title {
+  font-weight: 500;
+  color: #333;
+  font-size: 15px;
+}
+
+.ManageGrammarTopic-content {
+  max-height: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #666;
+  font-size: 14px;
+}
+
+.ManageGrammarTopic-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.ManageGrammarTopic-exercise-count-badge {
+  background-color: #e3f2fd;
+  color: #1976d2;
   border-radius: 12px;
-  font-size: 0.85em;
+  padding: 3px 10px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: inline-block;
 }
 
+/* Column width definitions for the grammar topic table */
+.ManageGrammarTopic-id-column {
+  width: 70px;
+}
 
-.edit-btn, .delete-btn, .view-btn {
+.ManageGrammarTopic-title-column {
+  width: 15%;
+}
+
+.ManageGrammarTopic-content-column {
+  width: 45%;
+}
+
+.ManageGrammarTopic-image-column {
+  width: 80px;
+  text-align: center;
+}
+
+.ManageGrammarTopic-exercise-count-column {
+  width: 10%;
+  text-align: center;
+}
+
+.ManageGrammarTopic-actions-column {
+  width: 100px;
+  text-align: center;
+}
+
+.ManageGrammarTopic-edit-btn, 
+.ManageGrammarTopic-delete-btn {
   padding: 6px 12px;
   border: none;
   cursor: pointer;
   margin-right: 5px;
   background-color: transparent;
   color: #858c97;
+  font-size: 15px;
 }
 
-.view-btn:hover {
-  color: #17a2b8;
-}
-
-
-.edit-btn:hover {
+.ManageGrammarTopic-edit-btn:hover {
   color: black;
 }
 
-
-.delete-btn:hover {
+.ManageGrammarTopic-delete-btn:hover {
   color: red;
 }
 
-.pagination {
+.ManageGrammarTopic-pagination-buttons {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 4px;
 }
 
-
-.pagination p { 
-  font-size: 1.5rem;
-  font-weight: 00;
-  font-style: normal;
-  color: #9a9a9b;
-  margin-top: 10px;
-
-}
-
-
-.pagination span {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #9a9a9b;
-}
-
-.pagination button {
-  padding: 6px 14px;
-  margin: 0 2px;
-  border: 1px solid #ddd;
+.ManageGrammarTopic-page-btn {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
   background-color: white;
-  border-radius: 5px;
+  color: #0d6efd;
   cursor: pointer;
-  color: #344054;
+  min-width: 38px;
+  border-radius: 4px;
+  font-size: 15px;
 }
 
-.pagination button:hover {
-  background-color: #e3effc;
-  color: #007bff;
+.ManageGrammarTopic-page-btn:hover:not(:disabled) {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  color: #0a58ca;
 }
 
-.pagination button.active {
-  background-color: #007bff;
+.ManageGrammarTopic-page-btn.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
   color: white;
-  border-color: #007bff;
 }
 
-.pagination button:disabled {
-  opacity: 0.6;
+.ManageGrammarTopic-page-btn:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
   cursor: not-allowed;
 }
 
-.action-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.ManageGrammarTopic-page-dots {
+  padding: 6px 12px;
+  color: #6c757d;
+  font-weight: bold;
 }
 
-.button-group {
-  display: flex;
-  gap: 12px;
-}
-
-.add-btn, .trash-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background-color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-
-.trash-btn {
-  background-color: #a5a7a8 !important;
-  color: white !important;
-}
-
-.trash-btn:hover {
-  background-color: #5a6268 !important;
-}
-
-.add-btn i, .trash-btn i {
-  font-size: 14px;
-}
-
-.sortable {
-  cursor: pointer;
-  position: relative;
-  padding-right: 25px !important;
-}
-
-.sortable:hover {
-  background-color: #f5f5f5;
-}
-
-.sort-icons {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.sort-icons i {
-  color: #999;
-  font-size: 14px;
-}
-
-.sort-icons .fa-sort-up,
-.sort-icons .fa-sort-down {
-  color: #333;
-}
-
-.sortable:hover .sort-icons i {
-  color: #666;
-}
-
-.checkbox-column {
-  width: 40px;
-  text-align: center !important;
-  padding: 8px !important;
-}
-
-.checkbox-column input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-/* Optional: Style for selected rows */
-.grammar-table tbody tr:has(input:checked) {
-  background-color: #f0f7ff;
-}
-
-.id-column {
-  width: 80px;
-}
-
-.id-header, .id-cell {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.id-header input[type="checkbox"],
-.id-cell input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-.id-header span {
-  margin-right: 4px;
-}
-
-/* Optional: Style for selected rows */
-.grammar-table tbody tr:has(input:checked) {
-  background-color: #f0f7ff;
-}
-
-.table-action-bar {
+.ManageGrammarTopic-table-action-bar {
   background-color: #f8f9fa;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -327,18 +372,19 @@ h1 {
   padding: 12px 20px;
 }
 
-.action-bar-content {
+.ManageGrammarTopic-action-bar-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.action-bar-content span {
+.ManageGrammarTopic-action-bar-content span {
   color: #666;
   font-weight: 500;
+  font-size: 15px;
 }
 
-.delete-selected-btn {
+.ManageGrammarTopic-delete-selected-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -350,17 +396,19 @@ h1 {
   cursor: pointer;
   font-weight: 500;
   transition: background-color 0.2s;
+  font-size: 15px;
 }
 
-.delete-selected-btn:hover {
+.ManageGrammarTopic-delete-selected-btn:hover {
   background-color: #c82333;
 }
 
-.delete-selected-btn i {
-  font-size: 14px;
+.ManageGrammarTopic-delete-selected-btn i {
+  font-size: 15px;
 }
 
-.modal-overlay {
+/* Modal styles for grammar topic management */
+.ManageGrammarTopic-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -371,87 +419,21 @@ h1 {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  overflow-y: auto;
+  padding: 20px;
 }
 
-.modal-content {
+.ManageGrammarTopic-modal-content {
   background-color: white;
   border-radius: 8px;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
+  max-height: 90vh;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h2 {
-  margin: 0;
-  font-size: 20px;
-  color: #111827;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  color: #6b7280;
-  cursor: pointer;
-}
-
-.modal-body {
-  padding: 24px;
-  color: #4b5563;
-}
-
-.modal-body p {
-  margin: 0 0 8px;
-}
-
-.modal-footer {
-  padding: 16px 24px;
-  border-top: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-.cancel-btn {
-  padding: 8px 16px;
-  background-color: white;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  color: #374151;
-  cursor: pointer;
-}
-
-.confirm-delete-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.cancel-btn:hover {
-  background-color: #f3f4f6;
-}
-
-.confirm-delete-btn:hover {
-  background-color: #c82333;
-}
-
-/* Animation cho modal */
-.modal-content {
   animation: modalFadeIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 @keyframes modalFadeIn {
@@ -463,4 +445,330 @@ h1 {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.ManageGrammarTopic-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ManageGrammarTopic-modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.ManageGrammarTopic-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.ManageGrammarTopic-modal-body {
+  padding: 24px;
+  color: #4b5563;
+  font-size: 15px;
+  overflow-y: auto;
+  max-height: calc(90vh - 120px); /* Trừ đi chiều cao của header và footer */
+}
+
+.ManageGrammarTopic-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background-color: white;
+  position: sticky;
+  bottom: 0;
+}
+
+.ManageGrammarTopic-cancel-btn {
+  padding: 8px 16px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  color: #374151;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.ManageGrammarTopic-save-btn,
+.ManageGrammarTopic-confirm-delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.ManageGrammarTopic-save-btn {
+  background-color: #1976d2;
+  color: white;
+}
+
+.ManageGrammarTopic-confirm-delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.ManageGrammarTopic-cancel-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.ManageGrammarTopic-save-btn:hover {
+  background-color: #1565c0;
+}
+
+.ManageGrammarTopic-confirm-delete-btn:hover {
+  background-color: #c82333;
+}
+
+/* Form-specific styles for grammar topic management */
+.ManageGrammarTopic-form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.ManageGrammarTopic-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 16px;
+}
+
+.ManageGrammarTopic-required {
+  color: #e53935;
+  margin-left: 2px;
+}
+
+.ManageGrammarTopic-form-group input, 
+.ManageGrammarTopic-form-group textarea,
+.ManageGrammarTopic-form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.ManageGrammarTopic-form-group input:focus, 
+.ManageGrammarTopic-form-group textarea:focus,
+.ManageGrammarTopic-form-group select:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.ManageGrammarTopic-form-group.has-error input, 
+.ManageGrammarTopic-form-group.has-error textarea,
+.ManageGrammarTopic-form-group.has-error select {
+  border-color: #e53935;
+}
+
+.ManageGrammarTopic-error-message {
+  color: #e53935;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* File upload for Word documents */
+.ManageGrammarTopic-doc-file-upload {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ManageGrammarTopic-doc-file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: fit-content;
+  transition: background-color 0.2s;
+}
+
+.ManageGrammarTopic-doc-file-label:hover {
+  background-color: #3a7bc8;
+}
+
+.ManageGrammarTopic-doc-file-name {
+  font-size: 14px;
+  color: #555;
+  margin-left: 8px;
+}
+
+/* Image upload for grammar topics */
+.ManageGrammarTopic-image-upload-container {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.ManageGrammarTopic-image-file-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #4a90e2;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.ManageGrammarTopic-image-file-label:hover {
+  background-color: #3a7bc8;
+}
+
+.ManageGrammarTopic-image-file-label i {
+  margin-right: 5px;
+}
+
+.ManageGrammarTopic-image-file-name {
+  margin-left: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.ManageGrammarTopic-image-preview {
+  margin-top: 10px;
+  width: 100%;
+  height: 150px;
+  border: 1px dashed #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #f9f9f9;
+}
+
+.ManageGrammarTopic-image-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.ManageGrammarTopic-empty-table {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.ManageGrammarTopic-empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: #666;
+  font-size: 16px;
+}
+
+.ManageGrammarTopic-empty-message i {
+  font-size: 3.5rem;
+  color: #d1d1d1;
+}
+
+.ManageGrammarTopic-empty-message p {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.ManageGrammarTopic-empty-message .ManageGrammarTopic-add-btn {
+  max-width: 200px;
+}
+
+/* Loading and error states */
+.ManageGrammarTopic-loading,
+.ManageGrammarTopic-error {
+  text-align: center;
+  padding: 40px 0;
+  font-size: 20px;
+}
+
+.ManageGrammarTopic-loading {
+  color: #4a90e2;
+}
+
+.ManageGrammarTopic-error {
+  color: #e53935;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .ManageGrammarTopic-container {
+    padding: 15px;
+    font-size: 15px;
+  }
+  
+  .ManageGrammarTopic-table {
+    font-size: 14px;
+  }
+  
+  .ManageGrammarTopic-table th,
+  .ManageGrammarTopic-table td {
+    padding: 10px;
+  }
+  
+  .ManageGrammarTopic-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .ManageGrammarTopic-search-box {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* Content preview styles */
+.ManageGrammarTopic-content-preview {
+  min-height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+}
+
+.ManageGrammarTopic-content-html-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ManageGrammarTopic-content-html-preview p {
+  margin: 0;
+  font-weight: 500;
+  color: #28a745;
+}
+
+.ManageGrammarTopic-content-html-length {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.ManageGrammarTopic-no-content {
+  color: #6c757d;
+  font-style: italic;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
 }

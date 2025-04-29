@@ -10,7 +10,6 @@
     "server": "cd server && npm run build:start",
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "build": "cd client && npm run build && cd ../server && npm run build:start"
-
   },
   "repository": {
     "type": "git",
@@ -42,6 +41,7 @@
     "cors": "^2.8.5",
     "express-session": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
+    "mammoth": "^1.9.0",
     "mysql2": "^3.14.0",
     "react-dom": "^19.0.0",
     "react-scripts": "^5.0.1",
