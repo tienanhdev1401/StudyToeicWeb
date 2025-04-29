@@ -73,3 +73,34 @@ export const isValidExcelFile = (file) => {
   
   return validExtensions.includes(fileExtension);
 }; 
+
+export async function parseQuestionExcel(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const data = evt.target.result;
+      const workbook = XLSX.read(data, { type: 'binary' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+      const questions = json.map(row => ({
+        partNumber: row.partNumber,
+        content: row.content,
+        correctAnswer: row.correct_answer,
+        explainDetail: row.explain_detail,
+        optionA: row.option_a,
+        optionB: row.option_b,
+        optionC: row.option_c,
+        optionD: row.option_d,
+        explainResource: row.explain_resource,
+        audioUrl: row.audio_url,
+        imageUrl: row.image_url,
+      }));
+
+      resolve({ questions });
+    };
+    reader.onerror = reject;
+    reader.readAsBinaryString(file);
+  });
+} 

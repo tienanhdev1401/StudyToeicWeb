@@ -6,6 +6,8 @@ import userService from '../../services/userService';
 import '../../styles/ManageVocabulary.css';
 import VocabularyExcelPreview from '../../components/VocabularyExcelPreview';
 import { parseVocabularyExcel, isValidExcelFile } from '../../utils/excelUtils';
+import SuccessAlert from '../../components/SuccessAlert';
+import ErrorAlert from '../../components/ErrorAlert';
 
 // Combine Add and Edit functionality into one modal component
 const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicId, editMode = false }) => {
@@ -32,6 +34,10 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  
+  // Add state for error alert
+  const [showServerErrorAlert, setShowServerErrorAlert] = useState(false);
+  const [serverError, setServerError] = useState('');
 
   // Initialize form data when editing an existing item
   useEffect(() => {
@@ -155,6 +161,8 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setServerError('');
+    setShowServerErrorAlert(false);
 
     if (!validateForm()) {
       return;
@@ -198,23 +206,31 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
       onClose();
     } catch (error) {
       console.error(`Error ${editMode ? 'updating' : 'adding'} vocabulary:`, error);
-      alert(`Failed to ${editMode ? 'update' : 'add'} vocabulary. Please try again.`);
+      setServerError(`Failed to ${editMode ? 'update' : 'add'} vocabulary. ${error.message || 'Please try again.'}`);
+      setShowServerErrorAlert(true);
       setIsUploading(false);
     }
   };
 
   return (
-    <div className="add-modal-overlay">
-      <div className="add-modal-content">
-        <div className="add-modal-header">
+    <div className="vocabulary-add-modal-overlay">
+      <div className="vocabulary-add-modal-content">
+        <div className="vocabulary-add-modal-header">
           <h2>{editMode ? 'Edit Word' : 'Add New Word'}</h2>
-          <button type="button" className="close-btn" onClick={onClose}>
+          <button type="button" className="vocabulary-close-btn" onClick={onClose}>
             <i className="fas fa-times"></i>
           </button>
         </div>
-        <div className="add-modal-body">
+        <div className="vocabulary-add-modal-body">
+          {/* Add ErrorAlert for server errors */}
+          <ErrorAlert
+            show={showServerErrorAlert}
+            message={serverError}
+            onClose={() => setShowServerErrorAlert(false)}
+          />
+          
           <form onSubmit={handleSubmit} noValidate>
-            <div className={`form-group ${errors.content && touched.content ? 'has-error' : ''}`}>
+            <div className={`vocabulary-form-group ${errors.content && touched.content ? 'has-error' : ''}`}>
               <label htmlFor="content">Word <span className="required">*</span></label>
               <input
                 type="text"
@@ -228,11 +244,11 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
                 className={errors.content && touched.content ? 'input-error' : ''}
               />
               {errors.content && touched.content && (
-                <div className="error-message">{errors.content}</div>
+                <div className="vocabulary-error-message">{errors.content}</div>
               )}
             </div>
             
-            <div className={`form-group ${errors.meaning && touched.meaning ? 'has-error' : ''}`}>
+            <div className={`vocabulary-form-group ${errors.meaning && touched.meaning ? 'has-error' : ''}`}>
               <label htmlFor="meaning">Meaning <span className="required">*</span></label>
               <input
                 type="text"
@@ -246,11 +262,11 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
                 className={errors.meaning && touched.meaning ? 'input-error' : ''}
               />
               {errors.meaning && touched.meaning && (
-                <div className="error-message">{errors.meaning}</div>
+                <div className="vocabulary-error-message">{errors.meaning}</div>
               )}
             </div>
             
-            <div className="form-group">
+            <div className="vocabulary-form-group">
               <label htmlFor="transcribe">Transcribe</label>
               <input
                 type="text"
@@ -262,7 +278,7 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
               />
             </div>
 
-            <div className="form-group">
+            <div className="vocabulary-form-group">
               <label htmlFor="synonym">Synonym (JSON format)</label>
               <textarea
                 id="synonym"
@@ -273,7 +289,7 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
               />
             </div>
             
-            <div className="form-group">
+            <div className="vocabulary-form-group">
               <label htmlFor="urlAudio">Audio URL</label>
               <input
                 type="text"
@@ -285,22 +301,22 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
               />
             </div>
             
-            <div className="form-group">
+            <div className="vocabulary-form-group">
               <label htmlFor="urlImage">Image</label>
-              <div className="image-upload-container">
+              <div className="vocabulary-image-upload-container">
                 <input
                   type="file"
                   id="vocabularyImage"
                   name="vocabularyImage"
                   accept="image/jpeg, image/png, image/gif"
                   onChange={handleImageChange}
-                  className="file-input"
+                  className="vocabulary-file-input"
                   style={{ display: 'none' }}
                 />
-                <label htmlFor="vocabularyImage" className="file-input-label">
+                <label htmlFor="vocabularyImage" className="vocabulary-file-input-label">
                   <i className="fas fa-upload"></i> {editMode && formData.urlImage ? 'Change Image' : 'Choose Image'}
                 </label>
-                <span className="file-name">
+                <span className="vocabulary-file-name">
                   {imageFile ? imageFile.name : (formData.urlImage && !imageFile ? 'Current image' : "No file chosen")}
                 </span>
                 
@@ -315,7 +331,7 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
                   style={{ marginTop: '10px' }}
                 />
               </div>
-              <div className={`image-preview ${isUploading ? 'uploading' : ''}`}>
+              <div className={`vocabulary-image-preview ${isUploading ? 'uploading' : ''}`}>
                 {imagePreview ? (
                   <img src={imagePreview} alt="Preview" />
                 ) : formData.urlImage ? (
@@ -327,11 +343,11 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
               </div>
             </div>
             
-            <div className="add-modal-footer">
-              <button type="button" className="cancel-btn" onClick={onClose}>
+            <div className="vocabulary-add-modal-footer">
+              <button type="button" className="vocabulary-cancel-btn" onClick={onClose}>
                 Cancel
               </button>
-              <button type="submit" className="submit-btn" disabled={isUploading}>
+              <button type="submit" className="vocabulary-submit-btn" disabled={isUploading}>
                 {isUploading ? 'Uploading...' : (editMode ? 'Save Changes' : 'Add Word')}
               </button>
             </div>
@@ -345,46 +361,51 @@ const VocabularyFormModal = ({ isOpen, onClose, onSubmit, vocabularyItem, topicI
 // Khai báo component cho modal import Excel
 const ImportExcelModal = ({ isOpen, onClose, onImport, topicId }) => {
   const [file, setFile] = useState(null);
-  const [excelData, setExcelData] = useState([]);
+  const [vocabularies, setVocabularies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  
+  // Add state for error alerts
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
       // Reset state khi đóng modal
       setFile(null);
-      setExcelData([]);
-      setError('');
+      setVocabularies([]);
+      setShowErrorAlert(false);
+      setErrorMessage('');
     }
   }, [isOpen]);
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
-
-    // Kiểm tra định dạng file
+    
     if (!isValidExcelFile(selectedFile)) {
-      setError('Chỉ chấp nhận file Excel (.xlsx, .xls) hoặc CSV (.csv)');
+      setErrorMessage('Only Excel (.xlsx, .xls) or CSV (.csv) files are allowed');
+      setShowErrorAlert(true);
       return;
     }
-
+    
     setFile(selectedFile);
-    setError('');
     setIsLoading(true);
     
     try {
       const result = await parseVocabularyExcel(selectedFile);
       if (result.error) {
-        setError(result.error);
-        setExcelData([]);
+        setErrorMessage(result.error);
+        setShowErrorAlert(true);
+        setVocabularies([]);
       } else {
-        setExcelData(result.vocabularies);
-        setError('');
+        setVocabularies(result.vocabularies);
+        setShowErrorAlert(false);
       }
-    } catch (err) {
-      console.error('Lỗi khi xử lý file Excel:', err);
-      setError('Lỗi không xác định khi xử lý file.');
-      setExcelData([]);
+    } catch (error) {
+      console.error('Error parsing file:', error);
+      setErrorMessage(error.message || 'Could not parse the file. Please check the format.');
+      setShowErrorAlert(true);
+      setVocabularies([]);
     } finally {
       setIsLoading(false);
     }
@@ -393,17 +414,21 @@ const ImportExcelModal = ({ isOpen, onClose, onImport, topicId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (excelData.length === 0) {
-      setError('Không có dữ liệu để import');
+    if (!file || vocabularies.length === 0) {
+      setErrorMessage('Please select a valid file with vocabulary data.');
+      setShowErrorAlert(true);
       return;
     }
     
+    setIsLoading(true);
+    
     try {
-      setIsLoading(true);
-      await onImport(excelData);
+      await onImport(vocabularies);
       onClose();
-    } catch (err) {
-      setError('Lỗi khi import dữ liệu: ' + (err.message || 'Unknown error'));
+    } catch (error) {
+      console.error('Error importing vocabularies:', error);
+      setErrorMessage(error.message || 'Failed to import vocabularies. Please try again.');
+      setShowErrorAlert(true);
     } finally {
       setIsLoading(false);
     }
@@ -412,72 +437,70 @@ const ImportExcelModal = ({ isOpen, onClose, onImport, topicId }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="add-modal-overlay">
-      <div className="add-modal-content">
-        <div className="add-modal-header">
-          <h2>Import Từ Vựng Từ Excel</h2>
-          <button type="button" className="close-btn" onClick={onClose}>
+    <div className="vocabulary-add-modal-overlay">
+      <div className="vocabulary-add-modal-content vocabulary-import-modal">
+        <div className="vocabulary-add-modal-header">
+          <h2>Import Vocabulary from Excel</h2>
+          <button className="vocabulary-close-btn" onClick={onClose}>
             <i className="fas fa-times"></i>
           </button>
         </div>
-        <div className="add-modal-body">
+        <div className="vocabulary-add-modal-body">
+          {/* Add ErrorAlert component */}
+          <ErrorAlert
+            show={showErrorAlert}
+            message={errorMessage}
+            onClose={() => setShowErrorAlert(false)}
+          />
+          
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="excelFile">Chọn file Excel:</label>
-              <div className="file-input-container">
-                <input
-                  type="file"
-                  id="excelFile"
-                  accept=".xlsx, .xls, .csv"
-                  onChange={handleFileChange}
-                  className="file-input"
-                  style={{ display: 'none' }}
-                />
-                <label htmlFor="excelFile" className="file-input-label">
-                  <i className="fas fa-upload"></i> Chọn File
-                </label>
-                <span className="file-name">
-                  {file ? file.name : "Chưa chọn file"}
-                </span>
-              </div>
-              {error && <div className="error-message">{error}</div>}
-            </div>
-            
-            <div className="form-info">
-              <p>
-                <i className="fas fa-info-circle"></i>
-                Định dạng file: File Excel (.xlsx, .xls) hoặc CSV (.csv) với các cột:
-              </p>
-              <ul>
-                <li>Từ vựng / Word / Content (bắt buộc)</li>
-                <li>Nghĩa / Meaning (bắt buộc)</li>
-                <li>Từ đồng nghĩa / Synonym (tùy chọn)</li>
-                <li>Phiên âm / Transcribe (tùy chọn)</li>
-                <li>URL Audio (tùy chọn)</li>
-                <li>URL Hình ảnh / Image URL (tùy chọn)</li>
-                
-              </ul>
-              <p>
+            <div className="vocabulary-form-group">
+              <label htmlFor="excelFile">Select Excel File</label>
+              <input
+                type="file"
+                id="excelFile"
+                onChange={handleFileChange}
+                accept=".xlsx, .xls, .csv"
+                className="vocabulary-file-input"
+              />
+              <div className="vocabulary-template-download">
                 <a href="/templates/vocabulary_template.xlsx" download>
-                  <i className="fas fa-download"></i> Tải mẫu Excel
+                  <i className="fas fa-download"></i> Download Template
                 </a>
-              </p>
+              </div>
             </div>
             
-            {excelData.length > 0 && (
-              <VocabularyExcelPreview vocabularies={excelData} />
+            {vocabularies.length > 0 && (
+              <div className="vocabulary-excel-preview">
+                <div className="vocabulary-excel-preview-header">
+                  Preview ({vocabularies.length} items)
+                </div>
+                <div className="vocabulary-excel-preview-content">
+                  <VocabularyExcelPreview data={vocabularies} />
+                </div>
+              </div>
             )}
             
-            <div className="add-modal-footer">
-              <button type="button" className="cancel-btn" onClick={onClose}>
-                Hủy
+            <div className="vocabulary-import-modal-footer">
+              <button 
+                type="button" 
+                className="vocabulary-cancel-btn" 
+                onClick={onClose}
+                disabled={isLoading}
+              >
+                Cancel
               </button>
               <button 
                 type="submit" 
-                className="submit-btn" 
-                disabled={isLoading || excelData.length === 0}
+                className="vocabulary-submit-btn"
+                disabled={isLoading || vocabularies.length === 0}
               >
-                {isLoading ? 'Đang xử lý...' : `Import ${excelData.length} từ vựng`}
+                {isLoading ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin"></i> 
+                    Importing...
+                  </>
+                ) : 'Import Vocabularies'}
               </button>
             </div>
           </form>
@@ -513,28 +536,35 @@ const ManageVocabulary = () => {
 
   const id = useParams().id;
 
-  useEffect(() => {
-    const fetchVocabularyTopic = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Lấy thông tin chủ đề từ vựng
-        const topicData = await vocabularyTopicService.getVocabularyTopicById(id);
-        setTopicInfo(topicData);
-        
-        // Lấy danh sách các từ vựng thuộc chủ đề 
-        const vocabularyData = await vocabularyService.getAllVocabularyByTopicId(id);
-        setVocabularyList(vocabularyData || []);
-        
-      } catch (err) {
-        setError(err.message);
-        console.error('Error fetching vocabulary data:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Add state for alerts
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-    fetchVocabularyTopic();
+  // Move fetchVocabularies outside of useEffect to make it accessible throughout the component
+  const fetchVocabularies = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Lấy thông tin chủ đề từ vựng
+      const topicData = await vocabularyTopicService.getVocabularyTopicById(id);
+      setTopicInfo(topicData);
+      
+      // Lấy danh sách các từ vựng thuộc chủ đề 
+      const vocabularyData = await vocabularyService.getAllVocabularyByTopicId(id);
+      setVocabularyList(vocabularyData || []);
+      
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching vocabulary data:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVocabularies();
   }, [id]);
 
   // Add entries options
@@ -624,20 +654,20 @@ const ManageVocabulary = () => {
       : `Are you sure you want to delete "${itemToDelete.content}"?`;
 
     return (
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <div className="modal-header">
+      <div className="vocabulary-modal-overlay">
+        <div className="vocabulary-modal-content">
+          <div className="vocabulary-modal-header">
             <h2>Confirm Delete</h2>
-            <button className="close-btn" onClick={onClose}>
+            <button className="vocabulary-close-btn" onClick={onClose}>
               <i className="fas fa-times"></i>
             </button>
           </div>
-          <div className="modal-body">
+          <div className="vocabulary-modal-body">
             <p>{message}</p>
           </div>
-          <div className="modal-footer">
-            <button className="cancel-btn" onClick={onClose}>Cancel</button>
-            <button className="confirm-delete-btn" onClick={onConfirm}>
+          <div className="vocabulary-modal-footer">
+            <button className="vocabulary-cancel-btn" onClick={onClose}>Cancel</button>
+            <button className="vocabulary-confirm-delete-btn" onClick={onConfirm}>
               <i className="fas fa-trash"></i>
               Delete
             </button>
@@ -703,6 +733,17 @@ const ManageVocabulary = () => {
     setIsFormModalOpen(true);
   };
 
+  // Add functions to display alerts
+  const displaySuccessMessage = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessAlert(true);
+  };
+  
+  const displayErrorMessage = (message) => {
+    setErrorMessage(message);
+    setShowErrorAlert(true);
+  };
+
   // Handle vocabulary submission (both add and edit)
   const handleVocabularySubmit = async (vocabularyData) => {
     try {
@@ -715,7 +756,7 @@ const ManageVocabulary = () => {
           prevList.map(item => item.id === updatedItem.id ? updatedItem : item)
         );
         
-        alert('Vocabulary updated successfully');
+        displaySuccessMessage('Vocabulary updated successfully');
       } else {
         // Add new vocabulary - đảm bảo topicId được đính kèm đúng
         const newVocabularyData = {
@@ -731,61 +772,101 @@ const ManageVocabulary = () => {
         // Update local state
         setVocabularyList(prevList => [...prevList, newItem]);
         
-        alert('New vocabulary added successfully');
+        displaySuccessMessage('New vocabulary added successfully');
       }
     } catch (error) {
       console.error(`Error ${editMode ? 'updating' : 'adding'} vocabulary:`, error);
       
-      // Hiển thị lỗi từ server nếu có
-      if (error.response && error.response.data && error.response.data.message) {
-        alert(error.response.data.message);
-      } else {
-        alert(`Failed to ${editMode ? 'update' : 'add'} vocabulary. Please try again.`);
-      }
+      // Display error alert instead of using alert()
+      displayErrorMessage(error.response?.data?.message || `Failed to ${editMode ? 'update' : 'add'} vocabulary. Please try again.`);
     }
   };
 
   // Thêm hàm xử lý import
   const handleImportVocabularies = async (vocabularies) => {
     try {
-      const result = await vocabularyService.importVocabulariesFromExcel(id, vocabularies);
+      console.log("Importing vocabularies to topic ID:", id);
       
-      if (result.data.errors && result.data.errors.length > 0) {
-        setImportErrors(result.data.errors);
-        alert(`Đã import ${result.data.imported.length} từ vựng thành công. Có ${result.data.errors.length} lỗi.`);
+      // Convert all vocabulary items to the correct format
+      const formattedVocabularies = vocabularies.map(item => ({
+        ...item,
+        VocabularyTopicId: parseInt(id)
+      }));
+      
+      // Use the batch import API
+      const result = await vocabularyService.importVocabularies(formattedVocabularies);
+      
+      // Refresh the vocabulary list
+      await fetchVocabularies();
+      
+      // Show success message
+      displaySuccessMessage(`Successfully imported ${result.length} vocabularies`);
+    } catch (error) {
+      console.error("Error importing vocabularies:", error);
+      displayErrorMessage(error.response?.data?.message || "Failed to import vocabularies. Please try again.");
+    }
+  };
+
+  // Update the Delete confirmation handler to use alerts
+  const handleDeleteConfirm = async () => {
+    try {
+      if (itemToDelete) {
+        // Delete single item
+        await vocabularyService.deleteVocabulary(itemToDelete.id);
+        displaySuccessMessage(`Vocabulary "${itemToDelete.content}" deleted successfully`);
       } else {
-        alert(`Đã import ${result.data.imported.length} từ vựng thành công!`);
+        // Delete multiple items
+        for (const id of selectedItems) {
+          await vocabularyService.deleteVocabulary(id);
+        }
+        displaySuccessMessage(`${selectedItems.length} vocabularies deleted successfully`);
       }
       
-      // Cập nhật danh sách từ vựng
-      const updatedVocabularies = await vocabularyService.getAllVocabularyByTopicId(id);
-      setVocabularyList(updatedVocabularies || []);
+      // Refresh the vocabulary list
+      await fetchVocabularies();
       
-      return result;
+      // Reset selection
+      setSelectedItems([]);
     } catch (error) {
-      console.error('Lỗi khi import từ vựng:', error);
-      throw error;
+      console.error("Error deleting vocabulary:", error);
+      displayErrorMessage(error.response?.data?.message || "Failed to delete vocabularies. Please try again.");
+    } finally {
+      setIsDeleteModalOpen(false);
+      setItemToDelete(null);
     }
   };
 
   return (
-    <div className="word-container">
-      <div className="topic-header">
-        <button className="back-btn" onClick={() => navigate(`/admin/vocabularyTopic/`)}>
+    <div className="vocabulary-container">
+      {/* Add alert components */}
+      <SuccessAlert 
+        show={showSuccessAlert} 
+        message={successMessage} 
+        onClose={() => setShowSuccessAlert(false)} 
+      />
+      
+      <ErrorAlert 
+        show={showErrorAlert} 
+        message={errorMessage} 
+        onClose={() => setShowErrorAlert(false)} 
+      />
+      
+      <div className="vocabulary-topic-header">
+        <button className="vocabulary-back-btn" onClick={() => navigate(`/admin/vocabularyTopic/`)}>
           <i className="fas fa-arrow-left"></i> Back to Topics
         </button>
-        <h1 className="header-title">
+        <h1 className="vocabulary-header-title">
           Manage Words: {topicInfo ? topicInfo.topicName : 'Loading...'}
         </h1>
       </div>
       
       <div className="pagination">
-        <div className="entries-select">
+        <div className="vocabulary-entries-select">
           <p>Show </p>
           <select 
             value={itemsPerPage} 
             onChange={handleEntriesChange}
-            className="entries-dropdown"
+            className="vocabulary-entries-dropdown"
           >
             {entriesOptions.map(option => (
               <option key={option} value={option}>
@@ -796,59 +877,59 @@ const ManageVocabulary = () => {
           <p>entries </p>
         </div>
 
-        <div className="action-section">
-          <div className="search-box">
+        <div className="vocabulary-action-section">
+          <div className="vocabulary-search-box">
             <i className="fas fa-search"></i>
             <input
               type="text"
               placeholder="Search..."
-              className="search-input"
+              className="vocabulary-search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
                 
-          <button className="add-btn" onClick={handleAddVocabulary}>
+          <button className="vocabulary-add-btn" onClick={handleAddVocabulary}>
             <i className="fas fa-plus"></i>
             Add New
           </button>
-          <button className="import-btn" onClick={() => setIsImportModalOpen(true)}>
+          <button className="vocabulary-import-btn" onClick={() => setIsImportModalOpen(true)}>
             <i className="fas fa-file-import"></i>
             Import Excel
           </button>
-          <button className="trash-btn">
+          <button className="manageVocabulary-trash-btn">
             <i className="fas fa-trash"></i>
             Trash
           </button>
         </div>
       </div>
         
-      <table className="word-table">
+      <table className="vocabulary-table">
         <thead>
           <tr>
-            <th className="id-column">
-              <div className="id-header">
+            <th className="vocabulary-id-column">
+              <div className="vocabulary-id-header">
                 <input
                   type="checkbox"
                   onChange={handleSelectAll}
                   checked={selectedItems.length === sortedData.length && sortedData.length > 0}
                   onClick={handleCheckboxClick}
                 />
-                <span onClick={() => handleSort('id')} className="sortable">
+                <span onClick={() => handleSort('id')} className="vocabulary-sortable">
                   STT
                   <i className={`fas ${sortField === 'id' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
                 </span>
               </div>
             </th>
-            <th onClick={() => handleSort('content')} className="sortable">
+            <th onClick={() => handleSort('content')} className="vocabulary-sortable">
               Word
               <i className={`fas ${sortField === 'content' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('meaning')} className="sortable">
+            <th onClick={() => handleSort('meaning')} className="vocabulary-sortable">
               Meaning
               <i className={`fas ${sortField === 'meaning' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('transcribe')} className="sortable">
+            <th onClick={() => handleSort('transcribe')} className="vocabulary-sortable">
               Transcribe
               <i className={`fas ${sortField === 'transcribe' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
@@ -861,8 +942,8 @@ const ManageVocabulary = () => {
           {currentItems.length > 0 ? (
             currentItems.map((item) => (
               <tr key={item.id}>
-                <td className="id-column">
-                  <div className="id-cell">
+                <td className="vocabulary-id-column">
+                  <div className="vocabulary-id-cell">
                     <input
                       type="checkbox"
                       checked={selectedItems.includes(item.id)}
@@ -874,12 +955,12 @@ const ManageVocabulary = () => {
                 <td>{item.content}</td>
                 <td>{item.meaning}</td>
                 <td>{item.transcribe}</td>
-                <td className="image-cell">
+                <td className="vocabulary-image-cell">
                   {item.urlImage && (
                     <img 
                       src={item.urlImage} 
                       alt={item.content} 
-                      className="word-image" 
+                      className="vocabulary-image" 
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = "https://via.placeholder.com/50?text=No+Image";
@@ -887,9 +968,9 @@ const ManageVocabulary = () => {
                     />
                   )}
                 </td>
-                <td className="audio-cell">
+                <td className="vocabulary-audio-cell">
                   {item.urlAudio && (
-                    <audio controls className="word-audio">
+                    <audio controls className="vocabulary-audio">
                       <source src={item.urlAudio} type="audio/mpeg" />
                       Your browser does not support the audio element.
                     </audio>
@@ -897,13 +978,13 @@ const ManageVocabulary = () => {
                 </td>
                 <td>
                   <button 
-                    className="edit-btn"
+                    className="vocabulary-edit-btn"
                     onClick={() => handleEditClick(item)}
                   >
                     <i className="fa-solid fa-pen-to-square"></i>
                   </button>
                   <button 
-                    className="delete-btn"
+                    className="vocabulary-delete-btn"
                     onClick={() => {
                       setItemToDelete(item);
                       setIsDeleteModalOpen(true);
@@ -916,11 +997,11 @@ const ManageVocabulary = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="7" className="empty-table">
-                <div className="empty-message">
+              <td colSpan="7" className="vocabulary-empty-table">
+                <div className="vocabulary-empty-message">
                   <i className="fas fa-book"></i>
                   <p>No words found for this topic</p>
-                  <button className="add-btn" onClick={handleAddVocabulary}>
+                  <button className="vocabulary-add-btn" onClick={handleAddVocabulary}>
                     <i className="fas fa-plus"></i> Add Word
                   </button>
                 </div>
@@ -935,23 +1016,23 @@ const ManageVocabulary = () => {
           <span>
             Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
           </span>
-          <div className="pagination-buttons">
+          <div className="vocabulary-pagination-buttons">
             <button 
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="page-btn"
+              className="vocabulary-page-btn"
             >
               Previous
             </button>
             
             {getPageNumbers(currentPage, totalPages).map((item, index) => (
               item === '...' ? (
-                <span key={`dots-${index}`} className="page-dots">...</span>
+                <span key={`dots-${index}`} className="vocabulary-page-dots">...</span>
               ) : (
                 <button
                   key={item}
                   onClick={() => setCurrentPage(item)}
-                  className={`page-btn ${currentPage === item ? 'active' : ''}`}
+                  className={`vocabulary-page-btn ${currentPage === item ? 'active' : ''}`}
                 >
                   {item}
                 </button>
@@ -961,7 +1042,7 @@ const ManageVocabulary = () => {
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="page-btn"
+              className="vocabulary-page-btn"
             >
               Next
             </button>
@@ -970,8 +1051,8 @@ const ManageVocabulary = () => {
       )}
 
       {selectedItems.length > 0 && (
-        <div className="table-action-bar">
-          <div className="action-bar-content">
+        <div className="vocabulary-table-action-bar">
+          <div className="vocabulary-action-bar-content">
             <span>{selectedItems.length} items selected</span>
             <button 
               className="delete-selected-btn"
@@ -994,28 +1075,7 @@ const ManageVocabulary = () => {
           setIsDeleteModalOpen(false);
           setItemToDelete(null);
         }}
-        onConfirm={async () => {
-          try {
-            if (itemToDelete) {
-              // Xóa một từ vựng
-              await vocabularyService.deleteVocabulary(itemToDelete.id);
-              setVocabularyList(prev => prev.filter(item => item.id !== itemToDelete.id));
-              alert(`"${itemToDelete.content}" has been deleted successfully.`);
-            } else {
-              // Xóa nhiều từ vựng
-              const deletePromises = selectedItems.map(id => vocabularyService.deleteVocabulary(id));
-              await Promise.all(deletePromises);
-              setVocabularyList(prev => prev.filter(item => !selectedItems.includes(item.id)));
-              alert(`${selectedItems.length} words have been deleted successfully.`);
-            }
-            setIsDeleteModalOpen(false);
-            setItemToDelete(null);
-            setSelectedItems([]);
-          } catch (error) {
-            console.error('Error deleting vocabulary:', error);
-            alert('Failed to delete vocabulary. Please try again.');
-          }
-        }}
+        onConfirm={handleDeleteConfirm}
         itemToDelete={itemToDelete}
         selectedItems={selectedItems}
       />

@@ -115,7 +115,7 @@ const AdminDashboard = () => {
     <div className={styles.adminDashboard}>
       {/* Header Section */}
       <header className={styles.header}>
-        <h1>ZEnglish Admin Dashboard</h1>
+        <h1 className={styles.dasboardHeaderTitle}>ZEnglish Admin Dashboard</h1>
         <div className={styles.timeFilters}>
           {['Day', 'Week', 'Month', 'Year'].map((filter) => (
             <button

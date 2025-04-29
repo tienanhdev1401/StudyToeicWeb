@@ -28,4 +28,28 @@ export class QuestionInAPartRepository {
       throw error;
     }
   }
+
+  async findByPartIdAndQuestionId(partId: number, questionId: number): Promise<QuestionInAPart | null> {
+    try {
+      const [rows] = await db.query(
+        'SELECT * FROM questioninaparts WHERE PartId = ? AND QuestionId = ?',
+        [partId, questionId]
+      );
+
+      const questions = rows as any[];
+      if (!questions.length) return null;
+
+      const row = questions[0];
+      return new QuestionInAPart(
+        Number(row.PartId),
+        Number(row.QuestionId),
+        Number(row.questionNumber)
+      );
+    } catch (error) {
+      console.error('QuestionInAPartRepository.findByPartIdAndQuestionId error:', error);
+      throw error;
+    }
+  }
+
+ 
 }

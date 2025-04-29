@@ -1,7 +1,7 @@
 import database from '../../config/db';
 import { VocabularyTopic } from '../../models/VocabularyTopic';
 import { Vocabulary } from '../../models/Vocabulary';
-
+import slugify from 'slugify';
 export class VocabularyTopicRepository {
   /**
    * Tìm VocabularyTopic theo ID
