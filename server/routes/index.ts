@@ -21,6 +21,7 @@ import wordNoteRoutes from './wordNoteRoutes'
 import questionRoutes from './questionRoutes';
 import testRoutes from './testRoutes';
 import submissionRoutes from './submissionRoutes';
+import roadmapRoutes from './roadmapRoutes';
 import test from './test'
 import adminQuestionRoutes from './admin/admin.questionRoutes';
 import adminResourceRoutes from './admin/admin.resourceRoutes';
@@ -45,6 +46,7 @@ function route(app: Application): void {
   app.use('/api/upload', uploadRouter);
   app.use('/api/exercise',exerciseRouter);
   app.use('/api/learning-goal',learningRouter)
+  app.use('/api/roadmap', roadmapRoutes);
   app.use('/api/comment', commentRoutes);
   app.use('/api/wordnote', wordNoteRoutes);
   app.use('/api/exercise',exerciseRouter);

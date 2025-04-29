@@ -22,6 +22,7 @@ import ExerciseList from './pages/ExerciseList';
 import DoExercise from './pages/DoExercise';
 import ProfilePage from './pages/Profile';
 import GrammarDetail from './pages/GrammarDetail';
+import Roadmap from './pages/Roadmap';
 import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import DictionaryPage from './pages/DictionaryPage';
@@ -69,6 +70,7 @@ function App() {
                 <Route path="/toeic-exercise/:partId" element={<DoExercise />} />
                 <Route path="/Dotest/:testID" element={<Dotest />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/roadmap" element={<Roadmap />} />
                 
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLogin />} />

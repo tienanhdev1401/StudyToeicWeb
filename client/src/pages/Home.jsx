@@ -311,6 +311,11 @@ const Home = () => {
                                                                        className="btn btn-sm btn-light mt-2">
                                                                         Cập nhật mục tiêu
                                                                     </a>
+                                                                    <a href="#" 
+                                                                       onClick={e => { e.preventDefault(); navigate('/roadmap'); }} 
+                                                                       className="btn btn-sm btn-light mt-2 ms-2">
+                                                                        <i className="fas fa-road me-1"></i> Xem lộ trình
+                                                                    </a>
                                                                 </>
                                                             ) : (
                                                                 <>

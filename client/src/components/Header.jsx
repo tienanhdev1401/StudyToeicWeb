@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaBook, FaSearch, FaHistory } from 'react-icons/fa';
+import { FaUser, FaBook, FaSearch, FaRoad } from 'react-icons/fa';
 import '../styles/Header.css';
 
 const Header = ({ style, className }) => {
@@ -87,6 +87,18 @@ const Header = ({ style, className }) => {
                                                                         navigate('/login');
                                                                     }
                                                                 }}>Do Exercise</a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#" onClick={e => {
+                                                                    e.preventDefault();
+                                                                    if (isLoggedIn) {
+                                                                        navigate('/roadmap');
+                                                                    } else {
+                                                                        navigate('/login');
+                                                                    }
+                                                                }}>
+                                                                    <FaRoad style={{ marginRight: '5px' }} /> Roadmap
+                                                                </a>
                                                             </li>
                                                         </ul>
                                                     </li>

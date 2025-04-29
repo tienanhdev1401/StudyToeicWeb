@@ -431,33 +431,7 @@ const ProfilePage = () => {
                 <div className="grid-container">
                     {/* Social Links */}
                     <div className="social-links">
-                        <h3 className="section-title">Social Connections</h3>
-                        <ul className="social-list">
-                            <li className="social-item">
-                                <FaGithub className="social-icon" />
-                                <a className="social-link" href="#">
-                                    GitHub
-                                </a>
-                            </li>
-                            <li className="social-item">
-                                <FaTwitter className="social-icon" />
-                                <a className="social-link" href="#">
-                                    Twitter
-                                </a>
-                            </li>
-                            <li className="social-item">
-                                <FaInstagram className="social-icon" />
-                                <a className="social-link" href="#">
-                                    Instagram
-                                </a>
-                            </li>
-                            <li className="social-item">
-                                <FaFacebook className="social-icon" />
-                                <a className="social-link" href="#">
-                                    Facebook
-                                </a>
-                            </li>
-                        </ul>
+                     
                     </div>
                     {/* Account Information */}
                     <div className="account-info">
