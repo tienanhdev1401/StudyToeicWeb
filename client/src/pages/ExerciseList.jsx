@@ -7,12 +7,12 @@ import GrammarTopicService from '../services/grammarTopicService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import VocabularyTopicService from '../services/vocabularyTopicService'
 
-const GrammarCard = ({ name, stats, progress, isExpanded, onToggle, gradientClass, exercises }) => {
+const GrammarCard = ({ id, name, stats, progress, isExpanded, onToggle, gradientClass, exercises }) => {
     const navigate = useNavigate();
 
     const toggleExpand = (e) => {
         e.stopPropagation();
-        onToggle(name); // Just pass the name to the parent handler
+        onToggle(id); // Truyền id thay vì name
     };
 
     const handleExerciseClick = (e, exercise) => {
@@ -83,13 +83,12 @@ const GrammarCard = ({ name, stats, progress, isExpanded, onToggle, gradientClas
     );
 };
 
-// Update the VocabularyCard component similarly
-const VocabularyCard = ({ name, stats, progress, isExpanded, onToggle, gradientClass, exercises }) => {
+const VocabularyCard = ({ id, name, stats, progress, isExpanded, onToggle, gradientClass, exercises }) => {
     const navigate = useNavigate();
 
     const toggleExpand = (e) => {
         e.stopPropagation();
-        onToggle(name); // Just pass the name to the parent handler
+        onToggle(id); // Truyền id thay vì name
     };
 
     const handleExerciseClick = (e, exercise) => {
@@ -160,14 +159,9 @@ const VocabularyCard = ({ name, stats, progress, isExpanded, onToggle, gradientC
     );
 };
 
-// ===== MODIFY THE MAIN COMPONENT =====
-
 const ExerciseList = () => {
     const [activeTab, setActiveTab] = useState('grammar');
-    
-    // Single string state to track the currently expanded topic
     const [expandedTopicName, setExpandedTopicName] = useState(null);
-    
     const [grammarTopics, setGrammarTopics] = useState([]);
     const [vocabularyTopics, setVocabularyTopics] = useState([]);
     const [loading, setLoading] = useState({
@@ -199,6 +193,7 @@ const ExerciseList = () => {
                     topics.map(async (topic, index) => {
                         const exercises = await GrammarTopicService.getExercisesForGrammarTopic(topic.id);
                         return {
+                            id: topic.id || `grammar-${index}`, // Đảm bảo có id duy nhất
                             name: topic.title,
                             stats: [
                                 { icon: 'fa-file-alt', value: `${exercises.length} bài tập` },
@@ -226,6 +221,7 @@ const ExerciseList = () => {
                     topics.map(async (topic, index) => {
                         const exercises = await VocabularyTopicService.getExercisesForVocabularyTopic(topic.id);
                         return {
+                            id: topic.id || `vocabulary-${index}`, // Đảm bảo có id duy nhất
                             name: topic.title,
                             stats: [
                                 { icon: 'fa-file-alt', value: `${exercises.length} bài tập` },
@@ -246,7 +242,7 @@ const ExerciseList = () => {
             }
         };
 
-        // Reset expanded topic when switching tabs
+        // Reset expanded topic khi chuyển tab
         setExpandedTopicName(null);
 
         if (activeTab === 'grammar') {
@@ -256,15 +252,11 @@ const ExerciseList = () => {
         }
     }, [activeTab]);
 
-    // Simplified toggle function - if already expanded, close it. Otherwise expand it.
-    const handleToggle = (topicName) => {
-        console.log('Toggle called with:', topicName);
-        console.log('Current expanded topic:', expandedTopicName);
-        
-        if (expandedTopicName === topicName) {
+    const handleToggle = (topicId) => {
+        if (expandedTopicName === topicId) {
             setExpandedTopicName(null);
         } else {
-            setExpandedTopicName(topicName);
+            setExpandedTopicName(topicId);
         }
     };
 
@@ -314,9 +306,10 @@ const ExerciseList = () => {
                         <div className="de-grid-listening">
                             {grammarTopics.map((item, index) => (
                                 <GrammarCard 
-                                    key={index} 
+                                    key={item.id} 
+                                    id={item.id} 
                                     {...item} 
-                                    isExpanded={expandedTopicName === item.name}
+                                    isExpanded={expandedTopicName === item.id}
                                     onToggle={handleToggle}
                                 />
                             ))}
@@ -330,9 +323,10 @@ const ExerciseList = () => {
                         <div className="de-grid-reading">
                             {vocabularyTopics.map((item, index) => (
                                 <VocabularyCard 
-                                    key={index} 
+                                    key={item.id} 
+                                    id={item.id} 
                                     {...item} 
-                                    isExpanded={expandedTopicName === item.name}
+                                    isExpanded={expandedTopicName === item.id}
                                     onToggle={handleToggle}
                                 />
                             ))}

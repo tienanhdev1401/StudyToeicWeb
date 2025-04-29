@@ -196,7 +196,7 @@ const WordNoteDetail = () => {
         return (
             <>
                 <Header />
-                <div className="word-note-detail-loading">
+                <div className="wordnote-detail-loading">
                     <div className="spinner-border text-primary" role="status">
                         <span className="visually-hidden">Đang tải...</span>
                     </div>
@@ -209,21 +209,21 @@ const WordNoteDetail = () => {
     return (
         <>
             <Header />
-            <div className="word-note-detail-container">
-                <div className="word-note-detail-header">
-                    <div className="word-note-detail-title">
-                        <div className="word-note-detail-name">
+            <div className="wordnote-detail-container">
+                <div className="wordnote-detail-header">
+                    <div className="wordnote-detail-title">
+                        <div className="wordnote-detail-name">
                             <h1>
-                                <FaBook className="word-note-detail-icon" /> 
+                                <FaBook className="wordnote-detail-icon" /> 
                                 {wordNote?.title}
                             </h1>
                         </div>
                     </div>
                 </div>
 
-                <div className="word-note-detail-actions">
-                    <div className="word-note-detail-search-bar">
-                        <FaSearch className="word-note-detail-search-icon" />
+                <div className="wordnote-detail-actions">
+                    <div className="wordnote-detail-search-bar">
+                        <FaSearch className="wordnote-detail-search-icon" />
                         <input
                             type="text"
                             placeholder="Tìm kiếm từ vựng..."
@@ -232,49 +232,49 @@ const WordNoteDetail = () => {
                         />
                     </div>
                     <button 
-                        className="btn btn-primary word-note-detail-add-btn"
+                        className="wordnote-detail-add-btn"
                         onClick={() => setShowAddVocabModal(true)}
                     >
                         <FaPlus /> Thêm từ vựng
                     </button>
                 </div>
 
-                <div className="word-note-detail-content">
+                <div className="wordnote-detail-content">
                     {filteredVocabularies.length === 0 ? (
-                        <div className="word-note-detail-empty">
-                            <FaBook className="word-note-detail-empty-icon" />
+                        <div className="wordnote-detail-empty">
+                            <FaBook className="wordnote-detail-empty-icon" />
                             <p>Chưa có từ vựng nào trong ghi chú này!</p>
                         </div>
                     ) : (
-                        <div className="word-note-detail-vocabulary-list">
+                        <div className="wordnote-detail-vocabulary-list">
                             {filteredVocabularies.map(vocabulary => (
-                                <div key={vocabulary.id} className="word-note-detail-vocabulary-card">
-                                    <div className="vocabulary-content">
-                                        <div className="vocabulary-header">
-                                            <h3 className="vocabulary-word">{vocabulary.content}</h3>
-                                            <span className="vocabulary-transcribe">{vocabulary.transcribe}</span>
+                                <div key={vocabulary.id} className="wordnote-detail-vocabulary-card">
+                                    <div className="wordnote-detail-vocabulary-content">
+                                        <div className="wordnote-detail-vocabulary-header">
+                                            <h3 className="wordnote-detail-vocabulary-word">{vocabulary.content}</h3>
+                                            <span className="wordnote-detail-vocabulary-transcribe">{vocabulary.transcribe}</span>
                                         </div>
-                                        <p className="vocabulary-meaning">{vocabulary.meaning}</p>
+                                        <p className="wordnote-detail-vocabulary-meaning">{vocabulary.meaning}</p>
                                         
                                         {vocabulary.synonym && (
-                                            <div className="vocabulary-synonyms">
-                                                <span className="synonym-label">Đồng nghĩa: </span>
-                                                <div className="synonym-tags">
+                                            <div className="wordnote-detail-vocabulary-synonyms">
+                                                <span className="wordnote-detail-synonym-label">Đồng nghĩa: </span>
+                                                <div className="wordnote-detail-synonym-tags">
                                                     {parseSynonym(vocabulary.synonym).map((syn, index) => (
-                                                        <span key={index} className="synonym-tag">{syn}</span>
+                                                        <span key={index} className="wordnote-detail-synonym-tag">{syn}</span>
                                                     ))}
                                                 </div>
                                             </div>
                                         )}
                                         
                                         {vocabulary.urlImage && (
-                                            <div className="vocabulary-image">
+                                            <div className="wordnote-detail-vocabulary-image">
                                                 <img src={vocabulary.urlImage} alt={vocabulary.content} />
                                             </div>
                                         )}
                                     </div>
                                     <button 
-                                        className="icon-button delete-icon-btn vocabulary-remove"
+                                        className="wordnote-detail-icon-button wordnote-detail-delete-icon"
                                         onClick={() => handleRemoveVocabulary(vocabulary.id)}
                                         title="Xóa khỏi ghi chú"
                                     >
@@ -287,11 +287,11 @@ const WordNoteDetail = () => {
                 </div>
 
                 {showAddVocabModal && (
-                    <div className="word-note-detail-modal-overlay">
-                        <div className="word-note-detail-modal-content">
-                            <div className="modal-header">
+                    <div className="wordnote-detail-modal-overlay">
+                        <div className="wordnote-detail-modal-content">
+                            <div className="wordnote-detail-modal-header">
                                 <button 
-                                    className="btn-close"
+                                    className="wordnote-detail-btn-close"
                                     onClick={() => {
                                         setShowAddVocabModal(false);
                                         setSelectedVocabularies([]);
@@ -303,7 +303,7 @@ const WordNoteDetail = () => {
                                 </button>
                                 <h2>Thêm từ đã có ({selectedVocabularies.length})</h2>
                                 <button 
-                                    className="btn-confirm"
+                                    className="wordnote-detail-btn-confirm"
                                     onClick={handleAddVocabularies}
                                     disabled={selectedVocabularies.length === 0}
                                 >
@@ -311,9 +311,9 @@ const WordNoteDetail = () => {
                                 </button>
                             </div>
 
-                            <div className="filter-section">
+                            <div className="wordnote-detail-filter-section">
                                 <select 
-                                    className="form-select"
+                                    className="wordnote-detail-form-select"
                                     value={selectedTopic?.id || ''}
                                     onChange={(e) => {
                                         const topic = vocabularyTopics.find(t => t.id === parseInt(e.target.value));
@@ -328,11 +328,11 @@ const WordNoteDetail = () => {
                                 </select>
                             </div>
 
-                            <div className="topic-name">
+                            <div className="wordnote-detail-topic-name">
                                 <div>{selectedTopic?.topicName}</div>
                             </div>
 
-                            <div className="vocabulary-search-results">
+                            <div className="wordnote-detail-vocabulary-search-results">
                                 {searching ? (
                                     <div className="text-center p-3">
                                         <div className="spinner-border spinner-border-sm" role="status">
@@ -345,8 +345,8 @@ const WordNoteDetail = () => {
                                     </p>
                                 ) : (
                                     searchResults.map(vocab => (
-                                        <div key={vocab.id} className="vocabulary-item">
-                                            <div className="vocab-checkbox">
+                                        <div key={vocab.id} className="wordnote-detail-vocabulary-item">
+                                            <div className="wordnote-detail-vocab-checkbox">
                                                 <input 
                                                     type="checkbox"
                                                     checked={selectedVocabularies.some(item => item.id === vocab.id)}
@@ -354,14 +354,14 @@ const WordNoteDetail = () => {
                                                 />
                                             </div>
                                             <div 
-                                                className="vocab-content"
+                                                className="wordnote-detail-vocab-content"
                                                 onClick={() => handleToggleVocabulary(vocab)}
                                             >
                                                 <h4>{vocab.content}</h4>
                                                 <p className="transcribe">{vocab.transcribe}</p>
                                                 <p className="meaning">{vocab.meaning}</p>
                                             </div>
-                                            <button className="btn-star">
+                                            <button className="wordnote-detail-btn-star">
                                                 <span>☆</span>
                                             </button>
                                         </div>

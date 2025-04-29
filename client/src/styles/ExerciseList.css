@@ -58,6 +58,8 @@ body {
   gap: 1.5rem;
   margin-bottom: 5rem;
   grid-template-columns: repeat(1, 1fr);
+  grid-auto-rows: min-content;
+  align-items: start;
 }
 
 .de-card {
@@ -68,8 +70,8 @@ body {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  transition: transform 0.5s ease, box-shadow 0.5s ease;
-  height: 100%;
+  height: auto !important;
+  min-height: 0;
 }
 
 .de-card:hover {
@@ -86,8 +88,9 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: all 0.3s ease;
   overflow: hidden;
+  height: auto !important;
+  min-height: 0;
 }
 
 .de-progress-bar {
@@ -129,6 +132,8 @@ h3.text-3xl.font-bold.mb-2 {
 @media (min-width: 768px) {
   .de-grid-listening, .de-grid-reading {
     grid-template-columns: repeat(2, 1fr);
+    grid-auto-flow: row;
+    grid-template-rows: auto;
   }
 }
 
@@ -273,5 +278,5 @@ button:focus {
   transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .de-slide.open {
-  max-height: 500px; /* hoặc giá trị đủ lớn cho nội dung */
+  max-height: 500px; 
 }

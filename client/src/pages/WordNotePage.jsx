@@ -115,7 +115,7 @@ const WordNotePage = () => {
         return (
             <>
                 <Header />
-                <div className="word-note-loading">
+                <div className="wordnote-page-loading">
                     <div className="spinner-border text-primary" role="status">
                         <span className="visually-hidden">Đang tải...</span>
                     </div>
@@ -128,19 +128,19 @@ const WordNotePage = () => {
     return (
         <>
         <Header/>
-        <div className="word-note-container">
-            <div className="word-note-header">
-                <div className="word-note-header-content">
-                    <h1><FaBook className="word-note-header-icon" /> Sổ tay từ vựng của tôi</h1>
+        <div className="wordnote-page-container">
+            <div className="wordnote-page-header">
+                <div className="wordnote-page-header-content">
+                    <h1><FaBook className="wordnote-page-header-icon" /> Sổ tay từ vựng của tôi</h1>
                     <button 
-                        className="btn btn-primary word-note-create-btn"
+                        className="btn btn-primary wordnote-page-create-btn"
                         onClick={() => setShowCreateModal(true)}
                     >
                         <FaPlus /> Tạo ghi chú mới
                     </button>
                 </div>
-                <div className="word-note-search-bar">
-                    <FaSearch className="word-note-search-icon" />
+                <div className="wordnote-page-search-bar">
+                    <FaSearch className="wordnote-page-search-icon" />
                     <input
                         type="text"
                         placeholder="Tìm kiếm ghi chú..."
@@ -150,34 +150,33 @@ const WordNotePage = () => {
                 </div>
             </div>
 
-            <div className="word-note-grid">
+            <div className="wordnote-page-grid">
                 {filteredNotes.length === 0 ? (
-                    <div className="word-note-empty">
-                        <FaBook className="word-note-empty-icon" />
+                    <div className="wordnote-page-empty">
+                        <FaBook className="wordnote-page-empty-icon" />
                         <p>Chưa có ghi chú nào. Hãy tạo ghi chú đầu tiên của bạn!</p>
                     </div>
                 ) : (
                     filteredNotes.map(note => (
-                        <div key={note.id} className="word-note-card">
-                            <div className="word-note-card-header">
+                        <div key={note.id} className="wordnote-page-card">
+                            <div className="wordnote-page-card-header">
                                 <div 
-                                    style={{fontSize: '20px', fontWeight: 'bold', cursor: 'pointer'}} 
-                                    className="word-note-title" 
+                                    className="wordnote-page-title" 
                                     onClick={() => window.location.href = `/word-note/${note.id}`}
                                     title="Xem chi tiết ghi chú"
                                 >
                                     {note.title}
                                 </div>
-                                <div className="word-note-card-actions">
+                                <div className="wordnote-page-card-actions">
                                     <button
-                                        className="icon-button edit-icon-btn"
+                                        className="wordnote-page-icon-button wordnote-page-edit-icon"
                                         onClick={() => handleOpenEditModal(note)}
                                         title="Chỉnh sửa tiêu đề"
                                     >
                                         <FaEdit />
                                     </button>
                                     <button
-                                        className="icon-button delete-icon-btn"
+                                        className="wordnote-page-icon-button wordnote-page-delete-icon"
                                         onClick={() => handleDeleteNote(note.id)}
                                         title="Xóa"
                                     >
@@ -185,7 +184,7 @@ const WordNotePage = () => {
                                     </button>
                                 </div>
                             </div>
-                            <div className="word-note-card-body">
+                            <div className="wordnote-page-card-body">
                                 <p>Số từ vựng: {note.vocabularies?.length || 0}</p>
                             </div>
                         </div>
@@ -194,8 +193,8 @@ const WordNotePage = () => {
             </div>
 
             {showCreateModal && (
-                <div className="word-note-modal-overlay">
-                    <div className="word-note-modal-content">
+                <div className="wordnote-page-modal-overlay">
+                    <div className="wordnote-page-modal-content">
                         <h2>Tạo ghi chú mới</h2>
                         <input
                             type="text"
@@ -204,7 +203,7 @@ const WordNotePage = () => {
                             onChange={(e) => setNewNoteTitle(e.target.value)}
                             className="form-control"
                         />
-                        <div className="word-note-modal-actions">
+                        <div className="wordnote-page-modal-actions">
                             <button 
                                 className="btn btn-secondary"
                                 onClick={() => setShowCreateModal(false)}
@@ -224,8 +223,8 @@ const WordNotePage = () => {
             )}
 
             {showEditModal && editingNote && (
-                <div className="word-note-modal-overlay">
-                    <div className="word-note-modal-content">
+                <div className="wordnote-page-modal-overlay">
+                    <div className="wordnote-page-modal-content">
                         <h2>Chỉnh sửa tiêu đề ghi chú</h2>
                         <input
                             type="text"
@@ -234,7 +233,7 @@ const WordNotePage = () => {
                             className="form-control"
                             placeholder="Nhập tiêu đề mới..."
                         />
-                        <div className="word-note-modal-actions">
+                        <div className="wordnote-page-modal-actions">
                             <button 
                                 className="btn btn-secondary"
                                 onClick={handleCloseEditModal}

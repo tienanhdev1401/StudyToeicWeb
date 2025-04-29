@@ -1,461 +1,734 @@
-.word-note-detail-container {
+/* WordNoteDetail - Modern UI Design */
+.wordnote-detail-container {
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
     margin-top: 100px;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    font-size: 16px;
 }
 
-.word-note-detail-loading {
+.wordnote-detail-loading {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 400px;
 }
 
-.word-note-detail-header {
-    margin-bottom: 2rem;
+.wordnote-detail-loading .spinner-border {
+    width: 3.5rem;
+    height: 3.5rem;
+    color: #4b6cb7 !important;
+}
+
+.wordnote-detail-header {
+    margin-bottom: 2.5rem;
     display: flex;
     flex-direction: column;
 }
 
-.word-note-detail-back-btn {
+.wordnote-detail-back-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #3498db;
-    font-weight: 500;
+    color: #4b6cb7;
+    font-weight: 600;
     margin-bottom: 1rem;
     text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 1.2rem;
 }
 
-.word-note-detail-back-btn:hover {
-    color: #2980b9;
+.wordnote-detail-back-btn:hover {
+    color: #182848;
+    transform: translateX(-5px);
 }
 
-.word-note-detail-title {
+.wordnote-detail-title {
     display: flex;
     align-items: center;
     margin-bottom: 1.5rem;
 }
 
-.word-note-detail-name {
+.wordnote-detail-name {
     display: flex;
     align-items: center;
     width: 100%;
 }
 
-.word-note-detail-name h1 {
+.wordnote-detail-name h1 {
     display: flex;
     align-items: center;
-    color: #2c3e50;
-    font-size: 2rem;
+    color: #2e3856;
+    font-size: 2.5rem;
+    font-weight: 700;
     margin: 0;
     margin-right: 1rem;
 }
 
-.word-note-detail-icon {
+.wordnote-detail-icon {
     margin-right: 1rem;
-    color: #3498db;
+    color: #4b6cb7;
+    font-size: 2.3rem;
 }
 
-.word-note-detail-edit-btn {
-    color: #3498db;
-    font-size: 0.9rem;
+.wordnote-detail-edit-btn {
+    color: #4b6cb7;
+    font-size: 1.1rem;
     text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 600;
 }
 
-.word-note-detail-edit-name {
+.wordnote-detail-edit-btn:hover {
+    color: #182848;
+}
+
+.wordnote-detail-edit-name {
     display: flex;
     align-items: center;
     gap: 1rem;
     width: 100%;
 }
 
-.word-note-detail-edit-name input {
+.wordnote-detail-edit-name input {
     flex: 1;
+    padding: 1rem 1.2rem;
+    border: 2px solid #e6e9ef;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
 }
 
-.word-note-detail-save-btn {
+.wordnote-detail-edit-name input:focus {
+    border-color: #4b6cb7;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(75, 108, 183, 0.1);
+}
+
+.wordnote-detail-save-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.9rem 1.4rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(75, 108, 183, 0.3);
+    transition: all 0.3s ease;
 }
 
-.word-note-detail-actions {
+.wordnote-detail-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(75, 108, 183, 0.4);
+}
+
+.wordnote-detail-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
 }
 
-.word-note-detail-search-bar {
+.wordnote-detail-search-bar {
     position: relative;
     width: 50%;
 }
 
-.word-note-detail-search-bar input {
+.wordnote-detail-search-bar input {
     width: 100%;
-    padding: 0.8rem 1rem 0.8rem 2.5rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
+    padding: 1.1rem 1rem 1.1rem 2.8rem;
+    border: 2px solid #e6e9ef;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    background-color: #f9fafc;
     transition: all 0.3s ease;
 }
 
-.word-note-detail-search-bar input:focus {
-    border-color: #3498db;
+.wordnote-detail-search-bar input:focus {
+    border-color: #4b6cb7;
+    background-color: white;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    box-shadow: 0 0 0 4px rgba(75, 108, 183, 0.1);
 }
 
-.word-note-detail-search-icon {
+.wordnote-detail-search-icon {
     position: absolute;
-    left: 1rem;
+    left: 1.2rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #95a5a6;
+    color: #8a94a6;
+    font-size: 1.4rem;
 }
 
-.word-note-detail-add-btn {
+.wordnote-detail-add-btn {
     display: flex;
     align-items: center;
-    border-radius: 6px;
-    background-color: #3498db;
+    gap: 0.5rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
     color: white;
     border: none;
-    transition: background-color 0.2s ease;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    gap: 0.5rem;
+    padding: 0.9rem 1.5rem;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(75, 108, 183, 0.3);
 }
 
-.word-note-detail-add-btn:hover {
-    background-color: #4F46E5;
-    color: white;
+.wordnote-detail-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(75, 108, 183, 0.4);
+    background: linear-gradient(135deg, #5b7cc7 10%, #283858 100%);
 }
 
-.word-note-detail-content {
+.wordnote-detail-content {
     min-height: 300px;
 }
 
-.word-note-detail-empty {
+.wordnote-detail-empty {
     text-align: center;
-    padding: 3rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-    color: #95a5a6;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #f6f9fc 0%, #f3f6fa 100%);
+    border-radius: 16px;
+    color: #8a94a6;
+    border: 2px dashed #e6e9ef;
 }
 
-.word-note-detail-empty-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: #bdc3c7;
-}
-
-.word-note-detail-empty p {
+.wordnote-detail-empty-icon {
+    font-size: 5rem;
     margin-bottom: 1.5rem;
-    font-size: 1.1rem;
+    color: #b0bac9;
 }
 
-.word-note-detail-vocabulary-list {
+.wordnote-detail-empty p {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.wordnote-detail-vocabulary-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.8rem;
 }
 
-.word-note-detail-vocabulary-card {
+.wordnote-detail-vocabulary-card {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03), 0 4px 10px rgba(0, 0, 0, 0.03);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     overflow: hidden;
     display: flex;
-    padding: 1.5rem;
+    padding: 1.8rem 2rem;
+    border: 1px solid #f0f0f0;
+    position: relative;
 }
 
-.word-note-detail-vocabulary-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+.wordnote-detail-vocabulary-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.06);
+    border-color: #e6e9ef;
 }
 
-.vocabulary-content {
+.wordnote-detail-vocabulary-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.vocabulary-header {
+.wordnote-detail-vocabulary-header {
     display: flex;
     align-items: baseline;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
-.vocabulary-word {
-    color: #2c3e50;
+.wordnote-detail-vocabulary-word {
+    color: #2e3856;
     margin: 0;
-    font-size: 2rem;
-    margin-right: 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-right: 1rem;
+    transition: color 0.2s ease;
 }
 
-.vocabulary-transcribe {
-    color: #95a5a6;
+.wordnote-detail-vocabulary-transcribe {
+    color: #8a94a6;
     font-size: 1.5rem;
     font-style: italic;
 }
 
-.vocabulary-meaning {
-    color: #7f8c8d;
-    margin: 0 0 0.5rem 0;
+.wordnote-detail-vocabulary-meaning {
+    color: #606f85;
+    margin: 0 0 1rem 0;
+    font-size: 1.3rem;
+    line-height: 1.6;
 }
 
-.vocabulary-synonyms {
-    margin-bottom: 0.75rem;
+.wordnote-detail-vocabulary-synonyms {
+    margin-bottom: 1.2rem;
 }
 
-.synonym-label {
+.wordnote-detail-synonym-label {
     font-size: 1.2rem;
-    color: #7f8c8d;
+    color: #8a94a6;
     margin-right: 0.5rem;
+    font-weight: 600;
 }
 
-.synonym-tags {
+.wordnote-detail-synonym-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.25rem;
+    gap: 0.6rem;
+    margin-top: 0.6rem;
 }
 
-.synonym-tag {
-    background-color: #ecf0f1;
-    color: #2c3e50;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 1.2rem;
+.wordnote-detail-synonym-tag {
+    background-color: #f0f4f9;
+    color: #4b6cb7;
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    font-size: 1.15rem;
+    font-weight: 500;
+    border: 1px solid rgba(75, 108, 183, 0.2);
+    transition: all 0.2s ease;
 }
 
-.vocabulary-image {
-    margin-top: 1rem;
+.wordnote-detail-synonym-tag:hover {
+    background-color: #e4eaf4;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(75, 108, 183, 0.1);
+}
+
+.wordnote-detail-vocabulary-image {
+    margin-top: 1.2rem;
     max-width: 100%;
-    border-radius: 8px;
+    border-radius: 14px;
     overflow: hidden;
-    height: 150px;
+    height: 180px;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #f9fafc;
+    border: 1px solid #e6e9ef;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    position: relative;
 }
 
-.vocabulary-image img {
+.wordnote-detail-vocabulary-image:hover {
+    border-color: #4b6cb7;
+    box-shadow: 0 6px 15px rgba(75, 108, 183, 0.12);
+    transform: translateY(-3px);
+}
+
+.wordnote-detail-vocabulary-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.05) 100%);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.wordnote-detail-vocabulary-image:hover::before {
+    opacity: 1;
+}
+
+.wordnote-detail-vocabulary-image img {
     object-fit: contain;
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 95%;
+    max-height: 95%;
+    transition: all 0.4s ease;
+    border-radius: 6px;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.05));
 }
 
-.icon-button {
+.wordnote-detail-vocabulary-image img:hover {
+    transform: scale(1.03);
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.08));
+}
+
+.wordnote-detail-icon-button {
     background: none;
     border: none;
-    padding: 0.25rem;
+    padding: 0.5rem;
     margin: 0;
     cursor: pointer;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     line-height: 1;
     color: inherit;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
     align-self: flex-start;
-    margin-left: 1rem;
+    margin-left: 1.2rem;
+    border-radius: 50%;
+    height: 42px;
+    width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.delete-icon-btn {
+.wordnote-detail-icon-button:hover {
+    background-color: rgba(234, 67, 53, 0.1);
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.wordnote-detail-delete-icon {
     color: #EA4335;
 }
 
-.word-note-detail-modal-overlay {
+.wordnote-detail-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(46, 56, 86, 0.7);
+    backdrop-filter: blur(4px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    animation: fadeIn 0.3s ease;
 }
 
-.word-note-detail-modal-content {
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.wordnote-detail-modal-content {
     background: white;
     width: 100%;
-    max-width: 500px;
-    border-radius: 12px;
+    max-width: 600px;
+    border-radius: 20px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     max-height: 90vh;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.4s ease-out;
 }
 
-.modal-header {
-    background-color: #785eff;
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.wordnote-detail-modal-header {
+    background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
     color: white;
-    padding: 15px 20px;
+    padding: 1.3rem 1.6rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
-.modal-header h2 {
+.wordnote-detail-modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #4b6cb7, #8e6af4, #4b6cb7);
+    opacity: 0.7;
+}
+
+.wordnote-detail-modal-header h2 {
     margin: 0;
-    font-size: 20px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.btn-close, .btn-confirm {
+.wordnote-detail-btn-close, 
+.wordnote-detail-btn-confirm {
     background: none;
     border: none;
     color: white;
-    font-size: 24px;
+    font-size: 1.5rem;
     cursor: pointer;
     padding: 0;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.filter-section {
-    padding: 10px 20px;
+.wordnote-detail-btn-close:hover, 
+.wordnote-detail-btn-confirm:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+}
+
+.wordnote-detail-btn-confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.wordnote-detail-filter-section {
+    padding: 1.3rem 1.6rem;
     display: flex;
     gap: 10px;
+    background-color: #f5f7fa;
+    border-bottom: 1px solid #e6e9ef;
+    position: relative;
 }
 
-.form-select {
+.wordnote-detail-filter-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(75, 108, 183, 0.2), transparent);
+}
+
+.wordnote-detail-form-select {
     flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    color: #000;
+    padding: 1rem 1.2rem;
+    border: 2px solid #e6e9ef;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    color: #2e3856;
     font-weight: 500;
-    background-color: #fff;
+    background-color: white;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%234b6cb7' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
     background-repeat: no-repeat;
-    background-position: right 10px center;
+    background-position: right 12px center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
-.form-select:focus {
+.wordnote-detail-form-select:focus {
     outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    border-color: #4b6cb7;
+    box-shadow: 0 0 0 3px rgba(75, 108, 183, 0.1);
 }
 
-.form-select option {
-    color: #000;
+.wordnote-detail-form-select option {
+    color: #2e3856;
     font-weight: 500;
-    background-color: #fff;
-    padding: 10px;
+    background-color: white;
+    padding: 12px;
 }
 
-.topic-name {
-    padding: 10px 20px;
-    margin-bottom: 5px;
+.wordnote-detail-topic-name {
+    padding: 1.2rem 1.6rem;
+    margin-bottom: 0.5rem;
+    background-color: white;
+    border-bottom: 1px solid #e6e9ef;
+    position: relative;
 }
 
-.topic-name div {
+.wordnote-detail-topic-name::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 1.6rem;
+    right: 1.6rem;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(75, 108, 183, 0.15), transparent);
+}
+
+.wordnote-detail-topic-name div {
     margin: 0;
-    font-size: 20px;
-    color: #333;
-    font-weight: 600;
+    font-size: 1.4rem;
+    color: #2e3856;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
 }
 
-.vocabulary-search-results {
+.wordnote-detail-topic-name div::before {
+    content: '•';
+    margin-right: 0.6rem;
+    color: #4b6cb7;
+    font-size: 1.8rem;
+    line-height: 0;
+}
+
+.wordnote-detail-vocabulary-search-results {
     flex: 1;
     overflow-y: auto;
-    padding: 0 20px;
-    margin-bottom: 20px;
+    padding: 0 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
-.vocabulary-item {
+.wordnote-detail-vocabulary-item {
     display: flex;
     align-items: flex-start;
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
+    padding: 1.4rem 1.2rem;
+    border-bottom: 1px solid #e6e9ef;
+    transition: all 0.25s ease;
+    margin-bottom: 0.5rem;
+    border-radius: 12px;
 }
 
-.vocab-checkbox {
-    padding-right: 15px;
-    padding-top: 5px;
+.wordnote-detail-vocabulary-item:hover {
+    background-color: #f5f7fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-.vocab-checkbox input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
+.wordnote-detail-vocab-checkbox {
+    padding-right: 1.2rem;
+    padding-top: 0.4rem;
+}
+
+.wordnote-detail-vocab-checkbox input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
     cursor: pointer;
+    border: 2px solid #e6e9ef;
+    border-radius: 6px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: white;
+    transition: all 0.2s ease;
+    position: relative;
 }
 
-.vocab-content {
+.wordnote-detail-vocab-checkbox input[type="checkbox"]:checked {
+    background-color: #4b6cb7;
+    border-color: #4b6cb7;
+    box-shadow: 0 0 0 2px rgba(75, 108, 183, 0.2);
+}
+
+.wordnote-detail-vocab-checkbox input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.wordnote-detail-vocab-content {
     flex: 1;
     cursor: pointer;
+    padding: 0.2rem 0;
 }
 
-.vocab-content h4 {
+.wordnote-detail-vocab-content h4 {
     margin: 0;
-    font-size: 18px;
-    color: #333;
-    font-weight: 500;
+    font-size: 1.5rem;
+    color: #2e3856;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    transition: color 0.2s ease;
 }
 
-.vocab-content .transcribe {
-    margin: 5px 0;
-    color: #666;
-    font-size: 14px;
+.wordnote-detail-vocabulary-item:hover .wordnote-detail-vocab-content h4 {
+    color: #4b6cb7;
+}
+
+.wordnote-detail-vocab-content .transcribe {
+    margin: 0.3rem 0;
+    color: #8a94a6;
+    font-size: 1.2rem;
     font-style: italic;
 }
 
-.vocab-content .meaning {
-    margin: 0;
-    color: #444;
+.wordnote-detail-vocab-content .meaning {
+    margin: 0.4rem 0 0 0;
+    color: #606f85;
+    font-size: 1.2rem;
+    line-height: 1.4;
 }
 
-.btn-star {
+.wordnote-detail-btn-star {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 1.7rem;
     color: #FFD700;
     cursor: pointer;
-    padding: 0;
-    width: 32px;
+    padding: 0.4rem;
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.25s ease;
+    border-radius: 50%;
+    margin-top: 0.2rem;
 }
 
-.word-note-detail-notification {
+.wordnote-detail-btn-star:hover {
+    transform: scale(1.15) rotate(15deg);
+    background-color: rgba(255, 215, 0, 0.1);
+}
+
+.wordnote-detail-btn-star span {
+    line-height: 1;
+    display: block;
+}
+
+.wordnote-detail-notification {
     margin-bottom: 1rem;
     padding: 0.75rem 1rem;
-    border-radius: 8px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     gap: 0.5rem;
     animation: slideIn 0.3s ease-out;
+    font-weight: 500;
+    font-size: 1.2rem;
 }
 
-.word-note-detail-notification.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+.wordnote-detail-notification.success {
+    background-color: #ecfdf5;
+    color: #064e3b;
+    border: 1px solid #a7f3d0;
 }
 
-.word-note-detail-notification.warning {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
+.wordnote-detail-notification.warning {
+    background-color: #fffbeb;
+    color: #78350f;
+    border: 1px solid #fef3c7;
 }
 
-.word-note-detail-notification.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+.wordnote-detail-notification.error {
+    background-color: #fef2f2;
+    color: #7f1d1d;
+    border: 1px solid #fee2e2;
 }
 
 @keyframes slideIn {
@@ -470,25 +743,42 @@
 }
 
 @media (max-width: 768px) {
-    .word-note-detail-container {
-        padding: 1rem;
+    .wordnote-detail-container {
+        padding: 1.5rem 1rem;
+        margin-top: 80px;
     }
 
-    .word-note-detail-actions {
+    .wordnote-detail-actions {
         flex-direction: column;
         gap: 1rem;
     }
 
-    .word-note-detail-search-bar {
+    .wordnote-detail-search-bar {
         width: 100%;
     }
 
-    .word-note-detail-edit-name {
+    .wordnote-detail-edit-name {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.8rem;
     }
 
-    .word-note-detail-vocabulary-list {
+    .wordnote-detail-vocabulary-list {
         grid-template-columns: 1fr;
+    }
+    
+    .wordnote-detail-vocabulary-card {
+        padding: 1.2rem;
+    }
+    
+    .wordnote-detail-vocabulary-word {
+        font-size: 1.8rem;
+    }
+    
+    .wordnote-detail-vocabulary-transcribe {
+        font-size: 1.4rem;
+    }
+    
+    .wordnote-detail-vocabulary-meaning {
+        font-size: 1.2rem;
     }
 } 
