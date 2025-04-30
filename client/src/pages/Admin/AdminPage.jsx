@@ -14,6 +14,7 @@ import ManageTest from './ManageTest';
 import NotFound from '../../components/404';
 import TestDetail from './TestDetail';
 import ManageExercise from './ManageExercise';
+import ManageRoadmapConfig from './RoadmapConfigAdmin';
 import ManageExerciseQuestion from './ManageExerciseQuestion';
 
 // Component để kiểm tra quyền Admin (không phải staff)
@@ -79,6 +80,7 @@ const AdminPage = () => {
         <Route path="/test/:id" element={<TestDetail />} />
         <Route path="*" element={<NotFound />} /> 
         <Route path="/exercise" element={<ManageExercise />} />
+        <Route path="/roadmap-config" element={<ManageRoadmapConfig />} />
         <Route path="/exercise/:id/questions" element={<ManageExerciseQuestion />} />
       </Routes>
     </AdminLayout>
