@@ -18,9 +18,16 @@ const Sidebar = () => {
     }));
   };
 
-  const handleMenuClick = (menu, path) => {
+  const handleMenuClick = (menu, path, isExternal) => {
     setActiveMenu(menu);
-    navigate(path);
+    
+    if (isExternal) {
+      // Mở liên kết external trong tab mới
+      window.open(path, '_blank');
+    } else {
+      // Điều hướng nội bộ với navigate
+      navigate(path);
+    }
   };
 
   const generateMenuItems = () => {
@@ -37,7 +44,7 @@ const Sidebar = () => {
           { key: 'exercise', label: 'Exercise', path: '/admin/exercise' },
           { key: 'test', label: 'Test', path: '/admin/test' },
           { key: 'question', label: 'Question', path: '/admin/question' },
-          { key: 'roadmap', label: 'RoadmapConfig', path: '/admin/roadmap-config'}
+        
         ],
       },
       {
@@ -52,7 +59,9 @@ const Sidebar = () => {
       },
       { key: 'tables', label: 'Tables', icon: 'fas fa-table', path: '/admin/tables' },
       { key: 'pages', label: 'Pages', icon: 'fas fa-file', path: '/admin/pages' },
-      { key: 'chat', label: 'Chat', icon: 'fas fa-comment-dots', path: '/admin/chat' },
+      { key: 'roadmap', label: 'RoadmapConfig',icon:'fas fa-project-diagram', path: '/admin/roadmap-config'},
+      { key: 'chat', label: 'Chat', icon: 'fas fa-comment-dots', path: 'https://dashboard.tawk.to/#/chat', external: true }
+
     ];
     
     return baseMenuItems;
@@ -95,7 +104,7 @@ const Sidebar = () => {
                       {item.subMenu.map((sub) => (
                         <li key={sub.key} className={styles.subMenuItem}>
                           <button
-                            onClick={() => handleMenuClick(sub.key, sub.path)}
+                            onClick={() => handleMenuClick(sub.key, sub.path, sub.external)}
                             className={`${styles.menuButton} ${activeMenu === sub.key ? styles.active : ''}`}
                           >
                             {sub.label}
@@ -108,7 +117,7 @@ const Sidebar = () => {
               ) : (
                 // Nếu không có submenu
                 <button
-                  onClick={() => item.path && handleMenuClick(item.key, item.path)}
+                  onClick={() => item.path && handleMenuClick(item.key, item.path, item.external)}
                   className={`${styles.menuButton} ${activeMenu === item.key ? styles.active : ''}`}
                 >
                   <i className={`${item.icon} ${styles.icon}`}></i>

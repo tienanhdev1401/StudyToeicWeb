@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaGithub, FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
+import { FaUser, FaRegCalendarAlt, FaRegEnvelope, FaPhoneAlt, FaLock, FaBars, FaChartLine, FaRegCheckCircle, FaUserEdit, FaRegClock, FaMedal, FaCrown, FaHistory, FaCamera } from 'react-icons/fa';
 import '../styles/Profile.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -9,11 +9,10 @@ import { useUser } from '../context/UserContext';
 import PasswordChangePopup from '../components/PasswordChangePopup';
 import userService from '../services/userService';
 import { getLearningGoalByLearnerId, createLearningGoal, updateLearningGoal } from '../services/learningGoalService';
-import LoadingSpinner from '../components/LoadingSpinner';
 
 const ProfilePage = () => {
     const { isLoggedIn, logout, refreshToken } = useAuth();
-    const { user, loading, initialized, fetchUserProfile } = useUser();
+    const { user, loading: userLoading, initialized, fetchUserProfile } = useUser();
     const navigate = useNavigate();
     const [isPasswordPopupOpen, setIsPasswordPopupOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -23,12 +22,12 @@ const ProfilePage = () => {
     const [isEditingGoal, setIsEditingGoal] = useState(false);
     const [editedGoal, setEditedGoal] = useState(null);
     const [isSavingProfile, setIsSavingProfile] = useState(false);
-    const [pageLoading, setPageLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
 
-    // Hàm để xử lý lỗi token hết hạn
+    // Handle token expiration
     const handleTokenRefresh = async () => {
         try {
-            await refreshToken(); // Giả sử refreshToken được triển khai trong AuthContext
+            await refreshToken();
             return true;
         } catch (error) {
             console.error('Không thể làm mới token:', error);
@@ -39,9 +38,8 @@ const ProfilePage = () => {
     };
 
     useEffect(() => {
-        if (initialized && !loading) {
+        if (initialized && !userLoading) {
             if (!isLoggedIn) {
-                // Kiểm tra token trong localStorage và thử làm mới nếu có
                 const token = localStorage.getItem('token');
                 if (token) {
                     handleTokenRefresh();
@@ -49,17 +47,16 @@ const ProfilePage = () => {
                     navigate('/login');
                 }
             } else {
-                fetchUserProfile(); // Load profile data on initial render
-                setPageLoading(false);
+                fetchUserProfile();
+                setLoading(false);
             }
         }
-    }, [isLoggedIn, loading, initialized, navigate]);
+    }, [isLoggedIn, userLoading, initialized, navigate]);
 
-    // Mỗi khi user thay đổi, cập nhật editedUser
     useEffect(() => {
         if (user) {
             setEditedUser({ ...user });
-            setPageLoading(false);
+            setLoading(false);
         }
     }, [user]);
 
@@ -71,15 +68,13 @@ const ProfilePage = () => {
                     if (response && response.success) {
                         setLearningGoal(response.data);
                     } else {
-                        // Không có learning goal, set null
                         setLearningGoal(null);
                     }
                 } catch (error) {
                     if (error.response && error.response.status === 404) {
-                     
                         setLearningGoal(null);
                     } else {
-                        console.error(error); // Chỉ log lỗi nếu KHÔNG phải 404
+                        console.error(error);
                     }
                 }
             }
@@ -88,10 +83,8 @@ const ProfilePage = () => {
         fetchLearningGoal();
     }, [user]);
     
-    
-
     useEffect(() => {
-        // Cleanup function để xóa URL preview khi component unmount
+        // Cleanup preview URLs on unmount
         return () => {
             if (imagePreview) {
                 URL.revokeObjectURL(imagePreview);
@@ -99,20 +92,23 @@ const ProfilePage = () => {
         };
     }, [imagePreview]);
 
-    // Hiển thị loading spinner khi đang loading
-    if (pageLoading) {
+    // Show loading spinner when loading data
+    if (loading) {
         return (
             <>
                 <Header />
-                <div className="containerprofile">
-                    <LoadingSpinner />
+                <div className="profile-container">
+                    <div className="profile-loading">
+                        <div className="profile-loading-spinner"></div>
+                        <div className="profile-loading-text">Đang tải thông tin...</div>
+                    </div>
                 </div>
                 <Footer />
             </>
         );
     }
 
-    // Return null nếu không có user sau khi đã load xong
+    // Return null if no user after loading
     if (!user) {
         return null;
     }
@@ -147,12 +143,11 @@ const ProfilePage = () => {
                 return;
             }
 
-            // Tạo preview URL cho ảnh
+            // Create preview URL
             const previewUrl = URL.createObjectURL(file);
             setImagePreview(previewUrl);
             
-            // Lưu file để đợi upload khi save
-            console.log('File to upload:', file);
+            // Save file for later upload
             setEditedUser(prev => ({
                 ...prev,
                 newAvatarFile: file
@@ -174,24 +169,23 @@ const ProfilePage = () => {
     };
 
     const handleSave = async () => {
-        setIsSavingProfile(true); // Start loading
+        setIsSavingProfile(true);
         try {
-            console.log('Saving profile with editedUser:', editedUser);
             await userService.updateProfile(editedUser);
             setIsEditing(false);
             await fetchUserProfile();
             
-            // Xóa preview
+            // Clean up image preview
             if (imagePreview) {
                 URL.revokeObjectURL(imagePreview);
                 setImagePreview(null);
             }
-            alert('Profile cập nhật thành công!'); // Success message
+            alert('Cập nhật thông tin thành công!');
         } catch (error) {
             console.error('Error saving profile:', error);
-            alert('Failed to save changes');
+            alert('Có lỗi xảy ra khi cập nhật thông tin');
         } finally {
-            setIsSavingProfile(false); // Stop loading regardless of success or failure
+            setIsSavingProfile(false);
         }
     };
 
@@ -221,7 +215,6 @@ const ProfilePage = () => {
 
         // Basic type check
         if (isNaN(numValue) || !Number.isInteger(numValue)) {
-            // Optionally provide feedback or just ignore invalid non-numeric/non-integer input
             return; 
         }
 
@@ -230,34 +223,29 @@ const ProfilePage = () => {
             if (numValue >= 30) {
                 setEditedGoal(prev => ({
                     ...prev,
-                    [field]: numValue // Store as number if valid
+                    [field]: numValue
                 }));
             } else if (value.length <= String(numValue).length && numValue >= 0 && numValue < 30) {
-                // Allow typing numbers less than 30, but don't update state if it *becomes* less than 30
-                // This prevents blocking typing '1' or '2' on the way to '30'
                 setEditedGoal(prev => ({ ...prev, [field]: value }));
             } else if (numValue < 0) {
-                // Prevent negative numbers explicitly
                 return;
             }
         } else if (field === 'scoreTarget') {
             if (numValue >= 300 && numValue <= 990) {
                 setEditedGoal(prev => ({
                     ...prev,
-                    [field]: numValue // Store as number if valid
+                    [field]: numValue
                 }));
             } else if (value.length <= String(numValue).length && numValue >= 0 && numValue < 300) {
-                 // Allow typing numbers less than 300
-                 setEditedGoal(prev => ({ ...prev, [field]: value }));
+                setEditedGoal(prev => ({ ...prev, [field]: value }));
             } else if (numValue > 990 || numValue < 0) {
-                 // Prevent numbers outside 0-990 range (negative handled above)
-                 return;
+                return;
             }
         }
     };
 
     const handleGoalSave = async () => {
-        // Validate before saving - ensure values meet the criteria finally
+        // Validate before saving
         const finalDuration = Number(editedGoal.duration);
         const finalScoreTarget = Number(editedGoal.scoreTarget);
 
@@ -296,40 +284,45 @@ const ProfilePage = () => {
         }
     };
 
+    // Calculate progress percentage if learning goal exists
+    const calculateProgress = () => {
+        if (!learningGoal) return 0;
+        // Sample calculation - in reality would be based on actual progress
+        return 35; // 35% progress for demo purposes
+    };
+
     return (
         <>
             <Header />
-            <div className="containerprofile">
-                <div className="grid-container">
-                    {/* Profile Card */}
-                    <div className="profile-card">
-                        <div className="profile-content">
-                            <div className="profile-image-container">
-                                <img
-                                    alt="Profile"
-                                    className="profile-image"
-                                    src={imagePreview || user.avatar || '/assets/img/Placeholder-Profile-Image.jpg'}
-                                />
-                                {isEditing && (
-                                    <div className="image-upload-overlay">
-                                        <input
-                                            type="file"
-                                            id="avatar-upload"
-                                            accept="image/*"
-                                            style={{ display: 'none' }}
-                                            onChange={handleImageChange}
-                                        />
-                                        <label htmlFor="avatar-upload" className="upload-button">
-                                            Thay đổi ảnh
-                                        </label>
-                                    </div>
-                                )}
-                            </div>
-                            <h2 className="profile-name">{user.fullName}</h2>
-                            <p className="profile-title">TOEIC Learner</p>
-                            <div className="profile-buttons">
+            <div className="profile-container">
+                {/* Profile Header with Cover Photo and User Info */}
+                <div className="profile-header">
+                    <div className="profile-header-cover"></div>
+                    <div className="profile-header-content">
+                        <div className="profile-avatar-wrapper">
+                            <img
+                                src={imagePreview || user.avatar || '/assets/img/Placeholder-Profile-Image.jpg'}
+                                alt="Profile"
+                                className="profile-avatar"
+                            />
+                            {isEditing && (
+                                <label className="profile-avatar-edit" htmlFor="avatar-upload">
+                                    <FaCamera />
+                                    <input
+                                        type="file"
+                                        id="avatar-upload"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                    />
+                                </label>
+                            )}
+                        </div>
+                        <div className="profile-user-info">
+                            <h1 className="profile-user-name">{user.fullName}</h1>
+                            <p className="profile-user-title">TOEIC Learner</p>
+                            <div className="profile-actions">
                                 <button
-                                    className={`btn-primary ${isSavingProfile ? 'is-loading' : ''}`}
+                                    className={`profile-btn profile-btn-primary ${isSavingProfile ? 'is-loading' : ''}`}
                                     onClick={() => {
                                         if (isEditing) {
                                             handleSave();
@@ -337,226 +330,322 @@ const ProfilePage = () => {
                                             handleEditToggle();
                                         }
                                     }}
-                                    disabled={isSavingProfile} // Disable button when loading
+                                    disabled={isSavingProfile}
                                 >
-                                    <span className="btn-text">{isEditing ? 'SAVE' : 'EDIT PROFILE'}</span>
+                                    {isEditing ? (
+                                        <>
+                                            <FaRegCheckCircle className="profile-icon" />
+                                            Lưu thông tin
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaUserEdit className="profile-icon" />
+                                            Chỉnh sửa
+                                        </>
+                                    )}
                                 </button>
-                                <button
-                                    className="btn-secondary"
-                                    onClick={handleLogout}
-                                >
-                                    ĐĂNG XUẤT
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Contact Information */}
-                    <div className="contact-info">
-                        <div className="contact-grid">
-                            <div className="contact-item">
-                                <p className="contact-label">Full Name</p>
-                                {isEditing ? (
-                                    <input
-                                        type="text"
-                                        value={editedUser?.fullName || ''}
-                                        onChange={(e) => handleInputChange('fullName', e.target.value)}
-                                        className="edit-input"
-                                    />
-                                ) : (
-                                    <p className="contact-value">{user.fullName || 'Not Provided'}</p>
-                                )}
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Email</p>
-                                <p className="contact-value">{user.email || 'Not Provided'}</p>
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Phone Number</p>
-                                {isEditing ? (
-                                    <input
-                                        type="text"
-                                        value={editedUser?.phoneNumber || ''}
-                                        onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                                        className="edit-input"
-                                    />
-                                ) : (
-                                    <p className="contact-value">{user.phoneNumber || 'Not Provided'}</p>
-                                )}
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Gender</p>
-                                {isEditing ? (
-                                    <select
-                                        value={editedUser?.gender || ''}
-                                        onChange={(e) => handleInputChange('gender', e.target.value)}
-                                        className="edit-input"
-                                    >
-                                        <option value="">Select Gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                ) : (
-                                    <p className="contact-value">{user.gender || 'Not Provided'}</p>
-                                )}
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Date of Birth</p>
-                                {isEditing ? (
-                                    <input
-                                        type="date"
-                                        value={editedUser?.dateOfBirth?.split('T')[0] || ''}
-                                        onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                                        className="edit-input"
-                                    />
-                                ) : (
-                                    <p className="contact-value">
-                                        {user.dateOfBirth && user.dateOfBirth !== '' ?
-                                            new Date(user.dateOfBirth).toLocaleDateString() :
-                                            'Not Provided'}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="contact-item">
-                                <p className="contact-label">Password</p>
-                                <button className="btn-primary" onClick={openPasswordPopup}>
-                                    Change Password
+                                <button className="profile-btn profile-btn-secondary" onClick={handleLogout}>
+                                    Đăng xuất
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid-container">
-                    {/* Social Links */}
-                    <div className="social-links">
-                     
-                    </div>
-                    {/* Account Information */}
-                    <div className="account-info">
-                        <h3 className="section-title">Account Details</h3>
-                        <div className="info-grid">
-                            <div className="info-item">
-                                <p className="info-label">Member Since:</p>
-                                <p className="info-value">
-                                    • {user.joinAt ? new Date(user.joinAt).toLocaleDateString() : 'Not Available'}
-                                </p>
+                {/* Main Content Grid */}
+                <div className="profile-content">
+                    {/* Left Sidebar */}
+                    <div className="profile-sidebar">
+                        {/* Personal Information Card */}
+                        <div className="profile-card">
+                            <div className="profile-card-header">
+                                <h3 className="profile-card-title">
+                                    <FaUser className="profile-icon" /> Thông tin cá nhân
+                                </h3>
                             </div>
-                            <div className="info-item">
-                                <p className="info-label">Account Status:</p>
-                                •<p className="info-value badge">{user.status || 'Active'}</p>
-                            </div>
-                            <div className="info-item">
-                                <p className="info-label">Last Updated:</p>
-                                <p className="info-value">
-                                    • {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'Not Available'}
-                                </p>
+                            <div className="profile-card-body">
+                                <div className="profile-info-list">
+                                    <div className="profile-info-item">
+                                        <label className="profile-info-label">Họ tên</label>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className="profile-info-edit"
+                                                value={editedUser?.fullName || ''}
+                                                onChange={(e) => handleInputChange('fullName', e.target.value)}
+                                            />
+                                        ) : (
+                                            <div className="profile-info-value">{user.fullName || 'Chưa cập nhật'}</div>
+                                        )}
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <label className="profile-info-label">Email</label>
+                                        <div className="profile-info-value">{user.email || 'Chưa cập nhật'}</div>
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <label className="profile-info-label">Số điện thoại</label>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className="profile-info-edit"
+                                                value={editedUser?.phoneNumber || ''}
+                                                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                                            />
+                                        ) : (
+                                            <div className="profile-info-value">{user.phoneNumber || 'Chưa cập nhật'}</div>
+                                        )}
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <label className="profile-info-label">Giới tính</label>
+                                        {isEditing ? (
+                                            <select
+                                                className="profile-info-edit"
+                                                value={editedUser?.gender || ''}
+                                                onChange={(e) => handleInputChange('gender', e.target.value)}
+                                            >
+                                                <option value="">Chọn giới tính</option>
+                                                <option value="male">Nam</option>
+                                                <option value="female">Nữ</option>
+                                                <option value="other">Khác</option>
+                                            </select>
+                                        ) : (
+                                            <div className="profile-info-value">
+                                                {user.gender === 'male' ? 'Nam' : 
+                                                 user.gender === 'female' ? 'Nữ' : 
+                                                 user.gender === 'other' ? 'Khác' : 'Chưa cập nhật'}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <label className="profile-info-label">Ngày sinh</label>
+                                        {isEditing ? (
+                                            <input
+                                                type="date"
+                                                className="profile-info-edit"
+                                                value={editedUser?.dateOfBirth?.split('T')[0] || ''}
+                                                onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                                            />
+                                        ) : (
+                                            <div className="profile-info-value">
+                                                {user.dateOfBirth && user.dateOfBirth !== '' ?
+                                                new Date(user.dateOfBirth).toLocaleDateString() : 'Chưa cập nhật'}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <label className="profile-info-label">Mật khẩu</label>
+                                        <button className="profile-btn profile-btn-primary" onClick={openPasswordPopup} style={{width: '100%'}}>
+                                            <FaLock className="profile-icon" /> Đổi mật khẩu
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div className="grid-container">
-                    {/* Learning Goal Section */}
-                    <div className="learning-goal-section">
-                        <h3 className="section-title">Mục tiêu học tập</h3>
-                        {isEditingGoal ? (
-                            <div className="goal-edit-form">
-                                <div className="form-group">
-                                    <label>Thời gian (ngày):</label>
-                                    <input
-                                        type="text"
-                                        value={editedGoal?.duration ?? ''}
-                                        onChange={(e) => handleGoalChange('duration', e.target.value)}
-                                        className="edit-input"
-                                        placeholder="Ít nhất 30 ngày"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Điểm mục tiêu:</label>
-                                    <input
-                                        type="text"
-                                        value={editedGoal?.scoreTarget ?? ''}
-                                        onChange={(e) => handleGoalChange('scoreTarget', e.target.value)}
-                                        className="edit-input"
-                                        placeholder="Từ 300 đến 990"
-                                    />
-                                </div>
-                                <div className="goal-buttons">
-                                    <button
-                                        className="btn-primary"
-                                        onClick={handleGoalSave}
-                                        disabled={!editedGoal?.duration || !editedGoal?.scoreTarget}
-                                    >
-                                        {learningGoal ? 'Cập nhật' : 'Lưu mục tiêu'}
-                                    </button>
-                                    <button className="btn-secondary" onClick={() => {
-                                        setIsEditingGoal(false);
-                                        setEditedGoal(learningGoal || null);
-                                    }}>
-                                        Hủy
-                                    </button>
-                                </div>
+                        {/* Account Information Card */}
+                        <div className="profile-card">
+                            <div className="profile-card-header">
+                                <h3 className="profile-card-title">
+                                    <FaBars className="profile-icon" /> Thông tin tài khoản
+                                </h3>
                             </div>
-                        ) : (
-                            !learningGoal ? (
-                                <div className="no-goal">
-                                    <p>Bạn chưa thiết lập mục tiêu học tập</p>
-                                    <button className="btn-primary" onClick={() => {
-                                        setIsEditingGoal(true);
-                                        setEditedGoal({
-                                            duration: '',
-                                            scoreTarget: '',
-                                            learnerId: user.id
-                                        });
-                                    }}>
-                                        Thiết lập mục tiêu
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="goal-content">
-                                    <div className="goal-info">
-                                        <div className="goal-item">
-                                            <p className="goal-label">Thời gian:</p>
-                                            <p className="goal-value">{learningGoal?.duration} ngày</p>
-                                        </div>
-                                        <div className="goal-item">
-                                            <p className="goal-label">Điểm mục tiêu:</p>
-                                            <p className="goal-value">{learningGoal?.scoreTarget} điểm</p>
+                            <div className="profile-card-body">
+                                <div className="profile-info-list">
+                                    <div className="profile-info-item">
+                                        <label className="profile-info-label">Ngày tham gia</label>
+                                        <div className="profile-info-value">
+                                            <FaRegCalendarAlt style={{marginRight: '8px'}} />
+                                            {user.joinAt ? new Date(user.joinAt).toLocaleDateString() : 'Không có dữ liệu'}
                                         </div>
                                     </div>
-                                    <button className="btn-primary" onClick={() => {
-                                        setIsEditingGoal(true);
-                                        setEditedGoal({...learningGoal});
-                                    }}>
-                                        Chỉnh sửa mục tiêu
-                                    </button>
+                                    <div className="profile-info-item">
+                                        <label className="profile-info-label">Trạng thái tài khoản</label>
+                                        <div className="profile-info-value">
+                                            <span className="profile-badge success">{user.status || 'Active'}</span>
+                                        </div>
+                                    </div>
+                                    <div className="profile-info-item">
+                                        <label className="profile-info-label">Cập nhật cuối</label>
+                                        <div className="profile-info-value">
+                                            <FaRegClock style={{marginRight: '8px'}} />
+                                            {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'Không có dữ liệu'}
+                                        </div>
+                                    </div>
                                 </div>
-                            )
-                        )}
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Account Statistics */}
-                    <div className="account-statistics">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-                            <h3 className="section-title" style={{ margin: 0 }}>Thống kê học tập</h3>
-                            <a href="/test-history" className="btn-primary" style={{ minWidth: 150 }}>
-                                Xem lịch sử làm bài
-                            </a>
+                    {/* Right Content */}
+                    <div className="profile-main">
+                        {/* Learning Statistics Card */}
+                        <div className="profile-card">
+                            <div className="profile-card-header">
+                                <h3 className="profile-card-title">
+                                    <FaChartLine className="profile-icon" /> Thống kê học tập
+                                </h3>
+                                <a href="/test-history" className="profile-btn profile-btn-primary" style={{padding: '8px 16px'}}>
+                                    Xem lịch sử làm bài
+                                </a>
+                            </div>
+                            <div className="profile-card-body">
+                                <div className="profile-stats-list">
+                                    <div className="profile-stat-item">
+                                        <div className="profile-stat-value">0/50</div>
+                                        <p className="profile-stat-label">Chủ đề ngữ pháp</p>
+                                    </div>
+                                    <div className="profile-stat-item">
+                                        <div className="profile-stat-value">0/100</div>
+                                        <p className="profile-stat-label">Bài tập đã làm</p>
+                                    </div>
+                                    <div className="profile-stat-item">
+                                        <div className="profile-stat-value">0</div>
+                                        <p className="profile-stat-label">Điểm TOEIC</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="statistics-grid">
-                            <div className="stat-item">
-                                <p className="stat-label">Số chủ đề ngữ pháp đã học:</p>
-                                <p className="stat-value">0/50</p>
+
+                        {/* Learning Goal Card */}
+                        <div className="profile-card">
+                            <div className="profile-card-header">
+                                <h3 className="profile-card-title">
+                                    <FaMedal className="profile-icon" /> Mục tiêu học tập
+                                </h3>
+                                {!isEditingGoal && learningGoal && (
+                                    <button 
+                                        className="profile-btn profile-btn-primary" 
+                                        onClick={handleGoalEdit}
+                                        style={{padding: '8px 16px'}}
+                                    >
+                                        Chỉnh sửa
+                                    </button>
+                                )}
                             </div>
-                            <div className="stat-item">
-                                <p className="stat-label">Số bài tập đã hoàn thành:</p>
-                                <p className="stat-value">0/100</p>
+                            <div className="profile-card-body">
+                                {isEditingGoal ? (
+                                    <div className="profile-goal-form">
+                                        <div className="profile-form-group">
+                                            <label>Thời gian (ngày)</label>
+                                            <input
+                                                type="text"
+                                                className="profile-info-edit"
+                                                value={editedGoal?.duration ?? ''}
+                                                onChange={(e) => handleGoalChange('duration', e.target.value)}
+                                                placeholder="Ít nhất 30 ngày"
+                                            />
+                                        </div>
+                                        <div className="profile-form-group">
+                                            <label>Điểm mục tiêu</label>
+                                            <input
+                                                type="text"
+                                                className="profile-info-edit"
+                                                value={editedGoal?.scoreTarget ?? ''}
+                                                onChange={(e) => handleGoalChange('scoreTarget', e.target.value)}
+                                                placeholder="Từ 300 đến 990"
+                                            />
+                                        </div>
+                                        <div className="profile-form-actions">
+                                            <button
+                                                className="profile-btn profile-btn-primary"
+                                                onClick={handleGoalSave}
+                                                disabled={!editedGoal?.duration || !editedGoal?.scoreTarget}
+                                            >
+                                                {learningGoal ? 'Cập nhật mục tiêu' : 'Lưu mục tiêu'}
+                                            </button>
+                                            <button
+                                                className="profile-btn profile-btn-secondary"
+                                                onClick={() => {
+                                                    setIsEditingGoal(false);
+                                                    setEditedGoal(learningGoal || null);
+                                                }}
+                                            >
+                                                Hủy bỏ
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : !learningGoal ? (
+                                    <div className="profile-empty-state">
+                                        <div className="profile-empty-icon"><FaCrown /></div>
+                                        <p className="profile-empty-text">Bạn chưa thiết lập mục tiêu học tập</p>
+                                        <button
+                                            className="profile-btn profile-btn-primary"
+                                            onClick={() => {
+                                                setIsEditingGoal(true);
+                                                setEditedGoal({
+                                                    duration: '',
+                                                    scoreTarget: '',
+                                                    learnerId: user.id
+                                                });
+                                            }}
+                                        >
+                                            Thiết lập mục tiêu
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="profile-goal-progress">
+                                        <div className="profile-goal-header">
+                                            <h4 className="profile-goal-title">Tiến độ học tập</h4>
+                                            <span>{calculateProgress()}%</span>
+                                        </div>
+                                        <div className="profile-progress-container">
+                                            <div className="profile-progress-bar">
+                                                <div 
+                                                    className="profile-progress-fill" 
+                                                    style={{ width: `${calculateProgress()}%` }}
+                                                ></div>
+                                            </div>
+                                            <div className="profile-progress-stats">
+                                                <span>0 điểm</span>
+                                                <span>{learningGoal.scoreTarget} điểm</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="profile-goal-metrics">
+                                            <div className="profile-goal-metric">
+                                                <div className="profile-goal-metric-value">{learningGoal.duration}</div>
+                                                <div className="profile-goal-metric-label">Số ngày mục tiêu</div>
+                                            </div>
+                                            <div className="profile-goal-metric">
+                                                <div className="profile-goal-metric-value">{learningGoal.scoreTarget}</div>
+                                                <div className="profile-goal-metric-label">Điểm TOEIC mục tiêu</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                            <div className="stat-item">
-                                <p className="stat-label">Điểm TOEIC hiện tại:</p>
-                                <p className="stat-value">Chưa có</p>
+                        </div>
+
+                        {/* Recent Activity Card */}
+                        <div className="profile-card">
+                            <div className="profile-card-header">
+                                <h3 className="profile-card-title">
+                                    <FaHistory className="profile-icon" /> Hoạt động gần đây
+                                </h3>
+                            </div>
+                            <div className="profile-card-body">
+                                {/* For demo, we'll show empty state. In real app, this would be populated from API */}
+                                <div className="profile-empty-state">
+                                    <div className="profile-empty-icon"><FaHistory /></div>
+                                    <p className="profile-empty-text">Chưa có hoạt động nào gần đây</p>
+                                </div>
+                                
+                                {/* Example activity items that would be shown if there was data */}
+                                {/* 
+                                <div className="profile-activity-list">
+                                    <div className="profile-activity-item">
+                                        <div className="profile-activity-icon">
+                                            <FaRegCheckCircle />
+                                        </div>
+                                        <div className="profile-activity-content">
+                                            <div className="profile-activity-title">Hoàn thành bài tập Part 5</div>
+                                            <p className="profile-activity-meta">
+                                                2 giờ trước • Điểm: <span className="profile-activity-score">85/100</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                */}
                             </div>
                         </div>
                     </div>

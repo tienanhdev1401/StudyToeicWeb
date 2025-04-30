@@ -4,7 +4,7 @@ import '../styles/DoTest.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TestService from '../services/TestService';
 import ScoreService from '../services/scoreService';
-import SubmissionService from '../services/SubmissionService';
+
 import ConfirmSubmitPopup from '../components/ConfirmSubmitPopup';
 import TestResultPopup from '../components/TestResultPopup';
 import TestGuidance from '../components/TestGuidance';
@@ -382,7 +382,8 @@ const DoTest = () => {
         const questionPart = question.part;
         
         // If this is a different part than before and we haven't visited it yet, show guidance
-        if (questionPart !== prevPartRef.current && !visitedParts[questionPart]) {
+        // Skip showing guidance if the test has been submitted
+        if (questionPart !== prevPartRef.current && !visitedParts[questionPart] && !isSubmitted) {
             setShowGuidance(true);
         }
         
@@ -403,7 +404,7 @@ const DoTest = () => {
             );
             setCurrentGroup(newGroup);
         }
-    }, [currentQuestion, filteredQuestions, visitedParts]);
+    }, [currentQuestion, filteredQuestions, visitedParts, isSubmitted]);
 
     // Tự động phát audio cho phần nghe (1-4)
     useEffect(() => {
@@ -1628,8 +1629,8 @@ const DoTest = () => {
                 />
             )}
 
-            {/* Show guidance if applicable and only when needed */}
-            {!loading && showGuidance && currentPart > 0 && (
+            {/* Show guidance only if not submitted and other conditions are met */}
+            {!loading && showGuidance && currentPart > 0 && !isSubmitted && (
                 <TestGuidance 
                     part={currentPart} 
                     onClose={handleGuidanceClose} 
