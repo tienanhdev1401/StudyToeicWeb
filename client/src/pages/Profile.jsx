@@ -54,11 +54,31 @@ const ProfilePage = () => {
     }, [isLoggedIn, userLoading, initialized, navigate]);
 
     useEffect(() => {
-        if (user) {
-            setEditedUser({ ...user });
+        if (user && !isEditing) {
+            // Chỉ cập nhật editedUser khi user thay đổi VÀ không ở chế độ chỉnh sửa
+            const userCopy = JSON.parse(JSON.stringify(user));
+            
+            // Đảm bảo giới tính được hiển thị đúng
+            if (userCopy.gender === null || userCopy.gender === undefined) {
+                userCopy.gender = '';
+            }
+            
+            setEditedUser(userCopy);
+            setLoading(false);
+        } else if (user && loading) {
+            // Lần đầu load trang
+            const userCopy = JSON.parse(JSON.stringify(user));
+            console.log("User data loaded (initial):", userCopy);
+            
+            // Đảm bảo giới tính được hiển thị đúng
+            if (userCopy.gender === null || userCopy.gender === undefined) {
+                userCopy.gender = '';
+            }
+            
+            setEditedUser(userCopy);
             setLoading(false);
         }
-    }, [user]);
+    }, [user, isEditing, loading]);
 
     useEffect(() => {
         const fetchLearningGoal = async () => {
@@ -159,11 +179,27 @@ const ProfilePage = () => {
         if (isEditing) {
             // Cancel editing - reset to original values
             setImagePreview(null);
-            setEditedUser({ ...user });
+            
+            // Đảm bảo sao chép tất cả thuộc tính của user
+            const userCopy = JSON.parse(JSON.stringify(user));
+            setEditedUser(userCopy);
             setIsEditing(false);
         } else {
             // Start editing - ensure we have the latest user data in the form
-            setEditedUser({ ...user });
+            
+            // Sao chép từ state hiện tại, không gọi lại dữ liệu từ server
+            // Điều này để tránh việc ghi đè dữ liệu đang nhập
+            if (!editedUser) {
+                const userCopy = JSON.parse(JSON.stringify(user));
+                
+                // Đảm bảo giới tính được hiển thị đúng
+                if (userCopy.gender === null || userCopy.gender === undefined) {
+                    userCopy.gender = '';
+                }
+                
+                setEditedUser(userCopy);
+            }
+            
             setIsEditing(true);
         }
     };
@@ -171,6 +207,7 @@ const ProfilePage = () => {
     const handleSave = async () => {
         setIsSavingProfile(true);
         try {
+            console.log("Saving profile with data:", editedUser);
             await userService.updateProfile(editedUser);
             setIsEditing(false);
             await fetchUserProfile();
@@ -190,10 +227,22 @@ const ProfilePage = () => {
     };
 
     const handleInputChange = (field, value) => {
-        setEditedUser(prev => ({
-            ...prev,
-            [field]: value
-        }));
+        console.log(`Changing ${field} to:`, value);
+        
+        if (field === 'gender') {
+            console.log("Cập nhật giới tính:", value);
+        }
+        
+        setEditedUser(prev => {
+            if (!prev) return { [field]: value };
+            
+            const updated = {
+                ...prev,
+                [field]: value
+            };
+            console.log("Updated user data:", updated);
+            return updated;
+        });
     };
 
     const handleGoalEdit = () => {
@@ -373,6 +422,8 @@ const ProfilePage = () => {
                                                 className="profile-info-edit"
                                                 value={editedUser?.fullName || ''}
                                                 onChange={(e) => handleInputChange('fullName', e.target.value)}
+                                                style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
+                                                autoComplete="off"
                                             />
                                         ) : (
                                             <div className="profile-info-value">{user.fullName || 'Chưa cập nhật'}</div>
@@ -390,6 +441,8 @@ const ProfilePage = () => {
                                                 className="profile-info-edit"
                                                 value={editedUser?.phoneNumber || ''}
                                                 onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                                                style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
+                                                autoComplete="off"
                                             />
                                         ) : (
                                             <div className="profile-info-value">{user.phoneNumber || 'Chưa cập nhật'}</div>
@@ -398,20 +451,29 @@ const ProfilePage = () => {
                                     <div className="profile-info-item">
                                         <label className="profile-info-label">Giới tính</label>
                                         {isEditing ? (
-                                            <select
-                                                className="profile-info-edit"
-                                                value={editedUser?.gender || ''}
-                                                onChange={(e) => handleInputChange('gender', e.target.value)}
-                                            >
-                                                <option value="">Chọn giới tính</option>
-                                                <option value="male">Nam</option>
-                                                <option value="female">Nữ</option>
-                                                <option value="other">Khác</option>
-                                            </select>
+                                            <div className="select-wrapper" style={{ position: 'relative', zIndex: 20 }}>
+                                                <select
+                                                    className="profile-info-edit"
+
+                                                    value={editedUser?.gender || ''}
+                                                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                                                    style={{ 
+                                                        position: 'relative', 
+                                                        zIndex: 20, 
+                                                        pointerEvents: 'auto',
+                                                        width: '100%'
+                                                    }}
+                                                >
+                                                    <option value="">Chọn giới tính</option>
+                                                    <option value="MALE">Nam</option>
+                                                    <option value="FEMALE">Nữ</option>
+                                                    <option value="other">Khác</option>
+                                                </select>
+                                            </div>
                                         ) : (
                                             <div className="profile-info-value">
-                                                {user.gender === 'male' ? 'Nam' : 
-                                                 user.gender === 'female' ? 'Nữ' : 
+                                                {user.gender === 'MALE' ? 'Nam' : 
+                                                 user.gender === 'FEMALE' ? 'Nữ' : 
                                                  user.gender === 'other' ? 'Khác' : 'Chưa cập nhật'}
                                             </div>
                                         )}
@@ -424,6 +486,7 @@ const ProfilePage = () => {
                                                 className="profile-info-edit"
                                                 value={editedUser?.dateOfBirth?.split('T')[0] || ''}
                                                 onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                                                style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}
                                             />
                                         ) : (
                                             <div className="profile-info-value">
