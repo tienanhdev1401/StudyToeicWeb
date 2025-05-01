@@ -640,11 +640,12 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
                 <table className="manageexercisequestion-question-table">
                   <thead>
                     <tr>
-                      <th>
+                      <th className="manageexercisequestion-checkbox-column">
                         <input 
                           type="checkbox" 
                           onChange={handleSelectAll}
                           checked={selectedQuestions.length === filteredQuestions.length && filteredQuestions.length > 0}
+                          aria-label="Select all questions"
                         />
                       </th>
                       <th>Question</th>
@@ -657,12 +658,13 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
                   </thead>
                   <tbody>
                     {filteredQuestions.map(question => (
-                      <tr key={question.id}>
-                        <td>
+                      <tr key={question.id} className={selectedQuestions.includes(question.id) ? 'selected-row' : ''}>
+                        <td className="manageexercisequestion-checkbox-column">
                           <input
                             type="checkbox"
                             checked={selectedQuestions.includes(question.id)}
                             onChange={() => handleSelectQuestion(question.id)}
+                            aria-label={`Select question ${question.id}`}
                           />
                         </td>
                         <td>{question.content}</td>
@@ -1127,6 +1129,7 @@ const ManageExerciseQuestion = () => {
                     checked={selectedItems.includes(item.id)}
                     onChange={() => handleSelectItem(item.id)}
                     onClick={handleCheckboxClick}
+                    aria-label={`Select question ${item.id}`}
                   />
                 </td>
                 <td className="manageexercisequestion-id-column">{item.id}</td>

@@ -234,8 +234,10 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
                       <th>
                         <input 
                           type="checkbox" 
+                          id="select-all-exercises"
                           onChange={handleSelectAll}
                           checked={selectedExercises.length === filteredExercises.length && filteredExercises.length > 0}
+                          disabled={filteredExercises.length === 0}
                         />
                       </th>
                       <th>ID</th>
@@ -257,6 +259,7 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
                           <td>
                             <input
                               type="checkbox"
+                              id={`exercise-${exercise.id}`}
                               checked={selectedExercises.includes(exercise.id)}
                               onChange={() => handleSelectExercise(exercise.id)}
                             />
@@ -273,6 +276,13 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
                   </tbody>
                 </table>
               </div>
+
+              {/* Add message showing selection count */}
+              {filteredExercises.length > 0 && (
+                <div className="selection-count">
+                  Đã chọn {selectedExercises.length} / {filteredExercises.length} bài tập
+                </div>
+              )}
             </form>
           )}
         </div>
@@ -880,8 +890,10 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
                       <th>
                         <input 
                           type="checkbox" 
+                          id="delete-select-all"
                           onChange={handleSelectAll}
                           checked={selectedExercises.length === filteredExercises.length && filteredExercises.length > 0}
+                          disabled={filteredExercises.length === 0}
                         />
                       </th>
                       <th>ID</th>
@@ -903,11 +915,16 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
                           <td>
                             <input
                               type="checkbox"
+                              id={`delete-exercise-${exercise.id}`}
                               checked={selectedExercises.includes(exercise.id)}
                               onChange={() => handleSelectExercise(exercise.id)}
                             />
                           </td>
-                          <td>{exercise.id}</td>
+                          <td>
+                            <div className="id-cell">
+                              <span>{exercise.id}</span>
+                            </div>
+                          </td>
                           <td className="text-left">{exercise.title}</td>
                         </tr>
                       ))
@@ -915,6 +932,13 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
                   </tbody>
                 </table>
               </div>
+
+              {/* Add message showing selection count */}
+              {filteredExercises.length > 0 && (
+                <div className="selection-count">
+                  Đã chọn {selectedExercises.length} / {filteredExercises.length} bài tập
+                </div>
+              )}
             </form>
           )}
         </div>
