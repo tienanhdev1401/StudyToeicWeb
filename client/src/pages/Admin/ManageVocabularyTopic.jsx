@@ -714,7 +714,7 @@ const ManageVocabularyTopic = () => {
                   onClick={handleCheckboxClick}
                 />
                 <span onClick={() => handleSort('vocabularyTopic.id')} className="vocabularyTopic-sortable">
-                  STT
+                  ID
                   <i className={`fas ${sortField === 'vocabularyTopic.id' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
                 </span>
               </div>

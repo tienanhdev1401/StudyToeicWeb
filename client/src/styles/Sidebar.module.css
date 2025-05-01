@@ -1,5 +1,5 @@
 .sidebar {
-  width: 290px;
+  width: 280px;
   background-color: #ffffff;
   height: 100vh;
   padding: 1rem;
@@ -12,18 +12,21 @@
   display: flex;
   align-items: center;
   margin-bottom: 2rem;
+  color: #111827; 
 }
 
 .logo {
   margin-right: 0.5rem;
   width: 5rem;
   height: 5rem;
+  color: #111827;
 }
 
 .logoText {
   font-size: 25px;
   font-weight: bold;
-  color: #111827;
+  color: #0c3ba1;
+  font-family: 'Poppins', sans-serif;
 }
 
 .menuItem {

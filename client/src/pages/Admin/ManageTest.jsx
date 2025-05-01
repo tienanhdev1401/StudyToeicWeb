@@ -139,10 +139,10 @@ const ManageTest = () => {
 
   // Filter data based on search term
   const filteredData = testList.filter(item =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.testCollection.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.numberOfAttempts.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.averageScore.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.testCollection?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.duration?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.id?.toString().toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Sort data
