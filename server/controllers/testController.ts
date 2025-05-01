@@ -1,36 +1,28 @@
-import { TestCollectionRepository } from './../repositories/testCollectionRepository';
 import { Request, Response } from 'express';
 import { TestRepository } from '../repositories/testRepository';
-import { PartRepository } from '../repositories/partRepository';
-import { QuestionInAPartRepository } from '../repositories/questionInAPartRepository';
-import { QuestionController } from './questionController';
+
+// Cache cho kết quả API
+const testCache: Map<string, { data: any, timestamp: number }> = new Map();
+// Thời gian cache hết hạn (5 phút)
+const CACHE_EXPIRATION = 5 * 60 * 1000;
 
 export class TestController {
   private testRepository: TestRepository;
-  private partRepository: PartRepository;
-  private questionInAPartRepository: QuestionInAPartRepository;
-  private questionController: QuestionController;
-  private testCollectionRepository: TestCollectionRepository;
 
   constructor() {
     this.testRepository = new TestRepository();
-    this.partRepository = new PartRepository();
-    this.questionInAPartRepository = new QuestionInAPartRepository();
-    this.questionController = new QuestionController();
-    this.testCollectionRepository = new TestCollectionRepository();
   }
+  
   getRandomCompletions(): string {
-    // Random từ 5000 đến 50000
     const num = Math.floor(Math.random() * (50000 - 5000) + 5000);
-    // Format số với dấu chấm phân cách hàng nghìn
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
+  
   async getAllTests(req: Request, res: Response) {
     try {
       // Lấy tất cả các bài test
       const tests = await this.testRepository.findAll();
   
-      // Nhóm các bài test theo testCollection
       const grouped: Record<string, any[]> = {};
       tests.forEach(test => {
         const collectionKey = test.testCollection || 'Khác';
@@ -44,9 +36,8 @@ export class TestController {
         });
       });
   
-      // Format lại thành mảng
       const result = Object.entries(grouped).map(([title, tests], index) => ({
-        id: index + 1, // Tạo id tạm (auto-increment)
+        id: index + 1,
         title,
         tests
       }));
@@ -58,34 +49,52 @@ export class TestController {
     }
   }
   
-    async getTestById(req: Request, res: Response) {
+  /**
+   * Lấy bài kiểm tra theo ID với đầy đủ thông tin
+   */
+  async getTestById(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ error: 'ID không hợp lệ' });
       }
 
-      const test = await this.testRepository.findById(id);
+      // Kiểm tra cache trước khi truy vấn database
+      const cacheKey = `test-${id}`;
+      const cachedData = testCache.get(cacheKey);
+      if (cachedData && (Date.now() - cachedData.timestamp < CACHE_EXPIRATION)) {
+        console.log(`Sử dụng dữ liệu cache cho test ID ${id}`);
+        return res.status(200).json(cachedData.data);
+      }
+
+      console.time(`getTestById-${id}`);
+      
+      // Lấy dữ liệu đầy đủ
+      const test = await this.testRepository.getTestWithDetails(id);
+      
       if (!test) {
         return res.status(404).json({ error: 'Không tìm thấy bài kiểm tra' });
       }
-      const parts = await this.partRepository.findByTestId(test.id);
-      test.parts = parts;
-
-      for (const part of parts) {
-        const questionInAParts = await this.questionInAPartRepository.findByPartId(part.id);
-        part.questions = questionInAParts;
-        const questionIds = questionInAParts.map(qp => qp.QuestionId);
-        const questions = await this.questionController.getQuestionsByIds(questionIds);
-        for (const questionInAPart of questionInAParts) {
-          questionInAPart.question = questions.find(q => q.id === questionInAPart.QuestionId);
-        }
-      }
-
+      
+      console.timeEnd(`getTestById-${id}`);
+      
+      // Lưu vào cache
+      testCache.set(cacheKey, { data: test, timestamp: Date.now() });
+      
       return res.status(200).json(test);
     } catch (error) {
       console.error('TestController.getTestById error:', error);
       return res.status(500).json({ error: 'Lỗi máy chủ' });
+    }
+  }
+  
+  // Xóa cache theo ID
+  clearCache(id?: number) {
+    if (id) {
+      // Xóa cache theo ID
+      testCache.delete(`test-${id}`);
+    } else {
+      testCache.clear();
     }
   }
 }

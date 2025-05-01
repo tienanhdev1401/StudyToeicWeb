@@ -634,7 +634,7 @@
 }
 
 /* Fix cho iOS */
-input, textarea {
+.profile-container input, .profile-container textarea {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;

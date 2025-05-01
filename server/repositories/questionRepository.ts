@@ -7,7 +7,7 @@ export class QuestionRepository {
   async findById(id: number): Promise<Question | null> {
     try {
       const [rows] = await db.query(
-        'SELECT * FROM questions WHERE id = ?',
+        'SELECT q.*, r.explain_resource, r.urlAudio, r.urlImage FROM questions q LEFT JOIN resources r ON q.ResourceId = r.id WHERE q.id = ?',
         [id]
       );
       
@@ -15,7 +15,14 @@ export class QuestionRepository {
       if (!questions.length) return null;
 
       const question = questions[0];
-      const resource = question.ResourceId ? await ResourceRepository.findById(question.resourceId) : null;
+      const resource = question.ResourceId ? 
+        new Resource(
+          question.ResourceId,
+          question.explain_resource,
+          question.urlAudio,
+          question.urlImage
+        ) : null;
+
       return new Question(
         question.id,
         question.content,
@@ -40,14 +47,27 @@ export class QuestionRepository {
       }
       const placeholders = ids.map(() => '?').join(',');
       const rows = await db.query(
-        `SELECT * FROM questions WHERE id IN (${placeholders})`,
+        `SELECT q.*, r.explain_resource, r.urlAudio, r.urlImage 
+         FROM questions q 
+         LEFT JOIN resources r ON q.ResourceId = r.id 
+         WHERE q.id IN (${placeholders})`,
         ids
       );
+      
+      // Ensure rows is an array
       const results = Array.isArray(rows) ? rows : [rows];
-      const questions = await Promise.all(results.map(async row => {
+      
+      // Map rows to Question objects
+      const questions = results.map(row => {
+        // Create resource object if ResourceId exists
         const resource = row.ResourceId ? 
-          await ResourceRepository.findById(Number(row.ResourceId)) : 
-          null;
+          new Resource(
+            Number(row.ResourceId),
+            row.explain_resource,
+            row.urlAudio,
+            row.urlImage
+          ) : null;
+          
         return new Question(
           Number(row.id),
           row.content,
@@ -59,7 +79,7 @@ export class QuestionRepository {
           row.option_d,    
           resource
         );
-      }));
+      });
   
       return questions;
     } catch (error) {

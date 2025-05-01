@@ -15,10 +15,12 @@ class Database {
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE,
       waitForConnections: true,
-      connectionLimit: 20,
+      connectionLimit: 50,           // Tăng giới hạn kết nối
       queueLimit: 0,
-      connectTimeout: 60000,       // Tăng timeout lên 60 giây
-      typeCast: true               // Bật type casting
+      connectTimeout: 60000,         // Timeout 60 giây
+      typeCast: true,                // Bật type casting
+      multipleStatements: true,      // Cho phép nhiều câu lệnh SQL
+      namedPlaceholders: true        // Sử dụng placeholders có tên
     });
     console.log('Khởi tạo pool kết nối database');
   }
@@ -32,7 +34,12 @@ class Database {
 
   async query(sql: string, values?: any): Promise<any> {
     try {
-      const [results] = await this.pool.query(sql, values);
+      const [results] = await this.pool.query({
+        sql,
+        values,
+        // Tăng timeout cho các truy vấn phức tạp
+        timeout: 30000
+      });
       return results;
     } catch (error) {
       throw error;
