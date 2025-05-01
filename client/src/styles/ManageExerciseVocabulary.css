@@ -1,0 +1,961 @@
+/* Grammar Topic Management styles */
+.ManageExerciseVocabulary-container {
+  padding: 30px;
+  font-family: 'Arial', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  font-size: 16px;
+}
+
+.ManageExerciseVocabulary-header-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.ManageExerciseVocabulary-topic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ManageExerciseVocabulary-back-btn {
+  background-color: white;
+  border: 1px solid #c7c7c7;
+  padding: 8px 15px;
+  border-radius: 0.5rem;
+  margin-right: 20px;
+  cursor: pointer;
+  display: flex;
+  color: #303133;
+  align-items: center;
+  transition: all 0.2s;
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-back-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.ManageExerciseVocabulary-back-btn i {
+  margin-right: 8px;
+}
+
+.ManageExerciseVocabulary-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ManageExerciseVocabulary-entries-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ManageExerciseVocabulary-entries-select p {
+  margin: 0;
+  color: #9a9a9b;
+  font-size: 1.25rem;
+}
+
+.ManageExerciseVocabulary-entries-dropdown {
+  padding: 6px 10px;
+  border: 1px solid #c7c7c7;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: #303133;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.ManageExerciseVocabulary-entries-dropdown:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.ManageExerciseVocabulary-action-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ManageExerciseVocabulary-search-box {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #c7c7c7;
+  border-radius: 0.5rem;
+  padding: 1px 16px;
+  width: 300px;
+  position: relative;
+}
+
+.ManageExerciseVocabulary-search-box i {
+  color: #9ca3af;
+  font-size: 1.25rem;
+  margin-right: 8px;
+}
+
+.ManageExerciseVocabulary-search-input {
+  flex-grow: 1;
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  color: #1f2937;
+  padding: 8px 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none;
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-search-input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.ManageExerciseVocabulary-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  background-color: gray;
+  color: white;
+}
+
+.ManageExerciseVocabulary-add-btn:hover {
+  background-color: green;
+}
+
+.ManageExerciseVocabulary-add-btn i {
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-table {
+  margin-top: 20px;
+  width: 100%;
+  table-layout: fixed;
+  max-width: 1150px;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 80px;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.ManageExerciseVocabulary-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.ManageExerciseVocabulary-table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.ManageExerciseVocabulary-table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+.ManageExerciseVocabulary-table th {
+  padding: 16px;
+  text-align: center;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  color: #344054;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.ManageExerciseVocabulary-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.ManageExerciseVocabulary-table th.sortable {
+  cursor: pointer;
+  position: relative;
+  padding-right: 25px;
+}
+
+.ManageExerciseVocabulary-table th.sortable:hover {
+  background-color: #f5f5f5;
+}
+
+.ManageExerciseVocabulary-table th.sortable i {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-table th.sortable:hover i {
+  color: #666;
+}
+
+.ManageExerciseVocabulary-table i.fa-sort-up,
+.ManageExerciseVocabulary-table i.fa-sort-down {
+  color: #333;
+}
+
+.ManageExerciseVocabulary-id-header, 
+.ManageExerciseVocabulary-id-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ManageExerciseVocabulary-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-title {
+  font-weight: 500;
+  color: #333;
+  font-size: 15px;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.ManageExerciseVocabulary-content {
+  max-height: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #666;
+  font-size: 14px;
+}
+
+.ManageExerciseVocabulary-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.ManageExerciseVocabulary-exercise-count-badge {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Column width definitions for the grammar topic table - Updated for 4 columns */
+.ManageExerciseVocabulary-id-column {
+  width: 8%;
+  text-align: center;
+}
+
+.ManageExerciseVocabulary-title-column {
+  width: 55%;
+}
+
+.ManageExerciseVocabulary-exercise-count-column {
+  width: 12%;
+  text-align: center;
+}
+
+.ManageExerciseVocabulary-actions-column {
+  width: 25%;
+  text-align: center;
+}
+
+.ManageExerciseVocabulary-id-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ManageExerciseVocabulary-pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ManageExerciseVocabulary-page-btn {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  background-color: white;
+  color: #0d6efd;
+  cursor: pointer;
+  min-width: 38px;
+  border-radius: 4px;
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-page-btn:hover:not(:disabled) {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  color: #0a58ca;
+}
+
+.ManageExerciseVocabulary-page-btn.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+}
+
+.ManageExerciseVocabulary-page-btn:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.ManageExerciseVocabulary-page-dots {
+  padding: 6px 12px;
+  color: #6c757d;
+  font-weight: bold;
+}
+
+.ManageExerciseVocabulary-table-action-bar {
+  background-color: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 20px;
+  padding: 12px 20px;
+}
+
+.ManageExerciseVocabulary-action-bar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ManageExerciseVocabulary-action-bar-content span {
+  color: #666;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-delete-selected-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-delete-selected-btn:hover {
+  background-color: #c82333;
+}
+
+.ManageExerciseVocabulary-delete-selected-btn i {
+  font-size: 15px;
+}
+
+/* Modal styles for grammar topic management */
+.ManageExerciseVocabulary-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.ManageExerciseVocabulary-modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ManageExerciseVocabulary-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ManageExerciseVocabulary-modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.ManageExerciseVocabulary-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.ManageExerciseVocabulary-modal-body {
+  padding: 24px;
+  color: #4b5563;
+  font-size: 15px;
+  overflow-y: auto;
+  max-height: calc(90vh - 120px); /* Trừ đi chiều cao của header và footer */
+}
+
+.ManageExerciseVocabulary-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background-color: white;
+  position: sticky;
+  bottom: 0;
+}
+
+.ManageExerciseVocabulary-save-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  background-color: #1976d2;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.ManageExerciseVocabulary-confirm-delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.ManageExerciseVocabulary-cancel-btn {
+  padding: 8px 16px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  color: #374151;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.ManageExerciseVocabulary-save-btn:hover {
+  background-color: #1565c0;
+}
+
+.ManageExerciseVocabulary-cancel-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* Form-specific styles for grammar topic management */
+.ManageExerciseVocabulary-form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.ManageExerciseVocabulary-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 16px;
+}
+
+.ManageExerciseVocabulary-required {
+  color: #e53935;
+  margin-left: 2px;
+}
+
+.ManageExerciseVocabulary-form-group input, 
+.ManageExerciseVocabulary-form-group textarea,
+.ManageExerciseVocabulary-form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.ManageExerciseVocabulary-form-group input:focus, 
+.ManageExerciseVocabulary-form-group textarea:focus,
+.ManageExerciseVocabulary-form-group select:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.ManageExerciseVocabulary-form-group.has-error input, 
+.ManageExerciseVocabulary-form-group.has-error textarea,
+.ManageExerciseVocabulary-form-group.has-error select {
+  border-color: #e53935;
+}
+
+.ManageExerciseVocabulary-error-message {
+  color: #e53935;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* File upload for Word documents */
+.ManageExerciseVocabulary-doc-file-upload {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ManageExerciseVocabulary-doc-file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: fit-content;
+  transition: background-color 0.2s;
+}
+
+.ManageExerciseVocabulary-doc-file-label:hover {
+  background-color: #3a7bc8;
+}
+
+.ManageExerciseVocabulary-doc-file-name {
+  font-size: 14px;
+  color: #555;
+  margin-left: 8px;
+}
+
+/* Image upload for grammar topics */
+.ManageExerciseVocabulary-image-upload-container {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.ManageExerciseVocabulary-image-file-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #4a90e2;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.ManageExerciseVocabulary-image-file-label:hover {
+  background-color: #3a7bc8;
+}
+
+.ManageExerciseVocabulary-image-file-label i {
+  margin-right: 5px;
+}
+
+.ManageExerciseVocabulary-image-file-name {
+  margin-left: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.ManageExerciseVocabulary-image-preview {
+  margin-top: 10px;
+  width: 100%;
+  height: 150px;
+  border: 1px dashed #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #f9f9f9;
+}
+
+.ManageExerciseVocabulary-image-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.ManageExerciseVocabulary-empty-table {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.ManageExerciseVocabulary-empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: #666;
+  font-size: 16px;
+}
+
+.ManageExerciseVocabulary-empty-message i {
+  font-size: 3.5rem;
+  color: #d1d1d1;
+}
+
+.ManageExerciseVocabulary-empty-message p {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.ManageExerciseVocabulary-empty-message .ManageExerciseVocabulary-add-btn {
+  max-width: 200px;
+}
+
+/* Loading and error states */
+.ManageExerciseVocabulary-loading,
+.ManageExerciseVocabulary-error {
+  text-align: center;
+  padding: 40px 0;
+  font-size: 20px;
+}
+
+.ManageExerciseVocabulary-loading {
+  color: #4a90e2;
+}
+
+.ManageExerciseVocabulary-error {
+  color: #e53935;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .ManageExerciseVocabulary-container {
+    padding: 15px;
+    font-size: 15px;
+  }
+  
+  .ManageExerciseVocabulary-table {
+    font-size: 14px;
+  }
+  
+  .ManageExerciseVocabulary-table th,
+  .ManageExerciseVocabulary-table td {
+    padding: 10px;
+  }
+  
+  .ManageExerciseVocabulary-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .ManageExerciseVocabulary-search-box {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* Content preview styles */
+.ManageExerciseVocabulary-content-preview {
+  min-height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+}
+
+.ManageExerciseVocabulary-content-html-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ManageExerciseVocabulary-content-html-preview p {
+  margin: 0;
+  font-weight: 500;
+  color: #28a745;
+}
+
+.ManageExerciseVocabulary-content-html-length {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.ManageExerciseVocabulary-no-content {
+  color: #6c757d;
+  font-style: italic;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+}
+
+/* Edit Exercises button style */
+.ManageGrammarTopic-edit-exercises-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: #4a90e2;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.ManageExerciseGrammarit-exercises-btn:hover {
+  background-color: #3a7bc8;
+}
+
+.ManageExerciseGrammarit-exercises-btn i {
+  font-size: 14px;
+}
+
+/* Exercise modal styles */
+.ManageExerciseGrammarercises-modal {
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+}
+
+.ManageExerciseGrammarercises-top-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.ManageExerciseVocabulary-rch-exercise-box ManageExerciseGrammar {
+  align-items: center;
+  background-color: white;
+  border: 1px solid #c7c7c7;
+  border-radius: 0.5rem;
+  padding: 1px 16px;
+  flex-grow: 1;
+  position: relative;
+}
+
+.ManageExerciseVocabulary-earch-exercise-box i {
+  color: #9ca3af;
+  font-size: 1.25rem;
+  margin-right: 8px;
+}
+
+.ManageExerciseVocabulary-earch-exercise-input {
+  flex-grow: 1;
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  color: #1f2937;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.ManageExerciseVocabulary-earch-exercise-input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.ManageExerciseVocabulary-xercises-top-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.ManageExerciseVocabulary-xercises-table-container {
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.ManageExerciseVocabulary-xercises-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.ManageExerciseVocabulary-xercises-table th,
+.ManageExerciseVocabulary-xercises-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ManageExerciseVocabulary-xercises-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.ManageExerciseVocabulary-xercises-table tbody tr:hover {
+  background-color: #f0f7ff;
+}
+
+.ManageExerciseVocabulary-heckbox-column {
+  width: 40px;
+  text-align: center;
+}
+
+.ManageExerciseVocabulary-escription-cell {
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ManageExerciseVocabulary-o-exercises {
+  text-align: center;
+  padding: 40px 0;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.ManageExerciseVocabulary-etry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.ManageExerciseVocabulary-etry-btn:hover {
+  background-color: #138496;
+}
+
+.ManageExerciseVocabulary-etry-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .ManageExerciseVocabulary-xercises-top-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .ManageExerciseVocabulary-earch-exercise-box {
+    width: 100%;
+  }
+  
+  .ManageExerciseVocabulary-xercises-top-buttons {
+    justify-content: flex-end;
+  }
+}
+
+/* Action buttons for grammar topics */
+.ManageExerciseVocabulary-action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ManageExerciseVocabulary-add-exercises-btn, 
+.ManageExerciseVocabulary-remove-exercises-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ManageExerciseVocabulary-add-exercises-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.ManageExerciseVocabulary-remove-exercises-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.ManageExerciseVocabulary-add-exercises-btn:hover {
+  background-color: #43a047;
+}
+
+.ManageExerciseVocabulary-remove-exercises-btn:hover {
+  background-color: #e53935;
+}
+
+.ManageExerciseVocabulary-remove-exercises-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  color: #999999;
+}

@@ -1,13 +1,70 @@
 import { Request, Response } from 'express';
-import { grammarExerciseRepository } from '../../repositories/admin/admin.grammarExerciseRepository';
+import { exercisegrammarRepository } from '../../repositories/admin/admin.exercisegrammarRepository';
+import { GrammarTopic } from '../../models/GrammarTopic';
+import { ExerciseTopic } from '../../models/ExerciseTopic';
 
-export class grammarExerciseController {
+export class ExerciseGrammarController {
+  
+  /**
+   * Lấy tất cả chủ đề grammar
+   */
+  static async getAllGrammarTopicsExercise(req: Request, res: Response) {
+    try {
+      const topics = await exercisegrammarRepository.getAllGrammarTopics();
+  
+      res.status(200).json({
+        success: true,
+        data: topics,
+        message: 'Lấy danh sách chủ đề grammar thành công'
+      });
+
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách chủ đề grammar:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Đã xảy ra lỗi khi lấy danh sách chủ đề grammar'
+      });
+    }
+  }
+
+  /**
+   * Lấy thông tin chủ đề grammar theo ID
+   */
+  static async findGrammarTopicByIdExercise(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id);
+      // Gọi repository
+      const topic = await exercisegrammarRepository.findById(id);
+      
+      if (!topic) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy chủ đề grammar' 
+        });
+      }
+  
+      // Trả về response thành công
+      res.status(200).json({
+        success: true,
+        data: topic,
+        message: 'Lấy thông tin chủ đề grammar thành công'
+      });
+  
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin chủ đề grammar:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Đã xảy ra lỗi khi lấy thông tin chủ đề grammar'
+      });
+    }
+  }
+
   /**
    * Lấy tất cả exercises
    */
-  static async getAllExercises(req: Request, res: Response) {
+  static async getAllExercisesExercise(req: Request, res: Response) {
     try {
-      const exercises = await grammarExerciseRepository.getAllExercise();
+      const exercises = await exercisegrammarRepository.getAllExercises();
   
       res.status(200).json({
         success: true,
@@ -27,7 +84,7 @@ export class grammarExerciseController {
   /**
    * Lấy exercises theo grammar topic ID
    */
-  static async getExercisesByGrammarTopicId(req: Request, res: Response) {
+  static async getExercisesByGrammarTopicIdExercise(req: Request, res: Response) {
     try {
       const grammarTopicId = parseInt(req.params.grammarTopicId);
       if (isNaN(grammarTopicId)) {
@@ -37,7 +94,7 @@ export class grammarExerciseController {
         });
       }
 
-      const exercises = await grammarExerciseRepository.getAllExerciseByGrammarTopicId(grammarTopicId);
+      const exercises = await exercisegrammarRepository.getAllExerciseByGrammarTopicId(grammarTopicId);
       
       res.status(200).json({
         success: true,
@@ -57,7 +114,7 @@ export class grammarExerciseController {
   /**
    * Thêm exercise vào grammar topic
    */
-  static async addExerciseToGrammarTopic(req: Request, res: Response) {
+  static async addExerciseToGrammarTopicExercise(req: Request, res: Response) {
     try {
       const grammarTopicId = parseInt(req.params.grammarTopicId);
       const { exerciseId } = req.body;
@@ -69,7 +126,7 @@ export class grammarExerciseController {
         });
       }
       
-      const success = await grammarExerciseRepository.addGrammarExercise(grammarTopicId, exerciseId);
+      const success = await exercisegrammarRepository.addGrammarExercise(grammarTopicId, exerciseId);
 
       if (!success) {
         return res.status(404).json({
@@ -95,7 +152,7 @@ export class grammarExerciseController {
   /**
    * Xóa exercise khỏi grammar topic
    */
-  static async removeExerciseFromGrammarTopic(req: Request, res: Response) {
+  static async removeExerciseFromGrammarTopicExercise(req: Request, res: Response) {
     try {
       const grammarTopicId = parseInt(req.params.grammarTopicId);
       const exerciseId = parseInt(req.params.exerciseId);
@@ -107,7 +164,7 @@ export class grammarExerciseController {
         });
       }
 
-      const success = await grammarExerciseRepository.deleteGrammarExercise(grammarTopicId, exerciseId);
+      const success = await exercisegrammarRepository.deleteGrammarExercise(grammarTopicId, exerciseId);
 
       if (!success) {
         return res.status(404).json({
@@ -133,7 +190,7 @@ export class grammarExerciseController {
   /**
    * Lấy exercises chưa được thêm vào grammar topic
    */
-  static async getExercisesNotInGrammarTopic(req: Request, res: Response) {
+  static async getExercisesNotInGrammarTopicExercise(req: Request, res: Response) {
     try {
       const grammarTopicId = parseInt(req.params.grammarTopicId);
       
@@ -144,7 +201,7 @@ export class grammarExerciseController {
         });
       }
 
-      const exercises = await grammarExerciseRepository.getExercisesNotInGrammarTopic(grammarTopicId);
+      const exercises = await exercisegrammarRepository.getExercisesNotInGrammarTopic(grammarTopicId);
       
       res.status(200).json({
         success: true,
@@ -161,4 +218,4 @@ export class grammarExerciseController {
   }
 }
 
-export default new grammarExerciseController();
+export default new ExerciseGrammarController();

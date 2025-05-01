@@ -10,7 +10,8 @@ import adminLearnerRoutes from './admin/admin.LearnerRoutes'
 import adminStaffRoutes from './admin/admin.StaffRoutes'
 import adminExerciseRoutes from './admin/admin.exercisesRoutes'
 import adminExerciseQuestionRoutes from './admin/admin.exercisesQuestionRoutes'
-import adminGrammarExerciseRoutes from './admin/admin.grammarExerciseRoutes'
+import adminExerciseGrammarRoutes from './admin/admin.exercisegrammarRoutes'
+import adminExerciseVocabularyRoutes from './admin/admin.exercisevocabularyRoutes'
 import adminGrammarTopicRoutes from './admin/admin.grammarTopicRoutes'
 import uploadRouter from './uploadRouter';
 import exerciseRouter from './exerciseRouter'
@@ -34,8 +35,9 @@ function route(app: Application): void {
   app.use('/api/admin/staff',adminStaffRoutes)
   app.use('/api/admin/exercise',adminExerciseRoutes)
   app.use('/api/admin/exercises',adminExerciseQuestionRoutes)
+  app.use('/api/admin/exercisess/grammars',adminExerciseGrammarRoutes)
+  app.use('/api/admin/exercisesss/vocabularies',adminExerciseVocabularyRoutes)
   app.use('/api/admin/grammar',adminGrammarTopicRoutes)
-  app.use('/api/admin/grammars',adminGrammarExerciseRoutes)
   app.use('/api/upload', uploadRouter);
   app.use('/api/exercise',exerciseRouter);
   app.use('/api/learning-goal',learningRouter)

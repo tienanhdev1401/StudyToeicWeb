@@ -8,10 +8,11 @@ import ManageVocabularyTopic from './ManageVocabularyTopic';
 import ManageStaff from './ManageStaff';
 import ManageLearn from './ManageLearner';
 import ManageGrammarTopic from './ManageGrammarTopic';
-import ManageGrammarExercise from './ManageGrammarExercise';
 import ManageVocabulary from './ManageVocabulary';
 import ManageExercise from './ManageExercise';
 import ManageExerciseQuestion from './ManageExerciseQuestion';
+import ManageExerciseVocabulary from './ManageExerciseVocabulary';
+import ManageExerciseGrammar from './ManageExerciseGrammar';
 
 const AdminLayout = ({ children }) => {
   return (
@@ -39,10 +40,11 @@ const AdminPage = () => {
         <Route path="/staff" element={<ManageStaff />} />
         <Route path="/learner" element={<ManageLearn />} />
         <Route path="/grammar" element={<ManageGrammarTopic />} />
-        <Route path="/grammar/:id/exercises" element={<ManageGrammarExercise />} />
         <Route path="/vocabularyTopic/:id/vocabularies" element={<ManageVocabulary />} />
         <Route path="/exercise" element={<ManageExercise />} />
         <Route path="/exercise/:id/questions" element={<ManageExerciseQuestion />} />
+        <Route path="/exercise/grammars" element={<ManageExerciseGrammar />} />
+        <Route path="/exercise/vocabularies" element={<ManageExerciseVocabulary />} />
       </Routes>
     </AdminLayout>
   );

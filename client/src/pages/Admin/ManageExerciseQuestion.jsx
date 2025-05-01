@@ -439,6 +439,7 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [fallbackMode, setFallbackMode] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -449,6 +450,7 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
       setSelectedQuestions([]);
       setError('');
       setFallbackMode(false);
+      setSearchTerm('');
     }
   }, [isOpen, exerciseId]);
 
@@ -508,6 +510,11 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
   };
 
   if (!isOpen) return null;
+
+  // Filter the questions based on search term
+  const filteredQuestions = availableQuestions.filter(question => 
+    question.content.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleSelectQuestion = (questionId) => {
     setSelectedQuestions(prev => {
@@ -604,6 +611,31 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
             <div className="empty-message">No available questions to add</div>
           ) : (
             <form onSubmit={handleSubmit}>
+              <div className="add-modal-top-actions">
+                <div className="search-question-box">
+                  <i className="fas fa-search"></i>
+                  <input
+                    type="text"
+                    placeholder="Search questions by content..."
+                    className="search-question-input"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="add-modal-top-buttons">
+                  <button type="button" className="cancel-btn" onClick={onClose}>
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="submit-btn" 
+                    disabled={isLoading || selectedQuestions.length === 0}
+                  >
+                    {isLoading ? 'Adding...' : `Add ${selectedQuestions.length} Question(s)`}
+                  </button>
+                </div>
+              </div>
+              
               <div className="table-container">
                 <table className="question-table">
                   <thead>
@@ -612,7 +644,7 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
                         <input 
                           type="checkbox" 
                           onChange={handleSelectAll}
-                          checked={selectedQuestions.length === availableQuestions.length && availableQuestions.length > 0}
+                          checked={selectedQuestions.length === filteredQuestions.length && filteredQuestions.length > 0}
                         />
                       </th>
                       <th>Question</th>
@@ -624,7 +656,7 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
                     </tr>
                   </thead>
                   <tbody>
-                    {availableQuestions.map(question => (
+                    {filteredQuestions.map(question => (
                       <tr key={question.id}>
                         <td>
                           <input
@@ -643,19 +675,6 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
                     ))}
                   </tbody>
                 </table>
-              </div>
-              
-              <div className="add-modal-footer">
-                <button type="button" className="cancel-btn" onClick={onClose}>
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="submit-btn" 
-                  disabled={isLoading || selectedQuestions.length === 0}
-                >
-                  {isLoading ? 'Adding...' : `Add ${selectedQuestions.length} Question(s)`}
-                </button>
               </div>
             </form>
           )}
