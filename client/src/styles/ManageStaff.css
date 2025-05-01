@@ -1,34 +1,37 @@
-.staff-container {
+.managestaff-staff-container {
   padding: 30px;
   font-family: 'Arial', sans-serif;
-  max-width: 1400px; /* Tăng max-width */
+  max-width: 1200px;
   margin: 0 auto;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-h1 {
+.managestaff-h1 {
   font-size: 30px;
   font-weight: 600;
 }
 
-.header-section {
+.managestaff-header-title {
+  font-size: 40px;
+  font-weight: 600;
+}
+
+.managestaff-header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  margin-top: 100dp;
 }
 
-.entries-select {
-
+.managestaff-entries-select {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.entries-dropdown {
+.managestaff-entries-dropdown {
   padding: 6px 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -38,24 +41,23 @@ h1 {
   cursor: pointer;
 }
 
-.entries-dropdown:focus {
+.managestaff-entries-dropdown:focus {
   outline: none;
   border-color: #007bff;
 }
 
-
-.search-box {
+.managestaff-search-box {
   display: flex;
   align-items: center;
   background-color: white;
   border: 1px solid #c7c7c7;
   border-radius: 0.5rem;
-  padding: 6px 16px;
+  padding: 1px 16px;
   width: 300px;
   position: relative;
 }
 
-.search-box i {
+.managestaff-search-box i {
   position: static;
   color: #9ca3af;
   font-size: 1.2rem;
@@ -63,7 +65,7 @@ h1 {
   font-size: 1.75rem;
 }
 
-.search-input {
+.managestaff-search-input {
   flex-grow: 1;
   width: 100%;
   background: none;
@@ -71,195 +73,200 @@ h1 {
   outline: none;
   color: #1f2937;
   padding-left: 8px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none;
 }
 
-.staff-table {
+.managestaff-search-input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.managestaff-staff-table {
   margin-top: 20px;
   width: 100%;
-  min-width: 1200px;
+  table-layout: auto;
+  max-width: none;
   border-collapse: separate;
   border-spacing: 0;
   margin-bottom: 80px;
   background-color: white !important;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
 }
 
-.staff-table th:first-child {
+.managestaff-staff-table th:first-child {
   border-top-left-radius: 8px;
 }
 
-.staff-table th:last-child {
+.managestaff-staff-table th:last-child {
   border-top-right-radius: 8px;
 }
 
-.staff-table tr:last-child td:first-child {
+.managestaff-staff-table tr:last-child td:first-child {
   border-bottom-left-radius: 8px;
 }
 
-.staff-table tr:last-child td:last-child {
+.managestaff-staff-table tr:last-child td:last-child {
   border-bottom-right-radius: 8px;
 }
 
-.staff-table th {
-  padding: 20px;
+.managestaff-staff-table th {
+  padding: 16px;
   text-align: center;
-  background-color: white !important;
-  border: 1px solid #e5e7eb;
+  background-color: #f9fafb !important;
+  border-bottom: 1px solid #e5e7eb;
   color: #344054;
   font-weight: 600;
+  transition: background-color 0.2s;
 }
 
-.staff-table td {
+.managestaff-staff-table td {
   padding: 16px;
   text-align: left;
-  border: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
   background-color: white !important;
+  transition: background-color 0.2s;
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 250px;
 }
 
-.staff-table tbody {
-  background-color: #f9fafb;
-}
-
-/* Remove duplicate th styles */
-.staff-table th {
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.status-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.85em;
-}
-
-
-/* Thêm vào file CSS của bạn */
-
-.block-btn, .unblock-btn {
-  padding: 6px 12px;
-  border: none;
-  cursor: pointer;
-  margin-right: 5px;
-  background-color: transparent;
-  color: #858c97;
-}
-
-.block-btn:hover {
-  color: #ff9800; /* Màu cam */
-}
-
-.unblock-btn:hover {
-  color: #4caf50; /* Màu xanh lá */
-}
-
-/* Cập nhật các nút action khác để đồng bộ */
-.edit-btn, .delete-btn, .block-btn, .unblock-btn {
-  padding: 6px;
-  border: none;
-  cursor: pointer;
-  margin-right: 5px;
-  background-color: transparent;
-  font-size: 16px;
+.managestaff-staff-table tbody tr {
   transition: all 0.2s ease;
+}
+
+.managestaff-staff-table tbody tr:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.managestaff-status-badge {
+  padding: 4px 8px;
   border-radius: 4px;
+  font-size: 0.85em;
+  background-color: #e3fcef;
+  color: #28a745;
+  display: inline-block;
+  font-weight: bold;
 }
 
-
-.edit-btn:hover {
-  background-color: rgba(0, 123, 255, 0.1);
-  color: #007bff;
+.managestaff-ACTIVE {
+  background-color: #e3fcef;
+  color: #28a745;
 }
 
-.block-btn:hover {
-  background-color: rgba(255, 152, 0, 0.1);
-  color: #ff9800;
-}
-
-.unblock-btn:hover {
-  background-color: rgba(76, 175, 80, 0.1);
-  color: #4caf50;
-}
-
-.delete-btn:hover {
-  background-color: rgba(220, 53, 69, 0.1);
+.managestaff-BANNED {
+  background-color: #f8d7da;
   color: #dc3545;
 }
 
-/* Đảm bảo các icon có cùng kích thước */
-.edit-btn i, 
-.delete-btn i, 
-.block-btn i, 
-.unblock-btn i {
-  font-size: 16px;
+.managestaff-edit-btn, 
+.managestaff-delete-btn, 
+.managestaff-block-btn, 
+.managestaff-unblock-btn {
+  margin: 0 2px;
+  padding: 6px 8px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s ease;
 }
 
-.pagination {
+.managestaff-edit-btn:hover,
+.managestaff-delete-btn:hover,
+.managestaff-block-btn:hover,
+.managestaff-unblock-btn:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.managestaff-pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-
-.pagination p { 
+.managestaff-pagination p { 
   font-size: 1.5rem;
-  font-weight: 00;
+  font-weight: 500;
   font-style: normal;
   color: #9a9a9b;
   margin-top: 10px;
-
 }
 
-
-.pagination span {
+.managestaff-pagination span {
   font-size: 1.2rem;
   font-weight: 600;
   color: #9a9a9b;
 }
 
-.pagination button {
-  padding: 6px 14px;
-  margin: 0 2px;
-  border: 1px solid #ddd;
+.managestaff-pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.managestaff-page-btn {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
   background-color: white;
-  border-radius: 5px;
+  color: #0d6efd;
   cursor: pointer;
-  color: #344054;
+  min-width: 38px;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-.pagination button:hover {
-  background-color: #e3effc;
-  color: #007bff;
+.managestaff-page-btn:hover:not(:disabled) {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  color: #0a58ca;
 }
 
-.pagination button.active {
-  background-color: #007bff;
+.managestaff-page-btn.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
   color: white;
-  border-color: #007bff;
 }
 
-.pagination button:disabled {
-  opacity: 0.6;
+.managestaff-page-btn:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
   cursor: not-allowed;
 }
 
-.action-section {
+.managestaff-page-dots {
+  padding: 6px 12px;
+  color: #6c757d;
+  font-weight: bold;
+}
+
+.managestaff-action-section {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.button-group {
+.managestaff-button-group {
   display: flex;
   gap: 12px;
 }
 
-.add-btn, .trash-btn {
+.managestaff-add-btn, 
+.managestaff-trash-btn {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background-color: black;
+  background-color: white;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -268,51 +275,176 @@ h1 {
   transition: background-color 0.2s;
 }
 
-.add-btn {
-  display: inline-flex;
+.managestaff-trash-btn {
+  background-color: #f0f0f0 !important;
+  color: #666 !important;
+  border: 1px solid #ddd !important;
+}
+
+.managestaff-trash-btn:hover {
+  background-color: #e0e0e0 !important;
+  color: #333 !important;
+}
+
+.managestaff-add-btn {
+  display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background-color: #4CAF50; /* Màu xanh lá */
-  color: black;
+  background-color: #4CAF50;
+  color: white;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   transition: all 0.3s ease;
-  white-space: nowrap; /* Ngăn text bị ngắt dòng */
+  white-space: nowrap;
   text-decoration: none;
 }
 
-.add-btn:hover {
-  background-color: #45a049; /* Màu xanh lá đậm hơn khi hover */
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+.managestaff-add-btn:hover {
+  background-color: #45a049;
 }
 
-.add-btn i {
+.managestaff-add-btn i, 
+.managestaff-trash-btn i {
   font-size: 14px;
 }
 
-/* Avatar styles */
-.avatar-column {
+.managestaff-sortable {
+  cursor: pointer;
+  position: relative;
+  padding-right: 25px !important;
+}
+
+.managestaff-sortable:hover {
+  background-color: #f5f5f5;
+}
+
+.managestaff-sortable i {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 25px;
+}
+
+.managestaff-sortable:hover i {
+  color: #666;
+}
+
+.managestaff-fa-sort-up, 
+.managestaff-fa-sort-down {
+  color: #333 !important;
+}
+
+.managestaff-checkbox-column {
+  width: 30px;
+  min-width: 30px;
+  text-align: center !important;
+  padding: 8px !important;
+}
+
+.managestaff-checkbox-column input[type="checkbox"],
+.managestaff-id-header input[type="checkbox"],
+.managestaff-id-cell input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+  background-color: white;
+  position: relative;
+  transition: all 0.2s ease;
+  margin: 0;
+  padding: 0;
+}
+
+.managestaff-checkbox-column input[type="checkbox"]:checked,
+.managestaff-id-header input[type="checkbox"]:checked,
+.managestaff-id-cell input[type="checkbox"]:checked {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+}
+
+.managestaff-checkbox-column input[type="checkbox"]:checked::after,
+.managestaff-id-header input[type="checkbox"]:checked::after,
+.managestaff-id-cell input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.managestaff-checkbox-column input[type="checkbox"]:hover,
+.managestaff-id-header input[type="checkbox"]:hover,
+.managestaff-id-cell input[type="checkbox"]:hover {
+  border-color: #999;
+}
+
+/* Highlight rows with checked checkboxes */
+.managestaff-staff-table tr:has(input[type="checkbox"]:checked) {
+  background-color: #f0f7ff !important;
+}
+
+.managestaff-staff-table tr:has(input[type="checkbox"]:checked) td {
+  background-color: #f0f7ff !important;
+}
+
+.managestaff-id-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.managestaff-id-header input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.managestaff-id-column {
   width: 60px;
+  min-width: 60px;
   text-align: center;
 }
 
-.avatar-img {
-  width: 100px;
-  height: 100px;
+.managestaff-id-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.managestaff-avatar-column {
+  width: 80px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.managestaff-avatar-img {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
   margin: 0 auto;
   display: block;
 }
 
-.avatar-placeholder {
-  width: 40px;
-  height: 40px;
+.managestaff-avatar-placeholder {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background-color: #f0f0f0;
   display: flex;
@@ -321,159 +453,12 @@ h1 {
   margin: 0 auto;
 }
 
-.avatar-placeholder i {
-  font-size: 20px;
+.managestaff-avatar-placeholder i {
+  font-size: 24px;
   color: #999;
 }
 
-.editing-row {
-  background-color: rgba(255, 255, 230, 0.5);
-}
-
-.editable-cell {
-  display: flex;
-  flex-direction: column;
-}
-
-.edit-input {
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.input-error {
-  border-color: #ff3333;
-}
-
-.error-text {
-  color: #ff3333;
-  font-size: 0.8rem;
-  margin-top: 2px;
-}
-
-.save-btn {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 10px;
-  margin-right: 5px;
-  cursor: pointer;
-}
-
-.cancel-btn {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 10px;
-  cursor: pointer;
-}
-
-.add-staff-row {
-  background-color: #f8f9fa;
-  border-top: 2px dashed #28a745;
-}
-
-.password-field {
-  margin-bottom: 8px;
-}
-
-.add-staff-actions {
-  display: flex;
-  justify-content: space-between;
-}
-/* Other existing styles remain the same */
-.trash-btn {
-  background-color: #a5a7a8 !important;
-  color: white !important;
-}
-
-.trash-btn:hover {
-  background-color: #5a6268 !important;
-}
-
-.add-btn i, .trash-btn i {
-  font-size: 14px;
-}
-
-.sortable {
-  cursor: pointer;
-  position: relative;
-  padding-right: 25px !important;
-}
-
-.sortable:hover {
-  background-color: #f5f5f5;
-}
-
-.sort-icons {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.sort-icons i {
-  color: #999;
-  font-size: 14px;
-}
-
-.sort-icons .fa-sort-up,
-.sort-icons .fa-sort-down {
-  color: #333;
-}
-
-.sortable:hover .sort-icons i {
-  color: #666;
-}
-
-.checkbox-column {
-  width: 40px;
-  text-align: center !important;
-  padding: 8px !important;
-}
-
-.checkbox-column input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-/* Optional: Style for selected rows */
-.staff-table tbody tr:has(input:checked) {
-  background-color: #f0f7ff;
-}
-
-.id-column {
-  width: 80px;
-}
-
-.id-header, .id-cell {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.id-header input[type="checkbox"],
-.id-cell input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-.id-header span {
-  margin-right: 4px;
-}
-
-/* Optional: Style for selected rows */
-.staff-table tbody tr:has(input:checked) {
-  background-color: #f0f7ff;
-}
-
-.table-action-bar {
+.managestaff-table-action-bar {
   background-color: #f8f9fa;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -481,18 +466,20 @@ h1 {
   padding: 12px 20px;
 }
 
-.action-bar-content {
+.managestaff-action-bar-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.action-bar-content span {
+.managestaff-action-bar-content span {
   color: #666;
   font-weight: 500;
 }
 
-.delete-selected-btn {
+.managestaff-delete-selected-btn,
+.managestaff-block-selected-btn,
+.managestaff-unblock-selected-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -506,15 +493,33 @@ h1 {
   transition: background-color 0.2s;
 }
 
-.delete-selected-btn:hover {
+.managestaff-block-selected-btn {
+  background-color: #ff9800;
+}
+
+.managestaff-unblock-selected-btn {
+  background-color: #28a745;
+}
+
+.managestaff-delete-selected-btn:hover {
   background-color: #c82333;
 }
 
-.delete-selected-btn i {
+.managestaff-block-selected-btn:hover {
+  background-color: #e08600;
+}
+
+.managestaff-unblock-selected-btn:hover {
+  background-color: #218838;
+}
+
+.managestaff-delete-selected-btn i,
+.managestaff-block-selected-btn i,
+.managestaff-unblock-selected-btn i {
   font-size: 14px;
 }
 
-.modal-overlay {
+.managestaff-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -527,15 +532,16 @@ h1 {
   z-index: 1000;
 }
 
-.modal-content {
+.managestaff-modal-content {
   background-color: white;
   border-radius: 8px;
   width: 100%;
   max-width: 500px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: managestaff-modalFadeIn 0.3s ease-out;
 }
 
-.modal-header {
+.managestaff-modal-header {
   padding: 16px 24px;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
@@ -543,13 +549,13 @@ h1 {
   align-items: center;
 }
 
-.modal-header h2 {
+.managestaff-modal-header h2 {
   margin: 0;
   font-size: 20px;
   color: #111827;
 }
 
-.close-btn {
+.managestaff-close-btn {
   background: none;
   border: none;
   font-size: 1.25rem;
@@ -557,16 +563,16 @@ h1 {
   cursor: pointer;
 }
 
-.modal-body {
+.managestaff-modal-body {
   padding: 24px;
   color: #4b5563;
 }
 
-.modal-body p {
+.managestaff-modal-body p {
   margin: 0 0 8px;
 }
 
-.modal-footer {
+.managestaff-modal-footer {
   padding: 16px 24px;
   border-top: 1px solid #e5e7eb;
   display: flex;
@@ -574,7 +580,7 @@ h1 {
   gap: 12px;
 }
 
-.cancel-btn {
+.managestaff-cancel-btn {
   padding: 8px 16px;
   background-color: white;
   border: 1px solid #d1d5db;
@@ -583,7 +589,9 @@ h1 {
   cursor: pointer;
 }
 
-.confirm-delete-btn {
+.managestaff-confirm-delete-btn,
+.managestaff-confirm-block-btn,
+.managestaff-confirm-unblock-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -595,20 +603,94 @@ h1 {
   cursor: pointer;
 }
 
-.cancel-btn:hover {
+.managestaff-confirm-block-btn {
+  background-color: #ff9800;
+}
+
+.managestaff-confirm-unblock-btn {
+  background-color: #28a745;
+}
+
+.managestaff-cancel-btn:hover {
   background-color: #f3f4f6;
 }
 
-.confirm-delete-btn:hover {
+.managestaff-confirm-delete-btn:hover {
   background-color: #c82333;
 }
 
-/* Animation cho modal */
-.modal-content {
-  animation: modalFadeIn 0.3s ease-out;
+.managestaff-confirm-block-btn:hover {
+  background-color: #e08600;
 }
 
-@keyframes modalFadeIn {
+.managestaff-confirm-unblock-btn:hover {
+  background-color: #218838;
+}
+
+.managestaff-editable-cell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.managestaff-edit-input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.managestaff-edit-input:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.managestaff-input-error {
+  border-color: #e53935 !important;
+}
+
+.managestaff-error-text {
+  color: #e53935;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.managestaff-save-btn,
+.managestaff-cancel-edit-btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-right: 4px;
+}
+
+.managestaff-save-btn {
+  background-color: #4a90e2;
+  border: 1px solid #4a90e2;
+  color: white;
+}
+
+.managestaff-save-btn:hover {
+  background-color: #3a7bc8;
+}
+
+.managestaff-cancel-edit-btn {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.managestaff-cancel-edit-btn:hover {
+  background-color: #e5e5e5;
+}
+
+@keyframes managestaff-modalFadeIn {
   from {
     opacity: 0;
     transform: translateY(-20px);
@@ -617,4 +699,126 @@ h1 {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.managestaff-add-staff-row {
+  background-color: #f9fafb;
+}
+
+.managestaff-editing-row {
+  background-color: #f0f7ff;
+}
+
+.managestaff-empty-message {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+  font-style: italic;
+}
+
+.managestaff-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+}
+
+.managestaff-loading i {
+  margin-right: 10px;
+  font-size: 24px;
+  color: #666;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.managestaff-error {
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  background-color: #fee;
+  color: #c33;
+  border: 1px solid #f99;
+  text-align: center;
+}
+
+/* Update column width styles */
+.managestaff-id-column {
+  width: 60px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.managestaff-avatar-column {
+  width: 80px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.managestaff-fullname-column {
+  width: 120px;
+  min-width: 120px;
+}
+
+.managestaff-email-column {
+  width: 180px;
+  min-width: 180px;
+}
+
+.managestaff-phone-column {
+  width: 120px;
+  min-width: 120px;
+}
+
+.managestaff-gender-column {
+  width: 80px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.managestaff-dob-column {
+  width: 110px;
+  min-width: 110px;
+  text-align: center;
+}
+
+.managestaff-status-column {
+  width: 90px;
+  min-width: 90px;
+  text-align: center;
+}
+
+.managestaff-joined-column {
+  width: 110px;
+  min-width: 110px;
+  text-align: center;
+}
+
+.managestaff-role-column {
+  width: 80px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.managestaff-action-column {
+  width: 160px;
+  min-width: 160px;
+  text-align: center;
+}
+
+/* Add responsive container to allow horizontal scrolling */
+.managestaff-table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  -webkit-overflow-scrolling: touch;
 }
