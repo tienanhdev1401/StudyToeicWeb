@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
+import userService from '../services/userService';
 import '../styles/PasswordChangePopup.css';
 
 const PasswordChangePopup = ({ isOpen, onClose }) => {
-    const { user, sendVerificationCode, changePassword, loading } = useUser();
+    const { user } = useUser();
     const [formData, setFormData] = useState({
         currentPassword: '',
         newPassword: '',
@@ -13,14 +14,31 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
     const [errors, setErrors] = useState({});
     const [countdown, setCountdown] = useState(0);
     const [successMessage, setSuccessMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSendingCode, setIsSendingCode] = useState(false);
 
     useEffect(() => {
+        // Đếm ngược cho OTP
         let timer;
         if (countdown > 0) {
             timer = setTimeout(() => setCountdown(countdown - 1), 1000);
         }
         return () => clearTimeout(timer);
     }, [countdown]);
+
+    useEffect(() => {
+        // Reset form khi mở/đóng popup
+        if (isOpen) {
+            setFormData({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: '',
+                verificationCode: ''
+            });
+            setErrors({});
+            setSuccessMessage('');
+        }
+    }, [isOpen]);
 
     const validate = () => {
         const newErrors = {};
@@ -60,59 +78,77 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
                 });
                 return;
             }
+
+            setIsSendingCode(true);
             console.log('Gửi mã xác thực đến:', user.email);
-            await sendVerificationCode(user.email);
+            
+            // Gọi trực tiếp đến service thay vì thông qua context
+            await userService.sendVerificationCode(user.email);
             
             // Bắt đầu đếm ngược
             setCountdown(60);
+            // Xóa lỗi nếu có
+            setErrors(prev => {
+                const newErrors = {...prev};
+                delete newErrors.form;
+                return newErrors;
+            });
         } catch (error) {
             console.error('Lỗi gửi mã xác thực:', error);
             setErrors({
                 form: error.message || 'Đã xảy ra lỗi khi gửi mã xác thực'
             });
+        } finally {
+            setIsSendingCode(false);
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
+        
         // Xóa thông báo lỗi và thành công trước khi thực hiện yêu cầu
         setSuccessMessage('');
         setErrors({});
+        
         try {
-          // Đảm bảo user tồn tại và có email
-          if (!user || !user.email) {
-            setErrors({ form: 'Không thể xác định email người dùng. Vui lòng làm mới trang.' });
-            return;
-          }
-          await changePassword({
-            email: user.email,
-            currentPassword: formData.currentPassword,
-            newPassword: formData.newPassword,
-            verificationCode: formData.verificationCode
-          });
-          setSuccessMessage('Đổi mật khẩu thành công!');
-          // Reset form sau khi thành công
-          setTimeout(() => {
-            setFormData({
-              currentPassword: '',
-              newPassword: '',
-              confirmPassword: '',
-              verificationCode: ''
+            // Đảm bảo user tồn tại và có email
+            if (!user || !user.email) {
+                setErrors({ form: 'Không thể xác định email người dùng. Vui lòng làm mới trang.' });
+                return;
+            }
+            
+            setIsLoading(true);
+            
+            // Gọi trực tiếp đến service thay vì thông qua context
+            await userService.changePassword({
+                email: user.email,
+                currentPassword: formData.currentPassword,
+                newPassword: formData.newPassword,
+                verificationCode: formData.verificationCode
             });
-            setSuccessMessage('');
-            onClose();
-          }, 2000);
+            
+            setSuccessMessage('Đổi mật khẩu thành công!');
+            
+            // Reset form sau khi thành công
+            setTimeout(() => {
+                setFormData({
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                    verificationCode: ''
+                });
+                setSuccessMessage('');
+                onClose();
+            }, 2000);
           
         } catch (error) {
-          console.error('Lỗi đổi mật khẩu:', error);
-          // Chỉ cập nhật thông báo lỗi, không làm gì khác
-          setErrors({ form: error.message || 'Đã xảy ra lỗi khi đổi mật khẩu' });
-          // Không chuyển trang, không đóng popup
+            console.error('Lỗi đổi mật khẩu:', error);
+            setErrors({ form: error.message || 'Đã xảy ra lỗi khi đổi mật khẩu' });
         } finally {
-       
+            setIsLoading(false);
         }
-      };
+    };
 
     if (!isOpen) return null;
 
@@ -143,6 +179,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
                                 onChange={handleChange}
                                 className={`changepass-input ${errors.currentPassword ? 'changepass-input-error' : ''}`}
                                 placeholder="Nhập mật khẩu hiện tại"
+                                disabled={isLoading || isSendingCode}
                             />
                         </div>
                         {errors.currentPassword && (
@@ -161,6 +198,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
                                 onChange={handleChange}
                                 className={`changepass-input ${errors.newPassword ? 'changepass-input-error' : ''}`}
                                 placeholder="Nhập mật khẩu mới"
+                                disabled={isLoading || isSendingCode}
                             />
                         </div>
                         {errors.newPassword && (
@@ -179,6 +217,7 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
                                 onChange={handleChange}
                                 className={`changepass-input ${errors.confirmPassword ? 'changepass-input-error' : ''}`}
                                 placeholder="Xác nhận mật khẩu mới"
+                                disabled={isLoading || isSendingCode}
                             />
                         </div>
                         {errors.confirmPassword && (
@@ -198,14 +237,17 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
                                 className={`changepass-input ${errors.verificationCode ? 'changepass-input-error' : ''}`}
                                 placeholder="Nhập mã OTP"
                                 maxLength={6}
+                                disabled={isLoading || isSendingCode}
                             />
                             <button 
                                 type="button" 
                                 className="changepass-otp-btn" 
                                 onClick={handleSendCode} 
-                                disabled={countdown > 0 || loading}
+                                disabled={countdown > 0 || isLoading || isSendingCode}
+                                data-state={isSendingCode ? 'sending' : ''}
                             >
-                                {countdown > 0 ? `Gửi lại (${countdown}s)` : 'Gửi mã'}
+                                {isSendingCode ? 'Đang gửi...' : 
+                                  countdown > 0 ? `Gửi lại (${countdown}s)` : 'Gửi mã'}
                             </button>
                         </div>
                         {errors.verificationCode && (
@@ -218,16 +260,17 @@ const PasswordChangePopup = ({ isOpen, onClose }) => {
                             type="button" 
                             className="changepass-btn-cancel" 
                             onClick={onClose}
-                            disabled={loading}
+                            disabled={isLoading || isSendingCode}
                         >
                             Hủy
                         </button>
                         <button 
                             type="submit" 
                             className="changepass-btn-submit"
-                            disabled={loading}
+                            disabled={isLoading || isSendingCode}
+                            data-state={isLoading ? 'loading' : ''}
                         >
-                            {loading ? 'Đang xử lý...' : 'Xác nhận'}
+                            {isLoading ? 'Đang xử lý...' : 'Xác nhận'}
                         </button>
                     </div>
                 </form>
