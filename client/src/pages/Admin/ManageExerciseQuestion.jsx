@@ -217,18 +217,18 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
   };
 
   return (
-    <div className="add-modal-overlay">
-      <div className="add-modal-content">
-        <div className="add-modal-header">
+    <div className="manageexercisequestion-add-modal-overlay">
+      <div className="manageexercisequestion-add-modal-content">
+        <div className="manageexercisequestion-add-modal-header">
           <h2>{editMode ? 'Edit Question' : 'Add New Question'}</h2>
-          <button type="button" className="close-btn" onClick={onClose}>
+          <button type="button" className="manageexercisequestion-close-btn" onClick={onClose}>
             <i className="fas fa-times"></i>
           </button>
         </div>
-        <div className="add-modal-body">
+        <div className="manageexercisequestion-add-modal-body">
           <form onSubmit={handleSubmit} noValidate>
-            <div className={`form-group ${errors.content && touched.content ? 'has-error' : ''}`}>
-              <label htmlFor="content">Question <span className="required">*</span></label>
+            <div className={`manageexercisequestion-form-group ${errors.content && touched.content ? 'has-error' : ''}`}>
+              <label htmlFor="content">Question <span className="manageexercisequestion-required">*</span></label>
               <textarea
                 id="content"
                 name="content"
@@ -237,17 +237,17 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
                 onBlur={handleBlur}
                 required
                 placeholder="Enter question content"
-                className={errors.content && touched.content ? 'input-error' : ''}
+                className={errors.content && touched.content ? 'manageexercisequestion-input-error' : ''}
                 rows="3"
               />
               {errors.content && touched.content && (
-                <div className="error-message">{errors.content}</div>
+                <div className="manageexercisequestion-error-message">{errors.content}</div>
               )}
             </div>
             
-            <div className="options-container">
-              <div className={`form-group ${errors.option_a && touched.option_a ? 'has-error' : ''}`}>
-                <label htmlFor="option_a">Option A <span className="required">*</span></label>
+            <div className="manageexercisequestion-options-container">
+              <div className={`manageexercisequestion-form-group ${errors.option_a && touched.option_a ? 'has-error' : ''}`}>
+                <label htmlFor="option_a">Option A <span className="manageexercisequestion-required">*</span></label>
                 <input
                   type="text"
                   id="option_a"
@@ -257,15 +257,15 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
                   onBlur={handleBlur}
                   required
                   placeholder="Enter option A"
-                  className={errors.option_a && touched.option_a ? 'input-error' : ''}
+                  className={errors.option_a && touched.option_a ? 'manageexercisequestion-input-error' : ''}
                 />
                 {errors.option_a && touched.option_a && (
-                  <div className="error-message">{errors.option_a}</div>
+                  <div className="manageexercisequestion-error-message">{errors.option_a}</div>
                 )}
               </div>
               
-              <div className={`form-group ${errors.option_b && touched.option_b ? 'has-error' : ''}`}>
-                <label htmlFor="option_b">Option B <span className="required">*</span></label>
+              <div className={`manageexercisequestion-form-group ${errors.option_b && touched.option_b ? 'has-error' : ''}`}>
+                <label htmlFor="option_b">Option B <span className="manageexercisequestion-required">*</span></label>
                 <input
                   type="text"
                   id="option_b"
@@ -275,15 +275,15 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
                   onBlur={handleBlur}
                   required
                   placeholder="Enter option B"
-                  className={errors.option_b && touched.option_b ? 'input-error' : ''}
+                  className={errors.option_b && touched.option_b ? 'manageexercisequestion-input-error' : ''}
                 />
                 {errors.option_b && touched.option_b && (
-                  <div className="error-message">{errors.option_b}</div>
+                  <div className="manageexercisequestion-error-message">{errors.option_b}</div>
                 )}
               </div>
               
-              <div className={`form-group ${errors.option_c && touched.option_c ? 'has-error' : ''}`}>
-                <label htmlFor="option_c">Option C <span className="required">*</span></label>
+              <div className={`manageexercisequestion-form-group ${errors.option_c && touched.option_c ? 'has-error' : ''}`}>
+                <label htmlFor="option_c">Option C <span className="manageexercisequestion-required">*</span></label>
                 <input
                   type="text"
                   id="option_c"
@@ -293,15 +293,15 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
                   onBlur={handleBlur}
                   required
                   placeholder="Enter option C"
-                  className={errors.option_c && touched.option_c ? 'input-error' : ''}
+                  className={errors.option_c && touched.option_c ? 'manageexercisequestion-input-error' : ''}
                 />
                 {errors.option_c && touched.option_c && (
-                  <div className="error-message">{errors.option_c}</div>
+                  <div className="manageexercisequestion-error-message">{errors.option_c}</div>
                 )}
               </div>
               
-              <div className={`form-group ${errors.option_d && touched.option_d ? 'has-error' : ''}`}>
-                <label htmlFor="option_d">Option D <span className="required">*</span></label>
+              <div className={`manageexercisequestion-form-group ${errors.option_d && touched.option_d ? 'has-error' : ''}`}>
+                <label htmlFor="option_d">Option D <span className="manageexercisequestion-required">*</span></label>
                 <input
                   type="text"
                   id="option_d"
@@ -311,16 +311,16 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
                   onBlur={handleBlur}
                   required
                   placeholder="Enter option D"
-                  className={errors.option_d && touched.option_d ? 'input-error' : ''}
+                  className={errors.option_d && touched.option_d ? 'manageexercisequestion-input-error' : ''}
                 />
                 {errors.option_d && touched.option_d && (
-                  <div className="error-message">{errors.option_d}</div>
+                  <div className="manageexercisequestion-error-message">{errors.option_d}</div>
                 )}
               </div>
             </div>
             
-            <div className={`form-group ${errors.correct_answer && touched.correct_answer ? 'has-error' : ''}`}>
-              <label htmlFor="correct_answer">Correct Answer <span className="required">*</span></label>
+            <div className={`manageexercisequestion-form-group ${errors.correct_answer && touched.correct_answer ? 'has-error' : ''}`}>
+              <label htmlFor="correct_answer">Correct Answer <span className="manageexercisequestion-required">*</span></label>
               <select
                 id="correct_answer"
                 name="correct_answer"
@@ -328,7 +328,7 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
                 onChange={handleChange}
                 onBlur={handleBlur}
                 required
-                className={errors.correct_answer && touched.correct_answer ? 'input-error' : ''}
+                className={errors.correct_answer && touched.correct_answer ? 'manageexercisequestion-input-error' : ''}
               >
                 <option value="">Select correct answer</option>
                 <option value="A">Option A</option>
@@ -337,11 +337,11 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
                 <option value="D">Option D</option>
               </select>
               {errors.correct_answer && touched.correct_answer && (
-                <div className="error-message">{errors.correct_answer}</div>
+                <div className="manageexercisequestion-error-message">{errors.correct_answer}</div>
               )}
             </div>
             
-            <div className="form-group">
+            <div className="manageexercisequestion-form-group">
               <label htmlFor="explain_detail">Explanation Detail</label>
               <textarea
                 id="explain_detail"
@@ -353,7 +353,7 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
               />
             </div>
             
-            <div className="form-group">
+            <div className="manageexercisequestion-form-group">
               <label htmlFor="explain_resource">Explanation Resource</label>
               <input
                 type="text"
@@ -365,7 +365,7 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
               />
             </div>
             
-            <div className="form-group">
+            <div className="manageexercisequestion-form-group">
               <label htmlFor="urlAudio">Audio URL</label>
               <input
                 type="text"
@@ -377,22 +377,22 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
               />
             </div>
             
-            <div className="form-group">
+            <div className="manageexercisequestion-form-group">
               <label htmlFor="urlImage">Image</label>
-              <div className="image-upload-container">
+              <div className="manageexercisequestion-image-upload-container">
                 <input
                   type="file"
                   id="questionImage"
                   name="questionImage"
                   accept="image/jpeg, image/png, image/gif"
                   onChange={handleImageChange}
-                  className="file-input"
+                  className="manageexercisequestion-file-input"
                   style={{ display: 'none' }}
                 />
-                <label htmlFor="questionImage" className="file-input-label">
+                <label htmlFor="questionImage" className="manageexercisequestion-file-input-label">
                   <i className="fas fa-upload"></i> {editMode && formData.urlImage ? 'Change Image' : 'Choose Image'}
                 </label>
-                <span className="file-name">
+                <span className="manageexercisequestion-file-name">
                   {imageFile ? imageFile.name : (formData.urlImage && !imageFile ? 'Current image' : "No file chosen")}
                 </span>
                 
@@ -406,7 +406,7 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
                   style={{ marginTop: '10px' }}
                 />
               </div>
-              <div className={`image-preview ${isUploading ? 'uploading' : ''}`}>
+              <div className={`manageexercisequestion-image-preview ${isUploading ? 'uploading' : ''}`}>
                 {imagePreview ? (
                   <img src={imagePreview} alt="Preview" />
                 ) : formData.urlImage ? (
@@ -418,11 +418,11 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, exerciseId
               </div>
             </div>
             
-            <div className="add-modal-footer">
-              <button type="button" className="cancel-btn" onClick={onClose}>
+            <div className="manageexercisequestion-add-modal-footer">
+              <button type="button" className="manageexercisequestion-cancel-btn" onClick={onClose}>
                 Cancel
               </button>
-              <button type="submit" className="submit-btn" disabled={isUploading}>
+              <button type="submit" className="manageexercisequestion-submit-btn" disabled={isUploading}>
                 {isUploading ? 'Uploading...' : (editMode ? 'Save Changes' : 'Add Question')}
               </button>
             </div>
@@ -583,24 +583,24 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
   };
 
   return (
-    <div className="add-modal-overlay">
-      <div className="add-modal-content">
-        <div className="add-modal-header">
+    <div className="manageexercisequestion-add-modal-overlay">
+      <div className="manageexercisequestion-add-modal-content">
+        <div className="manageexercisequestion-add-modal-header">
           <h2>Add Existing Questions {fallbackMode ? "(Fallback Mode)" : ""}</h2>
-          <button type="button" className="close-btn" onClick={onClose}>
+          <button type="button" className="manageexercisequestion-close-btn" onClick={onClose}>
             <i className="fas fa-times"></i>
           </button>
         </div>
-        <div className="add-modal-body">
+        <div className="manageexercisequestion-add-modal-body">
           {isLoading ? (
-            <div className="loading-spinner">
+            <div className="manageexercisequestion-loading-spinner">
               <i className="fas fa-spinner fa-spin"></i> Loading...
             </div>
           ) : error ? (
-            <div className="error-message">
+            <div className="manageexercisequestion-error-message">
               <p>{error}</p>
               <button 
-                className="retry-btn"
+                className="manageexercisequestion-retry-btn"
                 onClick={fetchAvailableQuestions} 
                 disabled={isLoading}
               >
@@ -608,27 +608,27 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
               </button>
             </div>
           ) : availableQuestions.length === 0 ? (
-            <div className="empty-message">No available questions to add</div>
+            <div className="manageexercisequestion-empty-message">No available questions to add</div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <div className="add-modal-top-actions">
-                <div className="search-question-box">
+              <div className="manageexercisequestion-add-modal-top-actions">
+                <div className="manageexercisequestion-search-question-box">
                   <i className="fas fa-search"></i>
                   <input
                     type="text"
                     placeholder="Search questions by content..."
-                    className="search-question-input"
+                    className="manageexercisequestion-search-question-input"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <div className="add-modal-top-buttons">
-                  <button type="button" className="cancel-btn" onClick={onClose}>
+                <div className="manageexercisequestion-add-modal-top-buttons">
+                  <button type="button" className="manageexercisequestion-cancel-btn" onClick={onClose}>
                     Cancel
                   </button>
                   <button 
                     type="submit" 
-                    className="submit-btn" 
+                    className="manageexercisequestion-submit-btn" 
                     disabled={isLoading || selectedQuestions.length === 0}
                   >
                     {isLoading ? 'Adding...' : `Add ${selectedQuestions.length} Question(s)`}
@@ -636,8 +636,8 @@ const AddExistingQuestionModal = ({ isOpen, onClose, exerciseId, onAddQuestions 
                 </div>
               </div>
               
-              <div className="table-container">
-                <table className="question-table">
+              <div className="manageexercisequestion-table-container">
+                <table className="manageexercisequestion-question-table">
                   <thead>
                     <tr>
                       <th>
@@ -693,20 +693,20 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selected
     : `Are you sure you want to delete this question?`;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-header">
+    <div className="manageexercisequestion-modal-overlay">
+      <div className="manageexercisequestion-modal-content">
+        <div className="manageexercisequestion-modal-header">
           <h2>Confirm Delete</h2>
-          <button className="close-btn" onClick={onClose}>
+          <button className="manageexercisequestion-close-btn" onClick={onClose}>
             <i className="fas fa-times"></i>
           </button>
         </div>
-        <div className="modal-body">
+        <div className="manageexercisequestion-modal-body">
           <p>{message}</p>
         </div>
-        <div className="modal-footer">
-          <button className="cancel-btn" onClick={onClose}>Cancel</button>
-          <button className="confirm-delete-btn" onClick={onConfirm}>
+        <div className="manageexercisequestion-modal-footer">
+          <button className="manageexercisequestion-cancel-btn" onClick={onClose}>Cancel</button>
+          <button className="manageexercisequestion-confirm-delete-btn" onClick={onConfirm}>
             <i className="fas fa-trash"></i>
             Delete
           </button>
@@ -980,31 +980,53 @@ const ManageExerciseQuestion = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="manageexercisequestion-container">
+        <div className="manageexercisequestion-loading">
+          <i className="fas fa-spinner fa-spin"></i>
+          <span>Loading questions...</span>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="manageexercisequestion-container">
+        <div className="manageexercisequestion-topic-header">
+          <button className="manageexercisequestion-back-btn" onClick={() => navigate(`/admin/exercise`)}>
+            <i className="fas fa-arrow-left"></i> Back to Exercise
+          </button>
+          <h1 className="manageexercisequestion-header-title">
+            Manage Questions
+          </h1>
+        </div>
+        <div className="manageexercisequestion-error">
+          <i className="fas fa-exclamation-triangle"></i>
+          <p>Error: {error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="word-container">
-      <div className="topic-header">
-        <button className="back-btn" onClick={() => navigate(`/admin/exercise`)}>
+    <div className="manageexercisequestion-container">
+      <div className="manageexercisequestion-topic-header">
+        <button className="manageexercisequestion-back-btn" onClick={() => navigate(`/admin/exercise`)}>
           <i className="fas fa-arrow-left"></i> Back to Exercise
         </button>
-        <h1 className="header-title">
+        <h1 className="manageexercisequestion-header-title">
           Manage Questions: {exerciseInfo ? exerciseInfo.title : 'Loading...'}
         </h1>
       </div>
       
-      <div className="pagination">
-        <div className="entries-select">
+      <div className="manageexercisequestion-pagination">
+        <div className="manageexercisequestion-entries-select">
           <p>Show </p>
           <select 
             value={itemsPerPage} 
             onChange={handleEntriesChange}
-            className="entries-dropdown"
+            className="manageexercisequestion-entries-dropdown"
           >
             {entriesOptions.map(option => (
               <option key={option} value={option}>
@@ -1015,117 +1037,120 @@ const ManageExerciseQuestion = () => {
           <p>entries </p>
         </div>
 
-        <div className="action-section">
-          <div className="search-box">
+        <div className="manageexercisequestion-action-section">
+          <div className="manageexercisequestion-search-box">
             <i className="fas fa-search"></i>
             <input
               type="text"
               placeholder="Search..."
-              className="search-input"
+              className="manageexercisequestion-search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-                
-          <button className="add-existing-btn" onClick={handleAddExistingQuestions}>
-            <i className="fas fa-copy"></i>
-            Add Existing
-          </button>
-          {selectedItems.length > 0 && (
-            <button 
-              className="delete-selected-btn"
-              onClick={() => {
-                setItemToDelete(null);
-                setIsDeleteModalOpen(true);
-              }}
-            >
-              <i className="fas fa-trash"></i>
-              Delete Selected
+          
+          <div className="manageexercisequestion-button-group">
+            <button className="manageexercisequestion-add-existing-btn" onClick={handleAddExistingQuestions}>
+              <i className="fas fa-copy"></i>
+              Add Existing
             </button>
-          )}
+            
+            {selectedItems.length > 0 && (
+              <button 
+                className="manageexercisequestion-trash-btn"
+                onClick={() => {
+                  setItemToDelete(null);
+                  setIsDeleteModalOpen(true);
+                }}
+              >
+                <i className="fas fa-trash"></i>
+                Delete Selected
+              </button>
+            )}
+          </div>
         </div>
       </div>
         
-      <table className="word-table">
+      <table className="manageexercisequestion-table">
         <thead>
           <tr>
-            <th className="id-column">
-              <div className="id-header">
+            <th className="manageexercisequestion-checkbox-column">
+              <div className="manageexercisequestion-id-header">
                 <input
                   type="checkbox"
                   onChange={handleSelectAll}
                   checked={selectedItems.length === sortedData.length && sortedData.length > 0}
                   onClick={handleCheckboxClick}
                 />
-                <span onClick={() => handleSort('id')} className="sortable">
-                  ID
-                  <i className={`fas ${sortField === 'id' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
-                </span>
               </div>
             </th>
-            <th onClick={() => handleSort('content')} className="sortable content-column">
+            <th className="manageexercisequestion-id-column">
+              <span onClick={() => handleSort('id')} className="manageexercisequestion-sortable">
+                ID
+                <i className={`fas ${sortField === 'id' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              </span>
+            </th>
+            <th onClick={() => handleSort('content')} className="manageexercisequestion-sortable manageexercisequestion-content-column">
               Question
               <i className={`fas ${sortField === 'content' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('option_a')} className="sortable option-column">
+            <th onClick={() => handleSort('option_a')} className="manageexercisequestion-sortable manageexercisequestion-option-column">
               Option A
               <i className={`fas ${sortField === 'option_a' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('option_b')} className="sortable option-column">
+            <th onClick={() => handleSort('option_b')} className="manageexercisequestion-sortable manageexercisequestion-option-column">
               Option B
               <i className={`fas ${sortField === 'option_b' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('option_c')} className="sortable option-column">
+            <th onClick={() => handleSort('option_c')} className="manageexercisequestion-sortable manageexercisequestion-option-column">
               Option C
               <i className={`fas ${sortField === 'option_c' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('option_d')} className="sortable option-column">
+            <th onClick={() => handleSort('option_d')} className="manageexercisequestion-sortable manageexercisequestion-option-column">
               Option D
               <i className={`fas ${sortField === 'option_d' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('correct_answer')} className="sortable answer-column">
-              Correct Answer
+            <th onClick={() => handleSort('correct_answer')} className="manageexercisequestion-sortable manageexercisequestion-answer-column">
+              Answer
               <i className={`fas ${sortField === 'correct_answer' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
             </th>
-            <th onClick={() => handleSort('explain_detail')} className="sortable explain-column">
-              Explanation
-              <i className={`fas ${sortField === 'explain_detail' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
-            </th>
-            <th className="action-column">Action</th>
+            <th className="manageexercisequestion-action-column">Action</th>
           </tr>
         </thead>
         <tbody>
           {currentItems.length > 0 ? (
             currentItems.map((item) => (
               <tr key={item.id}>
-                <td className="id-column">
-                  <div className="id-cell">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(item.id)}
-                      onChange={() => handleSelectItem(item.id)}
-                      onClick={handleCheckboxClick}
-                    />
-                    <span>{item.id}</span>
-                  </div>
+                <td className="manageexercisequestion-checkbox-column">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.includes(item.id)}
+                    onChange={() => handleSelectItem(item.id)}
+                    onClick={handleCheckboxClick}
+                  />
                 </td>
-                <td className="content-cell">{item.content || "-"}</td>
-                <td className="option-cell">{item.option_a || "-"}</td>
-                <td className="option-cell">{item.option_b || "-"}</td>
-                <td className="option-cell">{item.option_c || "-"}</td>
-                <td className="option-cell">{item.option_d || "-"}</td>
-                <td className="correct-answer-cell">{item.correct_answer || "-"}</td>
-                <td className="explanation-cell">{item.explain_detail || "-"}</td>
-                <td className="action-column">
+                <td className="manageexercisequestion-id-column">{item.id}</td>
+                <td className="manageexercisequestion-content-cell">
+                  <div className="manageexercisequestion-content-preview">{item.content || "-"}</div>
+                </td>
+                <td className="manageexercisequestion-option-cell">
+                  <div className="manageexercisequestion-option-preview">{item.option_a || "-"}</div>
+                </td>
+                <td className="manageexercisequestion-option-cell">
+                  <div className="manageexercisequestion-option-preview">{item.option_b || "-"}</div>
+                </td>
+                <td className="manageexercisequestion-option-cell">
+                  <div className="manageexercisequestion-option-preview">{item.option_c || "-"}</div>
+                </td>
+                <td className="manageexercisequestion-option-cell">
+                  <div className="manageexercisequestion-option-preview">{item.option_d || "-"}</div>
+                </td>
+                <td className="manageexercisequestion-correct-answer-cell">
+                  <span className="manageexercisequestion-correct-answer">{item.correct_answer || "-"}</span>
+                </td>
+                <td className="manageexercisequestion-action-column">
                   <button 
-                    className="edit-btn"
-                    onClick={() => handleEditClick(item)}
-                    title="Edit question"
-                  >
-                    <i className="fa-solid fa-pen-to-square"></i>
-                  </button>
-                  <button 
-                    className="delete-btn"
+                    className="manageexercisequestion-delete-btn"
                     onClick={() => {
                       setItemToDelete(item);
                       setIsDeleteModalOpen(true);
@@ -1139,12 +1164,12 @@ const ManageExerciseQuestion = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="9" className="empty-table">
-                <div className="empty-message">
+              <td colSpan="9" className="manageexercisequestion-empty-table">
+                <div className="manageexercisequestion-empty-message">
                   <i className="fas fa-question-circle"></i>
                   <p>No questions found for this exercise</p>
-                  <div className="empty-actions">
-                    <button className="add-existing-btn" onClick={handleAddExistingQuestions}>
+                  <div className="manageexercisequestion-empty-actions">
+                    <button className="manageexercisequestion-add-existing-btn" onClick={handleAddExistingQuestions}>
                       <i className="fas fa-copy"></i> Add Existing Question
                     </button>
                   </div>
@@ -1156,27 +1181,27 @@ const ManageExerciseQuestion = () => {
       </table>
 
       {currentItems.length > 0 && (
-        <div className="pagination">
+        <div className="manageexercisequestion-pagination">
           <span>
             Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
           </span>
-          <div className="pagination-buttons">
+          <div className="manageexercisequestion-pagination-buttons">
             <button 
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="page-btn"
+              className="manageexercisequestion-page-btn"
             >
               Previous
             </button>
             
             {getPageNumbers(currentPage, totalPages).map((item, index) => (
               item === '...' ? (
-                <span key={`dots-${index}`} className="page-dots">...</span>
+                <span key={`dots-${index}`} className="manageexercisequestion-page-dots">...</span>
               ) : (
                 <button
                   key={item}
                   onClick={() => setCurrentPage(item)}
-                  className={`page-btn ${currentPage === item ? 'active' : ''}`}
+                  className={`manageexercisequestion-page-btn ${currentPage === item ? 'active' : ''}`}
                 >
                   {item}
                 </button>
@@ -1186,7 +1211,7 @@ const ManageExerciseQuestion = () => {
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="page-btn"
+              className="manageexercisequestion-page-btn"
             >
               Next
             </button>
