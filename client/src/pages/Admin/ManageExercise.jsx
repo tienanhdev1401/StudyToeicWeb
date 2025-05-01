@@ -491,6 +491,17 @@ const ManageExercise = () => {
             <i className="fas fa-plus"></i>
             Add New
           </button>
+          
+          <button className="exercise-management-add-btn" onClick={() => navigate(`/admin/exercise/grammars`)}>
+            <i className="fas fa-book"></i>
+            Manage Grammar Exercise
+          </button>
+
+          <button className="exercise-management-add-btn" onClick={() => navigate(`/admin/exercise/vocabularies`)}>
+            <i className="fas fa-book"></i>
+            Manage Vocabulary Exercise
+          </button>
+
         </div>
       </div>
         
