@@ -168,7 +168,7 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
     <div className="add-modal-overlay">
       <div className="add-modal-content">
         <div className="add-modal-header">
-          <h2>Add Exercises to Topic: {grammarTopicTitle}</h2>
+          <h2>Thêm bài tập vào chủ đề: {grammarTopicTitle}</h2>
           <button type="button" className="close-btn" onClick={onClose} disabled={isLoading}>
             <i className="fas fa-times"></i>
           </button>
@@ -176,23 +176,23 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
         <div className="add-modal-body">
           {isLoading && !availableExercises.length ? (
             <div className="loading-spinner">
-              <i className="fas fa-spinner fa-spin"></i> Loading exercises...
+              <i className="fas fa-spinner fa-spin"></i> Đang tải dữ liệu...
             </div>
           ) : error ? (
             <div className="error-message">
               <p>{error}</p>
               <button 
-                className="retry-btn"
+                className="ManageExerciseGrammar-retry-btn"
                 onClick={fetchExercises} 
                 disabled={isLoading}
               >
-                <i className="fas fa-sync"></i> Retry
+                <i className="fas fa-sync"></i> Thử lại
               </button>
             </div>
           ) : !hasValidExercises ? (
             <div className="empty-message">
-              <p>No exercises available to add to this topic.</p>
-              <button className="close-btn" onClick={onClose}>Close</button>
+              <p>Không có bài tập nào khả dụng để thêm vào chủ đề này.</p>
+              <button className="cancel-btn" onClick={onClose}>Đóng</button>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
@@ -201,7 +201,7 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
                   <i className="fas fa-search"></i>
                   <input
                     type="text"
-                    placeholder="Search exercises by title..."
+                    placeholder="Tìm kiếm bài tập theo tiêu đề..."
                     className="search-question-input"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -209,7 +209,7 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
                 </div>
                 <div className="add-modal-top-buttons">
                   <button type="button" className="cancel-btn" onClick={onClose} disabled={isLoading}>
-                    Cancel
+                    Hủy
                   </button>
                   <button 
                     type="submit" 
@@ -218,10 +218,10 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
                   >
                     {isLoading ? (
                       <>
-                        <i className="fas fa-spinner fa-spin"></i> Adding...
+                        <i className="fas fa-spinner fa-spin"></i> Đang thêm...
                       </>
                     ) : (
-                      `Add ${selectedExercises.length} Exercise(s)`
+                      `Thêm ${selectedExercises.length} bài tập`
                     )}
                   </button>
                 </div>
@@ -239,7 +239,7 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
                         />
                       </th>
                       <th>ID</th>
-                      <th className="text-left">Exercise Title</th>
+                      <th className="text-left">Tiêu đề bài tập</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -247,8 +247,8 @@ const EditExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTitle
                       <tr>
                         <td colSpan="3" className="no-exercises">
                           {availableExercises.length === 0 ? 
-                            "No exercises found" : 
-                            "No matching exercises found"}
+                            "Không tìm thấy bài tập" : 
+                            "Không tìm thấy bài tập phù hợp"}
                         </td>
                       </tr>
                     ) : (
@@ -814,7 +814,7 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
     <div className="add-modal-overlay">
       <div className="add-modal-content">
         <div className="add-modal-header">
-          <h2>Delete Exercises From Topic: {grammarTopicTitle}</h2>
+          <h2>Xóa bài tập khỏi chủ đề: {grammarTopicTitle}</h2>
           <button type="button" className="close-btn" onClick={onClose} disabled={isLoading}>
             <i className="fas fa-times"></i>
           </button>
@@ -822,23 +822,23 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
         <div className="add-modal-body">
           {isLoading && !topicExercises.length ? (
             <div className="loading-spinner">
-              <i className="fas fa-spinner fa-spin"></i> Loading exercises...
+              <i className="fas fa-spinner fa-spin"></i> Đang tải dữ liệu...
             </div>
           ) : error ? (
             <div className="error-message">
               <p>{error}</p>
               <button 
-                className="retry-btn"
+                className="ManageExerciseGrammar-retry-btn"
                 onClick={fetchExercises} 
                 disabled={isLoading}
               >
-                <i className="fas fa-sync"></i> Retry
+                <i className="fas fa-sync"></i> Thử lại
               </button>
             </div>
           ) : !hasValidExercises ? (
             <div className="empty-message">
-              <p>No exercises found in this topic.</p>
-              <button className="close-btn" onClick={onClose}>Close</button>
+              <p>Không có bài tập nào trong chủ đề này.</p>
+              <button className="cancel-btn" onClick={onClose}>Đóng</button>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
@@ -847,7 +847,7 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
                   <i className="fas fa-search"></i>
                   <input
                     type="text"
-                    placeholder="Search exercises by title..."
+                    placeholder="Tìm kiếm bài tập theo tiêu đề..."
                     className="search-question-input"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -855,7 +855,7 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
                 </div>
                 <div className="add-modal-top-buttons">
                   <button type="button" className="cancel-btn" onClick={onClose} disabled={isLoading}>
-                    Cancel
+                    Hủy
                   </button>
                   <button 
                     type="submit" 
@@ -864,10 +864,10 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
                   >
                     {isLoading ? (
                       <>
-                        <i className="fas fa-spinner fa-spin"></i> Removing...
+                        <i className="fas fa-spinner fa-spin"></i> Đang xóa...
                       </>
                     ) : (
-                      `Remove ${selectedExercises.length} Exercise(s)`
+                      `Xóa ${selectedExercises.length} bài tập`
                     )}
                   </button>
                 </div>
@@ -885,7 +885,7 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
                         />
                       </th>
                       <th>ID</th>
-                      <th className="text-left">Exercise Title</th>
+                      <th className="text-left">Tiêu đề bài tập</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -893,8 +893,8 @@ const DeleteExercisesModal = ({ isOpen, onClose, grammarTopicId, grammarTopicTit
                       <tr>
                         <td colSpan="3" className="no-exercises">
                           {topicExercises.length === 0 ? 
-                            "No exercises found" : 
-                            "No matching exercises found"}
+                            "Không tìm thấy bài tập" : 
+                            "Không tìm thấy bài tập phù hợp"}
                         </td>
                       </tr>
                     ) : (
@@ -1291,8 +1291,10 @@ const ManageExerciseGrammar = () => {
                       className="ManageExerciseGrammar-add-exercises-btn"
                       onClick={() => handleEditExercises(item.grammarTopic)}
                       title="Thêm bài tập vào chủ đề"
+                      aria-label={`Thêm bài tập vào chủ đề ${item.grammarTopic.title}`}
                     >
                       <i className="fas fa-plus-circle"></i>
+                      <span className="sr-only">Thêm bài tập</span>
                     </button>
                     <button 
                       className="ManageExerciseGrammar-remove-exercises-btn"
@@ -1301,9 +1303,11 @@ const ManageExerciseGrammar = () => {
                         setIsDeleteExercisesModalOpen(true);
                       }}
                       disabled={item.exerciseCount === 0}
-                      title="Xóa bài tập khỏi chủ đề"
+                      title={item.exerciseCount === 0 ? "Không có bài tập để xóa" : "Xóa bài tập khỏi chủ đề"}
+                      aria-label={`Xóa bài tập khỏi chủ đề ${item.grammarTopic.title}`}
                     >
                       <i className="fas fa-minus-circle"></i>
+                      <span className="sr-only">Xóa bài tập</span>
                     </button>
                   </div>
                 </td>

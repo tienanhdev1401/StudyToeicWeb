@@ -518,6 +518,7 @@
   color: #374151;
   cursor: pointer;
   font-size: 15px;
+  transition: all 0.2s ease;
 }
 
 .ManageExerciseGrammar-save-btn:hover {
@@ -784,22 +785,22 @@
   font-size: 14px;
 }
 
-.ManageExerciseGrammarit-exercises-btn:hover {
+.ManageExerciseGrammar-edit-exercises-btn:hover {
   background-color: #3a7bc8;
 }
 
-.ManageExerciseGrammarit-exercises-btn i {
+.ManageExerciseGrammar-edit-exercises-btn i {
   font-size: 14px;
 }
 
 /* Exercise modal styles */
-.ManageExerciseGrammarercises-modal {
+.ManageExerciseGrammar-exercises-modal {
   width: 90%;
   max-width: 1000px;
   max-height: 90vh;
 }
 
-.ManageExerciseGrammarercises-top-actions {
+.ManageExerciseGrammar-exercises-top-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -807,7 +808,8 @@
   gap: 15px;
 }
 
-.ManageExerciseGrammar-rch-exercise-box ManageExerciseGrammar {
+.ManageExerciseGrammar-search-exercise-box {
+  display: flex;
   align-items: center;
   background-color: white;
   border: 1px solid #c7c7c7;
@@ -817,13 +819,13 @@
   position: relative;
 }
 
-.ManageExerciseGrammar-earch-exercise-box i {
+.ManageExerciseGrammar-search-exercise-box i {
   color: #9ca3af;
   font-size: 1.25rem;
   margin-right: 8px;
 }
 
-.ManageExerciseGrammar-earch-exercise-input {
+.ManageExerciseGrammar-search-exercise-input {
   flex-grow: 1;
   width: 100%;
   background: none;
@@ -834,18 +836,18 @@
   font-size: 14px;
 }
 
-.ManageExerciseGrammar-earch-exercise-input:focus {
+.ManageExerciseGrammar-search-exercise-input:focus {
   border: none;
   outline: none;
   box-shadow: none;
 }
 
-.ManageExerciseGrammar-xercises-top-buttons {
+.ManageExerciseGrammar-exercises-top-buttons {
   display: flex;
   gap: 10px;
 }
 
-.ManageExerciseGrammar-xercises-table-container {
+.ManageExerciseGrammar-exercises-table-container {
   margin-top: 20px;
   max-height: 400px;
   overflow-y: auto;
@@ -853,20 +855,20 @@
   border-radius: 8px;
 }
 
-.ManageExerciseGrammar-xercises-table {
+.ManageExerciseGrammar-exercises-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 
-.ManageExerciseGrammar-xercises-table th,
-.ManageExerciseGrammar-xercises-table td {
+.ManageExerciseGrammar-exercises-table th,
+.ManageExerciseGrammar-exercises-table td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.ManageExerciseGrammar-xercises-table th {
+.ManageExerciseGrammar-exercises-table th {
   background-color: #f8f9fa;
   font-weight: 600;
   position: sticky;
@@ -874,30 +876,30 @@
   z-index: 10;
 }
 
-.ManageExerciseGrammar-xercises-table tbody tr:hover {
+.ManageExerciseGrammar-exercises-table tbody tr:hover {
   background-color: #f0f7ff;
 }
 
-.ManageExerciseGrammar-heckbox-column {
+.ManageExerciseGrammar-checkbox-column {
   width: 40px;
   text-align: center;
 }
 
-.ManageExerciseGrammar-escription-cell {
+.ManageExerciseGrammar-description-cell {
   max-width: 250px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.ManageExerciseGrammar-o-exercises {
+.ManageExerciseGrammar-no-exercises {
   text-align: center;
   padding: 40px 0;
   color: #6c757d;
   font-style: italic;
 }
 
-.ManageExerciseGrammar-etry-btn {
+.ManageExerciseGrammar-retry-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -910,26 +912,26 @@
   margin-top: 10px;
 }
 
-.ManageExerciseGrammar-etry-btn:hover {
+.ManageExerciseGrammar-retry-btn:hover {
   background-color: #138496;
 }
 
-.ManageExerciseGrammar-etry-btn:disabled {
+.ManageExerciseGrammar-retry-btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
-  .ManageExerciseGrammar-xercises-top-actions {
+  .ManageExerciseGrammar-exercises-top-actions {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .ManageExerciseGrammar-earch-exercise-box {
+  .ManageExerciseGrammar-search-exercise-box {
     width: 100%;
   }
   
-  .ManageExerciseGrammar-xercises-top-buttons {
+  .ManageExerciseGrammar-exercises-top-buttons {
     justify-content: flex-end;
   }
 }
@@ -939,30 +941,269 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .ManageExerciseGrammar-add-exercises-btn, 
 .ManageExerciseGrammar-remove-exercises-btn {
-  padding: 6px 12px;
+  padding: 8px 12px;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
-  margin-right: 5px;
-  background-color: transparent;
-  color: #858c97;
-  font-size: 15px;
+  background-color: #f3f4f6;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
 }
 
-.ManageExerciseGrammar-add-exercises-btn:hover {
+.ManageExerciseGrammar-add-exercises-btn {
   color: #0ea5e9;
 }
 
-.ManageExerciseGrammar-remove-exercises-btn:hover {
+.ManageExerciseGrammar-remove-exercises-btn {
   color: #f59e0b;
+}
+
+.ManageExerciseGrammar-add-exercises-btn:hover {
+  background-color: #0ea5e9;
+  color: white;
+  transform: scale(1.05);
+}
+
+.ManageExerciseGrammar-remove-exercises-btn:hover {
+  background-color: #f59e0b;
+  color: white;
+  transform: scale(1.05);
 }
 
 .ManageExerciseGrammar-remove-exercises-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   color: #d1d5db;
+  background-color: #f3f4f6;
+  transform: none;
+}
+
+/* Fix the overlay and modal styles for all modals */
+.add-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.add-modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.add-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.add-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(90vh - 160px);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.add-modal-top-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.search-question-box {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #c7c7c7;
+  border-radius: 0.5rem;
+  padding: 1px 16px;
+  flex-grow: 1;
+  position: relative;
+}
+
+.search-question-box i {
+  color: #9ca3af;
+  font-size: 1.25rem;
+  margin-right: 8px;
+}
+
+.search-question-input {
+  flex-grow: 1;
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  color: #1f2937;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.add-modal-top-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.table-container {
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.question-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.question-table th,
+.question-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.question-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.question-table tbody tr:hover {
+  background-color: #f0f7ff;
+}
+
+.cancel-btn {
+  padding: 8px 16px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  color: #374151;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  background-color: #1976d2;
+  color: white;
+  transition: background-color 0.2s;
+  min-width: 120px;
+}
+
+.submit-btn i {
+  font-size: 16px;
+}
+
+.submit-btn:hover {
+  background-color: #1565c0;
+}
+
+.cancel-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #4a90e2;
+  font-size: 18px;
+}
+
+.loading-spinner i {
+  margin-right: 10px;
+  font-size: 24px;
+}
+
+.error-message {
+  color: #e53935;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.empty-message {
+  padding: 40px 20px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.no-exercises {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
