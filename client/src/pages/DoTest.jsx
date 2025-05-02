@@ -46,6 +46,7 @@ const DoTest = () => {
     // Track which parts the user has already visited
     const [visitedParts, setVisitedParts] = useState({});
     const [learningProcessId, setLearningProcessId] = useState(state?.learningProcessId || null);
+    const hasCreatedLearningProcess = useRef(false);
     //Tính điểm 
     const calculateScore = () => {
         if (!testData) {
@@ -168,7 +169,26 @@ const DoTest = () => {
                 if (!state?.timeLimit && processedData.duration) {
                     setTimeLeft(processedData.duration * 60);
                 }
-                
+
+                // Tạo learning process sau khi đã có testData và user
+                if (user && !learningProcessId) {
+                    try {
+                        const learningData = {
+                            LearnerId: user.id,
+                            testId: parseInt(testID),
+                            grammarTopicId: null,
+                            vocabularyTopicId: null
+                        };
+                        // Gọi API, backend sẽ trả về process cũ nếu đã có
+                        const response = await learningProcessService.setLearningProcessInProgress(user.id, learningData);
+                        if (response && response.id) {
+                            setLearningProcessId(response.id);
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi tạo learning process:', error);
+                    }
+                }
+
                 // Defer non-critical operations after setting test data
                 setTimeout(() => {
                     setLoading(false);
@@ -181,7 +201,7 @@ const DoTest = () => {
         };
 
         fetchTestData();
-    }, [testID, state?.timeLimit]);
+    }, [testID, state?.timeLimit, user]);
 
     // Khởi tạo và lọc câu hỏi - optimize to run faster
     useEffect(() => {
@@ -1538,29 +1558,6 @@ const DoTest = () => {
             [currentPart]: true
         }));
     };
-
-    // Thêm useEffect để tạo learning process khi vào trang
-    useEffect(() => {
-        const createLearningProcess = async () => {
-            if (user && user.id && !learningProcessId) {
-                try {
-                    const learningData = {
-                        LearnerId: user.id,
-                        testId: parseInt(testID),
-                        grammarTopicId: null,
-                        vocabularyTopicId: null
-                    };
-                    const response = await learningProcessService.setLearningProcessInProgress(user.id, learningData);
-                    if (response && response.id) {
-                        setLearningProcessId(response.id);
-                    }
-                } catch (error) {
-                    console.error('Lỗi khi tạo learning process:', error);
-                }
-            }
-        };
-        createLearningProcess();
-    }, [user, testID, learningProcessId]);
 
     return (
         <div className="do-test-container">

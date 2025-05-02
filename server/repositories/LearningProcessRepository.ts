@@ -41,10 +41,7 @@ export class LearningProcessRepository {
             }
 
             // Kiểm tra xem đã có learning process cho bài học này chưa
-            const result: any = await db.query(query, queryParams);
-
-            // Đảm bảo result là một mảng và lấy phần tử đầu tiên của mảng kết quả
-            const rows = Array.isArray(result) ? result[0] : [];
+            const [rows] = await db.query(query, queryParams);
             const existing = Array.isArray(rows) ? rows[0] : rows;
             
             // Nếu đã tồn tại, trả về learning process đó
@@ -62,37 +59,57 @@ export class LearningProcessRepository {
             }
 
             // Nếu chưa tồn tại, tạo mới learning process
-            const insertResult: any = await db.query(
-                'INSERT INTO toeic_web.learningprocesses (LearnerId, GrammarTopicId, TestId, VocabularyTopicId, progressStatus, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
-                [learnerId, params.grammarTopicId || null, params.testId || null, params.vocabularyTopicId || null, 'in_progress']
-            );
+            try {
+                const insertResult: any = await db.query(
+                    'INSERT INTO toeic_web.learningprocesses (LearnerId, GrammarTopicId, TestId, VocabularyTopicId, progressStatus, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+                    [learnerId, params.grammarTopicId || null, params.testId || null, params.vocabularyTopicId || null, 'in_progress']
+                );
 
-            const insertId = Array.isArray(insertResult) ? insertResult[0].insertId : insertResult.insertId;
+                const insertId = Array.isArray(insertResult) ? insertResult[0].insertId : insertResult.insertId;
 
-            // Lấy thông tin learning process vừa tạo
-            const newResult: any = await db.query(
-                'SELECT * FROM toeic_web.learningprocesses WHERE id = ?',
-                [insertId]
-            );
+                // Lấy thông tin learning process vừa tạo
+                const newResult: any = await db.query(
+                    'SELECT * FROM toeic_web.learningprocesses WHERE id = ?',
+                    [insertId]
+                );
 
-            // Đảm bảo newResult là một mảng và lấy phần tử đầu tiên
-            const newRows = Array.isArray(newResult) ? newResult[0] : [];
-            const createdProcess = Array.isArray(newRows) ? newRows[0] : newRows;
+                const newRows = Array.isArray(newResult) ? newResult[0] : [];
+                const createdProcess = Array.isArray(newRows) ? newRows[0] : newRows;
 
-            if (!createdProcess) {
-                throw new Error('Không thể tìm thấy learning process vừa tạo');
+                if (!createdProcess) {
+                    throw new Error('Không thể tìm thấy learning process vừa tạo');
+                }
+
+                return new LearningProcess(
+                    Number(createdProcess.id),
+                    createdProcess.LearnerId,
+                    createdProcess.GrammarTopicId,
+                    createdProcess.TestId,
+                    createdProcess.VocabularyTopicId,
+                    createdProcess.progressStatus,
+                    createdProcess.createdAt,
+                    createdProcess.updatedAt
+                );
+            } catch (error: any) {
+                // Nếu bị duplicate key thì select lại process cũ và trả về
+                if (error && error.code === 'ER_DUP_ENTRY') {
+                    const [rows2] = await db.query(query, queryParams);
+                    const process = Array.isArray(rows2) ? rows2[0] : rows2;
+                    if (process) {
+                        return new LearningProcess(
+                            Number(process.id),
+                            process.LearnerId,
+                            process.GrammarTopicId,
+                            process.TestId,
+                            process.VocabularyTopicId,
+                            process.progressStatus,
+                            process.createdAt,
+                            process.updatedAt
+                        );
+                    }
+                }
+                throw error;
             }
-
-            return new LearningProcess(
-                Number(createdProcess.id),
-                createdProcess.LearnerId,
-                createdProcess.GrammarTopicId,
-                createdProcess.TestId,
-                createdProcess.VocabularyTopicId,
-                createdProcess.progressStatus,
-                createdProcess.createdAt,
-                createdProcess.updatedAt
-            );
         } catch (error) {
             console.error('Lỗi khi tạo learning process:', error);
             throw error;
