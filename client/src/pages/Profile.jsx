@@ -153,7 +153,7 @@ const ProfilePage = () => {
                                     const test = await TestService.getTestById(process.TestId);
                                     details = {
                                         type: 'test',
-                                        name: test.name,
+                                        name: test.title,
                                         id: process.TestId
                                     };
                                 }
@@ -417,10 +417,6 @@ const ProfilePage = () => {
     const renderRecentActivities = () => {
         return (
             <div className="recent-activities-section">
-                <h3 className="section-title">
-                    <FaHistory className="section-icon" />
-                    Hoạt động gần đây
-                </h3>
                 <div className="activities-list">
                     {recentActivities.map((activity, index) => (
                         <div key={index} className="activity-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', padding: '10px', background: '#f8f9fa', borderRadius: '8px' }}>

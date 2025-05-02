@@ -3,6 +3,7 @@ import '../styles/Stm_quizzes.css';
 import Footer from '../components/Footer';
 import { useNavigate,useParams  } from 'react-router-dom';
 import LoginPopup from '../components/LoginPopup';
+import TestService from '../services/TestService';
 
 import { useAuth } from '../context/AuthContext'; 
 
@@ -14,6 +15,7 @@ function Stmquizzes() {
   const [selectedParts, setSelectedParts] = useState([]);
   const { testId } = useParams();
   const navigate = useNavigate();
+  const [testTitle, setTestTitle] = useState('');
 
   const handleTimeChange = (event) => {
     setSelectedTime(Number(event.target.value));
@@ -22,6 +24,23 @@ function Stmquizzes() {
   useEffect(() => {
     setShowLoginPopup(!isLoggedIn);
   }, [isLoggedIn]);
+
+  // Thêm useEffect để lấy thông tin test
+  useEffect(() => {
+    const fetchTestInfo = async () => {
+      try {
+        const testData = await TestService.getTestById(testId);
+        setTestTitle(testData.title || `TEST ĐẦU VÀO (${testId})`);
+      } catch (error) {
+        console.error('Lỗi khi lấy thông tin test:', error);
+        setTestTitle(`TEST ĐẦU VÀO (${testId})`);
+      }
+    };
+
+    if (testId) {
+      fetchTestInfo();
+    }
+  }, [testId]);
 
   const handlePartToggle = (partNumber, isChecked) => {
     setSelectedParts(prev =>
@@ -67,7 +86,7 @@ function Stmquizzes() {
       </header>
       <main className="main-content">
         <section className="test-section">
-          <h2>TEST ĐẦU VÀO (3)</h2>
+          <h2>{testTitle}</h2>
           <p>Thời gian làm bài thi: <strong>2 giờ</strong></p>
           <p>Cấu trúc đề thi</p>
 

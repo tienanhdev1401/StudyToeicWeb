@@ -48,9 +48,19 @@
 
 .test-section h2 {
   color: #1a365d;
-  font-size: 1.75rem;
+  font-size: 2.5rem;
   margin-bottom: 1.5rem;
   font-weight: bold;
+  text-align: center;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  text-transform: uppercase;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .checkbox-group {
