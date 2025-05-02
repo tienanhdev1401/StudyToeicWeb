@@ -27,6 +27,7 @@ import test from './test'
 import adminQuestionRoutes from './admin/admin.questionRoutes';
 import adminResourceRoutes from './admin/admin.resourceRoutes';
 import adminRoadmapConfigRoutes from './admin/admin.roadmapConfigRoutes';
+import learningProcessRoutes from './learningProcessRoutes';
 
 function route(app: Application): void {
   app.use('/api/user', userRouter);
@@ -61,6 +62,7 @@ function route(app: Application): void {
   app.use('/api/submissions', submissionRoutes);
   app.use('/', test);
   app.use('/api/admin/roadmap-config', adminRoadmapConfigRoutes);
+  app.use('/api/learning-process', learningProcessRoutes);
 }
 
 export default route;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaRedo } from 'react-icons/fa';
 import ExerciseService from '../services/exerciseService';
+import learningProcessService from '../services/learningProcessService';
 import '../styles/DoGrammarExercise.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
@@ -20,7 +21,8 @@ const DoExercise = () => {
   //lay data truyen tu state learn-grammar hoac len leanr-vocabulary
   const location = useLocation();
   const topicType = location.state?.topicType || 'Unknown';
-  const topicId= location.state?.topicId;
+  const topicId = location.state?.topicId;
+  const learningProcessId = location.state?.learningProcessId;
 
  
 
@@ -34,14 +36,10 @@ const DoExercise = () => {
 
   // Fetch single exercise
   useEffect(() => {
-
     console.log('topicId',topicId);
     console.log('topicType',topicType);
     const fetchExercise = async () => {
       try {
-        // Get exerciseId from navigation state or URL params
-        
-        // console.log('Hunganh',exerciseId)
         if (!exerciseId) {
           throw new Error('Exercise ID not provided');
         }
@@ -63,7 +61,7 @@ const DoExercise = () => {
     };
 
     fetchExercise();
-  }, [location.state]);
+  }, [exerciseId, topicId, topicType]);
 
   // Reset answered state when question changes
   useEffect(() => {
@@ -93,10 +91,20 @@ const DoExercise = () => {
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     const correctAnswersCount = Object.values(selectedAnswers).filter(a => a.isCorrect).length;
+    
+    // Nếu có learningProcessId, cập nhật trạng thái completed
+    if (learningProcessId) {
+      try {
+        await learningProcessService.setLearningProcessCompleted(learningProcessId);
+      } catch (error) {
+        console.error('Lỗi khi cập nhật trạng thái học tập:', error);
+      }
+    }
+
     alert(`Bạn đã hoàn thành với ${correctAnswersCount}/${exercise.questions.length} câu đúng!`);
-    // navigate('/'); // Navigate back to home or another route
+    
     // Navigate based on topicType
     if (topicType === 'Vocabulary' && topicId) {
       navigate(`/learn-vocabulary/${topicId}`);
@@ -214,7 +222,7 @@ const DoExercise = () => {
                 onChange={() => {}}
                 disabled={isAnswered}
               />
-              <span className="option-label">{option.id}. {option.text}</span>
+              <span className="option-label">{option.text}</span>
             </label>
           ))}
         </div>

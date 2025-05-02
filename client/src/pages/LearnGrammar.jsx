@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import { isGrammarCompleted } from '../data/mockLearningProcess';
 import { useAuth } from '../context/AuthContext';
 import GrammarTopicService from '../services/grammarTopicService';
+import learningProcessService from '../services/learningProcessService';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const LearnGrammar = () => {
@@ -16,6 +17,25 @@ const LearnGrammar = () => {
     const [grammarItems, setGrammarItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [completedTopics, setCompletedTopics] = useState([]);
+
+    // Fetch completed topics
+    useEffect(() => {
+        const fetchCompletedTopics = async () => {
+            if (user && user.id) {
+                try {
+                    const processes = await learningProcessService.getAllLearningProcessByUserId(user.id);
+                    const completedGrammarIds = processes
+                        .filter(process => process.GrammarTopicId && process.progressStatus === 'completed')
+                        .map(process => process.GrammarTopicId);
+                    setCompletedTopics(completedGrammarIds);
+                } catch (err) {
+                    console.error('Error fetching completed topics:', err);
+                }
+            }
+        };
+        fetchCompletedTopics();
+    }, [user]);
 
     // Fetch grammar topics from API
     useEffect(() => {
@@ -40,10 +60,6 @@ const LearnGrammar = () => {
     );
 
     const handleViewDetail = (topic) => {
-        // const topicSlug = topic.title
-        //     .toLowerCase()
-        //     .replace(/ /g, '-')
-        //     .replace(/[^\w-]+/g, '');
         const topicId=topic.id
         navigate(`/learn-grammary/${topicId}`);
     };
@@ -98,7 +114,9 @@ const LearnGrammar = () => {
                     
                     <div className="test-list">
                         {filteredGrammarItems.map(item => {
-                            const isCompleted = user ? isGrammarCompleted(user.id, item.id) : false;
+                            const mockCompleted = user ? isGrammarCompleted(user.id, item.id) : false;
+                            const realCompleted = completedTopics.includes(item.id);
+                            const isCompleted = realCompleted;
                             
                             return (
                                 <div key={item.id} className={`test-item ${isCompleted ? 'completed' : ''}`}>
@@ -109,7 +127,7 @@ const LearnGrammar = () => {
                                             {item.title}
                                         </span>
                                         {isCompleted && (
-                                            <FaCheckCircle className="completed-icon" />
+                                            <FaCheckCircle className="completed-icon" style={{ color: '#4CAF50' }} />
                                         )}
                                     </div>
                                     <span className="item-score">-</span>

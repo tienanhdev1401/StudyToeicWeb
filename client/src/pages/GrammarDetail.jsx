@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import GrammarTopicService from '../services/grammarTopicService';
 import CommentService from '../services/commentService';
+import learningProcessService from '../services/learningProcessService';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -21,6 +22,7 @@ const GrammarDetail = () => {
     const [commentLoading, setCommentLoading] = useState(false);
     const [editingComment, setEditingComment] = useState(null);
     const [editContent, setEditContent] = useState('');
+    const [learningProcess, setLearningProcess] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,6 +34,21 @@ const GrammarDetail = () => {
                 // Fetch comments
                 const commentsResponse = await CommentService.getCommentsByGrammarTopicId(topicId);
                 setComments(commentsResponse.data);
+
+                // Nếu user đã đăng nhập, tạo learning process
+                if (user) {
+                    try {
+                        const learningData = {
+                            grammarTopicId: parseInt(topicId),
+                            testId: null,
+                            vocabularyTopicId: null
+                        };
+                        const process = await learningProcessService.setLearningProcessInProgress(user.id, learningData);
+                        setLearningProcess(process);
+                    } catch (error) {
+                        console.error('Lỗi khi tạo learning process:', error);
+                    }
+                }
                 
                 setLoading(false);
             } catch (err) {
@@ -42,7 +59,7 @@ const GrammarDetail = () => {
         };
 
         fetchData();
-    }, [topicId]);
+    }, [topicId, user]);
 
     const handlePracticeClick = async () => {
         if (!topic) return;
@@ -61,7 +78,8 @@ const GrammarDetail = () => {
                 state: {
                     topicId: topic.id,
                     topicName: topic.title,
-                    topicType: 'Grammar'
+                    topicType: 'Grammar',
+                    learningProcessId: learningProcess?.id
                 }
             });
         } catch (error) {

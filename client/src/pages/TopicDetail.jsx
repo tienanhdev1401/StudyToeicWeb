@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { FaComment, FaPaperPlane, FaEdit, FaTrash, FaPlus, FaCheck, FaTimes } from 'react-icons/fa';
 import LoadingSpinner from '../components/LoadingSpinner';
 import WordNoteService from '../services/wordNoteService';
+import learningProcessService from '../services/learningProcessService';
 
 // Dữ liệu mẫu cho thanh công cụ tính năng
 const featuresData = [
@@ -49,6 +50,7 @@ const TopicDetail = () => {
     const { user } = useAuth();
     const [selectedNote, setSelectedNote] = useState(null);
     const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+    const [learningProcessId, setLearningProcessId] = useState(null);
 
     const navigate = useNavigate();
     
@@ -58,6 +60,21 @@ const TopicDetail = () => {
             try {
                 const data = await VocabularyTopicService.getVocabularyTopicById(topicId);
                 setTopic(data);
+                
+                // Tạo learning process khi vào trang
+                if (user) {
+                    try {
+                        const learningData = {
+                            vocabularyTopicId: parseInt(topicId),
+                            grammarTopicId: null,
+                            testId: null
+                        };
+                        const process = await learningProcessService.setLearningProcessInProgress(user.id, learningData);
+                        setLearningProcessId(process.id);
+                    } catch (error) {
+                        console.error('Lỗi khi tạo learning process:', error);
+                    }
+                }
                 
                 // Process the data to create flashCards and termsData
                 if (data && data.vocabularies && data.vocabularies.length > 0) {
@@ -128,7 +145,7 @@ const TopicDetail = () => {
 
         fetchTopicData();
         fetchRelatedTopics();
-    }, [topicId]);
+    }, [topicId, user]);
 
     const handleScroll = (direction) => {
         if (scrollContainerRef.current) {
@@ -150,7 +167,6 @@ const TopicDetail = () => {
         if (!topic) return;
         
         try {
-            // First get the exercise for this grammar topic
             const exercises = await VocabularyTopicService.getExercisesForVocabularyTopic(topicId);
             
             if (exercises.length === 0) {
@@ -158,14 +174,14 @@ const TopicDetail = () => {
                 return;
             }
     
-            // Navigate to exercise page with the first exercise
             const randomIndex = Math.floor(Math.random() * exercises.length);
             const randomExercise = exercises[randomIndex];
             navigate(`/exercise/${randomExercise.id}`, {
                 state: {
                     topicId: topic.id,
                     topicName: topic.topicName,
-                    topicType: 'Vocabulary'
+                    topicType: 'Vocabulary',
+                    learningProcessId: learningProcessId
                 }
             });
         } catch (error) {
