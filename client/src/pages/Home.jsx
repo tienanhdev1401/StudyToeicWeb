@@ -10,19 +10,19 @@ import { useNavigate } from 'react-router-dom';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { getLearningGoalByLearnerId } from '../services/learningGoalService';
+import learningProcessService from '../services/learningProcessService';
 
 const Home = () => {
     const [recentTopics, setRecentTopics] = useState([]);
     const [grammarTopics, setGrammarTopics] = useState([]);
     const [practiceTests, setPracticeTests] = useState([]);
-    const [userProgress] = useState({
-        vocabLearned: 120,
-        vocabTotal: 600,
-        grammarCompleted: 4,
-        grammarTotal: 12,
-        testsCompleted: 2,
-        lastScore: 650,
-        studyStreak: 5
+    const [latestLearningProcess, setLatestLearningProcess] = useState(null);
+    const [userProgress, setUserProgress] = useState({
+        vocabLearned: 0,
+        vocabTotal: 0,
+        grammarCompleted: 0,
+        grammarTotal: 0,
+        testsCompleted: 0
     });
     const [learningGoal, setLearningGoal] = useState(null);
     const [goalProgress, setGoalProgress] = useState(0);
@@ -130,6 +130,46 @@ const Home = () => {
             }
         };
         fetchLearningGoal();
+
+        const fetchLatestLearningProcess = async () => {
+            if (userDetails && userDetails.id) {
+                try {
+                    const processes = await learningProcessService.getAllLearningProcessByUserId(userDetails.id);
+                    // Lọc ra các process đang in_progress và sắp xếp theo thời gian tạo mới nhất
+                    const inProgressProcesses = processes
+                        .filter(process => process.progressStatus === 'in_progress')
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    
+                    if (inProgressProcesses.length > 0) {
+                        setLatestLearningProcess(inProgressProcesses[0]);
+                    }
+                } catch (error) {
+                    console.error('Error fetching latest learning process:', error);
+                }
+            }
+        };
+        fetchLatestLearningProcess();
+
+        // Fetch user learning statistics
+        const fetchLearningStats = async () => {
+            if (userDetails && userDetails.id) {
+                try {
+                    console.log('userDetails',userDetails)
+                    const stats = await learningProcessService.getLearningStatistics(userDetails.id);
+                    console.log('stats',stats)
+                    if (stats) {
+                        setUserProgress({
+                            vocabLearned: stats.completedVocabulary || 0,
+                            grammarCompleted: stats.completedGrammarTopics || 0,
+                            testsCompleted: stats.completedTests || 0
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching learning statistics:', error);
+                }
+            }
+        };
+        fetchLearningStats();
     }, [userDetails]);
 
     return (
@@ -217,11 +257,11 @@ const Home = () => {
                                                     <p className="text-muted mb-4">Tiếp tục hành trình nâng cao điểm TOEIC của bạn</p>
                                                     
                                                     <div className="row g-3">
-                                                        <div className="col-md-6">
+                                                        <div className="col-md-4">
                                                             <div className="d-flex align-items-center p-3 bg-light rounded">
                                                                 <div style={{ width: 50, height: 50 }}>
                                                                     <CircularProgressbar
-                                                                        value={(userProgress.vocabLearned / userProgress.vocabTotal) * 100}
+                                                                        value={(userProgress.vocabLearned / 600) * 100}
                                                                         text={`${userProgress.vocabLearned}`}
                                                                         styles={buildStyles({
                                                                             textSize: '28px',
@@ -232,15 +272,15 @@ const Home = () => {
                                                                 </div>
                                                                 <div className="ms-3">
                                                                     <p className="mb-0 small">Từ vựng đã học</p>
-                                                                    <p className="mb-0 small text-muted">{userProgress.vocabLearned}/{userProgress.vocabTotal} từ</p>
+                                                                    <p className="mb-0 small text-muted">{userProgress.vocabLearned}/600 từ</p>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="col-md-6">
+                                                        <div className="col-md-4">
                                                             <div className="d-flex align-items-center p-3 bg-light rounded">
                                                                 <div style={{ width: 50, height: 50 }}>
                                                                     <CircularProgressbar
-                                                                        value={(userProgress.grammarCompleted / userProgress.grammarTotal) * 100}
+                                                                        value={(userProgress.grammarCompleted / 20) * 100}
                                                                         text={`${userProgress.grammarCompleted}`}
                                                                         styles={buildStyles({
                                                                             textSize: '28px',
@@ -251,14 +291,47 @@ const Home = () => {
                                                                 </div>
                                                                 <div className="ms-3">
                                                                     <p className="mb-0 small">Ngữ pháp đã học</p>
-                                                                    <p className="mb-0 small text-muted">{userProgress.grammarCompleted}/{userProgress.grammarTotal} chủ đề</p>
+                                                                    <p className="mb-0 small text-muted">{userProgress.grammarCompleted}/20 chủ đề</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="d-flex align-items-center p-3 bg-light rounded">
+                                                                <div style={{ width: 50, height: 50 }}>
+                                                                    <CircularProgressbar
+                                                                        value={(userProgress.testsCompleted / 30) * 100}
+                                                                        text={`${userProgress.testsCompleted}`}
+                                                                        styles={buildStyles({
+                                                                            textSize: '28px',
+                                                                            pathColor: '#FF9800',
+                                                                            textColor: '#FF9800',
+                                                                        })}
+                                                                    />
+                                                                </div>
+                                                                <div className="ms-3">
+                                                                    <p className="mb-0 small">Bài test đã làm</p>
+                                                                    <p className="mb-0 small text-muted">{userProgress.testsCompleted}/30 bài</p>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     
                                                     <div className="mt-4">
-                                                        <a href="#" onClick={e => { e.preventDefault(); navigate('/resume-learning'); }} 
+                                                        <a href="#" 
+                                                           onClick={e => { 
+                                                               e.preventDefault(); 
+                                                               if (latestLearningProcess) {
+                                                                   if (latestLearningProcess.VocabularyTopicId) {
+                                                                       navigate(`/learn-vocabulary/${latestLearningProcess.VocabularyTopicId}`);
+                                                                   } else if (latestLearningProcess.GrammarTopicId) {
+                                                                       navigate(`/learn-grammary/${latestLearningProcess.GrammarTopicId}`);
+                                                                   } else if (latestLearningProcess.TestId) {
+                                                                       navigate(`/Stm_Quizzes/${latestLearningProcess.TestId}`);
+                                                                   }
+                                                               } else {
+                                                                   navigate('/resume-learning');
+                                                               }
+                                                           }} 
                                                            className="btn btn-primary me-2">
                                                             <i className="fas fa-play-circle me-2"></i>Tiếp tục học
                                                         </a>
@@ -1061,8 +1134,8 @@ const Home = () => {
                                                     padding: '15px',
                                                     height: '100%'
                                                 }}>
-                                                    <h5 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>Điểm dự đoán</h5>
-                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>650</h3>
+                                                    <h5 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>Bài test đã làm</h5>
+                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>{userProgress.testsCompleted}</h3>
                                                 </div>
                                             </div>
                                         </div>

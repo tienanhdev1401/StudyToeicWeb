@@ -4,6 +4,7 @@ import '../styles/DoTest.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TestService from '../services/TestService';
 import ScoreService from '../services/scoreService';
+import learningProcessService from '../services/learningProcessService';
 
 import ConfirmSubmitPopup from '../components/ConfirmSubmitPopup';
 import TestResultPopup from '../components/TestResultPopup';
@@ -44,6 +45,7 @@ const DoTest = () => {
     const [shouldStartTimer, setShouldStartTimer] = useState(false);
     // Track which parts the user has already visited
     const [visitedParts, setVisitedParts] = useState({});
+    const [learningProcessId, setLearningProcessId] = useState(state?.learningProcessId || null);
     //Tính điểm 
     const calculateScore = () => {
         if (!testData) {
@@ -338,6 +340,15 @@ const DoTest = () => {
             if (Object.keys(answers).length === 0) {
                 alert('Bạn chưa trả lời câu hỏi nào.');
                 return;
+            }
+
+            // Thêm xử lý setCompleted cho learning process
+            if (learningProcessId) {
+                try {
+                    await learningProcessService.setLearningProcessCompleted(learningProcessId);
+                } catch (error) {
+                    console.error('Lỗi khi cập nhật trạng thái học tập:', error);
+                }
             }
 
             // Đánh dấu đã nộp bài
@@ -726,6 +737,15 @@ const DoTest = () => {
                 audio.pause();
                 audio.src = '';
             });
+
+            // Thêm xử lý setCompleted cho learning process
+            if (learningProcessId) {
+                try {
+                    await learningProcessService.setLearningProcessCompleted(learningProcessId);
+                } catch (error) {
+                    console.error('Lỗi khi cập nhật trạng thái học tập:', error);
+                }
+            }
 
             // Đánh dấu đã nộp bài
             setIsSubmitted(true);
@@ -1518,6 +1538,29 @@ const DoTest = () => {
             [currentPart]: true
         }));
     };
+
+    // Thêm useEffect để tạo learning process khi vào trang
+    useEffect(() => {
+        const createLearningProcess = async () => {
+            if (user && user.id && !learningProcessId) {
+                try {
+                    const learningData = {
+                        LearnerId: user.id,
+                        testId: parseInt(testID),
+                        grammarTopicId: null,
+                        vocabularyTopicId: null
+                    };
+                    const response = await learningProcessService.setLearningProcessInProgress(user.id, learningData);
+                    if (response && response.id) {
+                        setLearningProcessId(response.id);
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi tạo learning process:', error);
+                }
+            }
+        };
+        createLearningProcess();
+    }, [user, testID, learningProcessId]);
 
     return (
         <div className="do-test-container">

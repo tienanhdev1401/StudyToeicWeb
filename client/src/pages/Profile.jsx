@@ -9,6 +9,10 @@ import { useUser } from '../context/UserContext';
 import PasswordChangePopup from '../components/PasswordChangePopup';
 import userService from '../services/userService';
 import { getLearningGoalByLearnerId, createLearningGoal, updateLearningGoal } from '../services/learningGoalService';
+import learningProcessService from '../services/learningProcessService';
+import GrammarTopicService from '../services/grammarTopicService';
+import VocabularyTopicService from '../services/vocabularyTopicService';
+import TestService from '../services/TestService';
 
 const ProfilePage = () => {
     const { isLoggedIn, logout, refreshToken } = useAuth();
@@ -23,6 +27,7 @@ const ProfilePage = () => {
     const [editedGoal, setEditedGoal] = useState(null);
     const [isSavingProfile, setIsSavingProfile] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [recentActivities, setRecentActivities] = useState([]);
 
     // Handle token expiration
     const handleTokenRefresh = async () => {
@@ -111,6 +116,75 @@ const ProfilePage = () => {
             }
         };
     }, [imagePreview]);
+
+    useEffect(() => {
+        const fetchRecentActivities = async () => {
+            if (user && user.id) {
+                try {
+                    // Lấy tất cả learning processes
+                    const processes = await learningProcessService.getAllLearningProcessByUserId(user.id);
+                    
+                    // Sắp xếp theo thời gian tạo mới nhất và lấy 3 cái gần nhất
+                    const recentProcesses = processes
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                        .slice(0, 3);
+
+                    // Lấy thông tin chi tiết cho từng process
+                    const activitiesWithDetails = await Promise.all(
+                        recentProcesses.map(async (process) => {
+                            let details = null;
+
+                            try {
+                                if (process.VocabularyTopicId) {
+                                    const vocabTopic = await VocabularyTopicService.getVocabularyTopicById(process.VocabularyTopicId);
+                                    details = {
+                                        type: 'vocabulary',
+                                        name: vocabTopic.topicName,
+                                        id: process.VocabularyTopicId
+                                    };
+                                } else if (process.GrammarTopicId) {
+                                    const grammarTopic = await GrammarTopicService.getGrammarTopicById(process.GrammarTopicId);
+                                    details = {
+                                        type: 'grammar',
+                                        name: grammarTopic.title,
+                                        id: process.GrammarTopicId
+                                    };
+                                } else if (process.TestId) {
+                                    const test = await TestService.getTestById(process.TestId);
+                                    details = {
+                                        type: 'test',
+                                        name: test.name,
+                                        id: process.TestId
+                                    };
+                                }
+
+                                return {
+                                    ...process,
+                                    details
+                                };
+                            } catch (error) {
+                                console.error('Error fetching details for process:', error);
+                                return {
+                                    ...process,
+                                    details: {
+                                        type: 'unknown',
+                                        name: 'Không thể tải thông tin',
+                                        id: null
+                                    }
+                                };
+                            }
+                        })
+                    );
+
+                    setRecentActivities(activitiesWithDetails);
+                } catch (error) {
+                    console.error('Error fetching recent activities:', error);
+                }
+            }
+        };
+
+        fetchRecentActivities();
+    }, [user]);
 
     // Show loading spinner when loading data
     if (loading) {
@@ -338,6 +412,55 @@ const ProfilePage = () => {
         if (!learningGoal) return 0;
         // Sample calculation - in reality would be based on actual progress
         return 35; // 35% progress for demo purposes
+    };
+
+    const renderRecentActivities = () => {
+        return (
+            <div className="recent-activities-section">
+                <h3 className="section-title">
+                    <FaHistory className="section-icon" />
+                    Hoạt động gần đây
+                </h3>
+                <div className="activities-list">
+                    {recentActivities.map((activity, index) => (
+                        <div key={index} className="activity-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', padding: '10px', background: '#f8f9fa', borderRadius: '8px' }}>
+                            <div className="activity-icon" style={{ marginRight: '15px', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e9ecef', borderRadius: '50%' }}>
+                                {activity.details.type === 'vocabulary' && <i className="fas fa-book" style={{ color: '#4527A0' }}></i>}
+                                {activity.details.type === 'grammar' && <i className="fas fa-pencil-alt" style={{ color: '#4527A0' }}></i>}
+                                {activity.details.type === 'test' && <i className="fas fa-file-alt" style={{ color: '#4527A0' }}></i>}
+                            </div>
+                            <div className="activity-content" style={{ flex: 1 }}>
+                                <div 
+                                    className="activity-title" 
+                                    style={{ 
+                                        fontWeight: '500', 
+                                        marginBottom: '5px',
+                                        cursor: 'pointer',
+                                        color: '#4527A0',
+                                        textDecoration: 'none'
+                                    }}
+                                    onClick={() => {
+                                        if (activity.details.type === 'vocabulary') {
+                                            navigate(`/learn-vocabulary/${activity.details.id}`);
+                                        } else if (activity.details.type === 'grammar') {
+                                            navigate(`/learn-grammary/${activity.details.id}`);
+                                        } else if (activity.details.type === 'test') {
+                                            navigate(`/Stm_Quizzes/${activity.details.id}`);
+                                        }
+                                    }}
+                                >
+                                    {activity.details.name}
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#6c757d' }}>
+                                    <span>{activity.progressStatus === 'completed' ? 'Đã hoàn thành' : 'Đang học'}</span>
+                                    <span>{new Date(activity.createdAt).toLocaleDateString('vi-VN')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -687,28 +810,7 @@ const ProfilePage = () => {
                                 </h3>
                             </div>
                             <div className="profile-card-body">
-                                {/* For demo, we'll show empty state. In real app, this would be populated from API */}
-                                <div className="profile-empty-state">
-                                    <div className="profile-empty-icon"><FaHistory /></div>
-                                    <p className="profile-empty-text">Chưa có hoạt động nào gần đây</p>
-                                </div>
-                                
-                                {/* Example activity items that would be shown if there was data */}
-                                {/* 
-                                <div className="profile-activity-list">
-                                    <div className="profile-activity-item">
-                                        <div className="profile-activity-icon">
-                                            <FaRegCheckCircle />
-                                        </div>
-                                        <div className="profile-activity-content">
-                                            <div className="profile-activity-title">Hoàn thành bài tập Part 5</div>
-                                            <p className="profile-activity-meta">
-                                                2 giờ trước • Điểm: <span className="profile-activity-score">85/100</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                */}
+                                {renderRecentActivities()}
                             </div>
                         </div>
                     </div>
