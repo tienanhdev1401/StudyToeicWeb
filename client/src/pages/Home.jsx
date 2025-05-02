@@ -329,7 +329,7 @@ const Home = () => {
                                                                        navigate(`/Stm_Quizzes/${latestLearningProcess.TestId}`);
                                                                    }
                                                                } else {
-                                                                   navigate('/resume-learning');
+                                                                   alert('Bạn chưa học, hãy bắt đầu một chủ đề hoặc bài test trước!');
                                                                }
                                                            }} 
                                                            className="btn btn-primary me-2">

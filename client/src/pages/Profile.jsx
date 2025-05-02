@@ -13,6 +13,7 @@ import learningProcessService from '../services/learningProcessService';
 import GrammarTopicService from '../services/grammarTopicService';
 import VocabularyTopicService from '../services/vocabularyTopicService';
 import TestService from '../services/TestService';
+import TestHistoryService from '../services/TestHistoryService';
 
 const ProfilePage = () => {
     const { isLoggedIn, logout, refreshToken } = useAuth();
@@ -28,6 +29,12 @@ const ProfilePage = () => {
     const [isSavingProfile, setIsSavingProfile] = useState(false);
     const [loading, setLoading] = useState(true);
     const [recentActivities, setRecentActivities] = useState([]);
+    const [userProgress, setUserProgress] = useState({
+        vocabLearned: 0,
+        grammarCompleted: 0,
+        testsCompleted: 0
+    });
+    const [highestTestScore, setHighestTestScore] = useState(null);
 
     // Handle token expiration
     const handleTokenRefresh = async () => {
@@ -184,6 +191,52 @@ const ProfilePage = () => {
         };
 
         fetchRecentActivities();
+    }, [user]);
+
+    useEffect(() => {
+        // Lấy thống kê học tập (số ngữ pháp đã học, số từ vựng đã học)
+        const fetchLearningStats = async () => {
+            if (user && user.id) {
+                try {
+                    const stats = await learningProcessService.getLearningStatistics(user.id);
+                    if (stats) {
+                        setUserProgress({
+                            vocabLearned: stats.completedVocabulary || 0,
+                            grammarCompleted: stats.completedGrammarTopics || 0,
+                            testsCompleted: stats.completedTests || 0
+                        });
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi lấy thống kê học tập:', error);
+                }
+            }
+        };
+        fetchLearningStats();
+
+        // Lấy điểm TOEIC cao nhất
+        const fetchHighestTestScore = async () => {
+            if (user && user.id) {
+                try {
+                    const history = await TestHistoryService.getGroupedTestHistory(user.id);
+                    let maxScore = null;
+                    let bestAttempt = null;
+                    history.forEach(test => {
+                        test.attempts.forEach(attempt => {
+                            if (maxScore === null || attempt.score > maxScore) {
+                                maxScore = attempt.score;
+                                bestAttempt = attempt;
+                            }
+                        });
+                    });
+                    if (bestAttempt) {
+                        setHighestTestScore(bestAttempt);
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi lấy điểm TOEIC cao nhất:', error);
+                }
+            }
+        };
+        fetchHighestTestScore();
     }, [user]);
 
     // Show loading spinner when loading data
@@ -409,12 +462,23 @@ const ProfilePage = () => {
 
     // Calculate progress percentage if learning goal exists
     const calculateProgress = () => {
-        if (!learningGoal) return 0;
-        // Sample calculation - in reality would be based on actual progress
-        return 35; // 35% progress for demo purposes
+        // if (!learningGoal) return 0;
+        // // Sample calculation - in reality would be based on actual progress
+        // return 35; // 35% progress for demo purposes
+        if (learningGoal && highestTestScore && learningGoal.scoreTarget) {
+            return Math.floor((highestTestScore.score / learningGoal.scoreTarget) * 100);
+        }
+        return 0;
     };
 
     const renderRecentActivities = () => {
+        if (!recentActivities || recentActivities.length === 0) {
+            return (
+                <div className="profile-empty-state">
+                    <div className="profile-empty-text">Không có hoạt động gần đây</div>
+                </div>
+            );
+        }
         return (
             <div className="recent-activities-section">
                 <div className="activities-list">
@@ -671,18 +735,22 @@ const ProfilePage = () => {
                                 </a>
                             </div>
                             <div className="profile-card-body">
-                                <div className="profile-stats-list">
-                                    <div className="profile-stat-item">
-                                        <div className="profile-stat-value">0/50</div>
-                                        <p className="profile-stat-label">Chủ đề ngữ pháp</p>
+                                <div className="profile-stats-list" style={{display: 'flex', gap: '16px', justifyContent: 'space-between', alignItems: 'stretch'}}>
+                                    <div className="profile-stat-item" style={{flex: 1, background: '#f8f9fa', borderRadius: '8px', padding: '16px 0', textAlign: 'center', minWidth: 0}}>
+                                        <div className="profile-stat-value" style={{fontSize: '1.6rem', color: '#4527A0', fontWeight: 700}}>{userProgress.grammarCompleted}</div>
+                                        <p className="profile-stat-label" style={{margin: 0, fontSize: '1.3rem', fontWeight: 700}}>Ngữ pháp đã học</p>
                                     </div>
-                                    <div className="profile-stat-item">
-                                        <div className="profile-stat-value">0/100</div>
-                                        <p className="profile-stat-label">Bài tập đã làm</p>
+                                    <div className="profile-stat-item" style={{flex: 1, background: '#f8f9fa', borderRadius: '8px', padding: '16px 0', textAlign: 'center', minWidth: 0}}>
+                                        <div className="profile-stat-value" style={{fontSize: '1.6rem', color: '#4527A0', fontWeight: 700}}>{userProgress.vocabLearned}</div>
+                                        <p className="profile-stat-label" style={{margin: 0, fontSize: '1.3rem', fontWeight: 700}}>Từ vựng đã học</p>
                                     </div>
-                                    <div className="profile-stat-item">
-                                        <div className="profile-stat-value">0</div>
-                                        <p className="profile-stat-label">Điểm TOEIC</p>
+                                    <div className="profile-stat-item" style={{flex: 1, background: '#f8f9fa', borderRadius: '8px', padding: '16px 0', textAlign: 'center', minWidth: 0}}>
+                                        <div className="profile-stat-value" style={{fontSize: '1.6rem', color: '#4527A0', fontWeight: 700}}>{userProgress.testsCompleted}</div>
+                                        <p className="profile-stat-label" style={{margin: 0, fontSize: '1.3rem', fontWeight: 700}}>Bài test đã làm</p>
+                                    </div>
+                                    <div className="profile-stat-item" style={{flex: 1, background: '#f8f9fa', borderRadius: '8px', padding: '16px 0', textAlign: 'center', minWidth: 0}}>
+                                        <div className="profile-stat-value" style={{fontSize: '1.6rem', color: '#4527A0', fontWeight: 700}}>{highestTestScore ? highestTestScore.score : '--'}</div>
+                                        <p className="profile-stat-label" style={{margin: 0, fontSize: '1.3rem', fontWeight: 700}}>Điểm TOEIC cao nhất</p>
                                     </div>
                                 </div>
                             </div>
