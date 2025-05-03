@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from '../styles/Header.module.css';
-
+import { useAuth } from '../context/AuthContext';
+import { useUser } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 const AdminHeader = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const { logout } = useAuth();
+  const { user } = useUser();
+  const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin/login');
+  }
   // Xử lý click outside
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -50,30 +59,28 @@ const AdminHeader = () => {
         >
 
           <img 
-            src="https://randomuser.me/api/portraits/men/32.jpg" 
+            src={user?.avatar || "https://res.cloudinary.com/dv7574j3j/image/upload/v1745148114/toeic_web/vocabularyTopic/mq3rwxvrykkjlx5lliwk.png"} 
             alt="User Profile" 
             className={styles.userAvatar}
           />
-          <span className={styles.userName}>MR HIEU NGHIA</span>
+          <span className={styles.userName}>{user?.name || "Admin"}</span>
           <i className={`fas fa-chevron-down ${styles.chevron} ${showDropdown ? styles.arrowUp : ''}`}></i>
           {showDropdown && (
             <div className={styles.userDropdown}>
               <div className={styles.dropdownHeader}>
-                <div className={styles.dropdownName}>Musharof Chowdhury</div>
-                <div className={styles.dropdownEmail}>randomuser@pimjo.com</div>
+                <div className={styles.dropdownName}>{user?.name || "Admin"}</div>
+                <div className={styles.dropdownEmail}>{user?.email || ""}</div>
               </div>
               
               <div className={styles.dropdownMenu}>
-                <div className={styles.menuItem}>
-                  <span></span> Edit profile
-                </div>
+                
                 <div className={styles.menuItem}>
                   <span></span> Account settings
                 </div>
                 <div className={styles.menuItem}>
                   <span></span> Support
                 </div>
-                <div className={styles.menuItem}>
+                <div className={styles.menuItem} onClick={handleLogout}>
                   <span>
                   <i class="fa-solid fa-right-from-bracket"></i>
                   </span> Sign out
