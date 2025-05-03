@@ -162,4 +162,17 @@ export class QuestionInAPartRepository {
       throw error;
     }
   }
+
+  static async isQuestionUsedInTests(questionId: number): Promise<boolean> {
+    try {
+      const result = await db.query(
+        'SELECT COUNT(*) as count FROM questioninaparts WHERE QuestionId = ?',
+        [questionId]
+      );
+      return result[0].count > 0;
+    } catch (error) {
+      console.error('QuestionInAPartRepository.isQuestionUsedInTests error:', error);
+      throw error;
+    }
+  }
 }

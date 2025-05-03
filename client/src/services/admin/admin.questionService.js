@@ -80,6 +80,64 @@ const questionService = {
       throw error;
     }
   },
+
+  getAllQuestions: async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/admin/question`);
+      console.log("response.data: ", response.data);
+      return response.data.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  createQuestion: async (questionData) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/admin/question`, questionData);
+      console.log("response.data: ", response.data);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  updateQuestion: async (id, questionData) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/admin/question/${id}`, questionData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  deleteQuestion: async (id) => {
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/admin/question/${id}`);
+      console.log("response.data: ", response.data);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  deleteQuestions: async (ids) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/admin/question/delete-many`, { ids });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  importQuestions: async (questionsData) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/admin/question/import`, questionsData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
 };
 
 export default questionService;

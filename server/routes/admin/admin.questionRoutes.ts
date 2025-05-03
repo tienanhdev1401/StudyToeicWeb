@@ -18,4 +18,12 @@ router.put('/parts/:partId/questions/:questionId', QuestionController.updateQues
 // Xóa câu hỏi
 router.delete('/parts/:partId/questions/:questionId', QuestionController.deleteQuestion);
 
+router.get('/', QuestionController.getAllQuestions);
+
+router.post('/', QuestionController.createDefaultQuestion);
+
+router.put('/:id', QuestionController.updateDefaultQuestion);
+
+router.delete('/:id', QuestionController.deleteDefaultQuestion);
+
 export default router;
