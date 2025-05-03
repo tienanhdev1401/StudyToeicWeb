@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:5000/api';
+import config from './config';
 
 class TestService {
   /**
@@ -10,7 +9,7 @@ class TestService {
    */
   static async getTestById(testId) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/test/${testId}`);
+      const response = await axios.get(`${config.API_BASE_URL}/test/${testId}`);
       return response.data;
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu bài kiểm tra:', error);
@@ -108,7 +107,7 @@ class TestService {
   }
   static async getAllTests() {
     try {
-      const response = await axios.get(`${API_BASE_URL}/test/`);
+      const response = await axios.get(`${config.API_BASE_URL}/test/`);
       return response.data;
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu bài kiểm tra:', error);

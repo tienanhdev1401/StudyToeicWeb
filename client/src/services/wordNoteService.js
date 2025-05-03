@@ -1,12 +1,13 @@
 import axios from 'axios';
+import config from './config';
 
-const API_BASE_URL = 'http://localhost:5000/api'; // Update if your backend URL is different
+// Use config for API base URL
 
 const WordNoteService = {
   // Lấy danh sách WordNote theo LearnerId
   getWordNotesByLearnerId: async (learnerId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/wordnote/learner/${learnerId}`);
+      const response = await axios.get(`${config.API_BASE_URL}/wordnote/learner/${learnerId}`);
       
       if (response.data.success) {
         return response.data;
@@ -22,7 +23,7 @@ const WordNoteService = {
   // Lấy chi tiết một WordNote theo ID
   getWordNoteById: async (wordNoteId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/wordnote/${wordNoteId}`);
+      const response = await axios.get(`${config.API_BASE_URL}/wordnote/${wordNoteId}`);
       
       if (response.data.success) {
         return response.data;
@@ -38,7 +39,7 @@ const WordNoteService = {
   // Tạo WordNote mới
   createWordNote: async (wordNoteData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/wordnote`, wordNoteData);
+      const response = await axios.post(`${config.API_BASE_URL}/wordnote`, wordNoteData);
       
       if (response.data.success) {
         return response.data;
@@ -54,7 +55,7 @@ const WordNoteService = {
   // Cập nhật WordNote
   updateWordNote: async (wordNoteId, wordNoteData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/wordnote/${wordNoteId}`, wordNoteData);
+      const response = await axios.put(`${config.API_BASE_URL}/wordnote/${wordNoteId}`, wordNoteData);
       
       if (response.data.success) {
         return response.data;
@@ -70,7 +71,7 @@ const WordNoteService = {
   // Xóa WordNote
   deleteWordNote: async (wordNoteId) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/wordnote/${wordNoteId}`);
+      const response = await axios.delete(`${config.API_BASE_URL}/wordnote/${wordNoteId}`);
       
       if (response.data.success) {
         return response.data;
@@ -86,7 +87,7 @@ const WordNoteService = {
   // Thêm từ vựng vào WordNote
   addVocabularyToWordNote: async (wordNoteId, vocabularyId) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/wordnote/${wordNoteId}/vocabularies`, {
+      const response = await axios.post(`${config.API_BASE_URL}/wordnote/${wordNoteId}/vocabularies`, {
         VocabularyId: vocabularyId
       });
       
@@ -104,7 +105,7 @@ const WordNoteService = {
   // Xóa từ vựng khỏi WordNote
   removeVocabularyFromWordNote: async (wordNoteId, vocabularyId) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/wordnote/${wordNoteId}/vocabularies/${vocabularyId}`);
+      const response = await axios.delete(`${config.API_BASE_URL}/wordnote/${wordNoteId}/vocabularies/${vocabularyId}`);
       
       if (response.data.success) {
         return response.data;

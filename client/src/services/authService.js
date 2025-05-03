@@ -1,9 +1,10 @@
 import axios from 'axios';
+import config from './config';
 
 // Cấu hình axios với base URL
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api', 
-  withCredentials: true
+  baseURL: config.API_BASE_URL, 
+  withCredentials: config.withCredentials
 });
 
 // Hàm đăng nhập
@@ -32,7 +33,7 @@ export const loginUser = async (email, password) => {
 export const logoutUser = async () => {
   try {
     // Attempt to call the logout endpoint if it exists
-    await axios.post('/api/logout', {}, {
+    await axios.post(`${config.API_BASE_URL}/logout`, {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }

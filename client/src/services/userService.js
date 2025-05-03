@@ -1,7 +1,8 @@
 import axios from 'axios';
+import config from './config';
 
-const API_URL = '/api/user';
-const UPLOAD_URL = '/api/upload';
+const API_URL = `${config.API_BASE_URL}/user`;
+const UPLOAD_URL = `${config.API_BASE_URL}/upload`;
 
 const userService = {
   sendVerificationCode: async (email) => {

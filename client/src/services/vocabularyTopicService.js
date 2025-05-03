@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:5000/api'; // Update with your backend URL
+import config from './config';
 
 const VocabularyTopicService = {
   /**
@@ -8,7 +7,7 @@ const VocabularyTopicService = {
    */
   getAllVocabularyTopics: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/vocabulary-topic`);
+      const response = await axios.get(`${config.API_BASE_URL}/vocabulary-topic`);
       
       if (response.data.success) {
         return response.data.data; // Returns array of VocabularyTopic objects
@@ -23,7 +22,7 @@ const VocabularyTopicService = {
 
   getVocabularyTopicById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/vocabulary-topic/${id}`);
+      const response = await axios.get(`${config.API_BASE_URL}/vocabulary-topic/${id}`);
       
       if (response.data.success) {
         return response.data.data;
@@ -38,7 +37,7 @@ const VocabularyTopicService = {
 
   getExercisesForVocabularyTopic: async (vocabularyTopicId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/vocabulary-topic/${vocabularyTopicId}/exercise`);
+      const response = await axios.get(`${config.API_BASE_URL}/vocabulary-topic/${vocabularyTopicId}/exercise`);
       
       if (response.data.success) {
         return response.data.data;
@@ -50,11 +49,6 @@ const VocabularyTopicService = {
       throw error;
     }
   },
-
-
-
-
-  
 };
 
 export default VocabularyTopicService;
