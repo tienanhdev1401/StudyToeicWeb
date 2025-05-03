@@ -116,8 +116,20 @@ export class exercisesRepository {
         'DELETE FROM questioninexercise WHERE exerciseId = ?',
         [id]
       );
-      
-      // 2. Xóa exercise
+
+     // 2. Xóa tất cả liên kết với grammartopic-exercise trong bảng grammartopic-exercise
+     await database.query(
+      'DELETE FROM `grammartopic-exercise` WHERE exerciseId = ?',
+      [id]
+    );
+    
+    // 3. Xóa tất cả liên kết với vocabularytopic-exercise trong bảng vocabularytopic-exercise
+    await database.query(
+      'DELETE FROM `vocabularytopic-exercise` WHERE exerciseId = ?',
+      [id]
+    );
+
+      // . Xóa exercise
       await database.query(
         'DELETE FROM exercises WHERE id = ?',
         [id]

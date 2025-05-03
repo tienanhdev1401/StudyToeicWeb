@@ -18,6 +18,8 @@ import TestDetail from './TestDetail';
 import ManageExercise from './ManageExercise';
 import ManageRoadmapConfig from './RoadmapConfigAdmin';
 import ManageExerciseQuestion from './ManageExerciseQuestion';
+import ManageExerciseGrammar from './ManageExerciseGrammar';
+import ManageExerciseVocabulary from './ManageExerciseVocabulary';
 import ManageQuestion from './ManageQuestion';
 
 // Component để kiểm tra quyền Admin (không phải staff)
@@ -88,6 +90,8 @@ const AdminPage = () => {
         <Route path="/exercise" element={<ManageExercise />} />
         <Route path="/roadmap-config" element={<ManageRoadmapConfig />} />
         <Route path="/exercise/:id/questions" element={<ManageExerciseQuestion />} />
+        <Route path="/exercise/grammars" element={<ManageExerciseGrammar />} />
+        <Route path="/exercise/vocabularies" element={<ManageExerciseVocabulary />} />
       </Routes>
       </UserProvider>
       </AuthProvider>
