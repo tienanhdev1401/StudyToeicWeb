@@ -37,7 +37,9 @@
 .test-detail-header h1 {
   margin: 0 0 15px 0;
   color: #409efd;
-  font-size: 2.5rem;
+  font-size: 3.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
 }
 
 .test-detail-meta {

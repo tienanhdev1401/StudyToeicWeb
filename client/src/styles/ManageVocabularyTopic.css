@@ -1,9 +1,9 @@
-.vocabulary-container {
+.vocabularyTopic-container {
   padding: 30px;
   font-family: 'Arial', sans-serif;
   max-width: 1200px; /* Tăng max-width */
   margin: 0 auto;
-  background-color: white;
+  background-color: white !important;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
@@ -15,8 +15,10 @@ h1 {
 
 .vocabularyTopic-header-title {
   margin-top: 10px;
-  font-size: 40px;
-  font-weight: 600;
+    font-size: 4.75rem;
+    color: #409efd;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
 }
 
 .vocabularyTopic-header-section {
@@ -54,7 +56,7 @@ h1 {
   display: flex;
   align-items: center;
   background-color: white;
-  border: 0px solid #c7c7c7;
+  border: 1px solid #c7c7c7;
   border-radius: 0.5rem;
   padding: 6px 16px;
   width: 300px;

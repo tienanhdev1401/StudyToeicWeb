@@ -43,21 +43,46 @@ export class QuestionRepository {
         }
     }
 
-    static async findAll(): Promise<TestCollection[]> {
+    static async findAll(): Promise<Question[]> {
         try {
-            const rows = await db.query('SELECT DISTINCT testCollection FROM tests');
+            const rows = await db.query('SELECT * FROM questions');
             
             const distinctCollections = Array.isArray(rows) ? rows : [rows];
             if (!distinctCollections.length) return [];
     
-            const collections = distinctCollections.map((row, index) => new TestCollection(
-                index + 1, // ID tự sinh
-                row.testCollection
-            ));
+        
+            const results = Array.isArray(rows) ? rows : [rows];
+            const questions = await Promise.all(results.map(async row => {
+              let resource = null;
+              if (row.ResourceId) {
+                try {
+                  resource = await ResourceRepository.findById(Number(row.ResourceId));
+                } catch (resourceError) {
+                  console.error(`Error fetching resource ${row.ResourceId}:`, resourceError);
+                  // Continue with null resource
+                }
+              }
+
+
+              
+              return new Question(
+                Number(row.id),
+                row.content,
+                row.correct_answer,
+                row.explain_detail || '', 
+                row.option_a || '',     
+                row.option_b || '',      
+                row.option_c || '',     
+                row.option_d || '',    
+                resource
+              );
+            }));
+        
+            return questions;
     
-            return collections;
+            return questions;
         } catch (error) {
-            console.error('TestCollectionRepository.findAll error:', error);
+            console.error('QuestionRepository.findAll error:', error);
             throw error;
         }
     }

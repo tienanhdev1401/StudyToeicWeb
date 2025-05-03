@@ -4,9 +4,27 @@ import { QuestionRepository } from '../../repositories/admin/admin.questionRepos
 import { QuestionInAPartRepository } from '../../repositories/admin/admin.questionInAPartRepository';
 import { QuestionInAPart } from '../../models/QuestionInAPart';
 import { ResourceRepository } from '../../repositories//admin/admin.resourceRepository';
+import { exercisesQuestionRepository } from '../../repositories/admin/admin.exercisesQuestionRepository';
 
 export class QuestionController {
  
+  static async getAllQuestions(req: Request, res: Response) {
+    try {
+      const questions = await QuestionRepository.findAll();
+      return res.status(200).json({
+        success: true,
+        data: questions,
+        message: 'Lấy danh sách câu hỏi thành công'
+      });
+
+    } catch (error) {
+      console.error('QuestionController.getAllQuestions error:', error);
+      return res.status(500).json({ error: 'Lỗi máy chủ' });
+    }
+
+
+  }
+
   static async getById(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id);
@@ -299,6 +317,235 @@ export class QuestionController {
       if (!usedInOtherParts) {
         await QuestionRepository.delete(questionId);
       }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Đã xóa câu hỏi thành công'
+      });
+    } catch (error) {
+      console.error('QuestionController.deleteQuestion error:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Lỗi khi xóa câu hỏi'
+      });
+    }
+  }
+
+
+  static async createDefaultQuestion(req: Request, res: Response) {
+    try {
+      console.log("req.body: ", req.body);
+      const {
+        content,
+        optionA,
+        optionB,
+        optionC,
+        optionD,
+        correctAnswer,
+        explainDetail,
+        resourceData,
+        questionNumber,
+        audioUrl,
+        imageUrl,
+        explainResource
+      } = req.body;
+
+      // Validate required fields
+      // if (!content || !optionA || !optionB || !optionC || !optionD || !correctAnswer) {
+      //   return res.status(400).json({ error: 'Thiếu thông tin câu hỏi bắt buộc' });
+      // }
+
+      // Create resource if audio or image URL is provided
+      let resourceId = null;
+      try {
+        if (resourceData && (resourceData.audioUrl || resourceData.imageUrl || resourceData.explainResource)) {
+          resourceId = await ResourceRepository.createResource(
+            resourceData.explainResource || null,
+            resourceData.audioUrl || null,
+            resourceData.imageUrl || null
+          );
+        } else if(audioUrl || imageUrl || explainResource) {
+            resourceId = await ResourceRepository.createResource(
+              explainResource || null,
+              audioUrl || null,
+              imageUrl || null
+            );
+          }
+        
+      } catch (resourceError) {
+        console.error('Error creating resource:', resourceError);
+        // Continue without a resource if creation fails
+      }
+
+      // Create new question - match the constructor parameters
+      const question = new Question(
+        0, // ID will be assigned by DB
+        content,
+        correctAnswer,
+        explainDetail || '', // explainDetail
+        optionA,
+        optionB,
+        optionC,
+        optionD,
+        null // resource - will be set after creation
+      );
+
+      // Save question to database
+      const savedQuestion = await QuestionRepository.create(question, resourceId);
+
+      if (!savedQuestion || !savedQuestion.id) {
+        return res.status(500).json({ error: 'Không thể tạo câu hỏi' });
+      }
+      return res.status(201).json({ 
+        success: true, 
+        message: 'Đã tạo câu hỏi thành công',
+        data: { 
+          ...savedQuestion, 
+          resource: resourceId ? {
+            id: resourceId,
+            explainResource: resourceData?.explainResource || null,
+            audioUrl: resourceData?.audioUrl || null,
+            imageUrl: resourceData?.imageUrl || null
+          } : null
+        } 
+      });
+    } catch (error) {
+      console.error('QuestionController.createQuestion error:', error);
+      return res.status(500).json({ 
+        success: false,
+        error: 'Lỗi khi tạo câu hỏi'
+      });
+    }
+  }
+    
+    static async updateDefaultQuestion(req: Request, res: Response) {
+    try {
+      const questionId = parseInt(req.params.id);
+
+      if ( isNaN(questionId)) {
+        return res.status(400).json({ error: 'ID không hợp lệ' });
+      } 
+
+      // Check if the question exists
+      const existingQuestions = await QuestionRepository.findByIds([questionId]);
+      if (!existingQuestions || existingQuestions.length === 0) {
+        return res.status(404).json({ error: 'Không tìm thấy câu hỏi' });
+      }
+
+      const question = existingQuestions[0];
+
+
+
+      const {
+        content,
+        optionA,
+        optionB,
+        optionC,
+        optionD,
+        correctAnswer,
+        explainDetail,
+        resourceData,
+        questionNumber
+      } = req.body;
+
+      // Handle resource update or creation
+      let resourceId = question.resource?.id || null;
+      
+      try {
+        if (resourceData) {
+          if (resourceId) {
+            // Update existing resource
+            await ResourceRepository.updateResource(
+              resourceId,
+              resourceData.explainResource || null,
+              resourceData.audioUrl || null,
+              resourceData.imageUrl || null
+            );
+          } else if (resourceData.audioUrl || resourceData.imageUrl || resourceData.explainResource) {
+            // Create new resource
+            resourceId = await ResourceRepository.createResource(
+              resourceData.explainResource || null,
+              resourceData.audioUrl || null,
+              resourceData.imageUrl || null
+            );
+          }
+        }
+      } catch (resourceError) {
+        console.error('Error managing resource:', resourceError);
+        // Continue without modifying the resource if it fails
+      }
+
+      // Update question data - match the constructor parameters
+      const updatedQuestion = new Question(
+        questionId,
+        content || question.content,
+        correctAnswer || question.correctAnswer,
+        explainDetail || question.explainDetail || '',
+        optionA || question.optionA,
+        optionB || question.optionB,
+        optionC || question.optionC,
+        optionD || question.optionD,
+        question.resource
+      );
+
+      await QuestionRepository.update(updatedQuestion, resourceId);
+
+      // Update question number if provided
+
+      return res.status(200).json({
+        success: true,
+        message: 'Đã cập nhật câu hỏi thành công',
+        data: { 
+          ...updatedQuestion, 
+          resource: resourceId ? {
+            id: resourceId,
+            explainResource: resourceData?.explainResource || null,
+            audioUrl: resourceData?.audioUrl || null,
+            imageUrl: resourceData?.imageUrl || null
+          } : question.resource
+        }
+      });
+    } catch (error) {
+      console.error('QuestionController.updateQuestion error:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Lỗi khi cập nhật câu hỏi'
+      });
+    }
+  }
+
+  static async deleteDefaultQuestion(req: Request, res: Response) {
+     try {
+      const questionId = parseInt(req.params.id);
+
+      if (isNaN(questionId)) {
+        return res.status(400).json({ error: 'ID không hợp lệ' });
+      }
+
+      // Kiểm tra xem câu hỏi có tồn tại không
+      const question = await QuestionRepository.findById(questionId);
+      if (!question) {
+        return res.status(404).json({ error: 'Không tìm thấy câu hỏi' });
+      }
+
+      // Kiểm tra xem câu hỏi có được sử dụng trong các bài test không
+      const usedInTests = await QuestionInAPartRepository.isQuestionUsedInTests(questionId);
+      if (usedInTests) {
+        return res.status(400).json({ 
+          error: 'Không thể xóa câu hỏi vì nó đang được sử dụng trong các bài test' 
+        });
+      }
+
+      // Kiểm tra xem câu hỏi có được sử dụng trong các bài tập không
+      const usedInExercises = await exercisesQuestionRepository.isQuestionUsedInExercises(questionId);
+      if (usedInExercises) {
+        return res.status(400).json({ 
+          error: 'Không thể xóa câu hỏi vì nó đang được sử dụng trong các bài tập' 
+        });
+      }
+
+      // Nếu không có ràng buộc nào, tiến hành xóa câu hỏi
+      await QuestionRepository.delete(questionId);
 
       return res.status(200).json({
         success: true,

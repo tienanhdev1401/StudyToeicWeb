@@ -10,14 +10,15 @@ import ManageLearn from './ManageLearner';
 import ManageGrammarTopic from './ManageGrammarTopic';
 import ManageVocabulary from './ManageVocabulary';
 import { useAuth } from '../../context/AuthContext';
+import { AuthProvider } from '../../context/AuthContext';
+import { UserProvider } from '../../context/UserContext';
 import ManageTest from './ManageTest';
 import NotFound from '../../components/404';
 import TestDetail from './TestDetail';
 import ManageExercise from './ManageExercise';
 import ManageRoadmapConfig from './RoadmapConfigAdmin';
 import ManageExerciseQuestion from './ManageExerciseQuestion';
-import ManageExerciseVocabulary from './ManageExerciseVocabulary';
-import ManageExerciseGrammar from './ManageExerciseGrammar';
+import ManageQuestion from './ManageQuestion';
 
 // Component để kiểm tra quyền Admin (không phải staff)
 const AdminOnlyRoute = ({ element }) => {
@@ -68,7 +69,10 @@ const AdminPage = () => {
   }, [user, isLoggedIn, navigate]);
 
   return (
+
     <AdminLayout>
+      <AuthProvider>
+        <UserProvider>
       <Routes>
         <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -84,9 +88,9 @@ const AdminPage = () => {
         <Route path="/exercise" element={<ManageExercise />} />
         <Route path="/roadmap-config" element={<ManageRoadmapConfig />} />
         <Route path="/exercise/:id/questions" element={<ManageExerciseQuestion />} />
-        <Route path="/exercise/grammars" element={<ManageExerciseGrammar />} />
-        <Route path="/exercise/vocabularies" element={<ManageExerciseVocabulary />} />
       </Routes>
+      </UserProvider>
+      </AuthProvider>
     </AdminLayout>
   );
 };

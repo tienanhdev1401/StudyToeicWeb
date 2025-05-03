@@ -216,4 +216,17 @@ export class exercisesQuestionRepository {
             );
         }));
     }
+
+    static async isQuestionUsedInExercises(questionId: number): Promise<boolean> {
+        try {
+            const result = await database.query(
+                'SELECT COUNT(*) as count FROM questioninexercise WHERE QuestionId = ?',
+                [questionId]
+            );
+            return result[0].count > 0;
+        } catch (error) {
+            console.error('exercisesQuestionRepository.isQuestionUsedInExercises error:', error);
+            throw error;
+        }
+    }
 }

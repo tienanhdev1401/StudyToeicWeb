@@ -12,13 +12,20 @@ const Sidebar = () => {
   const isAdmin = user && user.role === 'admin';
 
   const toggleSubmenu = (menu) => {
-    setOpenSubmenus((prev) => ({
-      ...prev,
-      [menu]: !prev[menu],
-    }));
+    setOpenSubmenus((prev) => {
+      // Tạo một object mới với tất cả các menu đều đóng
+      const newState = {};
+      // Chỉ mở menu được click
+      newState[menu] = !prev[menu];
+      return newState;
+    });
   };
 
   const handleMenuClick = (menu, path, isExternal) => {
+    // Reset all submenu states first
+    //setOpenSubmenus({});
+    
+    // Set the new active menu
     setActiveMenu(menu);
     
     if (isExternal) {
@@ -57,8 +64,8 @@ const Sidebar = () => {
           ...(isAdmin ? [{ key: 'staff', label: 'Staff', path: '/admin/staff' }] : []),
         ],
       },
-      { key: 'tables', label: 'Tables', icon: 'fas fa-table', path: '/admin/tables' },
-      { key: 'pages', label: 'Pages', icon: 'fas fa-file', path: '/admin/pages' },
+      // { key: 'tables', label: 'Tables', icon: 'fas fa-table', path: '/admin/tables' },
+      // { key: 'pages', label: 'Pages', icon: 'fas fa-file', path: '/admin/pages' },
       { key: 'roadmap', label: 'RoadmapConfig',icon:'fas fa-project-diagram', path: '/admin/roadmap-config'},
       { key: 'chat', label: 'Chat', icon: 'fas fa-comment-dots', path: 'https://dashboard.tawk.to/#/chat', external: true }
 
@@ -70,15 +77,16 @@ const Sidebar = () => {
   const menuItems = generateMenuItems();
 
   return (
-    <div className={styles.sidebar}>
+    <div className={styles.sidebar} >
       {/* Logo Section */}
-      <div className={styles.logoSection}>
-        <img
-          src="https://storage.googleapis.com/a1aa/image/UKgR22ZUm22NJMqRs2e2z2w6qbn3vPgRfCIzqNQXGZo.jpg"
-          alt="Logo"
+      <div className={styles.logoSection} >
+        {/* <img
+          // src="https://storage.googleapis.com/a1aa/image/UKgR22ZUm22NJMqRs2e2z2w6qbn3vPgRfCIzqNQXGZo.jpg"
+          src="/assets/img/logo/logo.png" 
+         // alt="Logo"
           className={styles.logo}
-        />
-        <span className={styles.logoText}>ZEnglish</span>
+        /> */}
+        <span className={styles.logoText} > Course Management</span>
       </div>
 
       {/* Navigation Menu */}
