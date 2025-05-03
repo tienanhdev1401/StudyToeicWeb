@@ -1,21 +1,16 @@
-// API Configuration
+// config.js
 const config = {
-  // Base URL for the API
-  // In development, we use relative URLs because of the proxy in package.json
-  // In production, we use the full domain
-  API_BASE_URL: process.env.NODE_ENV === 'production' 
-    ? 'https://hostserver.tptienanh.website/api'
-    : '/api',
-  
-  // Other common config values can go here
+  // Sử dụng biến môi trường từ file .env
+  API_BASE_URL: process.env.REACT_APP_API_URL || '/api',
+  // Các cấu hình khác
   withCredentials: true,
 };
-
+console.log('API_BASE_URL:', process.env.REACT_APP_API_URL); // Để debug
 export default config;
 
-// Helper function to get the full API URL
+// Helper function để lấy URL đầy đủ của API
 export const getApiUrl = (endpoint) => {
-  // Remove leading slash if it exists to avoid double slashes
+  // Loại bỏ dấu / ở đầu để tránh double slashes
   const path = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
   return `${config.API_BASE_URL}/${path}`;
-}; 
+};
