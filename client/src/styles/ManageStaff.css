@@ -168,7 +168,8 @@
 .managestaff-edit-btn, 
 .managestaff-delete-btn, 
 .managestaff-block-btn, 
-.managestaff-unblock-btn {
+.managestaff-unblock-btn,
+.managestaff-reset-password-btn {
   margin: 0 2px;
   padding: 6px 8px;
   background: #f0f0f0;
@@ -183,7 +184,8 @@
 .managestaff-edit-btn:hover,
 .managestaff-delete-btn:hover,
 .managestaff-block-btn:hover,
-.managestaff-unblock-btn:hover {
+.managestaff-unblock-btn:hover,
+.managestaff-reset-password-btn:hover {
   background-color: #e0e0e0;
   color: #333;
 }
@@ -591,7 +593,8 @@
 
 .managestaff-confirm-delete-btn,
 .managestaff-confirm-block-btn,
-.managestaff-confirm-unblock-btn {
+.managestaff-confirm-unblock-btn,
+.managestaff-confirm-reset-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -611,6 +614,10 @@
   background-color: #28a745;
 }
 
+.managestaff-confirm-reset-btn {
+  background-color: #007bff;
+}
+
 .managestaff-cancel-btn:hover {
   background-color: #f3f4f6;
 }
@@ -625,6 +632,10 @@
 
 .managestaff-confirm-unblock-btn:hover {
   background-color: #218838;
+}
+
+.managestaff-confirm-reset-btn:hover {
+  background-color: #0069d9;
 }
 
 .managestaff-editable-cell {
@@ -749,6 +760,49 @@
   color: #c33;
   border: 1px solid #f99;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.managestaff-error i {
+  font-size: 20px;
+}
+
+.managestaff-error p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.managestaff-success {
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  background-color: #e3fcef;
+  color: #28a745;
+  border: 1px solid #b4efd0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.managestaff-success i {
+  font-size: 20px;
+}
+
+.managestaff-success p {
+  margin: 0;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Update column width styles */
@@ -810,8 +864,8 @@
 }
 
 .managestaff-action-column {
-  width: 160px;
-  min-width: 160px;
+  width: 180px;
+  min-width: 180px;
   text-align: center;
 }
 

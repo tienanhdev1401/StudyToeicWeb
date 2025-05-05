@@ -9,4 +9,5 @@ router.post('/', LearnerController.addLearner);
 router.put('/:id', LearnerController.updateLearner);
 router.put('/block/:id', LearnerController.blockLearner);
 router.put('/unblock/:id', LearnerController.unblockLearner);
+router.put('/resetpassword/:id', LearnerController.resetLearnerPassword);
 export default router;

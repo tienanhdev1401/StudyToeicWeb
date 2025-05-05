@@ -197,7 +197,31 @@ export class LearnerController {
         });
       }
     }
+    //reset mật khẩu người học
+    static async resetLearnerPassword(req: Request, res: Response) {
+      try {
+        const learnerId = parseInt(req.params.id);
+        const success = await LearnerRepository.resetLearnerPassword(learnerId);
     
+        if (!success) {
+          return res.status(404).json({
+            success: false,
+            message: 'Không tìm thấy người học để đặt lại mật khẩu'
+          });
+        }
+    
+        res.status(200).json({
+          success: true,
+          message: 'Đặt lại mật khẩu người học thành công'
+        });
+      } catch (error) {
+        console.error('Lỗi khi mở chặn người học:', error);
+        res.status(500).json({
+          success: false,
+          message: 'Đã xảy ra lỗi khi mở chặn người học'
+        });
+      }
+    }
 }
 
 export default new LearnerController();

@@ -223,6 +223,33 @@ export class StaffController {
         });
       }
     }
+
+
+    static async resetStaffPassword(req: Request, res: Response) {
+      try {
+        const staffId = parseInt(req.params.id);
+        console.log(staffId);
+        const success = await StaffRepository.resetStaffPassword(staffId);
+    
+        if (!success) {
+          return res.status(404).json({
+            success: false,
+            message: 'Không tìm thấy nhân viên để đặt lại mật khẩu'
+          });
+        }
+    
+        res.status(200).json({
+          success: true,
+          message: 'Đặt lại mật khẩu nhân viên thành công'
+        });
+      } catch (error) {
+        console.error('Lỗi khi đặt lại mật khẩu nhân viên:', error);
+        res.status(500).json({
+          success: false,
+          message: 'Đã xảy ra lỗi khi đặt lại mật khẩu nhân viên'
+        });
+      }
+    }
 }
 
 export default new StaffController();

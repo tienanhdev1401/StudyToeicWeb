@@ -169,7 +169,7 @@
 .learner-delete-btn, 
 .learner-block-btn, 
 .learner-unblock-btn,
-.learner-view-btn {
+.learner-reset-password-btn {
   margin: 0 2px;
   padding: 6px 8px;
   background: #f0f0f0;
@@ -185,7 +185,7 @@
 .learner-delete-btn:hover,
 .learner-block-btn:hover,
 .learner-unblock-btn:hover,
-.learner-view-btn:hover {
+.learner-reset-password-btn:hover {
   background-color: #e0e0e0;
   color: #333;
 }
@@ -208,6 +208,11 @@
 .learner-unblock-btn:hover {
   background-color: rgba(76, 175, 80, 0.1);
   color: #4caf50;
+}
+
+.learner-reset-password-btn:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+  color: #007bff;
 }
 
 .learner-pagination {
@@ -613,7 +618,8 @@
 
 .learner-confirm-delete-btn,
 .learner-confirm-block-btn,
-.learner-confirm-unblock-btn {
+.learner-confirm-unblock-btn,
+.learner-confirm-reset-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -633,6 +639,10 @@
   background-color: #28a745;
 }
 
+.learner-confirm-reset-btn {
+  background-color: #007bff;
+}
+
 .learner-cancel-btn:hover {
   background-color: #f3f4f6;
 }
@@ -647,6 +657,10 @@
 
 .learner-confirm-unblock-btn:hover {
   background-color: #218838;
+}
+
+.learner-confirm-reset-btn:hover {
+  background-color: #0069d9;
 }
 
 .learner-editable-cell {
@@ -837,4 +851,33 @@
   overflow-x: auto;
   margin-bottom: 20px;
   -webkit-overflow-scrolling: touch;
+}
+
+.learner-success {
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  background-color: #e3fcef;
+  color: #28a745;
+  border: 1px solid #b4efd0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.learner-success i {
+  font-size: 20px;
+}
+
+.learner-success p {
+  margin: 0;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

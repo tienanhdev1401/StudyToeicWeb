@@ -4,6 +4,34 @@ import learnerService from '../../services/admin/admin.LearnerService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
+const ResetPasswordModal = ({ isOpen, onClose, onConfirm, learner }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="learner-modal-overlay">
+      <div className="learner-modal-content">
+        <div className="learner-modal-header">
+          <h2>Reset Password</h2>
+          <button className="learner-close-btn" onClick={onClose}>
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+        <div className="learner-modal-body">
+          <p>Are you sure you want to reset password for learner "{learner.fullname}"?</p>
+          <p>A temporary password will be sent to their email address.</p>
+        </div>
+        <div className="learner-modal-footer">
+          <button className="learner-cancel-btn" onClick={onClose}>Cancel</button>
+          <button className="learner-confirm-reset-btn" onClick={onConfirm}>
+            <i className="fas fa-key"></i>
+            Reset Password
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const BlockConfirmModal = ({ isOpen, onClose, onConfirm, itemToBlock, selectedItems, action }) => {
   if (!isOpen) return null;
 
@@ -43,6 +71,7 @@ const ManageLearner = () => {
   const [learnerList, setLearnerList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   
   // Table state
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,6 +84,7 @@ const ManageLearner = () => {
   // Modal state
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
   const [isUnblockModalOpen, setIsUnblockModalOpen] = useState(false);
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
   const [itemToAction, setItemToAction] = useState(null);
   const [actionType, setActionType] = useState(''); // 'block' or 'unblock'
 
@@ -537,6 +567,27 @@ const ManageLearner = () => {
     }
   };
 
+  const handleResetPassword = async (id) => {
+    try {
+      await learnerService.resetLearnerPassword(id);
+      setError(null);
+      setSuccessMessage("Password has been reset successfully. A temporary password has been sent to the learner's email.");
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
+    } catch (err) {
+      setError(err.message);
+      setSuccessMessage(null);
+      
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        setError(null);
+      }, 5000);
+    }
+  };
+
   if (isLoading) {
     return <div className="learner-loading"><i className="fas fa-spinner fa-spin"></i> Loading learners...</div>;
   }
@@ -548,6 +599,13 @@ const ManageLearner = () => {
   return (
     <div className="learner-container">
       <h1 className="learner-h1">Manage Learners</h1>
+      
+      {successMessage && (
+        <div className="learner-success">
+          <i className="fas fa-check-circle"></i>
+          <p>{successMessage}</p>
+        </div>
+      )}
       
       <div className="learner-header-section">
         <div className="learner-entries-select">
@@ -708,6 +766,15 @@ const ManageLearner = () => {
                           onClick={() => handleEditLearner(learner)}
                         >
                           <i className="fas fa-pen-to-square"></i>
+                        </button>
+                        <button 
+                          className="learner-reset-password-btn" 
+                          onClick={() => {
+                            setItemToAction(learner);
+                            setIsResetPasswordModalOpen(true);
+                          }}
+                        >
+                          <i className="fas fa-key"></i>
                         </button>
                         {learner.status === 'ACTIVE' ? (
                           <button 
@@ -897,6 +964,22 @@ const ManageLearner = () => {
         itemToBlock={itemToAction}
         selectedItems={selectedItems}
         action="unblock"
+      />
+
+      <ResetPasswordModal
+        isOpen={isResetPasswordModalOpen}
+        onClose={() => {
+          setIsResetPasswordModalOpen(false);
+          setItemToAction(null);
+        }}
+        onConfirm={() => {
+          if (itemToAction) {
+            handleResetPassword(itemToAction.id);
+          }
+          setIsResetPasswordModalOpen(false);
+          setItemToAction(null);
+        }}
+        learner={itemToAction || {}}
       />
     </div>
   );

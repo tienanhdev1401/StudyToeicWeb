@@ -1,5 +1,6 @@
 import database from '../../config/db';
 import { User } from '../../models/User';
+import bcrypt from 'bcrypt';
 
 export class StaffRepository {
   /**
@@ -151,5 +152,14 @@ export class StaffRepository {
     }
   }
   
+  static async resetStaffPassword(id: number): Promise<boolean> {
+    console.log(id);
+    const hashedPassword = await bcrypt.hash('123456789', 10);
+    const result = await database.query(
+      `UPDATE users SET password = ?, updatedAt = NOW() WHERE id = ?`,
+      [hashedPassword, id]
+    );
+    return result.affectedRows > 0;
+  }
   
 }
