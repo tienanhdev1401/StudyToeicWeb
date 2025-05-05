@@ -152,13 +152,14 @@ export class GrammarTopicController {
     try {
       // Lấy ID từ tham số route
       const topicId = parseInt(req.params.id);
+     /*
       if (isNaN(topicId)) {
         return res.status(400).json({
           success: false,
           message: 'ID chủ đề không hợp lệ',
         });
       }
-
+      */
       // Kiểm tra xem chủ đề có tồn tại không
       const existingTopic = await grammarTopicRepository.findById(topicId);
       if (!existingTopic) {
