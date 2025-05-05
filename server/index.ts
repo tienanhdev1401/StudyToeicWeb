@@ -20,20 +20,39 @@ app.use(compression({
 
 // Kết nối đến cơ sở dữ liệu
 import './config/db';
-// Cấu hình CORS
+
+// Cấu hình CORS - QUAN TRỌNG: Phải đặt middleware CORS trước tất cả các route khác
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://hostservertoeic.tptienanh.website',
+  'http://hostservertoeic.tptienanh.website'
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Cho phép requests không có origin (như mobile apps hoặc curl requests)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('Blocked by CORS:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-// Middleware cache cho các API tĩnh
+// Middleware để xác định CORS một cách rõ ràng cho preflight requests
 app.use((req: Request, res: Response, next: NextFunction) => {
-  // Cache cho API test
-  if (req.method === 'GET' && req.path.startsWith('/api/test/')) {
-    // Cache trong 5 phút (300 giây)
-    res.setHeader('Cache-Control', 'public, max-age=300');
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Xử lý preflight requests (OPTIONS)
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
   }
   next();
 });
@@ -47,7 +66,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Chỉ sử dụng secure cookie trong production
+    httpOnly: true,
+    sameSite: 'lax' // Giúp bảo vệ CSRF
+  }
 }));
 
 app.use(flash());
@@ -69,6 +93,22 @@ app.use('/assets', express.static(path.join(__dirname, 'assets'), {
 // Import và đăng ký routes
 import route from './routes/index';
 route(app);
+
+// Error handling middleware - Xử lý các lỗi CORS và lỗi khác
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('Error:', err.message);
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({
+      status: 'error',
+      message: 'CORS error: Origin not allowed'
+    });
+  }
+  
+  res.status(500).json({
+    status: 'error',
+    message: 'Internal Server Error'
+  });
+});
 
 // Start server
 app.listen(PORT, () => {
