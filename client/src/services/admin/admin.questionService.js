@@ -117,7 +117,16 @@ const questionService = {
       console.log("response.data: ", response.data);
       return response.data;
     } catch (error) {
-      throw error.response?.data || error;
+      console.error(`Error deleting question ${id}:`, error.response?.data || error);
+      // Return error response so we can handle it in the component
+      if (error.response && error.response.data) {
+        return {
+          success: false,
+          message: error.response.data.error || error.response.data.message || 'Failed to delete question',
+          error: error.response.data
+        };
+      }
+      throw error;
     }
   },
 

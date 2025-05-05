@@ -520,19 +520,29 @@ export class QuestionController {
       const questionId = parseInt(req.params.id);
 
       if (isNaN(questionId)) {
-        return res.status(400).json({ error: 'ID không hợp lệ' });
+        return res.status(400).json({ 
+          success: false,
+          message: 'Invalid question ID', 
+          error: 'ID không hợp lệ' 
+        });
       }
 
       // Kiểm tra xem câu hỏi có tồn tại không
       const question = await QuestionRepository.findById(questionId);
       if (!question) {
-        return res.status(404).json({ error: 'Không tìm thấy câu hỏi' });
+        return res.status(404).json({ 
+          success: false,
+          message: 'Question not found', 
+          error: 'Không tìm thấy câu hỏi' 
+        });
       }
 
       // Kiểm tra xem câu hỏi có được sử dụng trong các bài test không
       const usedInTests = await QuestionInAPartRepository.isQuestionUsedInTests(questionId);
       if (usedInTests) {
         return res.status(400).json({ 
+          success: false,
+          message: 'Cannot delete question: it is used in tests',
           error: 'Không thể xóa câu hỏi vì nó đang được sử dụng trong các bài test' 
         });
       }
@@ -541,6 +551,8 @@ export class QuestionController {
       const usedInExercises = await exercisesQuestionRepository.isQuestionUsedInExercises(questionId);
       if (usedInExercises) {
         return res.status(400).json({ 
+          success: false,
+          message: 'Cannot delete question: it is used in exercises',
           error: 'Không thể xóa câu hỏi vì nó đang được sử dụng trong các bài tập' 
         });
       }
@@ -549,6 +561,8 @@ export class QuestionController {
       const isDeleted = await QuestionRepository.delete(questionId);
       if (!isDeleted) {
         return res.status(400).json({
+          success: false,
+          message: 'Failed to delete question',
           error: 'Không thể xóa câu hỏi'
         });
       }
@@ -561,6 +575,7 @@ export class QuestionController {
       console.error('QuestionController.deleteQuestion error:', error);
       return res.status(500).json({
         success: false,
+        message: 'Server error while deleting question',
         error: 'Lỗi khi xóa câu hỏi'
       });
     }

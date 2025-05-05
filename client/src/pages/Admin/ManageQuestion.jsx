@@ -716,15 +716,51 @@ const ManageQuestions = () => {
       setIsDeleting(true);
       if (itemToDelete) {
         // Delete single item
-        await questionService.deleteQuestion(itemToDelete.id);
-        displaySuccessMessage('Question deleted successfully');
+        const response = await questionService.deleteQuestion(itemToDelete.id);
+        if (response && response.success) {
+          displaySuccessMessage('Question deleted successfully');
+        } else {
+          displayErrorMessage(response.message || 'Failed to delete question');
+        }
       } else {
         // Delete multiple items
         console.log("selectedItems: ", selectedItems);
-        for (const item of selectedItems) {
-          await questionService.deleteQuestion(item);
+        const failedItems = [];
+        
+        for (const id of selectedItems) {
+          try {
+            const response = await questionService.deleteQuestion(id);
+            if (!response || !response.success) {
+              failedItems.push({ id, message: response?.message || 'Unknown error' });
+            }
+          } catch (err) {
+            failedItems.push({ 
+              id, 
+              message: err.response?.data?.error || err.message || 'Unknown error' 
+            });
+          }
         }
-        displaySuccessMessage(`${selectedItems.length} questions deleted successfully`);
+        
+        if (failedItems.length === 0) {
+          displaySuccessMessage(`${selectedItems.length} questions deleted successfully`);
+        } else if (failedItems.length < selectedItems.length) {
+          displaySuccessMessage(`${selectedItems.length - failedItems.length} questions deleted successfully. ${failedItems.length} failed.`);
+          console.error("Failed to delete some questions:", failedItems);
+          
+          // More detailed error message
+          if (failedItems.some(item => item.message.includes('used in'))) {
+            displayErrorMessage("Some questions couldn't be deleted because they are used in tests or exercises");
+          } else {
+            displayErrorMessage("Failed to delete some questions. See console for details.");
+          }
+        } else {
+          const commonError = findCommonError(failedItems);
+          if (commonError && commonError.includes('used in')) {
+            displayErrorMessage("Questions can't be deleted because they are used in tests or exercises");
+          } else {
+            displayErrorMessage("Failed to delete questions. Please try again.");
+          }
+        }
       }
       
       // Refresh the question list
@@ -734,12 +770,40 @@ const ManageQuestions = () => {
       setSelectedItems([]);
     } catch (error) {
       console.error("Error deleting question:", error);
-      displayErrorMessage(error.response?.data?.message || "Failed to delete questions. Please try again.");
+      
+      // More user-friendly error message for specific cases
+      if (error.response?.data?.error && error.response.data.error.includes('used in')) {
+        displayErrorMessage("This question cannot be deleted because it is used in a test or exercise");
+      } else {
+        displayErrorMessage(error.response?.data?.message || "Failed to delete questions. Please try again.");
+      }
     } finally {
       setIsDeleting(false);
       setIsDeleteModalOpen(false);
       setItemToDelete(null);
     }
+  };
+
+  // Helper function to find common error in failed items
+  const findCommonError = (failedItems) => {
+    if (!failedItems || failedItems.length === 0) return null;
+    
+    const errorMessages = failedItems.map(item => item.message);
+    const uniqueErrors = [...new Set(errorMessages)];
+    
+    if (uniqueErrors.length === 1) {
+      return uniqueErrors[0]; // All errors are the same
+    }
+    
+    // Check if most errors contain a similar pattern
+    const testOrExerciseErrors = errorMessages.filter(msg => 
+      msg.includes('used in test') || msg.includes('used in exercise'));
+    
+    if (testOrExerciseErrors.length > failedItems.length / 2) {
+      return 'used in tests or exercises';
+    }
+    
+    return null; // No common error found
   };
 
   // Toggle detail view for a question
