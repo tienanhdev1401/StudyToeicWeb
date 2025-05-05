@@ -88,18 +88,6 @@ const Header = ({ style, className }) => {
                                                                     }
                                                                 }}>Do Exercise</a>
                                                             </li>
-                                                            <li>
-                                                                <a href="#" onClick={e => {
-                                                                    e.preventDefault();
-                                                                    if (isLoggedIn) {
-                                                                        navigate('/roadmap');
-                                                                    } else {
-                                                                        navigate('/login');
-                                                                    }
-                                                                }}>
-                                                                    <FaRoad style={{ marginRight: '5px' }} /> Roadmap
-                                                                </a>
-                                                            </li>
                                                         </ul>
                                                     </li>
                                                     <li><a href="/contact">Contact</a></li>

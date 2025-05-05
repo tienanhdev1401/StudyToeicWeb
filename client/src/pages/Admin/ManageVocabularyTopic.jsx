@@ -3,7 +3,6 @@ import  '../../styles/ManageVocabularyTopic.css';
 import vocabularyTopicService from '../../services/admin/admin.vocabularyTopicService';
 import userService from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import { parseVocabularyExcel, isValidExcelFile } from '../../utils/excelUtils';
 import SuccessAlert from '../../components/SuccessAlert';
 import ErrorAlert from '../../components/ErrorAlert';
@@ -223,7 +222,15 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
       
       // Nếu có file ảnh mới, upload
       if (topicImage) {
-        imageUrl = await userService.uploadImage(topicImage, 'vocabularyTopic');
+        try {
+          imageUrl = await userService.uploadImage(topicImage, 'vocabularyTopic');
+        
+        } catch (error) {
+          setServerError('Failed to upload image. Please try again.');
+          setShowServerErrorAlert(true);
+          setIsUploading(false);
+          return;
+        }
       } else if (editMode && topicToEdit.imageUrl) {
         // Nếu không có file ảnh mới nhưng đang edit và có URL ảnh cũ
         imageUrl = topicToEdit.imageUrl;
@@ -232,10 +239,11 @@ const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = 
       const updatedTopic = {
         ...topicToEdit, // Giữ nguyên ID và các thông tin khác nếu đang edit
         topicName: formData.topicName,
-        imageUrl: imageUrl,
+        imageUrl: imageUrl, // Đảm bảo URL ảnh được gán đúng
         date: editMode ? topicToEdit.date : new Date().toISOString().split('T')[0],
         vocabularies: vocabularyItems // Thêm danh sách từ vựng từ file Excel
       };
+
 
       try {
         await onAdd(updatedTopic, editMode);
@@ -869,7 +877,6 @@ const ManageVocabularyTopic = () => {
               console.log("Deleting single item:", itemToDelete);
               await vocabularyTopicService.deleteVocabularyTopic(itemToDelete.vocabularyTopic.id);
               displaySuccessMessage(`Topic "${itemToDelete.vocabularyTopic.topicName}" deleted successfully!`);
-
             } else {
               // Xử lý xóa nhiều items
               console.log("Deleting multiple items:", selectedItems);
@@ -878,8 +885,7 @@ const ManageVocabularyTopic = () => {
               for (const id of selectedItems) {
                 await vocabularyTopicService.deleteVocabularyTopic(id);
               }
-              displaySuccessMessage(`Topic "${itemToDelete.vocabularyTopic.topicName}" deleted successfully!`);
-
+              displaySuccessMessage(`${selectedItems.length} topics deleted successfully!`);
             }
             
             // Refresh the list
@@ -889,7 +895,7 @@ const ManageVocabularyTopic = () => {
             
           } catch (error) {
             console.error("Error deleting items:", error);
-            alert("Failed to delete items. Please try again.");
+            displayErrorMessage("Failed to delete items. Please try again.");
           }
           
           setIsDeleteModalOpen(false);
