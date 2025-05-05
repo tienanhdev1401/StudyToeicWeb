@@ -193,8 +193,8 @@
 .ManageExerciseVocabulary-table td {
   padding: 16px;
   text-align: left;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #ffffff;
+  border: 1px solid #e5e7eb !important;
+  background-color: #ffffff !important;
   font-size: 15px;
 }
 
