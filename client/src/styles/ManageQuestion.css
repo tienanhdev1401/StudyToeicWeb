@@ -114,6 +114,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .question-table th:first-child {
@@ -135,10 +136,12 @@
 .question-table th {
   padding: 16px;
   text-align: center;
-  background-color: white !important;
+  background-color: #f8f9fa !important;
   border: 1px solid #e5e7eb;
   color: #344054;
   font-weight: 600;
+  position: relative;
+  vertical-align: middle;
 }
 
 .question-table td {
@@ -146,33 +149,94 @@
   text-align: left;
   border: 1px solid #e5e7eb;
   background-color: white !important;
+  vertical-align: middle;
+}
+
+.question-table tbody tr:hover td {
+  background-color: #f9fafb !important;
 }
 
 .question-table tbody {
   background-color: #f9fafb;
 }
 
-/* Remove duplicate th styles */
-.question-table th {
-  border-bottom: 2px solid #e5e7eb;
+/* Mỗi cột trong bảng */
+.question-table tr th,
+.question-table tr td {
+  border-right: 1px solid #e5e7eb;
+}
+
+.question-table tr th:last-child,
+.question-table tr td:last-child {
+  border-right: none;
 }
 
 /* Column styles */
 .question-id-column {
-  width: 100px  ;
+  width: 80px !important;
+  text-align: center !important;
 }
 
 .question-content-column {
   min-width: 400px;
+  text-align: left !important;
 }
 
 .question-correct-answer-column {
-  width: 120px;
+  width: 150px;
+  text-align: center !important;
 }
 
 .question-actions-column {
   width: 120px;
-  text-align: right;
+  text-align: center !important;
+}
+
+/* Header sorting styles */
+.question-sortable {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  text-align: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+th .question-sortable {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.question-sortable i {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* Fix cho header bảng */
+.question-table thead tr {
+  height: 60px;
+}
+
+.question-table th.question-content-column {
+  text-align: left !important;
+}
+
+.question-table th.question-content-column .question-sortable {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.question-table th.question-id-column,
+.question-table th.question-correct-answer-column {
+  text-align: center !important;
+}
+
+.question-table th.question-actions-column {
+  text-align: center !important;
 }
 
 /* Action buttons */
@@ -212,8 +276,6 @@
   color: #d32f2f;
 }
 
-
-
 /* Correct answer badge */
 .option-letter {
   display: inline-flex;
@@ -228,11 +290,66 @@
 }
 
 /* Checkbox styles */
-.question-table input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+.question-admin-checkbox {
+  width: 18px !important;
+  height: 18px !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  appearance: auto !important;
+  -webkit-appearance: checkbox !important;
+  -moz-appearance: checkbox !important;
+  opacity: 1 !important;
+  position: relative !important;
+  visibility: visible !important;
+  accent-color: #409efd !important;
+  border: 1px solid #ccc !important;
+  border-radius: 3px !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+/* Prevent any other styles from affecting our checkboxes */
+.question-admin-checkbox::before,
+.question-admin-checkbox::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Cải thiện giao diện checkbox và cột ID */
+.question-id-header, 
+.question-id-cell {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.question-id-header {
+  justify-content: center !important;
+  gap: 8px;
+}
+
+.question-id-header span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   cursor: pointer;
-  margin-right: 10px;
+  font-weight: 600;
+}
+
+.question-id-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center !important;
+  gap: 8px;
+}
+
+.question-id-number {
+  font-weight: 500;
+  font-size: 14px;
+  color: #495057;
+  min-width: 20px;
+  text-align: center;
+  display: inline-block;
 }
 
 /* Pagination */

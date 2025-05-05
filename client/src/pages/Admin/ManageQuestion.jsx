@@ -777,6 +777,7 @@ const ManageQuestions = () => {
               <div className="question-id-header">
                 <input
                   type="checkbox"
+                  className="question-admin-checkbox"
                   onChange={handleSelectAll}
                   checked={selectedItems.length === sortedData.length && sortedData.length > 0}
                   onClick={handleCheckboxClick}
@@ -787,13 +788,17 @@ const ManageQuestions = () => {
                 </span>
               </div>
             </th>
-            <th onClick={() => handleSort('content')} className="question-sortable question-content-column">
-              Question Content
-              <i className={`fas ${sortField === 'content' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+            <th onClick={() => handleSort('content')} className="question-content-column">
+              <span className="question-sortable">
+                Question Content
+                <i className={`fas ${sortField === 'content' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              </span>
             </th>
-            <th onClick={() => handleSort('correctAnswer')} className="question-sortable">
-              Correct Answer
-              <i className={`fas ${sortField === 'correctAnswer' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+            <th onClick={() => handleSort('correctAnswer')} className="question-correct-answer-column">
+              <span className="question-sortable">
+                Correct Answer
+                <i className={`fas ${sortField === 'correctAnswer' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              </span>
             </th>
             <th className="question-actions-column">Actions</th>
           </tr>
@@ -807,10 +812,11 @@ const ManageQuestions = () => {
                     <div className="question-id-cell">
                       <input
                         type="checkbox"
+                        className="question-admin-checkbox"
                         checked={selectedItems.includes(item.id)}
                         onChange={() => handleSelectItem(item.id)}
                       />
-                      <span>{item.id}</span>
+                      <span className="question-id-number">{item.id}</span>
                     </div>
                   </td>
                   <td className="question-content-column">{item.content}</td>

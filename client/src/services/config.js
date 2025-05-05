@@ -35,9 +35,6 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-console.log('API_BASE_URL:', config.API_BASE_URL); // Log để debug
-
 export default config;
 
 // Helper function để lấy URL đầy đủ của API
