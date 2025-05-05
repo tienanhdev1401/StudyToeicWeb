@@ -6,7 +6,6 @@ import '../../styles/ManageQuestion.css';
 import SuccessAlert from '../../components/SuccessAlert';
 import ErrorAlert from '../../components/ErrorAlert';
 import { Editor } from '@tinymce/tinymce-react';
-import LoadingSpinner from '../../components/LoadingSpinner';
 import { parseQuestionExcel } from '../../utils/excelUtils';
 
 // Replace QuestionFormModal with a new modal that matches TestDetail's form
@@ -255,7 +254,7 @@ const QuestionFormModal = ({ isOpen, onClose, onSubmit, questionItem, editMode =
 };
 
 // Khai báo component cho modal import Excel
-const ImportExcelModal = ({ isOpen, onClose, onImport }) => {
+const ImportExcelModal = ({ isOpen, onClose, onImport, isImporting }) => {
   const [file, setFile] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [error, setError] = useState('');
@@ -266,6 +265,7 @@ const ImportExcelModal = ({ isOpen, onClose, onImport }) => {
       setFile(null);
       setQuestions([]);
       setError('');
+      setIsLoading(false);
     }
   }, [isOpen]);
 
@@ -283,8 +283,14 @@ const ImportExcelModal = ({ isOpen, onClose, onImport }) => {
     setIsLoading(true);
     try {
       const result = await parseQuestionExcel(selectedFile);
-      setQuestions(result.questions || []);
-      setError('');
+      
+      if (result.error) {
+        setError(result.error);
+        setQuestions([]);
+      } else {
+        setQuestions(result.questions || []);
+        setError('');
+      }
     } catch (err) {
       setError('Could not parse the file. Please check the format.');
       setQuestions([]);
@@ -317,7 +323,7 @@ const ImportExcelModal = ({ isOpen, onClose, onImport }) => {
       <div className="question-modal-content" style={{ maxWidth: 600 }}>
         <div className="question-modal-header">
           <h3>Import Questions from Excel</h3>
-          <button className="question-modal-close-btn" onClick={onClose}>
+          <button className="question-modal-close-btn" onClick={onClose} disabled={isImporting || isLoading}>
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -331,7 +337,7 @@ const ImportExcelModal = ({ isOpen, onClose, onImport }) => {
               accept=".xlsx, .xls"
             />
             <div style={{ marginTop: 8 }}>
-              <a href="/templates/par1Question.xlsx" download style={{ color: '#409efd', textDecoration: 'underline', fontSize: 13 }}>
+              <a href="/templates/question_template.xlsx" download style={{ color: '#409efd', textDecoration: 'underline', fontSize: 13 }}>
                 <i className="fas fa-download"></i> Download Template
               </a>
             </div>
@@ -368,9 +374,9 @@ const ImportExcelModal = ({ isOpen, onClose, onImport }) => {
             </div>
           )}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>
-            <button type="button" className="question-cancel-btn" onClick={onClose} disabled={isLoading}>Cancel</button>
-            <button type="submit" className="question-submit-btn" disabled={isLoading || questions.length === 0}>
-              {isLoading ? <><i className="fas fa-spinner fa-spin"></i> Importing...</> : 'Import Questions'}
+            <button type="button" className="question-cancel-btn" onClick={onClose} disabled={isImporting || isLoading}>Cancel</button>
+            <button type="submit" className="question-submit-btn" disabled={isImporting || isLoading || questions.length === 0}>
+              {isImporting ? 'Importing...' : 'Import Questions'}
             </button>
           </div>
         </form>
@@ -380,7 +386,7 @@ const ImportExcelModal = ({ isOpen, onClose, onImport }) => {
 };
 
 // Delete confirmation modal
-const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selectedItems }) => {
+const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selectedItems, isDeleting }) => {
   if (!isOpen) return null;
 
   const isMultiDelete = !itemToDelete;
@@ -393,7 +399,7 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selected
       <div className="question-modal-content">
         <div className="question-modal-header">
           <h2>Confirm Delete</h2>
-          <button className="question-close-btn" onClick={onClose}>
+          <button className="question-close-btn" onClick={onClose} disabled={isDeleting}>
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -401,10 +407,16 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selected
           <p>{message}</p>
         </div>
         <div className="question-modal-footer">
-          <button className="question-cancel-btn" onClick={onClose}>Cancel</button>
-          <button className="question-confirm-delete-btn" onClick={onConfirm}>
-            <i className="fas fa-trash"></i>
-            Delete
+          <button className="question-cancel-btn" onClick={onClose} disabled={isDeleting}>Cancel</button>
+          <button className="question-confirm-delete-btn" onClick={onConfirm} disabled={isDeleting}>
+            {isDeleting ? (
+              <>Deleting...</>
+            ) : (
+              <>
+                <i className="fas fa-trash"></i>
+                Delete
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -446,6 +458,31 @@ const ManageQuestions = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Thêm state cho việc submitting form
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Thêm style inline
+  const loadingTextStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#2c3e50'
+  };
+
+  const errorMessageStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    fontSize: '16px',
+    color: '#e74c3c',
+    padding: '20px'
+  };
 
   // Fetch all questions
   const fetchQuestions = async () => {
@@ -607,33 +644,29 @@ const ManageQuestions = () => {
   // Handle question submission (both add and edit)
   const handleQuestionSubmit = async (questionData) => {
     try {
+      setIsSubmitting(true);
       if (editMode) {
- 
-        // Update existing question using currentQuestion.id
-        const updatedItem = await questionService.updateQuestion(currentQuestion.id, questionData);
+        await questionService.updateQuestion(currentQuestion.id, questionData);
         
-        // Update local state
-        setQuestionList(prevList => 
-          prevList.map(item => item.id === updatedItem.id ? updatedItem : item)
-        );
+        // Refresh question list instead of manual state update
+        await fetchQuestions();
         setIsFormModalOpen(false);
         displaySuccessMessage('Question updated successfully');
       } else {
-        // Add new question
-        const newItem = await questionService.createQuestion(questionData);
+        await questionService.createQuestion(questionData);
         
-        // Update local state
-        setQuestionList(prevList => [...prevList, newItem]);
-        
+        // Refresh question list instead of manual state update
+        await fetchQuestions();
         displaySuccessMessage('New question added successfully');
         setIsFormModalOpen(false);
-        await fetchQuestions();
       }
     } catch (error) {
       console.error(`Error ${editMode ? 'updating' : 'adding'} question:`, error);
       
       // Display error alert instead of using alert()
       displayErrorMessage(error.response?.data?.message || `Failed to ${editMode ? 'update' : 'add'} question. Please try again.`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -641,15 +674,33 @@ const ManageQuestions = () => {
   const handleImportQuestions = async (questions) => {
     setIsImporting(true);
     try {
-      // Import each question
-      for (const question of questions) {
-        await questionService.createQuestion(question);
-      }
+      // Prepare questions for import
+      const formattedQuestions = questions.map(q => ({
+        content: q.content,
+        optionA: q.optionA,
+        optionB: q.optionB,
+        optionC: q.optionC,
+        optionD: q.optionD,
+        correctAnswer: q.correctAnswer,
+        explainDetail: q.explainDetail || null,
+        explain_resource: q.explain_resource || null,
+        urlAudio: q.urlAudio || null,
+        urlImage: q.urlImage || null,
+      }));
+
+      // Send all questions at once to the server
+      const importResult = await questionService.importQuestionsFromExcel(formattedQuestions);
       
       // Refresh question list
       await fetchQuestions();
+      // displaySuccessMessage(`Successfully imported ${questions.length} questions`);
+      // Show success message based on server response
+      if (importResult.errors && importResult.errors.length > 0) {
+        displaySuccessMessage(`Import completed: ${importResult.data.length} succeeded, ${importResult.errors.length} failed`);
+      } else {
+        displaySuccessMessage(`Successfully imported ${importResult.data.length} questions`);
+      }
       
-      displaySuccessMessage(`Successfully imported ${questions.length} questions`);
       setIsImportExcelModalOpen(false);
     } catch (error) {
       console.error('Error importing questions:', error);
@@ -662,6 +713,7 @@ const ManageQuestions = () => {
   // Update the Delete confirmation handler to use alerts
   const handleDeleteConfirm = async () => {
     try {
+      setIsDeleting(true);
       if (itemToDelete) {
         // Delete single item
         await questionService.deleteQuestion(itemToDelete.id);
@@ -684,6 +736,7 @@ const ManageQuestions = () => {
       console.error("Error deleting question:", error);
       displayErrorMessage(error.response?.data?.message || "Failed to delete questions. Please try again.");
     } finally {
+      setIsDeleting(false);
       setIsDeleteModalOpen(false);
       setItemToDelete(null);
     }
@@ -700,11 +753,19 @@ const ManageQuestions = () => {
 
   // Handle loading and error states
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="AdminPage_contentArea__a3Mko">
+        <div style={loadingTextStyle}>Loading...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="AdminPage_contentArea__a3Mko">
+        <div style={errorMessageStyle}>Error: {error}</div>
+      </div>
+    );
   }
 
   return (
@@ -790,14 +851,14 @@ const ManageQuestions = () => {
             </th>
             <th onClick={() => handleSort('content')} className="question-content-column">
               <span className="question-sortable">
-                Question Content
-                <i className={`fas ${sortField === 'content' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              Question Content
+              <i className={`fas ${sortField === 'content' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </span>
             </th>
             <th onClick={() => handleSort('correctAnswer')} className="question-correct-answer-column">
               <span className="question-sortable">
-                Correct Answer
-                <i className={`fas ${sortField === 'correctAnswer' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              Correct Answer
+              <i className={`fas ${sortField === 'correctAnswer' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </span>
             </th>
             <th className="question-actions-column">Actions</th>
@@ -1002,12 +1063,15 @@ const ManageQuestions = () => {
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
-          setIsDeleteModalOpen(false);
-          setItemToDelete(null);
+          if (!isDeleting) {
+            setIsDeleteModalOpen(false);
+            setItemToDelete(null);
+          }
         }}
         onConfirm={handleDeleteConfirm}
         itemToDelete={itemToDelete}
         selectedItems={selectedItems}
+        isDeleting={isDeleting}
       />
 
       <QuestionFormModal
@@ -1020,12 +1084,18 @@ const ManageQuestions = () => {
         onSubmit={handleQuestionSubmit}
         questionItem={currentQuestion}
         editMode={editMode}
+        submitting={isSubmitting}
       />
       
       <ImportExcelModal
         isOpen={isImportExcelModalOpen}
-        onClose={() => setIsImportExcelModalOpen(false)}
+        onClose={() => {
+          if (!isImporting) {
+            setIsImportExcelModalOpen(false);
+          }
+        }}
         onImport={handleImportQuestions}
+        isImporting={isImporting}
       />
     </div>
   );

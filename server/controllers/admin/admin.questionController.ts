@@ -5,6 +5,7 @@ import { QuestionInAPartRepository } from '../../repositories/admin/admin.questi
 import { QuestionInAPart } from '../../models/QuestionInAPart';
 import { ResourceRepository } from '../../repositories//admin/admin.resourceRepository';
 import { exercisesQuestionRepository } from '../../repositories/admin/admin.exercisesQuestionRepository';
+import bodyParser from 'body-parser';
 
 export class QuestionController {
  
@@ -545,7 +546,12 @@ export class QuestionController {
       }
 
       // Nếu không có ràng buộc nào, tiến hành xóa câu hỏi
-      await QuestionRepository.delete(questionId);
+      const isDeleted = await QuestionRepository.delete(questionId);
+      if (!isDeleted) {
+        return res.status(400).json({
+          error: 'Không thể xóa câu hỏi'
+        });
+      }
 
       return res.status(200).json({
         success: true,
@@ -559,4 +565,90 @@ export class QuestionController {
       });
     }
   }
+
+  static async importQuestionsFromExcel(req: Request, res: Response) {
+    try {
+      const questions = req.body;
+      console.log("questions: ", req.body);
+
+      // Kiểm tra xem có dữ liệu được gửi lên không
+      if (!Array.isArray(questions) || questions.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Không có dữ liệu câu hỏi hợp lệ'
+        });
+      }
+
+      // Khởi tạo mảng để lưu kết quả import
+      const importedQuestions: any[] = [];
+      const errors: any[] = [];
+
+      // Xử lý từng câu hỏi
+      for (const question of questions) {
+        try {
+         
+          // Tạo resource nếu có audio hoặc image URL
+          let resourceId = null;
+          if (question.urlAudio || question.urlImage || question.explain_resource) {
+            resourceId = await ResourceRepository.createResource(
+              question.explain_resource || null,
+              question.urlAudio || null,
+              question.urlImage || null
+            );
+          }
+
+          // Tạo câu hỏi mới
+          const newQuestion = new Question(
+            0, // ID sẽ được DB tự động gán
+            question.content,
+            question.correctAnswer,
+            question.explainDetail || '',
+            question.optionA,
+            question.optionB,
+            question.optionC,
+            question.optionD,
+            null // resource sẽ được set sau khi tạo
+          );
+
+          // Lưu câu hỏi vào database
+          const savedQuestion = await QuestionRepository.create(newQuestion, resourceId);
+
+          if (!savedQuestion || !savedQuestion.id) {
+            throw new Error('Không thể tạo câu hỏi');
+          }
+
+          // Thêm câu hỏi đã import vào mảng kết quả
+          importedQuestions.push({
+            ...savedQuestion,
+            resource: resourceId ? {
+              id: resourceId,
+              explain_resource: question.explain_resource || null,
+              urlAudio: question.urlAudio || null,
+              urlImage: question.urlImage || null
+            } : null
+          });
+        } catch (error: any) {
+          // Nếu có lỗi, thêm vào mảng errors
+          errors.push({
+            question: question,
+            error: error.message
+          });
+        }
+      }
+
+      // Trả về kết quả
+      return res.status(200).json({
+        success: true,
+        data: importedQuestions,
+        errors: errors,
+        message: `Đã import thành công ${importedQuestions.length} câu hỏi${errors.length > 0 ? `, ${errors.length} câu hỏi thất bại` : ''}`
+      });
+    } catch (error: any) {
+      console.error('QuestionController.importQuestionsFromExcel error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Lỗi khi import câu hỏi từ file Excel: ' + error.message
+      });
+    }
+  } 
 }

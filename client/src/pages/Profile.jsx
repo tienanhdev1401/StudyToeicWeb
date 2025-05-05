@@ -35,6 +35,11 @@ const ProfilePage = () => {
         testsCompleted: 0
     });
     const [highestTestScore, setHighestTestScore] = useState(null);
+    const [dataFetched, setDataFetched] = useState({
+        activities: false,
+        stats: false,
+        learningGoal: false
+    });
 
     // Handle token expiration
     const handleTokenRefresh = async () => {
@@ -58,12 +63,13 @@ const ProfilePage = () => {
                 } else {
                     navigate('/login');
                 }
-            } else {
+            } else if (!user) {
                 fetchUserProfile();
+            } else {
                 setLoading(false);
             }
         }
-    }, [isLoggedIn, userLoading, initialized, navigate]);
+    }, [isLoggedIn, userLoading, initialized, navigate, user]);
 
     useEffect(() => {
         if (user && !isEditing) {
@@ -80,7 +86,6 @@ const ProfilePage = () => {
         } else if (user && loading) {
             // Lần đầu load trang
             const userCopy = JSON.parse(JSON.stringify(user));
-            console.log("User data loaded (initial):", userCopy);
             
             // Đảm bảo giới tính được hiển thị đúng
             if (userCopy.gender === null || userCopy.gender === undefined) {
@@ -93,28 +98,172 @@ const ProfilePage = () => {
     }, [user, isEditing, loading]);
 
     useEffect(() => {
-        const fetchLearningGoal = async () => {
-            if (user && user.id) {
-                try {
-                    const response = await getLearningGoalByLearnerId(user.id);
-                    if (response && response.success) {
-                        setLearningGoal(response.data);
-                    } else {
-                        setLearningGoal(null);
+        const fetchInitialData = async () => {
+            if (user && user.id && !loading) {
+                // Đánh dấu đã gửi yêu cầu để tránh gọi lại
+                let hasSetDataFetched = false;
+                
+                // 1. Fetch learning goal nếu chưa có
+                if (!dataFetched.learningGoal) {
+                    try {
+                        if (!hasSetDataFetched) {
+                            setDataFetched(prev => ({ 
+                                ...prev, 
+                                learningGoal: true,
+                                activities: true,
+                                stats: true 
+                            }));
+                            hasSetDataFetched = true;
+                        }
+                        
+                        const response = await getLearningGoalByLearnerId(user.id);
+                        if (response && response.success) {
+                            setLearningGoal(response.data);
+                        } else {
+                            setLearningGoal(null);
+                        }
+                    } catch (error) {
+                        if (error.response && error.response.status === 404) {
+                            setLearningGoal(null);
+                        } else {
+                            console.error('Lỗi khi tải mục tiêu học tập:', error);
+                        }
                     }
-                } catch (error) {
-                    if (error.response && error.response.status === 404) {
-                        setLearningGoal(null);
-                    } else {
-                        console.error(error);
+                }
+                
+                // 2. Fetch recent activities nếu chưa có
+                if (!dataFetched.activities) {
+                    try {
+                        if (!hasSetDataFetched) {
+                            setDataFetched(prev => ({ 
+                                ...prev, 
+                                learningGoal: true,
+                                activities: true,
+                                stats: true 
+                            }));
+                            hasSetDataFetched = true;
+                        }
+                        
+                        // Lấy tất cả learning processes
+                        const processes = await learningProcessService.getAllLearningProcessByUserId(user.id);
+                        
+                        // Sắp xếp theo thời gian tạo mới nhất và lấy 3 cái gần nhất
+                        const recentProcesses = processes
+                            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                            .slice(0, 3);
+
+                        // Lấy thông tin chi tiết cho từng process
+                        const activitiesWithDetails = await Promise.all(
+                            recentProcesses.map(async (process) => {
+                                let details = null;
+
+                                try {
+                                    if (process.VocabularyTopicId) {
+                                        const vocabTopic = await VocabularyTopicService.getVocabularyTopicById(process.VocabularyTopicId);
+                                        details = {
+                                            type: 'vocabulary',
+                                            name: vocabTopic.topicName,
+                                            id: process.VocabularyTopicId
+                                        };
+                                    } else if (process.GrammarTopicId) {
+                                        const grammarTopic = await GrammarTopicService.getGrammarTopicById(process.GrammarTopicId);
+                                        details = {
+                                            type: 'grammar',
+                                            name: grammarTopic.title,
+                                            id: process.GrammarTopicId
+                                        };
+                                    } else if (process.TestId) {
+                                        const test = await TestService.getTestById(process.TestId);
+                                        details = {
+                                            type: 'test',
+                                            name: test.title,
+                                            id: process.TestId
+                                        };
+                                    }
+
+                                    return {
+                                        ...process,
+                                        details
+                                    };
+                                } catch (error) {
+                                    console.error('Error fetching details for process:', error);
+                                    return {
+                                        ...process,
+                                        details: {
+                                            type: 'unknown',
+                                            name: 'Không thể tải thông tin',
+                                            id: null
+                                        }
+                                    };
+                                }
+                            })
+                        );
+
+                        setRecentActivities(activitiesWithDetails);
+                    } catch (error) {
+                        console.error('Error fetching recent activities:', error);
+                    }
+                }
+                
+                // 3. Fetch learning statistics nếu chưa có
+                if (!dataFetched.stats) {
+                    try {
+                        if (!hasSetDataFetched) {
+                            setDataFetched(prev => ({ 
+                                ...prev, 
+                                learningGoal: true,
+                                activities: true,
+                                stats: true 
+                            }));
+                            hasSetDataFetched = true;
+                        }
+                        
+                        const stats = await learningProcessService.getLearningStatistics(user.id);
+                        if (stats) {
+                            setUserProgress({
+                                vocabLearned: stats.completedVocabulary || 0,
+                                grammarCompleted: stats.completedGrammarTopics || 0,
+                                testsCompleted: stats.completedTests || 0
+                            });
+                        }
+                        
+                        // Lấy điểm TOEIC cao nhất
+                        const history = await TestHistoryService.getGroupedTestHistory(user.id);
+                        let maxScore = null;
+                        let bestAttempt = null;
+                        
+                        if (history && history.length > 0) {
+                            history.forEach(test => {
+                                if (test.attempts && test.attempts.length > 0) {
+                                    test.attempts.forEach(attempt => {
+                                        if (maxScore === null || attempt.score > maxScore) {
+                                            maxScore = attempt.score;
+                                            bestAttempt = attempt;
+                                        }
+                                    });
+                                }
+                            });
+                            
+                            if (bestAttempt) {
+                                setHighestTestScore(bestAttempt);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Lỗi khi lấy thống kê học tập:', error);
                     }
                 }
             }
         };
-    
-        fetchLearningGoal();
-    }, [user]);
-    
+        
+        fetchInitialData();
+        
+        // Cleanup function
+        return () => {
+            // Xử lý bất kỳ việc cleanup nào nếu cần
+        };
+    }, [user, dataFetched, loading]);
+
+    // Thêm useEffect riêng để xử lý cleanup cho imagePreview
     useEffect(() => {
         // Cleanup preview URLs on unmount
         return () => {
@@ -123,121 +272,6 @@ const ProfilePage = () => {
             }
         };
     }, [imagePreview]);
-
-    useEffect(() => {
-        const fetchRecentActivities = async () => {
-            if (user && user.id) {
-                try {
-                    // Lấy tất cả learning processes
-                    const processes = await learningProcessService.getAllLearningProcessByUserId(user.id);
-                    
-                    // Sắp xếp theo thời gian tạo mới nhất và lấy 3 cái gần nhất
-                    const recentProcesses = processes
-                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                        .slice(0, 3);
-
-                    // Lấy thông tin chi tiết cho từng process
-                    const activitiesWithDetails = await Promise.all(
-                        recentProcesses.map(async (process) => {
-                            let details = null;
-
-                            try {
-                                if (process.VocabularyTopicId) {
-                                    const vocabTopic = await VocabularyTopicService.getVocabularyTopicById(process.VocabularyTopicId);
-                                    details = {
-                                        type: 'vocabulary',
-                                        name: vocabTopic.topicName,
-                                        id: process.VocabularyTopicId
-                                    };
-                                } else if (process.GrammarTopicId) {
-                                    const grammarTopic = await GrammarTopicService.getGrammarTopicById(process.GrammarTopicId);
-                                    details = {
-                                        type: 'grammar',
-                                        name: grammarTopic.title,
-                                        id: process.GrammarTopicId
-                                    };
-                                } else if (process.TestId) {
-                                    const test = await TestService.getTestById(process.TestId);
-                                    details = {
-                                        type: 'test',
-                                        name: test.title,
-                                        id: process.TestId
-                                    };
-                                }
-
-                                return {
-                                    ...process,
-                                    details
-                                };
-                            } catch (error) {
-                                console.error('Error fetching details for process:', error);
-                                return {
-                                    ...process,
-                                    details: {
-                                        type: 'unknown',
-                                        name: 'Không thể tải thông tin',
-                                        id: null
-                                    }
-                                };
-                            }
-                        })
-                    );
-
-                    setRecentActivities(activitiesWithDetails);
-                } catch (error) {
-                    console.error('Error fetching recent activities:', error);
-                }
-            }
-        };
-
-        fetchRecentActivities();
-    }, [user]);
-
-    useEffect(() => {
-        // Lấy thống kê học tập (số ngữ pháp đã học, số từ vựng đã học)
-        const fetchLearningStats = async () => {
-            if (user && user.id) {
-                try {
-                    const stats = await learningProcessService.getLearningStatistics(user.id);
-                    if (stats) {
-                        setUserProgress({
-                            vocabLearned: stats.completedVocabulary || 0,
-                            grammarCompleted: stats.completedGrammarTopics || 0,
-                            testsCompleted: stats.completedTests || 0
-                        });
-                    }
-                } catch (error) {
-                    console.error('Lỗi khi lấy thống kê học tập:', error);
-                }
-            }
-        };
-        fetchLearningStats();
-
-        // Lấy điểm TOEIC cao nhất
-        const fetchHighestTestScore = async () => {
-            if (user && user.id) {
-                try {
-                    const history = await TestHistoryService.getGroupedTestHistory(user.id);
-                    let maxScore = null;
-                    let bestAttempt = null;
-                    history.forEach(test => {
-                        test.attempts.forEach(attempt => {
-                            if (maxScore === null || attempt.score > maxScore) {
-                                maxScore = attempt.score;
-                                bestAttempt = attempt;
-                            }
-                        });
-                    });
-                    if (bestAttempt) {
-                        setHighestTestScore(bestAttempt);
-                    }
-                } catch (error) {
-                    console.error('Lỗi khi lấy điểm TOEIC cao nhất:', error);
-                }
-            }
-        };
-        fetchHighestTestScore();
-    }, [user]);
 
     // Show loading spinner when loading data
     if (loading) {
@@ -334,7 +368,6 @@ const ProfilePage = () => {
     const handleSave = async () => {
         setIsSavingProfile(true);
         try {
-            console.log("Saving profile with data:", editedUser);
             await userService.updateProfile(editedUser);
             setIsEditing(false);
             await fetchUserProfile();
@@ -354,12 +387,6 @@ const ProfilePage = () => {
     };
 
     const handleInputChange = (field, value) => {
-        console.log(`Changing ${field} to:`, value);
-        
-        if (field === 'gender') {
-            console.log("Cập nhật giới tính:", value);
-        }
-        
         setEditedUser(prev => {
             if (!prev) return { [field]: value };
             
@@ -367,7 +394,6 @@ const ProfilePage = () => {
                 ...prev,
                 [field]: value
             };
-            console.log("Updated user data:", updated);
             return updated;
         });
     };
@@ -462,9 +488,6 @@ const ProfilePage = () => {
 
     // Calculate progress percentage if learning goal exists
     const calculateProgress = () => {
-        // if (!learningGoal) return 0;
-        // // Sample calculation - in reality would be based on actual progress
-        // return 35; // 35% progress for demo purposes
         if (learningGoal && highestTestScore && learningGoal.scoreTarget) {
             return Math.floor((highestTestScore.score / learningGoal.scoreTarget) * 100);
         }
@@ -637,7 +660,6 @@ const ProfilePage = () => {
                                             <div className="select-wrapper" style={{ position: 'relative', zIndex: 20 }}>
                                                 <select
                                                     className="profile-info-edit"
-
                                                     value={editedUser?.gender || ''}
                                                     onChange={(e) => handleInputChange('gender', e.target.value)}
                                                     style={{ 

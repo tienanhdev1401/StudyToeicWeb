@@ -9,18 +9,22 @@ class Database {
 
   private constructor() {
     this.pool = mysql.createPool({
-      host: process.env.DATABASE_HOST,
-      user: process.env.DATABASE_USER,
-      port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT, 10) : undefined,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE,
-      waitForConnections: true,
-      connectionLimit: 50,           // Tăng giới hạn kết nối
-      queueLimit: 0,
-      connectTimeout: 60000,         // Timeout 60 giây
-      typeCast: true,                // Bật type casting
-      multipleStatements: true,      // Cho phép nhiều câu lệnh SQL
-      namedPlaceholders: true        // Sử dụng placeholders có tên
+        host: process.env.DATABASE_HOST,
+        user: process.env.DATABASE_USER,
+        port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT, 10) : undefined,
+        password: process.env.DATABASE_PASSWORD,
+        database: process.env.DATABASE,
+        waitForConnections: true,
+        connectionLimit: 50,        // Tăng giới hạn kết nối
+        queueLimit: 0,
+        connectTimeout: 60000,      // Timeout 60 giây
+        typeCast: true,             // Bật type casting
+        multipleStatements: true,   // Cho phép nhiều câu lệnh SQL
+        namedPlaceholders: true,    // Sử dụng placeholders có tên
+        enableKeepAlive: true,      // Bật keep-alive cho kết nối
+        keepAliveInitialDelay: 10000, // Kiểm tra kết nối mỗi 10 giây
+        maxIdle: 10,                // Số lượng kết nối idle tối đa
+        idleTimeout: 60000          // Thời gian tối đa một kết nối được giữ idle
     });
     console.log('Khởi tạo pool kết nối database');
   }

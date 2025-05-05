@@ -56,7 +56,7 @@ const Header = ({ style, className }) => {
                                                  
                                                     <li className="active" ><a href="/">Home</a></li>
                                                     <li><a href="/about">About</a></li>
-                                                    <li><a href="#">Learn</a>
+                                                    <li><a href="#">Study zone</a>
                                                         <ul className="submenu">
                                                             <li>
                                                                 <a href="#" onClick={e => {
@@ -116,7 +116,7 @@ const Header = ({ style, className }) => {
                                                         </div>
                                                     </li>
                                                     <li className="button-header margin-left ">
-                                                        <a href="/test-online-new" className="btn">Join</a>
+                                                        <a href="/test-online-new" className="btn">TEST NOW!</a>
                                                     </li>
                                                     {!isLoggedIn && (
                                                         <li className="button-header margin-left ">

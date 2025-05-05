@@ -27,7 +27,6 @@ export const getLearningGoalByLearnerId = async (learnerId) => {
 
 export const createLearningGoal = async (learningGoalData) => {
   try {
-    console.log(learningGoalData);
     const response = await axios.post(`${config.API_BASE_URL}/learning-goal`, learningGoalData);
     return response.data;
   } catch (error) {

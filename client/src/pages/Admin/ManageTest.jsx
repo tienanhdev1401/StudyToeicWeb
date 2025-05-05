@@ -29,6 +29,7 @@ const ManageTest = () => {
   const [editMode, setEditMode] = useState(false);
   const [testToEdit, setTestToEdit] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Alert states
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
@@ -109,6 +110,7 @@ const ManageTest = () => {
   // Handle delete confirmation
   const handleDeleteConfirm = async () => {
     try {
+      setIsDeleting(true);
       if (itemToDelete) {
         console.log(itemToDelete.id);
         // Delete single item using service
@@ -132,6 +134,7 @@ const ManageTest = () => {
       console.error("Error deleting test:", error);
       displayErrorMessage("Failed to delete test(s). Please try again.");
     } finally {
+      setIsDeleting(false);
       setIsDeleteModalOpen(false);
       setItemToDelete(null);
     }
@@ -474,7 +477,7 @@ const ManageTest = () => {
           <div className="manageTest-modal-content">
             <div className="manageTest-modal-header">
               <h2>Confirm Delete</h2>
-              <button className="manageTest-close-btn" onClick={() => setIsDeleteModalOpen(false)}>
+              <button className="manageTest-close-btn" onClick={() => setIsDeleteModalOpen(false)} disabled={isDeleting}>
                 <i className="fas fa-times"></i>
               </button>
             </div>
@@ -486,10 +489,16 @@ const ManageTest = () => {
               </p>
             </div>
             <div className="manageTest-modal-footer">
-              <button className="manageTest-cancel-btn" onClick={() => setIsDeleteModalOpen(false)}>Cancel</button>
-              <button className="manageTest-confirm-delete-btn" onClick={handleDeleteConfirm}>
-                <i className="fas fa-trash"></i>
-                Delete
+              <button className="manageTest-cancel-btn" onClick={() => setIsDeleteModalOpen(false)} disabled={isDeleting}>Cancel</button>
+              <button className="manageTest-confirm-delete-btn" onClick={handleDeleteConfirm} disabled={isDeleting}>
+                {isDeleting ? (
+                  'Deleting...'
+                ) : (
+                  <>
+                    <i className="fas fa-trash"></i>
+                    Delete
+                  </>
+                )}
               </button>
             </div>
           </div>
