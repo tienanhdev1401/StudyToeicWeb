@@ -92,6 +92,7 @@ const AdminPage = () => {
         <Route path="/exercise/:id/questions" element={<ManageExerciseQuestion />} />
         <Route path="/exercise/grammars" element={<ManageExerciseGrammar />} />
         <Route path="/exercise/vocabularies" element={<ManageExerciseVocabulary />} />
+        <Route path="/question" element={<ManageQuestion />} />
       </Routes>
       </UserProvider>
       </AuthProvider>
