@@ -4,6 +4,34 @@ import staffService from '../../services/admin/admin.StaffService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
+const ResetPasswordModal = ({ isOpen, onClose, onConfirm, staff }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="managestaff-modal-overlay">
+      <div className="managestaff-modal-content">
+        <div className="managestaff-modal-header">
+          <h2>Reset Password</h2>
+          <button className="managestaff-close-btn" onClick={onClose}>
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+        <div className="managestaff-modal-body">
+          <p>Are you sure you want to reset password for staff "{staff.fullname}"?</p>
+          <p>A temporary password will be sent to their email address.</p>
+        </div>
+        <div className="managestaff-modal-footer">
+          <button className="managestaff-cancel-btn" onClick={onClose}>Cancel</button>
+          <button className="managestaff-confirm-reset-btn" onClick={onConfirm}>
+            <i className="fas fa-key"></i>
+            Reset Password
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const BlockConfirmModal = ({ isOpen, onClose, onConfirm, itemToBlock, selectedItems, action }) => {
   if (!isOpen) return null;
 
@@ -75,6 +103,7 @@ const ManageStaff = () => {
   const [staffList, setStaffList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   
   // Table state
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,6 +117,7 @@ const ManageStaff = () => {
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
   const [isUnblockModalOpen, setIsUnblockModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
   const [itemToAction, setItemToAction] = useState(null);
   const [actionType, setActionType] = useState(''); // 'block' or 'unblock'
 
@@ -622,6 +652,27 @@ const ManageStaff = () => {
     }
   };
 
+  const handleResetPassword = async (id) => {
+    try {
+      await staffService.resetStaffPassword(id);
+      setError(null);
+      setSuccessMessage("Password has been reset successfully. A temporary password has been sent to the staff's email.");
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
+    } catch (err) {
+      setError(err.message);
+      setSuccessMessage(null);
+      
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        setError(null);
+      }, 5000);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="managestaff-loading">
@@ -635,7 +686,7 @@ const ManageStaff = () => {
     return (
       <div className="managestaff-error">
         <i className="fas fa-exclamation-circle"></i>
-        <p>Error: {error}</p>
+        <p>{error}</p>
       </div>
     );
   }
@@ -643,6 +694,13 @@ const ManageStaff = () => {
   return (
     <div className="managestaff-staff-container">
       <h1 className="managestaff-h1">Manage Staff</h1>
+      
+      {successMessage && (
+        <div className="managestaff-success">
+          <i className="fas fa-check-circle"></i>
+          <p>{successMessage}</p>
+        </div>
+      )}
       
       <div className="managestaff-header-section">
         <div className="managestaff-entries-select">
@@ -805,6 +863,15 @@ const ManageStaff = () => {
                           onClick={() => handleEditStaff(staff)}
                         >
                           <i className="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button 
+                          className="managestaff-reset-password-btn" 
+                          onClick={() => {
+                            setItemToAction(staff);
+                            setIsResetPasswordModalOpen(true);
+                          }}
+                        >
+                          <i className="fa-solid fa-key"></i>
                         </button>
                         {staff.status === 'ACTIVE' ? (
                           <button 
@@ -1033,6 +1100,22 @@ const ManageStaff = () => {
         }}
         itemToDelete={itemToAction}
         selectedItems={selectedItems}
+      />
+
+      <ResetPasswordModal
+        isOpen={isResetPasswordModalOpen}
+        onClose={() => {
+          setIsResetPasswordModalOpen(false);
+          setItemToAction(null);
+        }}
+        onConfirm={() => {
+          if (itemToAction) {
+            handleResetPassword(itemToAction.id);
+          }
+          setIsResetPasswordModalOpen(false);
+          setItemToAction(null);
+        }}
+        staff={itemToAction || {}}
       />
     </div>
   );

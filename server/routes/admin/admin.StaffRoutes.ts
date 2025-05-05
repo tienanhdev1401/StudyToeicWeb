@@ -10,5 +10,6 @@ router.put('/:id', StaffController.updateStaff);
 router.put('/block/:id', StaffController.blockStaff);
 router.put('/unblock/:id', StaffController.unblockStaff);
 router.delete('/:id', StaffController.deleteStaff);
+router.put('/resetpassword/:id', StaffController.resetStaffPassword);
 
 export default router;

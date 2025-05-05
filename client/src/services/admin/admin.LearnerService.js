@@ -88,6 +88,20 @@ const learnerService = {
       console.error(`Error unblocking learner with ID ${id}:`, error);
       throw error;
     }
+  },
+
+  resetLearnerPassword: async (id) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/admin/learner/resetpassword/${id}`);
+      if (response.data.success) {
+        return response.data;
+      } else {
+        throw new Error(response.data.message || `Failed to reset learner password with ID ${id}`);
+      }
+    } catch (error) {
+      console.error(`Error resetting learner password with ID ${id}:`, error);
+      throw error;
+    }
   }
 };
 

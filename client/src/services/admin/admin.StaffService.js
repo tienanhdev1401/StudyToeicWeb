@@ -116,6 +116,20 @@ const staffService = {
       console.error(`Error deleting multiple staffs:`, error);
       throw error;
     }
+  }, 
+
+  resetStaffPassword: async (id) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/admin/staff/resetpassword/${id}`);
+      if (response.data.success) {
+        return response.data;
+      } else {
+        throw new Error(response.data.message || `Failed to reset staff password with ID ${id}`);
+      }
+    } catch (error) {
+      console.error(`Error resetting staff password with ID ${id}:`, error);
+      throw error;
+    }
   }
 };
 
