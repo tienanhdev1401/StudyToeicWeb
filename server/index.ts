@@ -24,6 +24,8 @@ import './config/db';
 // Cấu hình CORS - QUAN TRỌNG: Phải đặt middleware CORS trước tất cả các route khác
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:5000',
+  'https://www.learntoeicnow.tptienanh.website',
   'https://hostservertoeic.tptienanh.website',
   'http://hostservertoeic.tptienanh.website'
 ];
