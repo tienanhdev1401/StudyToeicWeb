@@ -146,7 +146,7 @@ const userService = {
       delete updatedData.newAvatarFile;
   
       const token = localStorage.getItem('token');
-      const response = await axios.put('/api/user/update-profile', updatedData, {
+      const response = await axios.put(`${API_URL}/update-profile`, updatedData, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
