@@ -11,10 +11,10 @@
 }
 
 .ManageGrammarTopic-header-title {
-  font-size: 32px;
+  font-size: 4.75rem;
+  color: #409efd;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  margin-bottom: 20px;
-  color: #333;
 }
 
 .ManageGrammarTopic-topic-header {

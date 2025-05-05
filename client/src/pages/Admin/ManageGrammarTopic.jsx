@@ -645,7 +645,7 @@ const ManageGrammarTopic = () => {
 
   return (
     <div className="ManageGrammarTopic-container">
-      <h1 className="ManageGrammarTopic-header-title">Quản lý chủ đề ngữ pháp</h1>
+      <h1 className="ManageGrammarTopic-header-title">Manage Grammar Topic</h1>
       
       <div className="ManageGrammarTopic-pagination">
         <div className="ManageGrammarTopic-entries-select">
