@@ -793,14 +793,14 @@ const ManageVocabulary = () => {
         VocabularyTopicId: parseInt(id)
       }));
       
-      // Use the batch import API
-      const result = await vocabularyService.importVocabularies(formattedVocabularies);
+      // Use the correct import function from the service
+      const importResult = await vocabularyService.importVocabulariesFromExcel(id, formattedVocabularies);
       
       // Refresh the vocabulary list
       await fetchVocabularies();
       
       // Show success message
-      displaySuccessMessage(`Successfully imported ${result.length} vocabularies`);
+      displaySuccessMessage(`Successfully imported ${importResult.data.length} vocabularies`);
     } catch (error) {
       console.error("Error importing vocabularies:", error);
       displayErrorMessage(error.response?.data?.message || "Failed to import vocabularies. Please try again.");
