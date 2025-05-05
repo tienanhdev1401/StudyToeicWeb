@@ -120,7 +120,7 @@ const Contact = () => {
                             <div className="form-group mt-3">
                                 <button type="submit" className="button button-contactForm boxed-btn">
                                 Send
-                                </button>button button-contactForm boxed-btn
+                                </button>
                             </div>
                             </form>
                         </div>
