@@ -1,6 +1,6 @@
 import axios from 'axios';
-
-const ROADMAP_API_URL = 'http://localhost:5000/api/roadmap';
+import config from './config';
+const ROADMAP_API_URL = config.API_BASE_URL + '/roadmap';
 
 // Service để lấy roadmap theo learnerId
 export const getRoadmapByLearnerId = async (learnerId) => {

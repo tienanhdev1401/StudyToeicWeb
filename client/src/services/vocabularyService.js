@@ -1,11 +1,10 @@
 import axios from "axios";
-
-const API_BASE_URL = 'http://localhost:5000/api';
+import config from './config';
 
 const VocabularyService = {
     getVocabularyCountByTopicId: async (topicId) => {
         try {
-          const response = await axios.get(`${API_BASE_URL}/vocabulary-topic/${topicId}/count`);
+          const response = await axios.get(`${config.API_BASE_URL}/vocabulary-topic/${topicId}/count`);
           if (response.data.success) {
             return response.data.count;
           } else {

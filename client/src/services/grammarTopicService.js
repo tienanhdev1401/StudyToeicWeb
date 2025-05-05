@@ -1,6 +1,7 @@
 import axios from 'axios';
+import config from './config';
 
-const API_BASE_URL = 'http://localhost:5000/api'; // Update if your backend URL is different
+const API_BASE_URL = config.API_BASE_URL; // Update if your backend URL is different
 
 const GrammarTopicService = {
 

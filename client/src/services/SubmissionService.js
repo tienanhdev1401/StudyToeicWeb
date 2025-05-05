@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { getAuthToken } from '../utils/auth';
-
-const API_BASE_URL = 'http://localhost:5000/api';
+import config from './config';
 
 class SubmissionService {
   /**
@@ -14,7 +13,7 @@ class SubmissionService {
       const token = getAuthToken();
       
       const response = await axios.post(
-        `${API_BASE_URL}/submissions`, 
+        `${config.API_BASE_URL}/submissions`, 
         submissionData,
         {
           headers: {
@@ -41,7 +40,7 @@ class SubmissionService {
       const token = getAuthToken();
       
       const response = await axios.get(
-        `${API_BASE_URL}/submissions/learner/${learnerId}`,
+        `${config.API_BASE_URL}/submissions/learner/${learnerId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -66,7 +65,7 @@ class SubmissionService {
       const token = getAuthToken();
       
       const response = await axios.get(
-        `${API_BASE_URL}/submissions/${submissionId}`,
+        `${config.API_BASE_URL}/submissions/${submissionId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`

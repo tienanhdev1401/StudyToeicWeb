@@ -15,6 +15,7 @@
     "connect-flash": "^0.1.1",
     "copyfiles": "^2.4.1",
     "cors": "^2.8.5",
+    "cross": "^1.0.0",
     "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
@@ -41,6 +42,7 @@
     "@types/node": "^18.15.11",
     "@types/nodemailer": "^6.4.17",
     "@types/xlsx": "^0.0.35",
+    "cors-anywhere": "^0.4.4",
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
