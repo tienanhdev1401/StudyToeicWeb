@@ -64,12 +64,7 @@ export class UserController {
         res.status(400).json({ error: 'Vui lòng nhập email' });
         return;
       }
-      // Kiểm tra email đã tồn tại chưa
-      const user = await authRepository.findByEmail(email);
-      if (!user) {
-        res.status(404).json({ error: 'Email chưa được đăng ký tài khoản' });
-        return;
-      }
+      
       // Tạo mã OTP
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
 

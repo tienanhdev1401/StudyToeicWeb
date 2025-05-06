@@ -10,7 +10,7 @@ export class User {
   public gender?: string;
   public avatar?: string;
   public joinAt?: Date;
-  public status?: number;
+  public status?: string;
   public updatedAt?: Date;
 
   constructor(userData: {
@@ -24,7 +24,7 @@ export class User {
     gender?: string;
     avatar?: string;
     joinAt?: Date | string;
-    status?: number;
+    status?: string;
     updatedAt?: Date | string;
   }) {
     this.email = userData.email;

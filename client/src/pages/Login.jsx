@@ -28,16 +28,23 @@ const Login = () => {
       login(userData);
       navigate('/');
     } catch (err) {
-      if (err.response && err.response.status === 401) {
-        setError("Email hoặc mật khẩu không chính xác");
-      } else {
-        console.error("Lỗi không xác định:", err);
-        setError("Email hoặc mật khẩu không chính xác.");
+      console.error("Lỗi không xác định:", err);
+      
+      // Lấy message từ error object
+      let errorMessage = "Đã xảy ra lỗi. Vui lòng thử lại sau.";
+      
+      if (err.message) {
+        // Nếu là Error object có message property
+        errorMessage = err.message;
+      } else if (err.response?.data?.message) {
+        // Nếu là lỗi axios với data.message
+        errorMessage = err.response.data.message;
       }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
-    
   };
 
   return (

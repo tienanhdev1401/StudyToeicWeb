@@ -81,7 +81,7 @@ const Sidebar = () => {
       {/* Logo Section */}
       <div className={styles.logoSection} >
         {}
-        <span className={styles.logoText} > Ready4Toeic Management</span>
+        <span className={styles.logoText} > Course Management</span>
       </div>
 
       {/* Navigation Menu */}
