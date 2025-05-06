@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const config = {
- API_BASE_URL: 'https://hostservertoeic.tptienanh.website/api',
- //API_BASE_URL: 'http://localhost:5000/api',
+ //API_BASE_URL: 'https://hostservertoeic.tptienanh.website/api',
+ API_BASE_URL: 'http://localhost:5000/api',
   withCredentials: true,
 };
 
