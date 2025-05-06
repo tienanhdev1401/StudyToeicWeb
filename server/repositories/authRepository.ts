@@ -6,7 +6,7 @@ export class authRepository {
   // Tìm người dùng theo email
   static async findByEmail(email: string): Promise<User | null> {
     const results = await db.query(
-      'SELECT id, emailAddress as email, password, role FROM users WHERE emailAddress = ? LIMIT 1', 
+      'SELECT id, emailAddress as email, password, role , status FROM users WHERE emailAddress = ? LIMIT 1', 
       [email]
     );
 
@@ -14,6 +14,7 @@ export class authRepository {
       return null;
     }
     const userData = results[0] as any;
+    console.log(userData);
     return new User(userData);
   }
  

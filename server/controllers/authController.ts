@@ -21,7 +21,12 @@ export class AuthController {
         res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
         return;
       }
-  
+      // Kiểm tra trạng thái tài khoản (BANNED thường có giá trị là 0)
+      if (user.status?.toString() === "BANNED") {
+        res.status(403).json({ message: 'Tài khoản của bạn đã bị khóa' });
+        return;
+      }
+
       const isMatch = await user.checkPassword(password);
       if (!isMatch) {
         res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác' });
