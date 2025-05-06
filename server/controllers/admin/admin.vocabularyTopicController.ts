@@ -90,18 +90,37 @@ export class VocabularyTopicController {
 
         // Thêm danh sách từ vựng vào topic (nếu có)
         if (vocabularies && Array.isArray(vocabularies)) {
-            const vocabularyList = vocabularies.map((v: any) => 
-                new Vocabulary(
+            const vocabularyList = vocabularies.map((v: any) => {
+                // Xử lý synonym - đảm bảo nó là JSON hợp lệ hoặc null
+                let processedSynonym = null;
+                if (v.synonym) {
+                    if (typeof v.synonym === 'string' && (v.synonym.trim().charAt(0) !== '[' && v.synonym.trim().charAt(0) !== '{')) {
+                        if (v.synonym.includes('/') || v.synonym.trim().startsWith('/')) {
+                            processedSynonym = null;
+                        } else {
+                            processedSynonym = JSON.stringify([v.synonym.trim()]);
+                        }
+                    } else {
+                        try {
+                            JSON.parse(v.synonym);
+                            processedSynonym = v.synonym;
+                        } catch (e) {
+                            processedSynonym = JSON.stringify([v.synonym.trim()]);
+                        }
+                    }
+                }
+
+                return new Vocabulary(
                     0,
                     v.content,
                     v.meaning,
-                    v.synonym || null,
+                    processedSynonym,
                     v.transcribe || '',
                     v.urlAudio || '',
                     v.urlImage || '',
                     null
-                )
-            );
+                );
+            });
             newTopic.addVocabularyList(vocabularyList);
         }
 

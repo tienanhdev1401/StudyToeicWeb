@@ -520,6 +520,7 @@ const ManageTest = () => {
           editMode={editMode}
           testItem={testToEdit}
           isSubmitting={isSubmitting}
+          displayErrorMessage={displayErrorMessage}
         />
       )}
     </div>
@@ -527,7 +528,7 @@ const ManageTest = () => {
 };
 
 // Test Form Modal Component
-const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem = null, isSubmitting = false }) => {
+const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem = null, isSubmitting = false, displayErrorMessage }) => {
   const [formData, setFormData] = useState({
     title: '',
     testCollection: ''
@@ -563,6 +564,7 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
   const [parsedQuestions, setParsedQuestions] = useState([]);
 
   const [isExcelImporting, setIsExcelImporting] = useState(false);
+  const [excelImportError, setExcelImportError] = useState(null);
 
   // Fetch test collections
   useEffect(() => {
@@ -714,6 +716,7 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
   const handleQuestionExcelFileChange = (e) => {
     const file = e.target.files[0];
     setQuestionExcelFile(file);
+    setExcelImportError(null); // Clear previous errors when selecting a new file
   };
 
   const handleSubmit = async (e) => {
@@ -738,11 +741,43 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
       // Import all questions if Excel file is provided
       if (questionExcelFile) {
         setIsExcelImporting(true);
-        await testService.importAllQuestionsFile(savedTest.id, questionExcelFile);
-        setIsExcelImporting(false);
+        setExcelImportError(null);
+        try {
+          await testService.importAllQuestionsFile(savedTest.id, questionExcelFile);
+          setIsExcelImporting(false);
+          onClose && onClose();
+        } catch (error) {
+          console.error(`Error importing questions:`, error);
+          setIsExcelImporting(false);
+          // Handle validation errors from the server
+          if (error.response && error.response.data) {
+            const responseData = error.response.data;
+            console.log("Server response:", responseData);
+            
+            if (responseData.isFull === true) {
+              // Nếu test đã full, hiển thị thông báo alert và đóng modal
+              displayErrorMessage("Bài test đã đạt đủ 200 câu hỏi theo tiêu chuẩn TOEIC. Không thể import thêm câu hỏi.");
+              onClose && onClose();
+            } else {
+              // Nếu test chưa full, hiển thị lỗi trong form
+              setExcelImportError({
+                message: responseData.message,
+                errors: responseData.errors || {},
+                isFull: false
+              });
+            }
+          } else {
+            setExcelImportError({
+              message: 'Lỗi khi import câu hỏi. Vui lòng kiểm tra file và thử lại.',
+              errors: {},
+              isFull: false
+            });
+          }
+        }
+      } else {
+        setIsUploading(false);
+        onClose && onClose();
       }
-      setIsUploading(false);
-      onClose && onClose();
     } catch (error) {
       console.error(`Error ${editMode ? 'updating' : 'adding'} test:`, error);
       setIsUploading(false);
@@ -938,6 +973,35 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
               {isExcelImporting && (
                 <div className="manageTest-import-progress">
                   <i className="fas fa-spinner fa-spin"></i> Importing questions from Excel...
+                </div>
+              )}
+              {excelImportError && (
+                <div className="manageTest-excel-error">
+                  <div className="manageTest-error-message">
+                    <i className="fas fa-exclamation-circle"></i> {excelImportError.message}
+                  </div>
+                  {excelImportError.errors && Object.keys(excelImportError.errors).length > 0 && (
+                    <div className="manageTest-error-details">
+                      <ul>
+                        {Object.entries(excelImportError.errors).map(([partNumber, errorMessage]) => (
+                          <li key={partNumber}>
+                            <strong>Part {partNumber}:</strong> {errorMessage}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <div className="manageTest-error-summary">
+                    <i className="fas fa-info-circle"></i> 
+                    {excelImportError.isFull 
+                      ? "Bài test này đã đủ 200 câu hỏi theo tiêu chuẩn TOEIC. Vui lòng tạo bài test mới nếu muốn thêm câu hỏi."
+                      : "Bài test này đã gần đủ câu hỏi theo tiêu chuẩn TOEIC. Vui lòng kiểm tra lại số lượng câu hỏi ở mỗi phần."}
+                  </div>
+                  {excelImportError.isFull && (
+                    <div className="manageTest-full-test-badge">
+                      <i className="fas fa-check-circle"></i> Test đã đủ câu hỏi
+                    </div>
+                  )}
                 </div>
               )}
             </div>

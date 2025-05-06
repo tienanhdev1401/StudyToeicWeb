@@ -229,12 +229,11 @@ const TestDetail = () => {
       [name]: value
     }));
   };
-
   const getNextQuestionNumber = (partNumber) => {
     const partLimit = TOEIC_PART_LIMITS[partNumber];
     if (!partLimit) return 1;
 
-    // Find the highest question number in the current part
+    // Find all question numbers in the current part
     const partQuestions = questions.filter(q => {
       const qNumber = q.questionNumber || 0;
       return qNumber >= partLimit.start && qNumber <= partLimit.end;
@@ -244,7 +243,18 @@ const TestDetail = () => {
       return partLimit.start;
     }
 
-    const maxNumber = Math.max(...partQuestions.map(q => q.questionNumber || 0));
+    // Get all used question numbers
+    const usedNumbers = partQuestions.map(q => q.questionNumber || 0);
+    
+    // Find the first available number in the range
+    for (let i = partLimit.start; i <= partLimit.end; i++) {
+      if (!usedNumbers.includes(i)) {
+        return i;
+      }
+    }
+
+    // If no gaps found, return the next number after the highest
+    const maxNumber = Math.max(...usedNumbers);
     return maxNumber + 1;
   };
 

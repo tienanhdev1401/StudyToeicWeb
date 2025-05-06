@@ -95,7 +95,7 @@ export async function parseQuestionExcel(file) {
         explain_resource: row['explain_resource'] || row['explainResource'] || row['Explanation Resource'] || row['Tài liệu giải thích'] || '',
         urlAudio: row['audio_url'] || row['audioUrl'] || row['Audio URL'] || row['URL Audio'] || '',
         urlImage: row['image_url'] || row['imageUrl'] || row['Image URL'] || row['URL Hình ảnh'] || '',
-      }));
+      }));  
 
       resolve({ questions });
     };
