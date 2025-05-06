@@ -115,7 +115,7 @@ const EditExercisesModal = ({ isOpen, onClose, vocabularyTopicId, vocabularyTopi
     e.preventDefault();
     
     if (selectedExercises.length === 0) {
-      setError('Vui lòng chọn ít nhất một bài tập để thêm.');
+      setError('Please select at least one exercise to add.');
       return;
     }
     
@@ -140,7 +140,7 @@ const EditExercisesModal = ({ isOpen, onClose, vocabularyTopicId, vocabularyTopi
       }
       
       if (errorCount > 0) {
-        setError(`Đã thêm ${successCount} bài tập, nhưng có ${errorCount} bài tập thất bại.`);
+        setError(`Added ${successCount} exercises, but ${errorCount} failed.`);
       }
       
       if (successCount > 0) {
@@ -150,13 +150,13 @@ const EditExercisesModal = ({ isOpen, onClose, vocabularyTopicId, vocabularyTopi
         }
         
         if (errorCount === 0) {
-          alert('Thêm bài tập thành công!');
+          alert('Added exercises successfully!');
           onClose();
         }
       }
     } catch (error) {
       console.error('Error adding exercises:', error);
-      setError('Không thể thêm bài tập. Vui lòng thử lại.');
+      setError('Cannot add exercises. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -1111,11 +1111,11 @@ const ManageExerciseVocabulary = () => {
 
   return (
     <div className="ManageExerciseVocabulary-container">
-      <h1 className="ManageExerciseVocabulary-header-title">Quản lý chủ đề từ vựng</h1>
+      <h1 className="ManageExerciseVocabulary-header-title">Manage Vocabulary Exercise</h1>
       
       <div className="ManageExerciseVocabulary-pagination">
         <div className="ManageExerciseVocabulary-entries-select">
-          <p>Hiển thị </p>
+          <p> Show </p>
           <select 
             value={itemsPerPage} 
             onChange={handleEntriesChange}
@@ -1127,7 +1127,7 @@ const ManageExerciseVocabulary = () => {
               </option>
             ))}
           </select>
-          <p>mục </p>
+          <p>entries</p>
         </div>
 
         <div className="ManageExerciseVocabulary-action-section">
@@ -1135,7 +1135,7 @@ const ManageExerciseVocabulary = () => {
             <i className="fas fa-search"></i>
             <input
               type="text"
-              placeholder="Tìm kiếm..."
+              placeholder="Search..."
               className="ManageExerciseVocabulary-search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -1148,7 +1148,7 @@ const ManageExerciseVocabulary = () => {
         <div className="ManageExerciseVocabulary-empty-table">
           <div className="ManageExerciseVocabulary-empty-message">
             <i className="fas fa-folder-open"></i>
-            <p>Không có chủ đề từ vựng nào được tìm thấy</p>
+            <p>No vocabulary topic found</p>
           </div>
         </div>
       ) : (
@@ -1167,17 +1167,17 @@ const ManageExerciseVocabulary = () => {
                 onClick={() => handleSort('vocabularyTopic.topicName')} 
                 className="ManageExerciseVocabulary-title-column sortable"
               >
-                Tiêu đề
+                Title
                 <i className={`fas ${sortField === 'vocabularyTopic.topicName' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
               <th 
                 onClick={() => handleSort('exerciseCount')} 
                 className="ManageExerciseVocabulary-exercise-count-column sortable"
               >
-                Số bài tập
+                Number of exercises
                 <i className={`fas ${sortField === 'exerciseCount' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
-              <th className="ManageExerciseVocabulary-actions-column">Quản lý bài tập</th>
+              <th className="ManageExerciseVocabulary-actions-column">Manage exercises</th>
             </tr>
           </thead>
           <tbody>
@@ -1199,7 +1199,7 @@ const ManageExerciseVocabulary = () => {
                     <button 
                       className="ManageExerciseVocabulary-add-exercises-btn"
                       onClick={() => handleEditExercises(item.vocabularyTopic)}
-                      title="Thêm bài tập vào chủ đề"
+                      title="Add exercises to the topic"
                     >
                       <i className="fas fa-plus-circle"></i>
                     </button>
@@ -1210,7 +1210,7 @@ const ManageExerciseVocabulary = () => {
                         setIsDeleteExercisesModalOpen(true);
                       }}
                       disabled={item.exerciseCount === 0}
-                      title="Xóa bài tập khỏi chủ đề"
+                      title="Delete exercises from the topic"
                     >
                       <i className="fas fa-minus-circle"></i>
                     </button>
@@ -1224,7 +1224,7 @@ const ManageExerciseVocabulary = () => {
 
       <div className="ManageExerciseVocabulary-pagination">
         <span>
-          Hiển thị {indexOfFirstItem + 1} đến {Math.min(indexOfLastItem, filteredData.length)} của {filteredData.length} mục
+          Show {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
         </span>
         <div className="ManageExerciseVocabulary-pagination-buttons">
           <button 
@@ -1232,7 +1232,7 @@ const ManageExerciseVocabulary = () => {
             disabled={currentPage === 1}
             className="ManageExerciseVocabulary-page-btn"
           >
-            Trước
+            Previous
           </button>
           
           {getPageNumbers(currentPage, totalPages).map((item, index) => (
@@ -1254,7 +1254,7 @@ const ManageExerciseVocabulary = () => {
             disabled={currentPage === totalPages}
             className="ManageExerciseVocabulary-page-btn"
           >
-            Tiếp
+            Next
           </button>
         </div>
       </div>

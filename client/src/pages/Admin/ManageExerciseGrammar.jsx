@@ -1226,11 +1226,11 @@ const ManageExerciseGrammar = () => {
 
   return (
     <div className="ManageExerciseGrammar-container">
-      <h1 className="ManageExerciseGrammar-header-title">Quản lý chủ đề ngữ pháp</h1>
+      <h1 className="ManageExerciseGrammar-header-title">Manage Grammar Exercise</h1>
       
       <div className="ManageExerciseGrammar-pagination">
         <div className="ManageExerciseGrammar-entries-select">
-          <p>Hiển thị </p>
+          <p>Show </p>
           <select 
             value={itemsPerPage} 
             onChange={handleEntriesChange}
@@ -1242,7 +1242,7 @@ const ManageExerciseGrammar = () => {
               </option>
             ))}
           </select>
-          <p>mục </p>
+          <p> entries</p>
         </div>
 
         <div className="ManageExerciseGrammar-action-section">
@@ -1250,7 +1250,7 @@ const ManageExerciseGrammar = () => {
             <i className="fas fa-search"></i>
             <input
               type="text"
-              placeholder="Tìm kiếm..."
+              placeholder="Search..."
               className="ManageExerciseGrammar-search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -1263,7 +1263,8 @@ const ManageExerciseGrammar = () => {
         <div className="ManageExerciseGrammar-empty-table">
           <div className="ManageExerciseGrammar-empty-message">
             <i className="fas fa-folder-open"></i>
-            <p>Không có chủ đề ngữ pháp nào được tìm thấy</p>
+            <p>
+            No grammar exercise found</p>
           </div>
         </div>
       ) : (
@@ -1282,17 +1283,17 @@ const ManageExerciseGrammar = () => {
                 onClick={() => handleSort('grammarTopic.title')} 
                 className="ManageExerciseGrammar-title-column sortable"
               >
-                Tiêu đề
+                Title
                 <i className={`fas ${sortField === 'grammarTopic.title' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
               <th 
                 onClick={() => handleSort('exerciseCount')} 
                 className="ManageExerciseGrammar-exercise-count-column sortable"
               >
-                Số bài tập
+                Number of exercises
                 <i className={`fas ${sortField === 'exerciseCount' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
-              <th className="ManageExerciseGrammar-actions-column">Quản lý bài tập</th>
+              <th className="ManageExerciseGrammar-actions-column">Manage exercises</th>
             </tr>
           </thead>
           <tbody>
@@ -1318,7 +1319,7 @@ const ManageExerciseGrammar = () => {
                       aria-label={`Thêm bài tập vào chủ đề ${item.grammarTopic.title}`}
                     >
                       <i className="fas fa-plus-circle"></i>
-                      <span className="sr-only">Thêm bài tập</span>
+                      <span className="sr-only">Add exercises</span>
                     </button>
                     <button 
                       className="ManageExerciseGrammar-remove-exercises-btn"
@@ -1327,11 +1328,11 @@ const ManageExerciseGrammar = () => {
                         setIsDeleteExercisesModalOpen(true);
                       }}
                       disabled={item.exerciseCount === 0}
-                      title={item.exerciseCount === 0 ? "Không có bài tập để xóa" : "Xóa bài tập khỏi chủ đề"}
-                      aria-label={`Xóa bài tập khỏi chủ đề ${item.grammarTopic.title}`}
+                      title={item.exerciseCount === 0 ? "No exercises to delete" : "Delete exercises from the topic"}
+                      aria-label={`Delete exercises from the topic ${item.grammarTopic.title}`}
                     >
                       <i className="fas fa-minus-circle"></i>
-                      <span className="sr-only">Xóa bài tập</span>
+                      <span className="sr-only">Delete exercises</span>
                     </button>
                   </div>
                 </td>
@@ -1343,7 +1344,7 @@ const ManageExerciseGrammar = () => {
 
       <div className="ManageExerciseGrammar-pagination">
         <span>
-          Hiển thị {indexOfFirstItem + 1} đến {Math.min(indexOfLastItem, filteredData.length)} của {filteredData.length} mục
+          Show {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
         </span>
         <div className="ManageExerciseGrammar-pagination-buttons">
           <button 
@@ -1351,7 +1352,7 @@ const ManageExerciseGrammar = () => {
             disabled={currentPage === 1}
             className="ManageExerciseGrammar-page-btn"
           >
-            Trước
+            Previous
           </button>
           
           {getPageNumbers(currentPage, totalPages).map((item, index) => (
@@ -1373,7 +1374,7 @@ const ManageExerciseGrammar = () => {
             disabled={currentPage === totalPages}
             className="ManageExerciseGrammar-page-btn"
           >
-            Tiếp
+            Next
           </button>
         </div>
       </div>
@@ -1404,7 +1405,7 @@ const ManageExerciseGrammar = () => {
             
           } catch (error) {
             console.error("Error deleting items:", error);
-            alert("Lỗi khi xóa. Vui lòng thử lại.");
+            alert("Error deleting. Please try again.");
           }
           
           setIsDeleteModalOpen(false);

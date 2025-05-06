@@ -55,6 +55,12 @@
   gap: 10px;
 }
 
+.ManageGrammarTopic-pagination span { 
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #9a9a9b;
+}
+
 .ManageGrammarTopic-entries-select {
   display: flex;
   align-items: center;
@@ -137,12 +143,14 @@
   font-size: 15px;
   font-weight: 500;
   transition: background-color 0.2s;
-  background-color: gray;
+  background-color: #4caf50;
   color: white;
+  border: 1px solid transparent;
 }
 
 .ManageGrammarTopic-add-btn:hover {
-  background-color: green;
+  background-color: #3d8940;
+  color: white;
 }
 
 .ManageGrammarTopic-add-btn i {

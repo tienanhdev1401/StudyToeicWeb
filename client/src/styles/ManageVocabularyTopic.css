@@ -245,7 +245,6 @@ h1 {
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background-color: white;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -254,7 +253,15 @@ h1 {
   transition: background-color 0.2s;
 }
 
+.vocabularyTopic-add-btn {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
 
+.vocabularyTopic-add-btn:hover {
+  background-color: #3d8940 !important;
+  color: white !important;
+}
 .vocabularyTopic-trash-btn {
   background-color: #a5a7a8 !important;
   color: white !important;

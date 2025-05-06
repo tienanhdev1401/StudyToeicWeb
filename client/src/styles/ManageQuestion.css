@@ -90,6 +90,10 @@
   background-color: #4CAF50;
   color: white;
 }
+.question-add-btn:hover {
+  background-color: #3d8940;
+  color: white;
+}
 
 .question-import-btn {
   background-color: #2196F3;
@@ -368,6 +372,7 @@ th .question-sortable {
   color: #666;
 }
 
+
 .question-page-btn.active {
   background-color: #2196F3;
   color: white;
@@ -375,8 +380,9 @@ th .question-sortable {
 }
 
 .question-page-btn:hover:not(.active) {
-  background-color: #f5f5f5;
-}
+  background-color: #E9ECEF;
+  color: #2196F3;
+  }
 
 /* Detail view */
 .question-detail-row {
