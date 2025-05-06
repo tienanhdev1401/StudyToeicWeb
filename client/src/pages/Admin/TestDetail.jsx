@@ -1112,7 +1112,7 @@ const handleImportQuestions = async (importedQuestions) => {
               <div className="test-detail-form-group">
                 <label htmlFor="explainDetail">Explanation:</label>
                 <Editor
-                  apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
+                  apiKey="1w6cv14vn9vxpte2rrukp3g2j77lllo2ths7s5j3qad698cx"
                   value={newQuestion.explainDetail}
                   onEditorChange={value => setNewQuestion(prev => ({ ...prev, explainDetail: value }))}
                   init={{
@@ -1134,7 +1134,7 @@ const handleImportQuestions = async (importedQuestions) => {
               <div className="test-detail-form-group">
                 <label htmlFor="explainResource">Translation/Explanation Resource:</label>
                 <Editor
-                  apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
+                  apiKey="1w6cv14vn9vxpte2rrukp3g2j77lllo2ths7s5j3qad698cx"
                   value={newQuestion.explain_resource}
                   onEditorChange={value => setNewQuestion(prev => ({ ...prev, explain_resource: value }))}
                   init={{
@@ -1356,7 +1356,7 @@ const handleImportQuestions = async (importedQuestions) => {
                 <div className="test-detail-form-group">
                   <label htmlFor="batchExplainResource">Shared Text/Passage (optional):</label>
                   <Editor
-                    apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
+                    apiKey="1w6cv14vn9vxpte2rrukp3g2j77lllo2ths7s5j3qad698cx"
                     value={sharedResource.explainResource}
                     onEditorChange={value => setSharedResource(prev => ({ ...prev, explainResource: value }))}
                     init={{
@@ -1481,7 +1481,7 @@ const handleImportQuestions = async (importedQuestions) => {
                     <div className="test-detail-form-group">
                       <label htmlFor={`explainDetail-${index}`}>Explanation (optional):</label>
                       <Editor
-                        apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
+                        apiKey="1w6cv14vn9vxpte2rrukp3g2j77lllo2ths7s5j3qad698cx"
                         value={question.explainDetail}
                         onEditorChange={value => {
                           const updatedQuestions = [...batchQuestions];
