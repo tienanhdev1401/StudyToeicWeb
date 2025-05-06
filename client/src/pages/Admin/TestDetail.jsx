@@ -68,26 +68,20 @@ const TestDetail = () => {
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Add state for explainDetail preview
   const [explainDetailPreview, setExplainDetailPreview] = useState('');
 
-  // Add state for delete confirmation modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [questionIdToDelete, setQuestionIdToDelete] = useState(null);
 
-  // Add state for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Add state for import excel modal
   const [isImportExcelModalOpen, setIsImportExcelModalOpen] = useState(false);
 
-  // Add functions to display alerts
   const displaySuccessMessage = (message) => {
     setSuccessMessage(message);
     setShowSuccessAlert(true);
     
-    // Auto-hide success alert after 3 seconds
     setTimeout(() => {
       setShowSuccessAlert(false);
     }, 3000);
@@ -97,7 +91,6 @@ const TestDetail = () => {
     setErrorMessage(message);
     setShowErrorAlert(true);
     
-    // Auto-hide error alert after 5 seconds
     setTimeout(() => {
       setShowErrorAlert(false);
     }, 5000);
@@ -111,11 +104,9 @@ const TestDetail = () => {
         const response = await testService.getTestById(id);
         console.log("Test data:", response);
         
-        // Check if response has the expected format
         const testData = response.data || response;
         
         setTest(testData);
-        // If test data is loaded successfully, set the first part as active by default
         if (testData && testData.parts && testData.parts.length > 0) {
           setActivePart(testData.parts[0]);
         }
@@ -548,7 +539,6 @@ const TestDetail = () => {
         const q = batchQuestions[i];
         const questionNumber = nextQuestionNumber + i;
 
-        // Validate question number
         if (!validateQuestionNumber(activePart.partNumber, questionNumber)) {
           setSubmitError(`Question number ${questionNumber} is outside the valid range for Part ${activePart.partNumber}`);
           return;
@@ -571,14 +561,11 @@ const TestDetail = () => {
         await questionService.createQuestionByPartId(id, activePart.id, questionData);
       }
       
-      // Refresh the questions list
       const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
       setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
       
-      // Display success message BEFORE closing the modal
       displaySuccessMessage(`${batchQuestions.length} questions added successfully`);
       
-      // Close the modal after a short delay to ensure the alert is visible
       setTimeout(() => {
         closeBatchQuestionModal();
       }, 500);
@@ -586,14 +573,13 @@ const TestDetail = () => {
       console.error('Error creating batch questions:', err);
       setSubmitError(err.message || 'Failed to create questions');
       
-      // Display error message
       displayErrorMessage('Failed to save batch questions');
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Hàm tạo mảng số trang với dấu ... (giống ManageVocabulary)
+  // Hàm tạo mảng số trang với dấu ... 
   const getPageNumbers = (currentPage, totalPages) => {
     const delta = 1; // Số trang hiển thị ở hai bên trang hiện tại
     const range = [];
@@ -747,7 +733,6 @@ const TestDetail = () => {
   };
 
   // Hàm xử lý import câu hỏi từ excel cho part hiện tại (có validate số lượng tối đa)
-  // Hàm xử lý import câu hỏi từ excel cho part hiện tại (có validate số lượng tối đa)
 const handleImportQuestions = async (importedQuestions) => {
   if (!activePart || !activePart.id) return;
   const partLimit = TOEIC_PART_LIMITS[activePart.partNumber];
@@ -794,13 +779,11 @@ const handleImportQuestions = async (importedQuestions) => {
     console.log(questionsToImport[i]);
   }
 
-  // Tiến hành lưu từng câu hỏi vào database
   for (const question of questionsToImport) {
     console.log(question);
     await questionService.createQuestionByPartId(id, activePart.id, question);
   }
   
-  // Sau khi import xong, reload lại danh sách câu hỏi
   const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
   setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
   displaySuccessMessage(`Import thành công ${questionsToImport.length} câu hỏi!`);

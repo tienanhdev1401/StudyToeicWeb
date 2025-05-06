@@ -63,12 +63,12 @@ const AdminHeader = () => {
             alt="User Profile" 
             className={styles.userAvatar}
           />
-          <span className={styles.userName}>{user?.name || "Admin"}</span>
+          <span className={styles.userName}>{user?.fullname|| "Admin"}</span>
           <i className={`fas fa-chevron-down ${styles.chevron} ${showDropdown ? styles.arrowUp : ''}`}></i>
           {showDropdown && (
             <div className={styles.userDropdown}>
               <div className={styles.dropdownHeader}>
-                <div className={styles.dropdownName}>{user?.name || "Admin"}</div>
+                <div className={styles.dropdownName}>{user?.fullname || "Admin"}</div>
                 <div className={styles.dropdownEmail}>{user?.email || ""}</div>
               </div>
               
