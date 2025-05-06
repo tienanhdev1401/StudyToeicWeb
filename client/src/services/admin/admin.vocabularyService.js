@@ -100,7 +100,7 @@ const vocabularyservice = {
     importVocabulariesFromExcel: async (topicId, vocabularies) => {
         try {
             console.log(`Importing ${vocabularies.length} vocabularies to topic ${topicId}`);
-            console.log("vocabularies",vocabularies);
+            console.log("vocabulary",vocabularies);
             const response = await axios.post(`${API_BASE_URL}/admin/vocabulary/import/${topicId}`, { 
                 vocabularies 
             });

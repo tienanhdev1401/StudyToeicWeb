@@ -286,6 +286,12 @@
   background-color: #fff;
   cursor: pointer;
   border-radius: 4px;
+  color: #000;
+}
+
+.vocabulary-page-btn:hover {
+  background-color: #e9ecef;
+  color: #000;
 }
 
 .vocabulary-page-btn:disabled {

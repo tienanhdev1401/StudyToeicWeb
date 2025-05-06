@@ -800,7 +800,7 @@ const ManageVocabulary = () => {
       await fetchVocabularies();
       
       // Show success message
-      displaySuccessMessage(`Successfully imported ${importResult.data.length} vocabularies`);
+      displaySuccessMessage(`Successfully imported ${importResult.length} vocabularies`);
     } catch (error) {
       console.error("Error importing vocabularies:", error);
       displayErrorMessage(error.response?.data?.message || "Failed to import vocabularies. Please try again.");
