@@ -14,7 +14,6 @@ export class authRepository {
       return null;
     }
     const userData = results[0] as any;
-    console.log(userData);
     return new User(userData);
   }
  

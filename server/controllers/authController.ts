@@ -22,7 +22,7 @@ export class AuthController {
         return;
       }
       // Kiểm tra trạng thái tài khoản (BANNED thường có giá trị là 0)
-      if (user.status?.toString() === "BANNED") {
+      if (user.status === "BANNED") {
         res.status(403).json({ message: 'Tài khoản của bạn đã bị khóa' });
         return;
       }
