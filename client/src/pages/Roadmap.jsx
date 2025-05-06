@@ -28,8 +28,10 @@ const Roadmap = () => {
       return;
     }
     
+    // Chỉ gọi fetchData một lần khi component được mount
     fetchData();
-  }, [user, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Bỏ dependencies để chỉ chạy một lần
 
   const fetchData = async () => {
     try {

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaBook, FaSearch, FaRoad } from 'react-icons/fa';
+import { FaUser, FaBook, FaSearch } from 'react-icons/fa';
 import '../styles/Header.css';
 
 const Header = ({ style, className }) => {

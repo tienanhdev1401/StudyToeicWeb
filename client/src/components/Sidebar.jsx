@@ -80,13 +80,8 @@ const Sidebar = () => {
     <div className={styles.sidebar} >
       {/* Logo Section */}
       <div className={styles.logoSection} >
-        {/* <img
-          // src="https://storage.googleapis.com/a1aa/image/UKgR22ZUm22NJMqRs2e2z2w6qbn3vPgRfCIzqNQXGZo.jpg"
-          src="/assets/img/logo/logo.png" 
-         // alt="Logo"
-          className={styles.logo}
-        /> */}
-        <span className={styles.logoText} > Course Management</span>
+        {}
+        <span className={styles.logoText} > Ready4Toeic Management</span>
       </div>
 
       {/* Navigation Menu */}
