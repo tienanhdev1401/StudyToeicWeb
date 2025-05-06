@@ -96,14 +96,31 @@ const userService = {
   getUserProfile: async () => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      console.log('userService - Calling profile API with token');
       const response = await axios.get(`${API_URL}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log('userService - Profile API response received');
       return response.data;
     } catch (error) {
-      throw new Error('Lỗi lấy thông tin người dùng');
+      console.error('userService - Error fetching profile:', error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        throw new Error(`Profile error: ${error.response.status} - ${error.response.data.error || error.response.statusText}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw new Error('Network error: Could not connect to server');
+      } else {
+        // Something happened in setting up the request
+        throw new Error(`Error: ${error.message}`);
+      }
     }
   },
 
