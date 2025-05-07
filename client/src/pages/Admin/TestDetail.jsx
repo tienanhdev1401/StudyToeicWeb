@@ -538,7 +538,9 @@ const TestDetail = () => {
           audioUrl: sharedResource.audioUrl,
           imageUrl: sharedResource.imageUrl
         });
-        resourceId = resourceResponse.data?.id;
+        console.log("resourceResponse: ", resourceResponse);
+        resourceId = resourceResponse.data;
+        console.log("resourceId: ", resourceId);
       }
       
       // Get next question number for the part

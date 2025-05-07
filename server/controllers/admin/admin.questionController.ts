@@ -113,7 +113,7 @@ export class QuestionController {
       // }
 
       // Create resource if audio or image URL is provided
-      let resourceId = null;
+      let resourceId = resourceData?.resourceId || null;
       try {
         if (resourceData && (resourceData.audioUrl || resourceData.imageUrl || resourceData.explainResource)) {
           resourceId = await ResourceRepository.createResource(
@@ -422,8 +422,8 @@ export class QuestionController {
     static async updateDefaultQuestion(req: Request, res: Response) {
     try {
       const questionId = parseInt(req.params.id);
-
-      if ( isNaN(questionId)) {
+      console.log("body: ", req.body);
+      if (isNaN(questionId)) {
         return res.status(400).json({ error: 'ID không hợp lệ' });
       } 
 
@@ -434,9 +434,6 @@ export class QuestionController {
       }
 
       const question = existingQuestions[0];
-
-
-
       const {
         content,
         optionA,
@@ -445,29 +442,34 @@ export class QuestionController {
         optionD,
         correctAnswer,
         explainDetail,
-        resourceData,
-        questionNumber
+        audioUrl,
+        imageUrl,
+        explain_resource
       } = req.body;
 
+      console.log("audioUrl: ", audioUrl);
+      console.log("imageUrl: ", imageUrl);
+      console.log("explainResource: ", explain_resource);
+      console.log("questionNumber: ",  question.resource?.id);
       // Handle resource update or creation
       let resourceId = question.resource?.id || null;
       
       try {
-        if (resourceData) {
+        if (audioUrl || imageUrl || explain_resource) {
           if (resourceId) {
             // Update existing resource
             await ResourceRepository.updateResource(
               resourceId,
-              resourceData.explainResource || null,
-              resourceData.audioUrl || null,
-              resourceData.imageUrl || null
+              explain_resource || null,
+              audioUrl || null,
+              imageUrl || null
             );
-          } else if (resourceData.audioUrl || resourceData.imageUrl || resourceData.explainResource) {
+          } else {
             // Create new resource
             resourceId = await ResourceRepository.createResource(
-              resourceData.explainResource || null,
-              resourceData.audioUrl || null,
-              resourceData.imageUrl || null
+              explain_resource || null,
+              audioUrl || null,
+              imageUrl || null
             );
           }
         }
@@ -500,9 +502,9 @@ export class QuestionController {
           ...updatedQuestion, 
           resource: resourceId ? {
             id: resourceId,
-            explainResource: resourceData?.explainResource || null,
-            audioUrl: resourceData?.audioUrl || null,
-            imageUrl: resourceData?.imageUrl || null
+            explainResource: explain_resource || null,
+            audioUrl: audioUrl || null,
+            imageUrl: imageUrl || null
           } : question.resource
         }
       });

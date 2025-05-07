@@ -514,11 +514,13 @@ const ManageQuestions = () => {
 
   // Search functionality
   const filteredData = Array.isArray(questionList) ? questionList.filter(item =>
+    item.id?.toString().includes(searchTerm) ||
     item.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.optionA?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.optionB?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.optionC?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.optionD?.toLowerCase().includes(searchTerm.toLowerCase())
+    item.optionD?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.correctAnswer?.toLowerCase().includes(searchTerm.toLowerCase())
   ) : [];
 
   // Sort data
@@ -1056,8 +1058,8 @@ const ManageQuestions = () => {
                 <div className="question-empty-message">
                   <i className="fas fa-question-circle"></i>
                   <p>No questions found</p>
-                  <button className="question-add-btn" onClick={handleAddQuestion}>
-                    <i className="fas fa-plus"></i> Add Question
+                  <button className="question-notFound-add-btn" onClick={handleAddQuestion}>
+                     Add Question
                   </button>
                 </div>
               </td>

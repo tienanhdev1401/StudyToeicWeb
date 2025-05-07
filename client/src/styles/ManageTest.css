@@ -161,14 +161,14 @@
   }
   
   .manageTest-add-btn {
-    background-color: white;
+    background-color: #4CAF50;
     border: 1px solid #d1d5db;
-    color: black;
+    color: rgb(255, 255, 255);
   }
   
   .manageTest-add-btn:hover {
-    background-color: #e3effc;
-    color: #007bff;;
+    background-color: #3d8940;
+    color: rgb(255, 255, 255);
   }
   
   .manageTest-trash-btn {

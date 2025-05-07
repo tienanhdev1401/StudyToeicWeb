@@ -86,6 +86,25 @@
   transition: all 0.2s;
 }
 
+.question-notFound-add-btn {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px; /* Tăng padding cho nút */
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 16px; /* Tăng font-size cho dễ nhìn */
+  font-weight: 500;
+  color: #fff; /* Đảm bảo màu chữ trắng */
+  transition: background-color 0.2s;
+} 
+.question-notFound-add-btn:hover {
+  background-color: #3d8940;
+  color: white;
+}
+
 .question-add-btn {
   background-color: #4CAF50;
   color: white;
