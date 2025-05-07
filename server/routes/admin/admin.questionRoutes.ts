@@ -26,4 +26,6 @@ router.put('/:id', QuestionController.updateDefaultQuestion);
 
 router.delete('/:id', QuestionController.deleteDefaultQuestion);
 
+router.post('/import', QuestionController.importQuestionsFromExcel);
+
 export default router;

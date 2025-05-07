@@ -482,7 +482,7 @@ const TopicDetail = () => {
                     <div className="td-content-container">
                         {/* Phần tiêu đề và nút hành động */}
                         <div className="td-header-section">
-                            <h1 className="td-main-title">{topic.topicName}</h1>
+                            <h1 className="td-main-title">Topic: {topic.topicName}</h1>
                             <div className="td-action-buttons">
                                 <button className="td-action-btn">
                                     <i className="fas fa-save td-btn-icon"></i>

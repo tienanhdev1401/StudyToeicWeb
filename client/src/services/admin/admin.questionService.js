@@ -117,7 +117,16 @@ const questionService = {
       console.log("response.data: ", response.data);
       return response.data;
     } catch (error) {
-      throw error.response?.data || error;
+      console.error(`Error deleting question ${id}:`, error.response?.data || error);
+      // Return error response so we can handle it in the component
+      if (error.response && error.response.data) {
+        return {
+          success: false,
+          message: error.response.data.error || error.response.data.message || 'Failed to delete question',
+          error: error.response.data
+        };
+      }
+      throw error;
     }
   },
 
@@ -129,13 +138,19 @@ const questionService = {
       throw error.response?.data || error;
     }
   },
-
-  importQuestions: async (questionsData) => {
+  importQuestionsFromExcel: async (questions) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/admin/question/import`, questionsData);
-      return response.data;
+      console.log('Importing questions:', questions);
+      const response = await axios.post(`${API_BASE_URL}/admin/question/import`, questions);
+      
+      if (response.data && response.data.success) {
+        return response.data;
+      } else {
+        throw new Error(response.data?.message || 'Failed to import questions');
+      }
     } catch (error) {
-      throw error.response?.data || error;
+      console.error('Error in importQuestionsFromExcel:', error);
+      throw error;
     }
   },
 

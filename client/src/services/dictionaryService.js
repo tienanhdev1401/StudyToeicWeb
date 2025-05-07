@@ -1,11 +1,14 @@
 /**
  * DictionaryService - Xử lý các API calls liên quan đến từ điển
  */
+import config from './config';
+
+const API_BASE_URL = config.API_BASE_URL;
 
 // Hàm tìm kiếm từ trong từ điển
 export const searchWord = async (word) => {
   try {
-    const response = await fetch(`/api/dictionary/${encodeURIComponent(word.trim())}`);
+    const response = await fetch(`${API_BASE_URL}/dictionary/${encodeURIComponent(word.trim())}`);
     
     if (!response.ok) {
       if (response.status === 404) {

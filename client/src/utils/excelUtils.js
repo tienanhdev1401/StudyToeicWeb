@@ -85,18 +85,17 @@ export async function parseQuestionExcel(file) {
       const json = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
       const questions = json.map(row => ({
-        partNumber: row.partNumber,
-        content: row.content,
-        correctAnswer: row.correct_answer,
-        explainDetail: row.explain_detail,
-        optionA: row.option_a,
-        optionB: row.option_b,
-        optionC: row.option_c,
-        optionD: row.option_d,
-        explainResource: row.explain_resource,
-        audioUrl: row.audio_url,
-        imageUrl: row.image_url,
-      }));
+        content: row['content'] || row['Content'] || row['Question'] || row['Câu hỏi'] || '',
+        correctAnswer: row['correct_answer'] || row['correctAnswer'] || row['Correct Answer'] || row['Đáp án đúng'] || '',
+        explainDetail: row['explain_detail'] || row['explainDetail'] || row['Explanation'] || row['Giải thích'] || '',
+        optionA: row['option_a'] || row['optionA'] || row['Option A'] || row['Lựa chọn A'] || '',
+        optionB: row['option_b'] || row['optionB'] || row['Option B'] || row['Lựa chọn B'] || '',
+        optionC: row['option_c'] || row['optionC'] || row['Option C'] || row['Lựa chọn C'] || '',
+        optionD: row['option_d'] || row['optionD'] || row['Option D'] || row['Lựa chọn D'] || '',
+        explain_resource: row['explain_resource'] || row['explainResource'] || row['Explanation Resource'] || row['Tài liệu giải thích'] || '',
+        urlAudio: row['audio_url'] || row['audioUrl'] || row['Audio URL'] || row['URL Audio'] || '',
+        urlImage: row['image_url'] || row['imageUrl'] || row['Image URL'] || row['URL Hình ảnh'] || '',
+      }));  
 
       resolve({ questions });
     };

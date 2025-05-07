@@ -11,10 +11,11 @@
 }
 
 .ManageExerciseVocabulary-header-title {
-  font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: #333;
+  margin-top: 10px;
+    font-size: 4.75rem;
+    color: #409efd;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
 }
 
 .ManageExerciseVocabulary-topic-header {
@@ -53,6 +54,12 @@
   margin: 20px 0;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.ManageExerciseVocabulary-pagination span { 
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #9a9a9b;
 }
 
 .ManageExerciseVocabulary-entries-select {

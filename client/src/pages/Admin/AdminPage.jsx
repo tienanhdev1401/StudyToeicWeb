@@ -71,10 +71,7 @@ const AdminPage = () => {
   }, [user, isLoggedIn, navigate]);
 
   return (
-
     <AdminLayout>
-      <AuthProvider>
-        <UserProvider>
       <Routes>
         <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -94,8 +91,6 @@ const AdminPage = () => {
         <Route path="/exercise/vocabularies" element={<ManageExerciseVocabulary />} />
         <Route path="/question" element={<ManageQuestion />} />
       </Routes>
-      </UserProvider>
-      </AuthProvider>
     </AdminLayout>
   );
 };

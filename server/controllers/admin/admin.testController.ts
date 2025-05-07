@@ -378,16 +378,63 @@ export class AdminTestController {
         partMap[q.partNumber].push(q);
       }
 
-      // Quy định số bắt đầu cho từng part TOEIC
-      const TOEIC_PART_LIMITS: { [key: string]: { start: number, end: number } } = {
-        1: { start: 1, end: 6 },
-        2: { start: 7, end: 31 },
-        3: { start: 32, end: 70 },
-        4: { start: 71, end: 100 },
-        5: { start: 101, end: 130 },
-        6: { start: 131, end: 146 },
-        7: { start: 147, end: 200 }
+      // Quy định số bắt đầu và số lượng tối đa cho từng part TOEIC
+      const TOEIC_PART_LIMITS: { [key: string]: { start: number, end: number, maxQuestions: number } } = {
+        1: { start: 1, end: 6, maxQuestions: 6 },
+        2: { start: 7, end: 31, maxQuestions: 25 },
+        3: { start: 32, end: 70, maxQuestions: 39 },
+        4: { start: 71, end: 100, maxQuestions: 30 },
+        5: { start: 101, end: 130, maxQuestions: 30 },
+        6: { start: 131, end: 146, maxQuestions: 16 },
+        7: { start: 147, end: 200, maxQuestions: 54 }
       };
+
+      // Kiểm tra số lượng câu hỏi hiện có cho mỗi part
+      const partErrors: { [key: string]: string } = {};
+      
+      // Kiểm tra số lượng câu hỏi của mỗi part trước khi import
+      for (const partNumber in partMap) {
+        const part = await PartRepository.findByTestIdAndPartNumber(testId, Number(partNumber));
+        if (!part) continue;
+        
+        // Đếm số lượng câu hỏi hiện có trong part
+        const existingQuestions = await QuestionInAPartRepository.findByPartId(part.id);
+        const currentQuestionCount = existingQuestions.length;
+        const maxAllowed = TOEIC_PART_LIMITS[partNumber]?.maxQuestions || 0;
+        const newQuestionCount = partMap[partNumber].length;
+        
+        if (currentQuestionCount >= maxAllowed) {
+          partErrors[partNumber] = `Part ${partNumber} đã đạt số lượng câu hỏi tối đa (${maxAllowed}). Không thể import thêm.`;
+        } else if (currentQuestionCount + newQuestionCount > maxAllowed) {
+          partErrors[partNumber] = `Part ${partNumber} chỉ còn trống ${maxAllowed - currentQuestionCount} câu, không thể import ${newQuestionCount} câu.`;
+        }
+      }
+      
+      // Nếu có lỗi, trả về thông báo lỗi cho người dùng
+      if (Object.keys(partErrors).length > 0) {
+        // Xóa file tạm
+        fs.unlinkSync(req.file.path);
+
+        // Kiểm tra nếu tất cả các phần đều đã đầy
+        const allPartsFull = Object.values(partErrors).every(error => 
+          error.includes('đã đạt số lượng câu hỏi tối đa'));
+        
+        let message = '';
+        if (allPartsFull) {
+          message = 'Bài test đã đạt đủ 200 câu hỏi theo tiêu chuẩn TOEIC. Không thể import thêm câu hỏi.';
+        } else {
+          message = 'Không thể import bài test do vượt quá số lượng câu hỏi cho phép ở một số phần.';
+        }
+
+        return res.status(400).json({ 
+          success: false, 
+          message: message,
+          errors: partErrors,
+          isFull: allPartsFull
+        });
+      }
+
+      // Tiếp tục import nếu không có lỗi
       for (const partNumber in partMap) {
         const part = await PartRepository.findByTestIdAndPartNumber(testId, Number(partNumber));
         if (!part) continue;
@@ -404,6 +451,20 @@ export class AdminTestController {
         }
         // Đánh số questionNumber đúng chuẩn TOEIC
         let questionNumber = TOEIC_PART_LIMITS[partNumber]?.start || 1;
+        
+        // Lấy số câu hỏi hiện tại để đánh số tiếp theo
+        const existingQuestions = await QuestionInAPartRepository.findByPartId(partId);
+        if (existingQuestions && existingQuestions.length > 0) {
+          // Tìm số lớn nhất trong các câu hỏi hiện có
+          const maxQuestionNumber = Math.max(...existingQuestions.map(q => q.questionNumber || 0));
+          questionNumber = maxQuestionNumber + 1;
+          
+          // Đảm bảo số câu hỏi vẫn nằm trong khoảng cho phép của part
+          if (questionNumber < TOEIC_PART_LIMITS[partNumber].start) {
+            questionNumber = TOEIC_PART_LIMITS[partNumber].start;
+          }
+        }
+        
         for (const resourceKey in resourceGroups) {
           const group = resourceGroups[resourceKey];
           let resourceId = null;
@@ -416,6 +477,11 @@ export class AdminTestController {
             );
           }
           for (const q of group) {
+            // Kiểm tra xem số câu hỏi có vượt quá giới hạn end của part không
+            if (questionNumber > TOEIC_PART_LIMITS[partNumber].end) {
+              continue; // Bỏ qua nếu vượt quá
+            }
+            
             const question = new Question(
               0,
               q.content,
@@ -433,6 +499,7 @@ export class AdminTestController {
           }
         }
       }
+      
       // Xóa file tạm
       fs.unlinkSync(req.file.path);
       return res.status(200).json({ success: true, message: 'Import thành công!' });

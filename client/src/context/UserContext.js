@@ -33,12 +33,21 @@ export const UserProvider = ({ children }) => {
   const fetchUserProfile = async () => {
     try {
       setLoading(true);
+      console.log('UserContext - Fetching user profile...');
       const userData = await userService.getUserProfile();
+      console.log('UserContext - User profile fetched successfully:', userData);
       setUser(userData);
       setError(null);
     } catch (err) {
+      console.error('UserContext - Error fetching user profile:', err);
       setError(err.message);
-      console.error('Error fetching user profile:', err);
+      
+      // Check if the error is due to an invalid token
+      if (err.message.includes('401') || err.message.includes('Unauthorized')) {
+        console.log('UserContext - Token appears to be invalid, clearing user data');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
     } finally {
       setLoading(false);
     }

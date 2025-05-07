@@ -11,10 +11,10 @@
 }
 
 .ManageGrammarTopic-header-title {
-  font-size: 32px;
+  font-size: 4.75rem;
+  color: #409efd;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  margin-bottom: 20px;
-  color: #333;
 }
 
 .ManageGrammarTopic-topic-header {
@@ -53,6 +53,12 @@
   margin: 20px 0;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.ManageGrammarTopic-pagination span { 
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #9a9a9b;
 }
 
 .ManageGrammarTopic-entries-select {
@@ -137,12 +143,14 @@
   font-size: 15px;
   font-weight: 500;
   transition: background-color 0.2s;
-  background-color: gray;
+  background-color: #4caf50;
   color: white;
+  border: 1px solid transparent;
 }
 
 .ManageGrammarTopic-add-btn:hover {
-  background-color: green;
+  background-color: #3d8940;
+  color: white;
 }
 
 .ManageGrammarTopic-add-btn i {

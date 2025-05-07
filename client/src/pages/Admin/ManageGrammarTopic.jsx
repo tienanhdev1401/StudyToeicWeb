@@ -581,7 +581,7 @@ const ManageGrammarTopic = () => {
       <div className="ManageGrammarTopic-modal-overlay">
         <div className="ManageGrammarTopic-modal-content">
           <div className="ManageGrammarTopic-modal-header">
-            <h2>Xác nhận xóa</h2>
+            <h2>Confirm Delete</h2>
             <button className="ManageGrammarTopic-close-btn" onClick={onClose}>
               <i className="fas fa-times"></i>
             </button>
@@ -590,10 +590,10 @@ const ManageGrammarTopic = () => {
             <p>{message}</p>
           </div>
           <div className="ManageGrammarTopic-modal-footer">
-            <button className="ManageGrammarTopic-cancel-btn" onClick={onClose}>Hủy bỏ</button>
+            <button className="ManageGrammarTopic-cancel-btn" onClick={onClose}>Cancel</button>
             <button className="ManageGrammarTopic-confirm-delete-btn" onClick={onConfirm}>
               <i className="fas fa-trash"></i>
-              Xóa
+              Delete
             </button>
           </div>
         </div>
@@ -645,7 +645,7 @@ const ManageGrammarTopic = () => {
 
   return (
     <div className="ManageGrammarTopic-container">
-      <h1 className="ManageGrammarTopic-header-title">Quản lý chủ đề ngữ pháp</h1>
+      <h1 className="ManageGrammarTopic-header-title">Manage Grammar Topic</h1>
       
       <div className="ManageGrammarTopic-pagination">
         <div className="ManageGrammarTopic-entries-select">
@@ -669,7 +669,7 @@ const ManageGrammarTopic = () => {
             <i className="fas fa-search"></i>
             <input
               type="text"
-              placeholder="Tìm kiếm..."
+              placeholder="Search..."
               className="ManageGrammarTopic-search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -678,7 +678,7 @@ const ManageGrammarTopic = () => {
                 
           <button className="ManageGrammarTopic-add-btn" onClick={() => setIsAddModalOpen(true)}>
             <i className="fas fa-plus"></i>
-            Thêm mới
+            Add New
           </button>
         </div>
       </div>
@@ -687,10 +687,10 @@ const ManageGrammarTopic = () => {
         <div className="ManageGrammarTopic-empty-table">
           <div className="ManageGrammarTopic-empty-message">
             <i className="fas fa-folder-open"></i>
-            <p>Không có chủ đề ngữ pháp nào được tìm thấy</p>
+            <p>No grammar topic found</p>
             <button className="ManageGrammarTopic-add-btn" onClick={() => setIsAddModalOpen(true)}>
               <i className="fas fa-plus"></i>
-              Thêm chủ đề mới
+              Add New
             </button>
           </div>
         </div>
@@ -716,27 +716,27 @@ const ManageGrammarTopic = () => {
                 onClick={() => handleSort('grammarTopic.title')} 
                 className="ManageGrammarTopic-title-column sortable"
               >
-                Tiêu đề
+                Title
                 <i className={`fas ${sortField === 'grammarTopic.title' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
               <th 
                 onClick={() => handleSort('grammarTopic.content')} 
                 className="ManageGrammarTopic-content-column sortable"
               >
-                Nội dung
+                Content
                 <i className={`fas ${sortField === 'grammarTopic.content' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
               <th className="ManageGrammarTopic-image-column">
-                Hình ảnh
+                Image
               </th>
               <th 
                 onClick={() => handleSort('exerciseCount')} 
                 className="ManageGrammarTopic-exercise-count-column sortable"
               >
-                Số bài tập
+                Number of exercises
                 <i className={`fas ${sortField === 'exerciseCount' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
               </th>
-              <th className="ManageGrammarTopic-actions-column">Thao tác</th>
+              <th className="ManageGrammarTopic-actions-column">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -756,7 +756,7 @@ const ManageGrammarTopic = () => {
                 <td className="ManageGrammarTopic-content">
                   {item.grammarTopic.content ? 
                     item.grammarTopic.content.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...' : 
-                    'Không có nội dung'}
+                    'No content'}
                 </td>
                 <td className="ManageGrammarTopic-image-column">
                   {item.grammarTopic.imageUrl ? (
@@ -772,7 +772,7 @@ const ManageGrammarTopic = () => {
                       }} 
                     />
                   ) : (
-                    <span>Không có hình ảnh</span>
+                    <span>No image</span>
                   )}
                 </td>
                 <td>
@@ -805,7 +805,7 @@ const ManageGrammarTopic = () => {
 
       <div className="ManageGrammarTopic-pagination">
         <span>
-          Hiển thị {indexOfFirstItem + 1} đến {Math.min(indexOfLastItem, filteredData.length)} của {filteredData.length} mục
+          Display {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} items
         </span>
         <div className="ManageGrammarTopic-pagination-buttons">
           <button 
@@ -813,7 +813,7 @@ const ManageGrammarTopic = () => {
             disabled={currentPage === 1}
             className="ManageGrammarTopic-page-btn"
           >
-            Trước
+            Previous
           </button>
           
           {getPageNumbers(currentPage, totalPages).map((item, index) => (
@@ -835,7 +835,7 @@ const ManageGrammarTopic = () => {
             disabled={currentPage === totalPages}
             className="ManageGrammarTopic-page-btn"
           >
-            Tiếp
+            Next
           </button>
         </div>
       </div>
@@ -843,7 +843,7 @@ const ManageGrammarTopic = () => {
       {selectedItems.length > 0 && (
         <div className="ManageGrammarTopic-table-action-bar">
           <div className="ManageGrammarTopic-action-bar-content">
-            <span>Đã chọn {selectedItems.length} mục</span>
+            <span>Selected {selectedItems.length} items</span>
             <button 
               className="ManageGrammarTopic-delete-selected-btn"
               onClick={() => {
@@ -852,7 +852,7 @@ const ManageGrammarTopic = () => {
               }}
             >
               <i className="fas fa-trash"></i>
-              Xóa mục đã chọn
+              Delete selected items
             </button>
           </div>
         </div>
@@ -884,7 +884,7 @@ const ManageGrammarTopic = () => {
             
           } catch (error) {
             console.error("Error deleting items:", error);
-            alert("Lỗi khi xóa. Vui lòng thử lại.");
+            alert("Error deleting. Please try again.");
           }
           
           setIsDeleteModalOpen(false);

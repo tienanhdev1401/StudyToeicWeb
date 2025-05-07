@@ -104,6 +104,16 @@
   border-radius: 50%;
 }
 
+.userLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
 .userProfile {
   position: relative;
   display: flex;

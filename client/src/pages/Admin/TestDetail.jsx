@@ -68,26 +68,20 @@ const TestDetail = () => {
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Add state for explainDetail preview
   const [explainDetailPreview, setExplainDetailPreview] = useState('');
 
-  // Add state for delete confirmation modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [questionIdToDelete, setQuestionIdToDelete] = useState(null);
 
-  // Add state for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Add state for import excel modal
   const [isImportExcelModalOpen, setIsImportExcelModalOpen] = useState(false);
 
-  // Add functions to display alerts
   const displaySuccessMessage = (message) => {
     setSuccessMessage(message);
     setShowSuccessAlert(true);
     
-    // Auto-hide success alert after 3 seconds
     setTimeout(() => {
       setShowSuccessAlert(false);
     }, 3000);
@@ -97,7 +91,6 @@ const TestDetail = () => {
     setErrorMessage(message);
     setShowErrorAlert(true);
     
-    // Auto-hide error alert after 5 seconds
     setTimeout(() => {
       setShowErrorAlert(false);
     }, 5000);
@@ -111,11 +104,9 @@ const TestDetail = () => {
         const response = await testService.getTestById(id);
         console.log("Test data:", response);
         
-        // Check if response has the expected format
         const testData = response.data || response;
         
         setTest(testData);
-        // If test data is loaded successfully, set the first part as active by default
         if (testData && testData.parts && testData.parts.length > 0) {
           setActivePart(testData.parts[0]);
         }
@@ -238,12 +229,11 @@ const TestDetail = () => {
       [name]: value
     }));
   };
-
   const getNextQuestionNumber = (partNumber) => {
     const partLimit = TOEIC_PART_LIMITS[partNumber];
     if (!partLimit) return 1;
 
-    // Find the highest question number in the current part
+    // Find all question numbers in the current part
     const partQuestions = questions.filter(q => {
       const qNumber = q.questionNumber || 0;
       return qNumber >= partLimit.start && qNumber <= partLimit.end;
@@ -253,7 +243,18 @@ const TestDetail = () => {
       return partLimit.start;
     }
 
-    const maxNumber = Math.max(...partQuestions.map(q => q.questionNumber || 0));
+    // Get all used question numbers
+    const usedNumbers = partQuestions.map(q => q.questionNumber || 0);
+    
+    // Find the first available number in the range
+    for (let i = partLimit.start; i <= partLimit.end; i++) {
+      if (!usedNumbers.includes(i)) {
+        return i;
+      }
+    }
+
+    // If no gaps found, return the next number after the highest
+    const maxNumber = Math.max(...usedNumbers);
     return maxNumber + 1;
   };
 
@@ -548,7 +549,6 @@ const TestDetail = () => {
         const q = batchQuestions[i];
         const questionNumber = nextQuestionNumber + i;
 
-        // Validate question number
         if (!validateQuestionNumber(activePart.partNumber, questionNumber)) {
           setSubmitError(`Question number ${questionNumber} is outside the valid range for Part ${activePart.partNumber}`);
           return;
@@ -571,14 +571,11 @@ const TestDetail = () => {
         await questionService.createQuestionByPartId(id, activePart.id, questionData);
       }
       
-      // Refresh the questions list
       const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
       setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
       
-      // Display success message BEFORE closing the modal
       displaySuccessMessage(`${batchQuestions.length} questions added successfully`);
       
-      // Close the modal after a short delay to ensure the alert is visible
       setTimeout(() => {
         closeBatchQuestionModal();
       }, 500);
@@ -586,14 +583,13 @@ const TestDetail = () => {
       console.error('Error creating batch questions:', err);
       setSubmitError(err.message || 'Failed to create questions');
       
-      // Display error message
       displayErrorMessage('Failed to save batch questions');
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Hàm tạo mảng số trang với dấu ... (giống ManageVocabulary)
+  // Hàm tạo mảng số trang với dấu ... 
   const getPageNumbers = (currentPage, totalPages) => {
     const delta = 1; // Số trang hiển thị ở hai bên trang hiện tại
     const range = [];
@@ -747,7 +743,6 @@ const TestDetail = () => {
   };
 
   // Hàm xử lý import câu hỏi từ excel cho part hiện tại (có validate số lượng tối đa)
-  // Hàm xử lý import câu hỏi từ excel cho part hiện tại (có validate số lượng tối đa)
 const handleImportQuestions = async (importedQuestions) => {
   if (!activePart || !activePart.id) return;
   const partLimit = TOEIC_PART_LIMITS[activePart.partNumber];
@@ -794,13 +789,11 @@ const handleImportQuestions = async (importedQuestions) => {
     console.log(questionsToImport[i]);
   }
 
-  // Tiến hành lưu từng câu hỏi vào database
   for (const question of questionsToImport) {
     console.log(question);
     await questionService.createQuestionByPartId(id, activePart.id, question);
   }
   
-  // Sau khi import xong, reload lại danh sách câu hỏi
   const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
   setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
   displaySuccessMessage(`Import thành công ${questionsToImport.length} câu hỏi!`);
@@ -1112,7 +1105,7 @@ const handleImportQuestions = async (importedQuestions) => {
               <div className="test-detail-form-group">
                 <label htmlFor="explainDetail">Explanation:</label>
                 <Editor
-                  apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
+                  apiKey="1w6cv14vn9vxpte2rrukp3g2j77lllo2ths7s5j3qad698cx"
                   value={newQuestion.explainDetail}
                   onEditorChange={value => setNewQuestion(prev => ({ ...prev, explainDetail: value }))}
                   init={{
@@ -1134,7 +1127,7 @@ const handleImportQuestions = async (importedQuestions) => {
               <div className="test-detail-form-group">
                 <label htmlFor="explainResource">Translation/Explanation Resource:</label>
                 <Editor
-                  apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
+                  apiKey="1w6cv14vn9vxpte2rrukp3g2j77lllo2ths7s5j3qad698cx"
                   value={newQuestion.explain_resource}
                   onEditorChange={value => setNewQuestion(prev => ({ ...prev, explain_resource: value }))}
                   init={{
@@ -1356,7 +1349,7 @@ const handleImportQuestions = async (importedQuestions) => {
                 <div className="test-detail-form-group">
                   <label htmlFor="batchExplainResource">Shared Text/Passage (optional):</label>
                   <Editor
-                    apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
+                    apiKey="1w6cv14vn9vxpte2rrukp3g2j77lllo2ths7s5j3qad698cx"
                     value={sharedResource.explainResource}
                     onEditorChange={value => setSharedResource(prev => ({ ...prev, explainResource: value }))}
                     init={{
@@ -1481,7 +1474,7 @@ const handleImportQuestions = async (importedQuestions) => {
                     <div className="test-detail-form-group">
                       <label htmlFor={`explainDetail-${index}`}>Explanation (optional):</label>
                       <Editor
-                        apiKey="mbktsx5e61er2k8coefqk7u51n3sf1m7z1r9qyqcpv01grpw"
+                        apiKey="1w6cv14vn9vxpte2rrukp3g2j77lllo2ths7s5j3qad698cx"
                         value={question.explainDetail}
                         onEditorChange={value => {
                           const updatedQuestions = [...batchQuestions];
@@ -1531,7 +1524,7 @@ const handleImportQuestions = async (importedQuestions) => {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.3)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="modal-content" style={{ background: '#fff', padding: 24, borderRadius: 8, minWidth: 320, boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+          <div className="modal-content" style={{ maxWidth: 600 ,background: '#fff', padding: 24, borderRadius: 8, minWidth: 320, boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
             <h3>Xác nhận xóa câu hỏi</h3>
             <p>Bạn có chắc chắn muốn xóa câu hỏi này? Hành động này không thể hoàn tác.</p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>

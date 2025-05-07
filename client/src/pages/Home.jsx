@@ -27,150 +27,188 @@ const Home = () => {
     const [learningGoal, setLearningGoal] = useState(null);
     const [goalProgress, setGoalProgress] = useState(0);
     const [daysRemaining, setDaysRemaining] = useState(0);
+    const [currentTopicName, setCurrentTopicName] = useState("");
     
     const { isLoggedIn, user } = useAuth();
     const { user: userDetails } = useUser();
     const navigate = useNavigate();
 
+    // Thêm state để theo dõi việc đã fetch dữ liệu chưa
+    const [dataFetched, setDataFetched] = useState({
+        topics: false,
+        grammar: false,
+        tests: false,
+        learningGoal: false,
+        processes: false,
+        stats: false
+    });
+
     useEffect(() => {
-        const fetchTopics = async () => {
-            try {
-                const allTopics = await VocabularyTopicService.getAllVocabularyTopics();
-                // Lấy 4 chủ đề cuối cùng
-                setRecentTopics(allTopics.slice(-4));
-            } catch (error) {
-                setRecentTopics([]);
-            }
-        };
-        fetchTopics();
-
-        // Lấy 4 chủ đề grammar cuối cùng
-        const fetchGrammarTopics = async () => {
-            try {
-                const allGrammarTopics = await GrammarTopicService.getAllGrammarTopics();
-                setGrammarTopics(allGrammarTopics.slice(-4));
-            } catch (error) {
-                setGrammarTopics([]);
-            }
-        };
-        fetchGrammarTopics();
-        
-        // Lấy 4 bài test mới nhất
-        const fetchPracticeTests = async () => {
-            try {
-                const allTests = await TestService.getAllTests();
-                if (allTests && allTests.length > 0) {
-                    // Lấy tất cả các bài test từ tất cả các collections
-                    let allTestItems = [];
-                    allTests.forEach(collection => {
-                        if (collection.tests && collection.tests.length > 0) {
-                            // Thêm tên collection vào mỗi test
-                            const testsWithCollection = collection.tests.map(test => ({
-                                ...test,
-                                collectionName: collection.title
-                            }));
-                            allTestItems = [...allTestItems, ...testsWithCollection];
-                        }
-                    });
-                    
-                    // Sắp xếp theo số lượt hoàn thành (giả định completions là số lượt hoàn thành)
-                    allTestItems.sort((a, b) => {
-                        const completionsA = parseInt(a.completions?.replace(/\./g, '')) || 0;
-                        const completionsB = parseInt(b.completions?.replace(/\./g, '')) || 0;
-                        return completionsB - completionsA; // Sắp xếp giảm dần
-                    });
-                    
-                    // Lấy 4 bài test có nhiều lượt hoàn thành nhất
-                    const topTests = allTestItems.slice(0, 4);
-                    
-                    // Map dữ liệu bài test để phù hợp với cấu trúc hiện tại
-                    const formattedTests = topTests.map(test => ({
-                        id: test.id,
-                        title: test.name,
-                        description: `Bài kiểm tra TOEIC ${test.collectionName}`,
-                        time: `120 phút`,
-                        completions: test.completions
-                    }));
-                    
-                    setPracticeTests(formattedTests);
-                } 
-            } catch (error) {
-                console.error('Lỗi khi tải dữ liệu bài kiểm tra:', error);
-            }
-        };
-        fetchPracticeTests();
-        
-        // Fetch user learning goal if logged in
-        const fetchLearningGoal = async () => {
-            if (userDetails && userDetails.id) {
+        // Đặt tất cả các hàm fetch dữ liệu trong một useEffect duy nhất
+        const fetchAllData = async () => {
+            // Chỉ fetch dữ liệu khi cần thiết
+            if (!dataFetched.topics) {
                 try {
-                    const response = await getLearningGoalByLearnerId(userDetails.id);
-                    if (response.success && response.data) {
-                        setLearningGoal(response.data);
-                        
-                        // Calculate progress
-                        const createdDate = new Date(response.data.createdAt || new Date());
-                        const targetDuration = response.data.duration; // in days
-                        const currentDate = new Date();
-                        
-                        // Calculate days elapsed
-                        const daysElapsed = Math.floor((currentDate - createdDate) / (1000 * 60 * 60 * 24));
-                        
-                        // Calculate progress percentage
-                        const progressPercentage = Math.min(100, Math.round((daysElapsed / targetDuration) * 100));
-                        setGoalProgress(progressPercentage);
-                        
-                        // Calculate days remaining
-                        const remaining = Math.max(0, targetDuration - daysElapsed);
-                        setDaysRemaining(remaining);
-                    }
+                    setDataFetched(prev => ({ ...prev, topics: true }));
+                    const allTopics = await VocabularyTopicService.getAllVocabularyTopics();
+                    // Lấy 4 chủ đề cuối cùng
+                    setRecentTopics(allTopics.slice(-4));
                 } catch (error) {
-                    console.error('Error fetching learning goal:', error);
+                    setRecentTopics([]);
                 }
             }
-        };
-        fetchLearningGoal();
 
-        const fetchLatestLearningProcess = async () => {
-            if (userDetails && userDetails.id) {
+            // Lấy 4 chủ đề grammar cuối cùng
+            if (!dataFetched.grammar) {
                 try {
-                    const processes = await learningProcessService.getAllLearningProcessByUserId(userDetails.id);
-                    // Lọc ra các process đang in_progress và sắp xếp theo thời gian tạo mới nhất
-                    const inProgressProcesses = processes
-                        .filter(process => process.progressStatus === 'in_progress')
-                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                    
-                    if (inProgressProcesses.length > 0) {
-                        setLatestLearningProcess(inProgressProcesses[0]);
-                    }
+                    setDataFetched(prev => ({ ...prev, grammar: true }));
+                    const allGrammarTopics = await GrammarTopicService.getAllGrammarTopics();
+                    setGrammarTopics(allGrammarTopics.slice(-4));
                 } catch (error) {
-                    console.error('Error fetching latest learning process:', error);
+                    setGrammarTopics([]);
                 }
             }
-        };
-        fetchLatestLearningProcess();
-
-        // Fetch user learning statistics
-        const fetchLearningStats = async () => {
-            if (userDetails && userDetails.id) {
+            
+            // Lấy 4 bài test mới nhất
+            if (!dataFetched.tests) {
                 try {
-                    console.log('userDetails',userDetails)
-                    const stats = await learningProcessService.getLearningStatistics(userDetails.id);
-                    console.log('stats',stats)
-                    if (stats) {
-                        setUserProgress({
-                            vocabLearned: stats.completedVocabulary || 0,
-                            grammarCompleted: stats.completedGrammarTopics || 0,
-                            testsCompleted: stats.completedTests || 0
+                    setDataFetched(prev => ({ ...prev, tests: true }));
+                    const allTests = await TestService.getAllTests();
+                    if (allTests && allTests.length > 0) {
+                        // Lấy tất cả các bài test từ tất cả các collections
+                        let allTestItems = [];
+                        allTests.forEach(collection => {
+                            if (collection.tests && collection.tests.length > 0) {
+                                // Thêm tên collection vào mỗi test
+                                const testsWithCollection = collection.tests.map(test => ({
+                                    ...test,
+                                    collectionName: collection.title
+                                }));
+                                allTestItems = [...allTestItems, ...testsWithCollection];
+                            }
                         });
-                    }
+                        
+                        // Sắp xếp theo số lượt hoàn thành
+                        allTestItems.sort((a, b) => {
+                            const completionsA = parseInt(a.completions?.replace(/\./g, '')) || 0;
+                            const completionsB = parseInt(b.completions?.replace(/\./g, '')) || 0;
+                            return completionsB - completionsA; // Sắp xếp giảm dần
+                        });
+                        
+                        // Lấy 4 bài test có nhiều lượt hoàn thành nhất
+                        const topTests = allTestItems.slice(0, 4);
+                        
+                        // Map dữ liệu bài test để phù hợp với cấu trúc hiện tại
+                        const formattedTests = topTests.map(test => ({
+                            id: test.id,
+                            title: test.name,
+                            description: `Bài kiểm tra TOEIC ${test.collectionName}`,
+                            time: `120 phút`,
+                            completions: test.completions
+                        }));
+                        
+                        setPracticeTests(formattedTests);
+                    } 
                 } catch (error) {
-                    console.error('Error fetching learning statistics:', error);
+                    console.error('Lỗi khi tải dữ liệu bài kiểm tra:', error);
+                }
+            }
+
+            // Chỉ thực hiện các hàm fetch sau khi người dùng đã đăng nhập
+            if (userDetails && userDetails.id) {
+                // Fetch user learning goal if logged in
+                if (!dataFetched.learningGoal) {
+                    try {
+                        setDataFetched(prev => ({ ...prev, learningGoal: true }));
+                        const response = await getLearningGoalByLearnerId(userDetails.id);
+                        if (response.success && response.data) {
+                            setLearningGoal(response.data);
+                            
+                            // Calculate progress
+                            const createdDate = new Date(response.data.createdAt || new Date());
+                            const targetDuration = response.data.duration; // in days
+                            const currentDate = new Date();
+                            
+                            // Calculate days elapsed
+                            const daysElapsed = Math.floor((currentDate - createdDate) / (1000 * 60 * 60 * 24));
+                            
+                            // Calculate progress percentage
+                            const progressPercentage = Math.min(100, Math.round((daysElapsed / targetDuration) * 100));
+                            setGoalProgress(progressPercentage);
+                            
+                            // Calculate days remaining
+                            const remaining = Math.max(0, targetDuration - daysElapsed);
+                            setDaysRemaining(remaining);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching learning goal:', error);
+                    }
+                }
+
+                // Fetch learning processes
+                if (!dataFetched.processes) {
+                    try {
+                        setDataFetched(prev => ({ ...prev, processes: true }));
+                        const processes = await learningProcessService.getAllLearningProcessByUserId(userDetails.id);
+                        // Lọc ra các process đang in_progress và sắp xếp theo thời gian tạo mới nhất
+                        const inProgressProcesses = processes
+                            .filter(process => process.progressStatus === 'in_progress')
+                            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                        
+                        if (inProgressProcesses.length > 0) {
+                            setLatestLearningProcess(inProgressProcesses[0]);
+                            
+                            // Lấy tên chủ đề đang học
+                            try {
+                                if (inProgressProcesses[0].VocabularyTopicId) {
+                                    const topic = await VocabularyTopicService.getVocabularyTopicById(inProgressProcesses[0].VocabularyTopicId);
+                                    if (topic) {
+                                        setCurrentTopicName(topic.topicName || "Chủ đề từ vựng");
+                                    }
+                                } else if (inProgressProcesses[0].GrammarTopicId) {
+                                    const topic = await GrammarTopicService.getGrammarTopicById(inProgressProcesses[0].GrammarTopicId);
+                                    if (topic) {
+                                        setCurrentTopicName(topic.title || "Chủ đề ngữ pháp");
+                                    }
+                                } else if (inProgressProcesses[0].TestId) {
+                                    const test = await TestService.getTestById(inProgressProcesses[0].TestId);
+                                    if (test) {
+                                        setCurrentTopicName(test.title || "Bài test TOEIC");
+                                    }
+                                }
+                            } catch (error) {
+                                console.error('Error fetching topic details:', error);
+                                setCurrentTopicName("Tiếp tục học tập");
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error fetching latest learning process:', error);
+                    }
+                }
+
+                // Fetch user learning statistics
+                if (!dataFetched.stats) {
+                    try {
+                        setDataFetched(prev => ({ ...prev, stats: true }));
+                        const stats = await learningProcessService.getLearningStatistics(userDetails.id);
+                        if (stats) {
+                            setUserProgress({
+                                vocabLearned: stats.completedVocabulary || 0,
+                                vocabTotal: 600, // Giá trị mặc định
+                                grammarCompleted: stats.completedGrammarTopics || 0,
+                                grammarTotal: 20, // Giá trị mặc định
+                                testsCompleted: stats.completedTests || 0
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error fetching learning statistics:', error);
+                    }
                 }
             }
         };
-        fetchLearningStats();
-    }, [userDetails]);
+
+        fetchAllData();
+    }, [userDetails, dataFetched]);
 
     return (
         <div>
@@ -261,7 +299,7 @@ const Home = () => {
                                                             <div className="d-flex align-items-center p-3 bg-light rounded">
                                                                 <div style={{ width: 50, height: 50 }}>
                                                                     <CircularProgressbar
-                                                                        value={(userProgress.vocabLearned / 600) * 100}
+                                                                        value={(userProgress.vocabLearned / (userProgress.vocabTotal || 600)) * 100}
                                                                         text={`${userProgress.vocabLearned}`}
                                                                         styles={buildStyles({
                                                                             textSize: '28px',
@@ -272,7 +310,7 @@ const Home = () => {
                                                                 </div>
                                                                 <div className="ms-3">
                                                                     <p className="mb-0 small">Từ vựng đã học</p>
-                                                                    <p className="mb-0 small text-muted">{userProgress.vocabLearned}/600 từ</p>
+                                                                    <p className="mb-0 small text-muted">{userProgress.vocabLearned}/{userProgress.vocabTotal || 600} từ</p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -280,7 +318,7 @@ const Home = () => {
                                                             <div className="d-flex align-items-center p-3 bg-light rounded">
                                                                 <div style={{ width: 50, height: 50 }}>
                                                                     <CircularProgressbar
-                                                                        value={(userProgress.grammarCompleted / 20) * 100}
+                                                                        value={(userProgress.grammarCompleted / (userProgress.grammarTotal || 20)) * 100}
                                                                         text={`${userProgress.grammarCompleted}`}
                                                                         styles={buildStyles({
                                                                             textSize: '28px',
@@ -291,7 +329,7 @@ const Home = () => {
                                                                 </div>
                                                                 <div className="ms-3">
                                                                     <p className="mb-0 small">Ngữ pháp đã học</p>
-                                                                    <p className="mb-0 small text-muted">{userProgress.grammarCompleted}/20 chủ đề</p>
+                                                                    <p className="mb-0 small text-muted">{userProgress.grammarCompleted}/{userProgress.grammarTotal || 20} chủ đề</p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1023,40 +1061,40 @@ const Home = () => {
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between align-items-center mb-2">
                                                 <h5 style={{ margin: 0, fontSize: '1rem' }}>TOEIC Listening</h5>
-                                                <span style={{ fontWeight: '500' }}>65%</span>
+                                                <span style={{ fontWeight: '500' }}>{learningGoal ? Math.min(70, Math.round(goalProgress * 0.5)) : 0}%</span>
                                             </div>
                                             <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
-                                                <div className="progress-bar" style={{ width: '65%', background: '#4527A0', borderRadius: '5px' }}></div>
+                                                <div className="progress-bar" style={{ width: `${learningGoal ? Math.min(50, Math.round(goalProgress * 0.5)) : 0}%`, background: '#4527A0', borderRadius: '5px' }}></div>
                                             </div>
                                         </div>
 
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between align-items-center mb-2">
                                                 <h5 style={{ margin: 0, fontSize: '1rem' }}>TOEIC Reading</h5>
-                                                <span style={{ fontWeight: '500' }}>42%</span>
+                                                <span style={{ fontWeight: '500' }}>{learningGoal ? Math.min(70, Math.round(goalProgress * 0.5)) : 0}%</span>
                                             </div>
                                             <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
-                                                <div className="progress-bar" style={{ width: '42%', background: '#4527A0', borderRadius: '5px' }}></div>
+                                                <div className="progress-bar" style={{ width: `${learningGoal ? Math.min(50, Math.round(goalProgress * 0.5)) : 0}%`, background: '#4527A0', borderRadius: '5px' }}></div>
                                             </div>
                                         </div>
 
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between align-items-center mb-2">
                                                 <h5 style={{ margin: 0, fontSize: '1rem' }}>Vocabulary</h5>
-                                                <span style={{ fontWeight: '500' }}>78%</span>
+                                                <span style={{ fontWeight: '500' }}>{userProgress.vocabTotal > 0 ? Math.round((userProgress.vocabLearned / userProgress.vocabTotal) * 100) : 0}%</span>
                                             </div>
                                             <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
-                                                <div className="progress-bar" style={{ width: '78%', background: '#4527A0', borderRadius: '5px' }}></div>
+                                                <div className="progress-bar" style={{ width: `${userProgress.vocabTotal > 0 ? Math.round((userProgress.vocabLearned / userProgress.vocabTotal) * 100) : 0}%`, background: '#4527A0', borderRadius: '5px' }}></div>
                                             </div>
                                         </div>
 
                                         <div className="mb-4">
                                             <div className="d-flex justify-content-between align-items-center mb-2">
                                                 <h5 style={{ margin: 0, fontSize: '1rem' }}>Grammar</h5>
-                                                <span style={{ fontWeight: '500' }}>53%</span>
+                                                <span style={{ fontWeight: '500' }}>{userProgress.grammarTotal > 0 ? Math.round((userProgress.grammarCompleted / userProgress.grammarTotal) * 100) : 0}%</span>
                                             </div>
                                             <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
-                                                <div className="progress-bar" style={{ width: '53%', background: '#4527A0', borderRadius: '5px' }}></div>
+                                                <div className="progress-bar" style={{ width: `${userProgress.grammarTotal > 0 ? Math.round((userProgress.grammarCompleted / userProgress.grammarTotal) * 100) : 0}%`, background: '#4527A0', borderRadius: '5px' }}></div>
                                             </div>
                                         </div>
 
@@ -1071,7 +1109,7 @@ const Home = () => {
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     if (isLoggedIn) {
-                                                        navigate('/dashboard');
+                                                        navigate('/profile');
                                                     } else {
                                                         navigate('/login');
                                                     }
@@ -1102,7 +1140,7 @@ const Home = () => {
                                                     height: '100%'
                                                 }}>
                                                     <h5 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>Từ vựng đã học</h5>
-                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>480</h3>
+                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>{userProgress.vocabLearned}</h3>
                                                 </div>
                                             </div>
                                             <div className="col-6 mb-4">
@@ -1113,7 +1151,7 @@ const Home = () => {
                                                     height: '100%'
                                                 }}>
                                                     <h5 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>Bài tập đã làm</h5>
-                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>68</h3>
+                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>{userProgress.grammarCompleted + userProgress.testsCompleted}</h3>
                                                 </div>
                                             </div>
                                             <div className="col-6">
@@ -1124,7 +1162,7 @@ const Home = () => {
                                                     height: '100%'
                                                 }}>
                                                     <h5 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>Thời gian học</h5>
-                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>42h</h3>
+                                                    <h3 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#4527A0', marginBottom: '0' }}>{Math.round(userProgress.vocabLearned * 0.2 + userProgress.grammarCompleted * 0.5 + userProgress.testsCompleted * 2)}h</h3>
                                                 </div>
                                             </div>
                                             <div className="col-6">
@@ -1151,7 +1189,17 @@ const Home = () => {
                                         }}
                                             onClick={(e) => {
                                                 if (isLoggedIn) {
-                                                    navigate('/learn-vocabulary/1');
+                                                    if (latestLearningProcess) {
+                                                        if (latestLearningProcess.VocabularyTopicId) {
+                                                            navigate(`/learn-vocabulary/${latestLearningProcess.VocabularyTopicId}`);
+                                                        } else if (latestLearningProcess.GrammarTopicId) {
+                                                            navigate(`/learn-grammary/${latestLearningProcess.GrammarTopicId}`);
+                                                        } else if (latestLearningProcess.TestId) {
+                                                            navigate(`/Stm_Quizzes/${latestLearningProcess.TestId}`);
+                                                        }
+                                                    } else {
+                                                        navigate('/learn-vocabulary/1');
+                                                    }
                                                 } else {
                                                     navigate('/login');
                                                 }
@@ -1166,12 +1214,23 @@ const Home = () => {
                                                 justifyContent: 'center',
                                                 marginRight: '15px'
                                             }}>
-                                                <i className="fas fa-book" style={{ color: 'white' }}></i>
+                                                <i className={latestLearningProcess ? 
+                                                    (latestLearningProcess.VocabularyTopicId ? "fas fa-book" : 
+                                                    latestLearningProcess.GrammarTopicId ? "fas fa-pencil-alt" : 
+                                                    "fas fa-file-alt") : "fas fa-book"} 
+                                                   style={{ color: 'white' }}>
+                                                </i>
                                             </div>
-                                            <div>
-                                                <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '500' }}>Từ vựng về Office Equipment</h5>
+                                            <div style={{ width: '100%' }}>
+                                                <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '500' }}>
+                                                    {currentTopicName ? currentTopicName : 
+                                                     latestLearningProcess ? 
+                                                        (latestLearningProcess.VocabularyTopicId ? "Tiếp tục học từ vựng" : 
+                                                        latestLearningProcess.GrammarTopicId ? "Tiếp tục học ngữ pháp" : 
+                                                        "Tiếp tục làm bài test") : "Bắt đầu học từ vựng"}
+                                                </h5>
                                                 <div style={{ height: '4px', background: '#e0e0e0', borderRadius: '2px', marginTop: '8px', width: '100%' }}>
-                                                    <div style={{ height: '100%', width: '65%', background: '#4527A0', borderRadius: '2px' }}></div>
+                                                    <div style={{ height: '100%', width: latestLearningProcess ? '65%' : '0%', background: '#4527A0', borderRadius: '2px' }}></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1198,21 +1257,21 @@ const Home = () => {
                                 {
                                     id: 1,
                                     name: "Trần Phan Tiến Anh",
-                                    avatar: "assets/img/gallery/testimonial.png",
+                                    avatar: "assets/img/gallery/team1.png",
                                     score: "950/990",
                                     review: "Tôi đã tăng 200 điểm TOEIC sau 3 tháng học tập với nền tảng này. Phương pháp học rất hiệu quả."
                                 },
                                 {
                                     id: 2,
                                     name: "Phan Hùng Anh",
-                                    avatar: "assets/img/gallery/team1.png",
+                                    avatar: "assets/img/gallery/team2.png",
                                     score: "890/990",
                                     review: "Các bài tập và đề thi thử giúp tôi làm quen với format bài thi thật. Đặc biệt phần nghe rất tốt."
                                 },
                                 {
                                     id: 3,
                                     name: "Hồ Kim Trí",
-                                    avatar: "assets/img/gallery/team2.png",
+                                    avatar: "assets/img/gallery/team4.png",
                                     score: "845/990",
                                     review: "Từ vựng theo chủ đề và ngữ pháp trọng tâm giúp tôi tiết kiệm thời gian ôn luyện rất nhiều."
                                 },

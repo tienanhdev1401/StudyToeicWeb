@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from './config';
 
+const API_BASE_URL = config.API_BASE_URL;
 // Service lấy toàn bộ cấu hình roadmap
 export const getRoadmapConfig = async () => {
   try {
@@ -9,7 +10,7 @@ export const getRoadmapConfig = async () => {
       ? { headers: { Authorization: `Bearer ${token}` } } 
       : {};
     
-    const response = await axios.get(`${config.API_BASE_URL}/admin/roadmap-config`, config);
+    const response = await axios.get(`${API_BASE_URL}/admin/roadmap-config`, config);
     return response.data;
   } catch (error) {
     console.error('Error fetching roadmap config:', error);
@@ -25,7 +26,7 @@ export const updateLevelThresholds = async (levelThresholds) => {
       ? { headers: { Authorization: `Bearer ${token}` } } 
       : {};
     
-    const response = await axios.put(`${config.API_BASE_URL}/admin/roadmap-config/level-thresholds`, { levelThresholds }, config);
+    const response = await axios.put(`${API_BASE_URL}/admin/roadmap-config/level-thresholds`, { levelThresholds }, config);
     return response.data;
   } catch (error) {
     console.error('Error updating level thresholds:', error);
@@ -41,7 +42,7 @@ export const updateLearningMethods = async (level, methods) => {
       ? { headers: { Authorization: `Bearer ${token}` } } 
       : {};
     
-    const response = await axios.put(`${config.API_BASE_URL}/admin/roadmap-config/learning-methods`, { level, methods }, config);
+    const response = await axios.put(`${API_BASE_URL}/admin/roadmap-config/learning-methods`, { level, methods }, config);
     return response.data;
   } catch (error) {
     console.error('Error updating learning methods:', error);
@@ -73,7 +74,7 @@ export const updateResources = async (level, resources) => {
       ? { headers: { Authorization: `Bearer ${token}` } } 
       : {};
     
-    const response = await axios.put(`${config.API_BASE_URL}/admin/roadmap-config/resources`, { level, resources }, config);
+    const response = await axios.put(`${API_BASE_URL}/admin/roadmap-config/resources`, { level, resources }, config);
     return response.data;
   } catch (error) {
     console.error('Error updating resources:', error);
@@ -89,7 +90,7 @@ export const resetConfig = async () => {
       ? { headers: { Authorization: `Bearer ${token}` } } 
       : {};
     
-    const response = await axios.post(`${config.API_BASE_URL}/admin/roadmap-config/reset`, {}, config);
+    const response = await axios.post(`${API_BASE_URL}/admin/roadmap-config/reset`, {}, config);
     return response.data;
   } catch (error) {
     console.error('Error resetting config:', error);

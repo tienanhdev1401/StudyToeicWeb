@@ -140,9 +140,10 @@ export class QuestionRepository {
         }
       }
 
-      static async delete(id: number): Promise<void> {
+      static async delete(id: number): Promise<boolean> {
         try {
           await db.query('DELETE FROM questions WHERE id = ?', [id]);
+          return true;
         } catch (error) {
           console.error('QuestionRepository.delete error:', error);
           throw error;

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaBook, FaSearch, FaRoad } from 'react-icons/fa';
+import { FaUser, FaBook, FaSearch } from 'react-icons/fa';
 import '../styles/Header.css';
 
 const Header = ({ style, className }) => {
@@ -56,7 +56,7 @@ const Header = ({ style, className }) => {
                                                  
                                                     <li className="active" ><a href="/">Home</a></li>
                                                     <li><a href="/about">About</a></li>
-                                                    <li><a href="#">Learn</a>
+                                                    <li><a href="#">Study zone</a>
                                                         <ul className="submenu">
                                                             <li>
                                                                 <a href="#" onClick={e => {
@@ -88,18 +88,6 @@ const Header = ({ style, className }) => {
                                                                     }
                                                                 }}>Do Exercise</a>
                                                             </li>
-                                                            <li>
-                                                                <a href="#" onClick={e => {
-                                                                    e.preventDefault();
-                                                                    if (isLoggedIn) {
-                                                                        navigate('/roadmap');
-                                                                    } else {
-                                                                        navigate('/login');
-                                                                    }
-                                                                }}>
-                                                                    <FaRoad style={{ marginRight: '5px' }} /> Roadmap
-                                                                </a>
-                                                            </li>
                                                         </ul>
                                                     </li>
                                                     <li><a href="/contact">Contact</a></li>
@@ -128,7 +116,7 @@ const Header = ({ style, className }) => {
                                                         </div>
                                                     </li>
                                                     <li className="button-header margin-left ">
-                                                        <a href="/test-online-new" className="btn">Join</a>
+                                                        <a href="/test-online-new" className="btn">TEST NOW!</a>
                                                     </li>
                                                     {!isLoggedIn && (
                                                         <li className="button-header margin-left ">

@@ -56,41 +56,11 @@ export class VocabularyTopicController {
     }
   }
 
-  // static async findVocabularyTopicBySlug(req: Request, res: Response) {
-  //   try {
-  //     const slug = req.params.slug;
-      
-  //     // Gọi repository
-  //     const topic = await VocabularyTopicRepository.findBySlug(slug);
-      
-  //     if (!topic) {
-  //       return res.status(404).json({
-  //         success: false,
-  //         message: 'Không tìm thấy chủ đề' + slug
-  //       });
-  //     }
-  
-  //     // Trả về response thành công
-  //     res.status(200).json({
-  //       success: true,
-  //       data: topic,
-  //       message: 'Lấy thông tin chủ đề thành công'
-  //     });
-  
-  //   } catch (error) {
-  //     console.error('Lỗi khi lấy thông tin chủ đề:', error);
-  //     res.status(500).json({
-  //       success: false,
-  //       message: 'Đã xảy ra lỗi khi lấy thông tin chủ đề'
-  //     });
-  //   }
-  // }
-
-
+ 
   static async addVocabularyTopic(req: Request, res: Response) {
     try {
         // Lấy dữ liệu từ request body
-        const { topicName, imgUrl, vocabularies } = req.body;
+        const { topicName, imageUrl, vocabularies } = req.body;
         
         // Validate topicName
         if (!topicName || topicName.trim() === '') {
@@ -116,22 +86,41 @@ export class VocabularyTopicController {
         // Kiểm tra dữ liệu đầu vào
         console.log('req.body',req.body);
         // Tạo một đối tượng VocabularyTopic mới
-        const newTopic = new VocabularyTopic(0, topicName,  imgUrl, [], [], new Date(), new Date()); 
+        const newTopic = new VocabularyTopic(0, topicName,  imageUrl, [], [], new Date(), new Date()); 
 
         // Thêm danh sách từ vựng vào topic (nếu có)
         if (vocabularies && Array.isArray(vocabularies)) {
-            const vocabularyList = vocabularies.map((v: any) => 
-                new Vocabulary(
+            const vocabularyList = vocabularies.map((v: any) => {
+                // Xử lý synonym - đảm bảo nó là JSON hợp lệ hoặc null
+                let processedSynonym = null;
+                if (v.synonym) {
+                    if (typeof v.synonym === 'string' && (v.synonym.trim().charAt(0) !== '[' && v.synonym.trim().charAt(0) !== '{')) {
+                        if (v.synonym.includes('/') || v.synonym.trim().startsWith('/')) {
+                            processedSynonym = null;
+                        } else {
+                            processedSynonym = JSON.stringify([v.synonym.trim()]);
+                        }
+                    } else {
+                        try {
+                            JSON.parse(v.synonym);
+                            processedSynonym = v.synonym;
+                        } catch (e) {
+                            processedSynonym = JSON.stringify([v.synonym.trim()]);
+                        }
+                    }
+                }
+
+                return new Vocabulary(
                     0,
                     v.content,
                     v.meaning,
-                    v.synonym || null,
+                    processedSynonym,
                     v.transcribe || '',
                     v.urlAudio || '',
                     v.urlImage || '',
                     null
-                )
-            );
+                );
+            });
             newTopic.addVocabularyList(vocabularyList);
         }
 
@@ -178,7 +167,7 @@ export class VocabularyTopicController {
       }
 
       // Lấy dữ liệu từ request body
-      const { topicName, imgUrl, vocabularies } = req.body;
+      const { topicName, imageUrl, vocabularies } = req.body;
       
       // Validate topicName
       if (!topicName || topicName.trim() === '') {
@@ -204,16 +193,12 @@ export class VocabularyTopicController {
         }
       }
       
-      // Tạo slug mới nếu tên chủ đề thay đổi
-      // const slug = topicName !== existingTopic.topicName
-      //   ? slugify(topicName, { lower: true, strict: true })
-      //   : existingTopic.slug;
-
+    
       // Cập nhật thông tin chủ đề
       const updatedTopic = new VocabularyTopic(
         topicId,
         topicName || existingTopic.topicName,
-        imgUrl || existingTopic.imageUrl,
+        imageUrl || existingTopic.imageUrl,
         existingTopic.vocabularies,
         existingTopic.exercises,
         existingTopic.createdAt,

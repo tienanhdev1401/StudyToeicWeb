@@ -17,8 +17,8 @@ const ResetPasswordModal = ({ isOpen, onClose, onConfirm, staff }) => {
           </button>
         </div>
         <div className="managestaff-modal-body">
-          <p>Are you sure you want to reset password for staff "{staff.fullname}"?</p>
-          <p>A temporary password will be sent to their email address.</p>
+        <p>Bạn có chắc chắn muốn đặt lại mật khẩu cho Nhân viên "{staff.fullname}"?</p>
+        <p>Mật khẩu tạm thời của nhân viên là :123456789</p>
         </div>
         <div className="managestaff-modal-footer">
           <button className="managestaff-cancel-btn" onClick={onClose}>Cancel</button>

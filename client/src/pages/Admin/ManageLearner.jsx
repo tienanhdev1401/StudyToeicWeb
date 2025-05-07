@@ -17,11 +17,11 @@ const ResetPasswordModal = ({ isOpen, onClose, onConfirm, learner }) => {
           </button>
         </div>
         <div className="learner-modal-body">
-          <p>Are you sure you want to reset password for learner "{learner.fullname}"?</p>
-          <p>A temporary password will be sent to their email address.</p>
+          <p>Bạn có chắc chắn muốn đặt lại mật khẩu cho học viên "{learner.fullname}"?</p>
+          <p>Mật khẩu tạm thời của học viên là :123456789</p>
         </div>
         <div className="learner-modal-footer">
-          <button className="learner-cancel-btn" onClick={onClose}>Cancel</button>
+          <button className="learner-cancel-btn" onClick={onClose}>Hủy</button>
           <button className="learner-confirm-reset-btn" onClick={onConfirm}>
             <i className="fas fa-key"></i>
             Reset Password
