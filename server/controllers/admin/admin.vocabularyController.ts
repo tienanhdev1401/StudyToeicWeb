@@ -144,17 +144,16 @@ export class VocabularyController {
                     if (synonym.includes('/') || synonym.trim().startsWith('/')) {
                         processedSynonym = null;
                     } else {
-                        processedSynonym = JSON.stringify([synonym.trim()]);
+                        processedSynonym = [synonym.trim()];
                     }
                 } else {
-                    // Nếu đã là JSON string, giữ nguyên
+                    // Nếu đã là JSON string, parse nó thành mảng
                     try {
-                        // Kiểm tra xem đã là JSON hợp lệ chưa
-                        JSON.parse(synonym);
-                        processedSynonym = synonym;
+                        const parsedSynonym = JSON.parse(synonym);
+                        processedSynonym = Array.isArray(parsedSynonym) ? parsedSynonym : [parsedSynonym];
                     } catch (e) {
                         // Nếu không phải JSON hợp lệ, chuyển thành mảng
-                        processedSynonym = JSON.stringify([synonym.trim()]);
+                        processedSynonym = [synonym.trim()];
                     }
                 }
             }
@@ -236,17 +235,16 @@ export class VocabularyController {
                     if (synonym.includes('/') || synonym.trim().startsWith('/')) {
                         processedSynonym = null;
                     } else {
-                        processedSynonym = JSON.stringify([synonym.trim()]);
+                        processedSynonym = [synonym.trim()];
                     }
                 } else {
-                    // Nếu đã là JSON string, giữ nguyên
+                    // Nếu đã là JSON string, parse nó thành mảng
                     try {
-                        // Kiểm tra xem đã là JSON hợp lệ chưa
-                        JSON.parse(synonym);
-                        processedSynonym = synonym;
+                        const parsedSynonym = JSON.parse(synonym);
+                        processedSynonym = Array.isArray(parsedSynonym) ? parsedSynonym : [parsedSynonym];
                     } catch (e) {
                         // Nếu không phải JSON hợp lệ, chuyển thành mảng
-                        processedSynonym = JSON.stringify([synonym.trim()]);
+                        processedSynonym = [synonym.trim()];
                     }
                 }
             }
@@ -377,17 +375,16 @@ export class VocabularyController {
                         if (vocab.synonym.includes('/') || vocab.synonym.trim().startsWith('/')) {
                             processedSynonym = null;
                         } else {
-                            processedSynonym = JSON.stringify([vocab.synonym.trim()]);
+                            processedSynonym = [vocab.synonym.trim()];
                         }
                     } else {
-                        // Nếu đã là JSON string, giữ nguyên
+                        // Nếu đã là JSON string, parse nó thành mảng
                         try {
-                            // Kiểm tra xem đã là JSON hợp lệ chưa
-                            JSON.parse(vocab.synonym);
-                            processedSynonym = vocab.synonym;
+                            const parsedSynonym = JSON.parse(vocab.synonym);
+                            processedSynonym = Array.isArray(parsedSynonym) ? parsedSynonym : [parsedSynonym];
                         } catch (e) {
                             // Nếu không phải JSON hợp lệ, chuyển thành mảng
-                            processedSynonym = JSON.stringify([vocab.synonym.trim()]);
+                            processedSynonym = [vocab.synonym.trim()];
                         }
                     }
                 }
