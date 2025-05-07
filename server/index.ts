@@ -25,7 +25,8 @@ import './config/db';
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5000',
-  'https://www.learntoeicnow.tptienanh.website',
+  'http://learntoeicnow.tptienanh.website',
+  'https://learntoeicnow.tptienanh.website',
   'https://hostservertoeic.tptienanh.website',
   'http://hostservertoeic.tptienanh.website'
 ];
