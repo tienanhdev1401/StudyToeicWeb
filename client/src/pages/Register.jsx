@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
   
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -32,6 +33,7 @@ const RegisterForm = () => {
     }
 
     try {
+      setIsLoading(true);
       await sendVerificationCode(formData.email);
       setIsCodeSent(true);
       setCountdown(60);
@@ -50,6 +52,8 @@ const RegisterForm = () => {
     } catch (error) {
       console.error('Error sending verification code:', error);
       alert(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,7 +65,6 @@ const RegisterForm = () => {
       return;
     }
 
-
     if (formData.password !== formData.confirmPassword) {
       alert('Mật khẩu xác nhận không khớp');
       return;
@@ -70,6 +73,7 @@ const RegisterForm = () => {
     const { fullname, email, password, verificationCode } = formData;
 
     try {
+      setIsLoading(true);
       const result = await register({ fullname, email, password, verificationCode });
       
       if (result && result.success) {
@@ -81,6 +85,8 @@ const RegisterForm = () => {
     } catch (error) {
       console.error('Error registering user:', error);
       alert(error.message || 'Đã có lỗi xảy ra khi đăng ký');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -95,16 +101,18 @@ const RegisterForm = () => {
   return (
     <div className="register-container">
       <div className="bg-overlay"></div>
-      <div id="preloader-active">
-        <div className="preloader d-flex align-items-center justify-content-center">
-          <div className="preloader-inner position-relative">
-            <div className="preloader-circle"></div>
-            <div className="preloader-img pere-text">
-              <img src="assets/img/logo/loder.png" alt="" />
+      {isLoading && (
+        <div id="preloader-active">
+          <div className="preloader d-flex align-items-center justify-content-center">
+            <div className="preloader-inner position-relative">
+              <div className="preloader-circle"></div>
+              <div className="preloader-img pere-text">
+                <img src="assets/img/logo/loder.png" alt="" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
       <div className="floating-card">
         {/* Left content section */}
         <div className="content-section">
