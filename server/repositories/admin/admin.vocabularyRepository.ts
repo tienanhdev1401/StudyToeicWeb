@@ -15,7 +15,7 @@ export class VocabularyRepository {
             'SELECT * FROM vocabularies WHERE VocabularyTopicId = ?',
             [topicId]
         );
-        console.log('results',results);
+   
        
         const vocabularies = results.map((row: any) => new Vocabulary(
             row.id,
@@ -27,8 +27,6 @@ export class VocabularyRepository {
             row.urlImage,
             row.VocabularyTopicId
         ));
-
-        console.log('vocabularies',vocabularies);
         return vocabularies;
     }
 

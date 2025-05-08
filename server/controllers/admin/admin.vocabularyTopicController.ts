@@ -82,9 +82,6 @@ export class VocabularyTopicController {
                 message: 'Topic name already exists'
             });
         }
-        
-        // Kiểm tra dữ liệu đầu vào
-        console.log('req.body',req.body);
         // Tạo một đối tượng VocabularyTopic mới
         const newTopic = new VocabularyTopic(0, topicName, imageUrl, [], [], new Date(), new Date()); 
 
@@ -92,44 +89,42 @@ export class VocabularyTopicController {
         if (vocabularies && Array.isArray(vocabularies)) {
             const vocabularyList = vocabularies.map((v: any) => {
                 // Xử lý synonym - đảm bảo nó là JSON hợp lệ dạng mảng hoặc null
-                let processedSynonym = null;
-                try {
-                    if (v.synonym) {
-                        if (typeof v.synonym === 'string') {
-                            // Nếu là string, kiểm tra xem có phải JSON array không
-                            if (v.synonym.trim().startsWith('[') && v.synonym.trim().endsWith(']')) {
-                                // Đã là JSON array string, kiểm tra hợp lệ
-                                const parsedArray = JSON.parse(v.synonym);
-                                if (Array.isArray(parsedArray)) {
-                                    processedSynonym = JSON.stringify(parsedArray);
-                                } else {
-                                    // Nếu parse được nhưng không phải mảng thì chuyển thành mảng
-                                    processedSynonym = JSON.stringify([parsedArray.toString().trim()]);
-                                }
+                  let processedSynonym = null;
+            try {
+                if (v.synonym) {
+                    if (typeof v.synonym === 'string') {
+                        // Nếu là string, kiểm tra xem có phải JSON array không
+                        if (v.synonym.trim().startsWith('[') && v.synonym.trim().endsWith(']')) {
+                            // Đã là JSON array string, kiểm tra hợp lệ
+                            const parsedArray = JSON.parse(v.synonym);
+                            if (Array.isArray(parsedArray)) {
+                                processedSynonym = JSON.stringify(parsedArray);
                             } else {
-                                // Xử lý chuỗi có dấu phẩy thành mảng JSON
-                                if (v.synonym.includes(',')) {
-                                    const synonymArray = v.synonym.split(',').map((s: string) => s.trim()).filter(Boolean);
-                                    processedSynonym = JSON.stringify(synonymArray);
-                                } else {
-                                    // Chỉ là một từ đơn, chuyển thành mảng có một phần tử
-                                    processedSynonym = JSON.stringify([v.synonym.trim()]);
-                                }
+                                // Nếu parse được nhưng không phải mảng thì chuyển thành mảng
+                                processedSynonym = JSON.stringify([parsedArray.toString().trim()]);
                             }
-                        } else if (Array.isArray(v.synonym)) {
-                            // Nếu đã là mảng
-                            processedSynonym = JSON.stringify(v.synonym);
-                        } else if (typeof v.synonym === 'object') {
-                            // Nếu là object, chuyển thành mảng chứa string
-                            processedSynonym = JSON.stringify([v.synonym.toString()]);
+                        } else {
+                            // Xử lý chuỗi có dấu phẩy thành mảng JSON
+                            if (v.synonym.includes(',')) {
+                                const synonymArray = v.synonym.split(',').map((s: string) => s.trim()).filter(Boolean);
+                                processedSynonym = JSON.stringify(synonymArray);
+                            } else {
+                                // Chỉ là một từ đơn, chuyển thành mảng có một phần tử
+                                processedSynonym = JSON.stringify([v.synonym.trim()]);
+                            }
                         }
+                    } else if (Array.isArray(v.synonym)) {
+                        // Nếu đã là mảng
+                        processedSynonym = JSON.stringify(v.synonym);
+                    } else if (typeof v.synonym === 'object') {
+                        // Nếu là object, chuyển thành mảng chứa string
+                        processedSynonym = JSON.stringify([v.synonym.toString()]);
                     }
-                } catch (error) {
-                    console.error('Error processing synonym:', error);
-                    processedSynonym = null;
                 }
-
-                console.log('processedSynonym', processedSynonym);
+            } catch (error) {
+                console.error('Error processing synonym:', error);
+                processedSynonym = null;
+            }
                 return new Vocabulary(
                     0,
                     v.content,
@@ -306,7 +301,6 @@ export class VocabularyTopicController {
     try {
       // Lấy ID từ tham số route
       const topicId = parseInt(req.params.topicId);
-      console.log('topicId',topicId);
       if (isNaN(topicId)) {
         return res.status(400).json({
           success: false,

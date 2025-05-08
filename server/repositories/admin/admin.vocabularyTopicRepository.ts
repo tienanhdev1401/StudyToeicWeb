@@ -42,45 +42,6 @@ export class VocabularyTopicRepository {
     return topic;
   }
 
-
-
-  // static async findBySlug(slug: string): Promise<VocabularyTopic | null> {
-  //   const results = await database.query(
-  //     'SELECT id, topicName,slug FROM vocabularytopics WHERE slug = ? LIMIT 1',
-  //     [slug]
-  //   );
-
-  //   if (Array.isArray(results) && results.length === 0) {
-  //     return null;
-  //   }
-
-
-  //   const topicData = results[0] as any;
-  //   const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.slug ,topicData.imgUrl, topicData.createAt, topicData.updateAt);
-
-  //   // Lấy danh sách vocabularies thuộc topic này
-  //   const vocabResults = await database.query(
-  //     'SELECT * FROM vocabularies WHERE VocabularyTopicId = ?',
-  //     [topicData.id]
-  //   );
-
-  //   topic.addVocabularyList(
-  //     vocabResults.map((v: any) => new Vocabulary(
-  //       v.id,
-  //       v.content,
-  //       v.meaning,
-  //       v.synonym ? JSON.parse(v.synonym) : null,
-  //       v.transcribe,
-  //       v.urlAudio,
-  //       v.urlImage,
-  //       v.VocabularyTopicId
-  //     ))
-  //   );
-
-  //   return topic;
-  // }
-
-
   /**
    * Lấy tất cả VocabularyTopics
    */
@@ -146,7 +107,7 @@ export class VocabularyTopicRepository {
                 [
                     vocab.content,
                     vocab.meaning,
-                    vocab.synonym ? JSON.stringify(vocab.synonym) : null,
+                    vocab.synonym,
                     vocab.transcribe,
                     vocab.urlAudio,
                     vocab.urlImage,
@@ -184,7 +145,7 @@ export class VocabularyTopicRepository {
                 [
                     vocab.content,
                     vocab.meaning,
-                    vocab.synonym ? JSON.stringify(vocab.synonym) : null,
+                    vocab.synonym,
                     vocab.transcribe, 
                     vocab.urlAudio,
                     vocab.urlImage,

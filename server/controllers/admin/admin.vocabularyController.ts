@@ -109,7 +109,7 @@ export class VocabularyController {
             const { content, meaning, synonym, transcribe, urlAudio, urlImage, VocabularyTopicId } = req.body;
             
             const topicId = parseInt(VocabularyTopicId);
-            console.log("Request body:", req.body);
+           
             
             if (isNaN(topicId)) {
                 return res.status(400).json({
@@ -171,8 +171,6 @@ export class VocabularyController {
                 console.error('Error processing synonym:', error);
                 processedSynonym = null;
             }
-            
-            console.log("Processed synonym:", processedSynonym);
             
             const newVocabulary = new Vocabulary(
                 0, // ID will be assigned by the database
@@ -281,7 +279,7 @@ export class VocabularyController {
                 }
             }
             
-            console.log("Processed synonym for update:", processedSynonym);
+       
             
             // Create updated vocabulary object
             const updatedVocabulary = new Vocabulary(
@@ -369,7 +367,7 @@ export class VocabularyController {
                 });
             }
             
-            console.log(`Importing ${vocabularies.length} vocabularies for topic ID ${topicId}`);
+
             
             // Validate each vocabulary
             const validVocabularies = [];
@@ -436,7 +434,7 @@ export class VocabularyController {
                     processedSynonym = null;
                 }
                 
-                console.log("processedSynonym",processedSynonym);
+          
                 // Tạo đối tượng Vocabulary
                 const newVocab = new Vocabulary(
                     0, // ID sẽ được gán bởi database
