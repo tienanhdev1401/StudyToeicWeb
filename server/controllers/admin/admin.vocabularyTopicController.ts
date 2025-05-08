@@ -86,30 +86,50 @@ export class VocabularyTopicController {
         // Kiểm tra dữ liệu đầu vào
         console.log('req.body',req.body);
         // Tạo một đối tượng VocabularyTopic mới
-        const newTopic = new VocabularyTopic(0, topicName,  imageUrl, [], [], new Date(), new Date()); 
+        const newTopic = new VocabularyTopic(0, topicName, imageUrl, [], [], new Date(), new Date()); 
 
         // Thêm danh sách từ vựng vào topic (nếu có)
         if (vocabularies && Array.isArray(vocabularies)) {
             const vocabularyList = vocabularies.map((v: any) => {
-                // Xử lý synonym - đảm bảo nó là JSON hợp lệ hoặc null
+                // Xử lý synonym - đảm bảo nó là JSON hợp lệ dạng mảng hoặc null
                 let processedSynonym = null;
-                if (v.synonym) {
-                    if (typeof v.synonym === 'string' && (v.synonym.trim().charAt(0) !== '[' && v.synonym.trim().charAt(0) !== '{')) {
-                        if (v.synonym.includes('/') || v.synonym.trim().startsWith('/')) {
-                            processedSynonym = null;
-                        } else {
-                            processedSynonym = JSON.stringify([v.synonym.trim()]);
-                        }
-                    } else {
-                        try {
-                            JSON.parse(v.synonym);
-                            processedSynonym = v.synonym;
-                        } catch (e) {
-                            processedSynonym = JSON.stringify([v.synonym.trim()]);
+                try {
+                    if (v.synonym) {
+                        if (typeof v.synonym === 'string') {
+                            // Nếu là string, kiểm tra xem có phải JSON array không
+                            if (v.synonym.trim().startsWith('[') && v.synonym.trim().endsWith(']')) {
+                                // Đã là JSON array string, kiểm tra hợp lệ
+                                const parsedArray = JSON.parse(v.synonym);
+                                if (Array.isArray(parsedArray)) {
+                                    processedSynonym = JSON.stringify(parsedArray);
+                                } else {
+                                    // Nếu parse được nhưng không phải mảng thì chuyển thành mảng
+                                    processedSynonym = JSON.stringify([parsedArray.toString().trim()]);
+                                }
+                            } else {
+                                // Xử lý chuỗi có dấu phẩy thành mảng JSON
+                                if (v.synonym.includes(',')) {
+                                    const synonymArray = v.synonym.split(',').map((s: string) => s.trim()).filter(Boolean);
+                                    processedSynonym = JSON.stringify(synonymArray);
+                                } else {
+                                    // Chỉ là một từ đơn, chuyển thành mảng có một phần tử
+                                    processedSynonym = JSON.stringify([v.synonym.trim()]);
+                                }
+                            }
+                        } else if (Array.isArray(v.synonym)) {
+                            // Nếu đã là mảng
+                            processedSynonym = JSON.stringify(v.synonym);
+                        } else if (typeof v.synonym === 'object') {
+                            // Nếu là object, chuyển thành mảng chứa string
+                            processedSynonym = JSON.stringify([v.synonym.toString()]);
                         }
                     }
+                } catch (error) {
+                    console.error('Error processing synonym:', error);
+                    processedSynonym = null;
                 }
 
+                console.log('processedSynonym', processedSynonym);
                 return new Vocabulary(
                     0,
                     v.content,
@@ -207,18 +227,56 @@ export class VocabularyTopicController {
 
       // Cập nhật danh sách từ vựng nếu được cung cấp
       if (vocabularies && Array.isArray(vocabularies)) {
-        const vocabularyList = vocabularies.map((v: any) => 
-          new Vocabulary(
+        const vocabularyList = vocabularies.map((v: any) => {
+          // Xử lý synonym - đảm bảo nó là JSON hợp lệ dạng mảng hoặc null
+          let processedSynonym = null;
+          try {
+            if (v.synonym) {
+              if (typeof v.synonym === 'string') {
+                // Nếu là string, kiểm tra xem có phải JSON array không
+                if (v.synonym.trim().startsWith('[') && v.synonym.trim().endsWith(']')) {
+                  // Đã là JSON array string, kiểm tra hợp lệ
+                  const parsedArray = JSON.parse(v.synonym);
+                  if (Array.isArray(parsedArray)) {
+                    processedSynonym = JSON.stringify(parsedArray);
+                  } else {
+                    // Nếu parse được nhưng không phải mảng thì chuyển thành mảng
+                    processedSynonym = JSON.stringify([parsedArray.toString().trim()]);
+                  }
+                } else {
+                  // Xử lý chuỗi có dấu phẩy thành mảng JSON
+                  if (v.synonym.includes(',')) {
+                    const synonymArray = v.synonym.split(',').map((s: string) => s.trim()).filter(Boolean);
+                    processedSynonym = JSON.stringify(synonymArray);
+                  } else {
+                    // Chỉ là một từ đơn, chuyển thành mảng có một phần tử
+                    processedSynonym = JSON.stringify([v.synonym.trim()]);
+                  }
+                }
+              } else if (Array.isArray(v.synonym)) {
+                // Nếu đã là mảng
+                processedSynonym = JSON.stringify(v.synonym);
+              } else if (typeof v.synonym === 'object') {
+                // Nếu là object, chuyển thành mảng chứa string
+                processedSynonym = JSON.stringify([v.synonym.toString()]);
+              }
+            }
+          } catch (error) {
+            console.error('Error processing synonym:', error);
+            processedSynonym = null;
+          }
+
+          return new Vocabulary(
             v.id || 0,
             v.content,
             v.meaning,
-            v.synonym || null,
+            processedSynonym,
             v.transcribe || '',
             v.urlAudio || '',
             v.urlImage || '',
             topicId
-          )
-        );
+          );
+        });
         updatedTopic.vocabularies = vocabularyList;
       }
 
