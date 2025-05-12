@@ -246,11 +246,17 @@ const TestDetail = () => {
     // Get all used question numbers
     const usedNumbers = partQuestions.map(q => q.questionNumber || 0);
     
-    // Find the first available number in the range
+    // Find all available numbers (gaps) in the valid range
+    const availableNumbers = [];
     for (let i = partLimit.start; i <= partLimit.end; i++) {
       if (!usedNumbers.includes(i)) {
-        return i;
+        availableNumbers.push(i);
       }
+    }
+    
+    // If there are available numbers, return the lowest one
+    if (availableNumbers.length > 0) {
+      return Math.min(...availableNumbers);
     }
 
     // If no gaps found, return the next number after the highest
@@ -543,13 +549,33 @@ const TestDetail = () => {
         console.log("resourceId: ", resourceId);
       }
       
-      // Get next question number for the part
-      const nextQuestionNumber = getNextQuestionNumber(activePart.partNumber);
+      // Find all available question numbers in the range
+      const partQuestions = questions.filter(q => {
+        const qNumber = q.questionNumber || 0;
+        return qNumber >= partLimit.start && qNumber <= partLimit.end;
+      });
+      
+      const usedNumbers = partQuestions.map(q => q.questionNumber || 0);
+      const availableNumbers = [];
+      
+      for (let i = partLimit.start; i <= partLimit.end; i++) {
+        if (!usedNumbers.includes(i)) {
+          availableNumbers.push(i);
+        }
+      }
       
       // Create all questions with shared resource
       for (let i = 0; i < batchQuestions.length; i++) {
         const q = batchQuestions[i];
-        const questionNumber = nextQuestionNumber + i;
+        // Use available numbers if possible, otherwise use sequential numbers after the max
+        let questionNumber;
+        
+        if (i < availableNumbers.length) {
+          questionNumber = availableNumbers[i];
+        } else {
+          const maxNumber = Math.max(...usedNumbers, ...availableNumbers.slice(0, i));
+          questionNumber = maxNumber + 1;
+        }
 
         if (!validateQuestionNumber(activePart.partNumber, questionNumber)) {
           setSubmitError(`Question number ${questionNumber} is outside the valid range for Part ${activePart.partNumber}`);
@@ -745,61 +771,80 @@ const TestDetail = () => {
   };
 
   // Hàm xử lý import câu hỏi từ excel cho part hiện tại (có validate số lượng tối đa)
-const handleImportQuestions = async (importedQuestions) => {
-  if (!activePart || !activePart.id) return;
-  const partLimit = TOEIC_PART_LIMITS[activePart.partNumber];
-  if (!partLimit) return;
-  const currentCount = questions.length;
-  const maxAllowed = partLimit.maxQuestions;
-  if (currentCount >= maxAllowed) {
-    displayErrorMessage(`Part ${activePart.partNumber} đã đủ số câu hỏi tối đa (${maxAllowed}). Không thể import thêm.`);
-    return;
-  }
-  // Chỉ lấy số lượng câu hỏi vừa đủ
-  const canImport = Math.min(importedQuestions.length, maxAllowed - currentCount);
-  if (canImport <= 0) {
-    displayErrorMessage(`Không còn chỗ để import câu hỏi mới cho part này.`);
-    return;
-  }
-  const questionsToImport = importedQuestions.slice(0, canImport);
-  if (questionsToImport.length < importedQuestions.length) {
-    displayErrorMessage(`Chỉ import được ${questionsToImport.length} câu hỏi, vì part này chỉ còn trống ${maxAllowed - currentCount} câu.`);
-  }
+  const handleImportQuestions = async (importedQuestions) => {
+    if (!activePart || !activePart.id) return;
+    const partLimit = TOEIC_PART_LIMITS[activePart.partNumber];
+    if (!partLimit) return;
+    const currentCount = questions.length;
+    const maxAllowed = partLimit.maxQuestions;
+    if (currentCount >= maxAllowed) {
+      displayErrorMessage(`Part ${activePart.partNumber} đã đủ số câu hỏi tối đa (${maxAllowed}). Không thể import thêm.`);
+      return;
+    }
+    // Chỉ lấy số lượng câu hỏi vừa đủ
+    const canImport = Math.min(importedQuestions.length, maxAllowed - currentCount);
+    if (canImport <= 0) {
+      displayErrorMessage(`Không còn chỗ để import câu hỏi mới cho part này.`);
+      return;
+    }
+    const questionsToImport = importedQuestions.slice(0, canImport);
+    if (questionsToImport.length < importedQuestions.length) {
+      displayErrorMessage(`Chỉ import được ${questionsToImport.length} câu hỏi, vì part này chỉ còn trống ${maxAllowed - currentCount} câu.`);
+    }
 
-  // Lấy số câu hỏi tiếp theo cho part
-  const nextQuestionNumber = getNextQuestionNumber(activePart.partNumber);
-  
-  // Thêm question number cho các câu hỏi được import
-  for (let i = 0; i < questionsToImport.length; i++) {
-    // Gán số thứ tự câu hỏi theo quy tắc của TOEIC
-    const questionNumber = nextQuestionNumber + i;
+    // Tìm tất cả các số câu hỏi đã được sử dụng
+    const partQuestions = questions.filter(q => {
+      const qNumber = q.questionNumber || 0;
+      return qNumber >= partLimit.start && qNumber <= partLimit.end;
+    });
     
-    // Kiểm tra nếu số câu hỏi vượt quá giới hạn cho phép
-    if (questionNumber > partLimit.end) {
-      displayErrorMessage(`Chỉ import được ${i} câu hỏi, vì số câu hỏi vượt quá giới hạn cho phép của Part ${activePart.partNumber}`);
-      // Chỉ import số câu hỏi không vượt quá giới hạn
-      questionsToImport.splice(i);
-      break;
+    const usedNumbers = partQuestions.map(q => q.questionNumber || 0);
+    const availableNumbers = [];
+    
+    for (let i = partLimit.start; i <= partLimit.end; i++) {
+      if (!usedNumbers.includes(i)) {
+        availableNumbers.push(i);
+      }
     }
     
-    // Thêm thuộc tính questionNumber vào đối tượng câu hỏi
-    questionsToImport[i] = {
-      ...questionsToImport[i],
-      questionNumber: questionNumber,
-      explainDetail: formatExplainDetailToHtml(questionsToImport[i].explainDetail || '')
-    };
-    console.log(questionsToImport[i]);
-  }
-  
-  for (const question of questionsToImport) {
-    console.log(question);
-    await questionService.createQuestionByPartId(id, activePart.id, question);
-  }
-  
-  const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
-  setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
-  displaySuccessMessage(`Import thành công ${questionsToImport.length} câu hỏi!`);
-};
+    // Thêm question number cho các câu hỏi được import
+    for (let i = 0; i < questionsToImport.length; i++) {
+      // Sử dụng các số câu hỏi có sẵn hoặc số tiếp theo nếu không đủ
+      let questionNumber;
+      
+      if (i < availableNumbers.length) {
+        questionNumber = availableNumbers[i];
+      } else {
+        const maxNumber = Math.max(...usedNumbers, ...availableNumbers.slice(0, i));
+        questionNumber = maxNumber + 1;
+      }
+      
+      // Kiểm tra nếu số câu hỏi vượt quá giới hạn cho phép
+      if (questionNumber > partLimit.end) {
+        displayErrorMessage(`Chỉ import được ${i} câu hỏi, vì số câu hỏi vượt quá giới hạn cho phép của Part ${activePart.partNumber}`);
+        // Chỉ import số câu hỏi không vượt quá giới hạn
+        questionsToImport.splice(i);
+        break;
+      }
+      
+      // Thêm thuộc tính questionNumber vào đối tượng câu hỏi
+      questionsToImport[i] = {
+        ...questionsToImport[i],
+        questionNumber: questionNumber,
+        explainDetail: formatExplainDetailToHtml(questionsToImport[i].explainDetail || '')
+      };
+      console.log(questionsToImport[i]);
+    }
+    
+    for (const question of questionsToImport) {
+      console.log(question);
+      await questionService.createQuestionByPartId(id, activePart.id, question);
+    }
+    
+    const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
+    setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
+    displaySuccessMessage(`Import thành công ${questionsToImport.length} câu hỏi!`);
+  };
 
   if (loading) {
     return <div className="test-detail-loading">Loading test details...</div>;

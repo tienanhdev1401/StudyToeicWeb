@@ -795,7 +795,7 @@ const ManageVocabulary = () => {
       
       // Use the correct import function from the service
       const importResult = await vocabularyService.importVocabulariesFromExcel(id, formattedVocabularies);
-      
+    
       // Refresh the vocabulary list
       await fetchVocabularies();
       
