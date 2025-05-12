@@ -656,7 +656,7 @@ const ManageStaff = () => {
     try {
       await staffService.resetStaffPassword(id);
       setError(null);
-      setSuccessMessage("Password has been reset successfully. A temporary password has been sent to the staff's email.");
+      setSuccessMessage("Password has been reset successfully. New Password is: 123456789");
       
       // Clear success message after 5 seconds
       setTimeout(() => {
