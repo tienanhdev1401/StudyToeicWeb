@@ -1527,11 +1527,11 @@ const handleImportQuestions = async (importedQuestions) => {
       {showDeleteModal && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.3)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div className="modal-content" style={{ maxWidth: 600 ,background: '#fff', padding: 24, borderRadius: 8, minWidth: 320, boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
-            <h3>Xác nhận xóa câu hỏi</h3>
-            <p>Bạn có chắc chắn muốn xóa câu hỏi này? Hành động này không thể hoàn tác.</p>
+            <h3>Confirm question deletion</h3>
+            <p>Are you sure you want to delete this question? This action cannot be undone..</p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>
-              <button onClick={closeDeleteModal} style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#ccc', color: '#222', cursor: 'pointer' }}>Hủy</button>
-              <button onClick={handleDeleteQuestion} style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#d32f2f', color: '#fff', cursor: 'pointer' }}>Xác nhận xóa</button>
+              <button onClick={closeDeleteModal} style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#ccc', color: '#222', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleDeleteQuestion} style={{ padding: '6px 16px', borderRadius: 4, border: 'none', background: '#d32f2f', color: '#fff', cursor: 'pointer' }}>Delete</button>
             </div>
           </div>
         </div>
