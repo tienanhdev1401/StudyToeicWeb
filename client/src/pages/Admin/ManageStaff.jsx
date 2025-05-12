@@ -150,7 +150,7 @@ const ManageStaff = () => {
       const data = await staffService.getAllStaffs();
       setStaffList(data.filter(staff => staff.role !== 'USER'));
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     } finally {
       setIsLoading(false);
     }
@@ -221,7 +221,7 @@ const ManageStaff = () => {
       await staffService.blockStaff(id);
       await fetchStaffs();
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     }
   };
 
@@ -230,7 +230,7 @@ const ManageStaff = () => {
       await staffService.unblockStaff(id);
       await fetchStaffs();
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     }
   };
 
@@ -239,7 +239,7 @@ const ManageStaff = () => {
       await staffService.deleteStaff(id);
       await fetchStaffs();
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     }
   };
 
@@ -249,7 +249,7 @@ const ManageStaff = () => {
       await fetchStaffs();
       setSelectedItems([]);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     }
   };
 
@@ -259,7 +259,7 @@ const ManageStaff = () => {
       await fetchStaffs();
       setSelectedItems([]);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     }
   };
 
@@ -269,7 +269,7 @@ const ManageStaff = () => {
       await fetchStaffs();
       setSelectedItems([]);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     }
   };
 
@@ -369,7 +369,7 @@ const ManageStaff = () => {
       setShowAddForm(false);
       setFormErrors({});
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     }
   };
 
@@ -400,7 +400,7 @@ const ManageStaff = () => {
       setEditingStaffId(null);
       setFormErrors({});
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     }
   };
   
@@ -656,14 +656,14 @@ const ManageStaff = () => {
     try {
       await staffService.resetStaffPassword(id);
       setError(null);
-      setSuccessMessage("Password has been reset successfully. A temporary password has been sent to the staff's email.");
+      setSuccessMessage("Password has been reset successfully. New Password is: 123456789");
       
       // Clear success message after 5 seconds
       setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
       setSuccessMessage(null);
       
       // Clear error message after 5 seconds

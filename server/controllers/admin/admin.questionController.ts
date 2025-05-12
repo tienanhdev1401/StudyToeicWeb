@@ -314,6 +314,12 @@ export class QuestionController {
       // Check if the question is used in other parts
       const usedInOtherParts = await QuestionInAPartRepository.isQuestionUsedInOtherParts(questionId, partId);
 
+      if (usedInOtherParts) {
+        return res.status(404).json({
+          success: true,
+          message: 'Đã xóa câu hỏi khỏi phần này, nhưng câu hỏi vẫn được sử dụng trong các phần khác'
+        });
+      }
       // If not used anywhere else, delete the question entirely
       if (!usedInOtherParts) {
         await QuestionRepository.delete(questionId);
