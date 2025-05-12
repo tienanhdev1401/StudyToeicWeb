@@ -116,13 +116,13 @@ const LearnVocabulary = () => {
             <Header />
             <main>
                 <div className="container">
-                    <div className="header-container">
-                        <div className="search-box">
-                            <FaSearch className="search-icon" />
+                    <div className="vocab-header-container">
+                        <div className="vocab-search-box">
+                            <FaSearch className="vocab-search-icon" />
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm chủ đề..."
-                                className="search-input"
+                                className="vocab-search-input"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />

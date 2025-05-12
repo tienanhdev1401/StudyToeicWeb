@@ -41,7 +41,7 @@ export class TestController {
         title,
         tests
       }));
-  
+   
       return res.status(200).json(result);
     } catch (error) {
       console.error('Error in getAllTests:', error);

@@ -90,13 +90,13 @@ const LearnGrammar = () => {
     return (
         <>
             <Header />
-            <div className="header-container">
-                <div className="search-box">
-                    <FaSearch className="search-icon" />
+            <div className="grammar-header-container">
+                <div className="grammar-search-box">
+                    <FaSearch className="grammar-search-icon" />
                     <input
                         type="text"
                         placeholder="Tìm kiếm chủ đề..."
-                        className="search-input"
+                        className="grammar-search-input"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />

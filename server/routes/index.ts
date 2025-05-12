@@ -59,6 +59,7 @@ function route(app: Application): void {
   app.use('/api/admin/exercise', adminExerciseRoutes);
   app.use('/api/admin/exercise/', adminExerciseQuestionRoutes);
 
+  
   app.use('/api/submissions', submissionRoutes);
   app.use('/', test);
   app.use('/api/admin/roadmap-config', adminRoadmapConfigRoutes);

@@ -160,9 +160,19 @@ const DoTest = () => {
             try {
                 console.log("Fetching test data..." + testID);
                 setLoading(true);
-                // Use Promise.all to fetch data in parallel if possible
-                const rawData = await TestService.getTestById(testID);
-                const processedData = TestService.processTestData(rawData);
+                
+                let processedData;
+                
+                // Kiểm tra nếu có dữ liệu từ state
+                if (state?.testData) {
+                    
+                    processedData = TestService.processTestData(state.testData);
+                } else {
+                    // Nếu không có dữ liệu từ state, gọi API
+                   const rawData = await TestService.getTestById(testID);
+                    processedData = TestService.processTestData(rawData);
+                }
+                
                 setTestData(processedData);
 
                 // Khởi tạo thời gian nếu có
@@ -201,7 +211,7 @@ const DoTest = () => {
         };
 
         fetchTestData();
-    }, [testID, state?.timeLimit, user]);
+    }, [testID, state?.timeLimit, state?.testData, user]);
 
     // Khởi tạo và lọc câu hỏi - optimize to run faster
     useEffect(() => {

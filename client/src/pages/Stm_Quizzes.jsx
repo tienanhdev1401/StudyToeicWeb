@@ -16,6 +16,7 @@ function Stmquizzes() {
   const { testId } = useParams();
   const navigate = useNavigate();
   const [testTitle, setTestTitle] = useState('');
+  const [testData, setTestData] = useState(null);
 
   const handleTimeChange = (event) => {
     setSelectedTime(Number(event.target.value));
@@ -31,6 +32,7 @@ function Stmquizzes() {
       try {
         const testData = await TestService.getTestById(testId);
         setTestTitle(testData.title || `TEST ĐẦU VÀO (${testId})`);
+        setTestData(testData);
       } catch (error) {
         console.error('Lỗi khi lấy thông tin test:', error);
         setTestTitle(`TEST ĐẦU VÀO (${testId})`);
@@ -51,14 +53,12 @@ function Stmquizzes() {
   };
 
   const handleStartTest = () => {
-    // Sử dụng testId lấy từ URL để điều hướng
-    //navigate(`/Dotest/${testId}`
     localStorage.setItem('userInteracted', 'true');
     navigate(`/DoTest/${testId}`, {
       state: {
-        
         selectedParts: selectedParts.length > 0 ? selectedParts : [1, 2, 3, 4, 5, 6, 7],
-        timeLimit: selectedTime * 60 
+        timeLimit: selectedTime * 60,
+        testData: testData
       }
     });
   };

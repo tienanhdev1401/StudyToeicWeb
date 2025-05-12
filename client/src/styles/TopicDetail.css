@@ -538,26 +538,26 @@
 
 /* Style cho nội dung thẻ */
 .td-word {
-  font-size: 2rem;
+  font-size:4rem;
   font-weight: 600;
   color: #2d3436;
 }
 
 .td-definition {
-  font-size: 1.8rem;
+  font-size: 4rem;
   color: #2d3436;
   margin-bottom: 1rem;
 }
 
 .td-pronunciation {
-  font-size: 1.2rem;
+  font-size: 2.5rem;
   color: #6c757d;
   font-style: italic;
   margin-bottom: 1.5rem;
 }
 
 .td-example {
-  font-size: 1rem;
+  font-size: 2rem;
   color: #495057;
   border-left: 3px solid #0984e3;
   padding-left: 1rem;
