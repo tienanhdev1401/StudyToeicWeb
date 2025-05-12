@@ -1,10 +1,10 @@
 export class Roadmap {
-  public id: number;
-  public tittle: string;
-  public content: string;
-  public createdAt: Date;
-  public updatedAt: Date | null;
-  public learnerId: number;
+   id: number;
+   tittle: string;
+   content: string;
+   createdAt: Date;
+   updatedAt: Date | null;
+   learnerId: number;
 
   constructor(
     id: number,

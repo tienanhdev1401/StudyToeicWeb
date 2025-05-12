@@ -1,8 +1,8 @@
 export class Resource {
-    public id: number;
-    public explain_resource: string | null;
-    public urlAudio: string | null;
-    public urlImage: string | null;
+     id: number;
+ explain_resource: string | null;
+     urlAudio: string | null;
+     urlImage: string | null;
 
     constructor(
         id: number,

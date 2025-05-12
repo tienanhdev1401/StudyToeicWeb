@@ -1,11 +1,11 @@
 import { Exercise } from "./Exercise";
 
 export class GrammarTopic {
-  public id: number;
-  public title: string;
-  public content: string;
-  public imageUrl: string | null;
-  public exercises: Exercise[]; // <-- thêm thuộc tính này
+   id: number;
+   title: string;
+   content: string;
+   imageUrl: string | null;
+   exercises: Exercise[]; 
 
   constructor(
     id: number,

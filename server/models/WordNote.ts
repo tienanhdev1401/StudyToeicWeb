@@ -1,7 +1,7 @@
 class WordNote {
-    public id: number;
-    public title: string;
-    public LearnerId: number;
+    id: number;
+    title: string;
+    LearnerId: number;
 
     constructor(
         id: number,

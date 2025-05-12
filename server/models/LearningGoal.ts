@@ -1,9 +1,9 @@
 export class LearningGoal {
-    public id: number;
-    public duration: number;
-    public scoreTarget: number;
-    public createdAt: Date;
-    public learnerId: number;
+     id: number;
+     duration: number;
+     scoreTarget: number;
+     createdAt: Date;
+     learnerId: number;
   
     constructor(
       id: number,

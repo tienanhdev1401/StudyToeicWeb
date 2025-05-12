@@ -1,15 +1,15 @@
 export class Submission {
-  public id?: number;
-  public tittle?: string;
-  public totalscore?: number;
-  public listeningScore?: number;
-  public readingScore?: number;
-  public completionTime?: number;
-  public userAnswer?: any; // JSON
-  public createdAt?: Date;
-  public updatedAt?: Date;
-  public LearnerId?: number;
-  public TestId?: number;
+  id?: number;
+  tittle?: string;
+  totalscore?: number;
+  listeningScore?: number;
+  readingScore?: number;
+  completionTime?: number;
+  userAnswer?: any; // JSON
+  createdAt?: Date;
+  updatedAt?: Date;
+  LearnerId?: number;
+  TestId?: number;
 
   constructor(submissionData: {
     id?: number;
@@ -31,15 +31,15 @@ export class Submission {
     this.readingScore = submissionData.readingScore;
     this.completionTime = submissionData.completionTime;
     this.userAnswer = submissionData.userAnswer;
-    
-    this.createdAt = submissionData.createdAt instanceof Date 
-      ? submissionData.createdAt 
+
+    this.createdAt = submissionData.createdAt instanceof Date
+      ? submissionData.createdAt
       : submissionData.createdAt ? new Date(submissionData.createdAt) : undefined;
-    
-    this.updatedAt = submissionData.updatedAt instanceof Date 
-      ? submissionData.updatedAt 
+
+    this.updatedAt = submissionData.updatedAt instanceof Date
+      ? submissionData.updatedAt
       : submissionData.updatedAt ? new Date(submissionData.updatedAt) : undefined;
-    
+
     this.LearnerId = submissionData.LearnerId;
     this.TestId = submissionData.TestId;
   }

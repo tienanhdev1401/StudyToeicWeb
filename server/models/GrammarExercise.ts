@@ -1,9 +1,9 @@
 import { Question } from "./Question";
 
 export class GrammarExercise {
-    public id: number;
-    public exerciseName: string;
-    public questions: Question[];
+     id: number;
+     exerciseName: string;
+     questions: Question[];
 
     constructor(
         id: number,

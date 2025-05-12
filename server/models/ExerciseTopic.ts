@@ -1,8 +1,8 @@
 export class ExerciseTopic {
-    public id: number;
-    public exerciseName: string;
-    public createdAt: Date;
-    public updatedAt: Date;
+     id: number;
+     exerciseName: string;
+     createdAt: Date;
+     updatedAt: Date;
 
     constructor(
         id: number,
