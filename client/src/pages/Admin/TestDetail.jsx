@@ -790,7 +790,7 @@ const handleImportQuestions = async (importedQuestions) => {
     };
     console.log(questionsToImport[i]);
   }
-
+  
   for (const question of questionsToImport) {
     console.log(question);
     await questionService.createQuestionByPartId(id, activePart.id, question);
