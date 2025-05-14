@@ -28,7 +28,7 @@ const Home = () => {
     const [goalProgress, setGoalProgress] = useState(0);
     const [daysRemaining, setDaysRemaining] = useState(0);
     const [currentTopicName, setCurrentTopicName] = useState("");
-    
+
     const { isLoggedIn, user } = useAuth();
     const { user: userDetails } = useUser();
     const navigate = useNavigate();
@@ -68,7 +68,7 @@ const Home = () => {
                     setGrammarTopics([]);
                 }
             }
-            
+
             // Lấy 4 bài test mới nhất
             if (!dataFetched.tests) {
                 try {
@@ -87,17 +87,17 @@ const Home = () => {
                                 allTestItems = [...allTestItems, ...testsWithCollection];
                             }
                         });
-                        
+
                         // Sắp xếp theo số lượt hoàn thành
                         allTestItems.sort((a, b) => {
                             const completionsA = parseInt(a.completions?.replace(/\./g, '')) || 0;
                             const completionsB = parseInt(b.completions?.replace(/\./g, '')) || 0;
                             return completionsB - completionsA; // Sắp xếp giảm dần
                         });
-                        
+
                         // Lấy 4 bài test có nhiều lượt hoàn thành nhất
                         const topTests = allTestItems.slice(0, 4);
-                        
+
                         // Map dữ liệu bài test để phù hợp với cấu trúc hiện tại
                         const formattedTests = topTests.map(test => ({
                             id: test.id,
@@ -106,9 +106,9 @@ const Home = () => {
                             time: `120 phút`,
                             completions: test.completions
                         }));
-                        
+
                         setPracticeTests(formattedTests);
-                    } 
+                    }
                 } catch (error) {
                     console.error('Lỗi khi tải dữ liệu bài kiểm tra:', error);
                 }
@@ -123,19 +123,24 @@ const Home = () => {
                         const response = await getLearningGoalByLearnerId(userDetails.id);
                         if (response.success && response.data) {
                             setLearningGoal(response.data);
-                            
+
                             // Calculate progress
-                            const createdDate = new Date(response.data.createdAt || new Date());
+                            const rawCreatedDate = new Date(response.data.createdAt || new Date());
+
+                            // Trừ ngược lại 7 tiếng (tính bằng milliseconds)
+                            const createdDate = new Date(rawCreatedDate.getTime() - 7 * 60 * 60 * 1000);
+
+
                             const targetDuration = response.data.duration; // in days
                             const currentDate = new Date();
-                            
+
                             // Calculate days elapsed
                             const daysElapsed = Math.floor((currentDate - createdDate) / (1000 * 60 * 60 * 24));
-                            
+
                             // Calculate progress percentage
                             const progressPercentage = Math.min(100, Math.round((daysElapsed / targetDuration) * 100));
                             setGoalProgress(progressPercentage);
-                            
+
                             // Calculate days remaining
                             const remaining = Math.max(0, targetDuration - daysElapsed);
                             setDaysRemaining(remaining);
@@ -154,10 +159,10 @@ const Home = () => {
                         const inProgressProcesses = processes
                             .filter(process => process.progressStatus === 'in_progress')
                             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                        
+
                         if (inProgressProcesses.length > 0) {
                             setLatestLearningProcess(inProgressProcesses[0]);
-                            
+
                             // Lấy tên chủ đề đang học
                             try {
                                 if (inProgressProcesses[0].VocabularyTopicId) {
@@ -293,7 +298,7 @@ const Home = () => {
                                                 <div className="col-md-8">
                                                     <h3 className="mb-1">Xin chào, {user?.name || "học viên"}!</h3>
                                                     <p className="text-muted mb-4">Tiếp tục hành trình nâng cao điểm TOEIC của bạn</p>
-                                                    
+
                                                     <div className="row g-3">
                                                         <div className="col-md-4">
                                                             <div className="d-flex align-items-center p-3 bg-light rounded">
@@ -353,28 +358,28 @@ const Home = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="mt-4">
-                                                        <a href="#" 
-                                                           onClick={e => { 
-                                                               e.preventDefault(); 
-                                                               if (latestLearningProcess) {
-                                                                   if (latestLearningProcess.VocabularyTopicId) {
-                                                                       navigate(`/learn-vocabulary/${latestLearningProcess.VocabularyTopicId}`);
-                                                                   } else if (latestLearningProcess.GrammarTopicId) {
-                                                                       navigate(`/learn-grammary/${latestLearningProcess.GrammarTopicId}`);
-                                                                   } else if (latestLearningProcess.TestId) {
-                                                                       navigate(`/Stm_Quizzes/${latestLearningProcess.TestId}`);
-                                                                   }
-                                                               } else {
-                                                                   alert('Bạn chưa học, hãy bắt đầu một chủ đề hoặc bài test trước!');
-                                                               }
-                                                           }} 
-                                                           className="btn btn-primary me-2">
+                                                        <a href="#"
+                                                            onClick={e => {
+                                                                e.preventDefault();
+                                                                if (latestLearningProcess) {
+                                                                    if (latestLearningProcess.VocabularyTopicId) {
+                                                                        navigate(`/learn-vocabulary/${latestLearningProcess.VocabularyTopicId}`);
+                                                                    } else if (latestLearningProcess.GrammarTopicId) {
+                                                                        navigate(`/learn-grammary/${latestLearningProcess.GrammarTopicId}`);
+                                                                    } else if (latestLearningProcess.TestId) {
+                                                                        navigate(`/Stm_Quizzes/${latestLearningProcess.TestId}`);
+                                                                    }
+                                                                } else {
+                                                                    alert('Bạn chưa học, hãy bắt đầu một chủ đề hoặc bài test trước!');
+                                                                }
+                                                            }}
+                                                            className="btn btn-primary me-2">
                                                             <i className="fas fa-play-circle me-2"></i>Tiếp tục học
                                                         </a>
-                                                        <a href="#" onClick={e => { e.preventDefault(); navigate('/test-online-new'); }} 
-                                                           className="btn btn-outline-primary">
+                                                        <a href="#" onClick={e => { e.preventDefault(); navigate('/test-online-new'); }}
+                                                            className="btn btn-outline-primary">
                                                             <i className="fas fa-tasks me-2"></i>Làm bài thi thử
                                                         </a>
                                                     </div>
@@ -417,14 +422,14 @@ const Home = () => {
                                                                             <strong>{daysRemaining} ngày</strong>
                                                                         </div>
                                                                     </div>
-                                                                    <a href="#" 
-                                                                       onClick={e => { e.preventDefault(); navigate('/profile'); }} 
-                                                                       className="btn btn-sm btn-light mt-2">
+                                                                    <a href="#"
+                                                                        onClick={e => { e.preventDefault(); navigate('/profile'); }}
+                                                                        className="btn btn-sm btn-light mt-2">
                                                                         Cập nhật mục tiêu
                                                                     </a>
-                                                                    <a href="#" 
-                                                                       onClick={e => { e.preventDefault(); navigate('/roadmap'); }} 
-                                                                       className="btn btn-sm btn-light mt-2 ms-2">
+                                                                    <a href="#"
+                                                                        onClick={e => { e.preventDefault(); navigate('/roadmap'); }}
+                                                                        className="btn btn-sm btn-light mt-2 ms-2">
                                                                         <i className="fas fa-road me-1"></i> Xem lộ trình
                                                                     </a>
                                                                 </>
@@ -435,11 +440,11 @@ const Home = () => {
                                                                     </div>
                                                                     <h2 className="mb-3" style={{ color: '#FF9800', fontWeight: 'bold' }}>Chưa có mục tiêu</h2>
                                                                     <p className="mb-3">Hãy đặt mục tiêu học tập để theo dõi tiến độ và đạt kết quả tốt hơn</p>
-                                                                    
-                                                                    <a href="#" 
-                                                                       onClick={e => { e.preventDefault(); navigate('/profile'); }} 
-                                                                       className="btn btn-light btn-lg fw-bold mt-2" 
-                                                                       style={{ borderRadius: '30px', padding: '10px 25px' }}>
+
+                                                                    <a href="#"
+                                                                        onClick={e => { e.preventDefault(); navigate('/profile'); }}
+                                                                        className="btn btn-light btn-lg fw-bold mt-2"
+                                                                        style={{ borderRadius: '30px', padding: '10px 25px' }}>
                                                                         <i className="fas fa-flag-checkered me-2"></i>
                                                                         Tạo mục tiêu ngay
                                                                     </a>
@@ -969,7 +974,7 @@ const Home = () => {
                                     }}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                                navigate(`/Stm_Quizzes/${test.id}`);
+                                            navigate(`/Stm_Quizzes/${test.id}`);
                                         }}
                                         onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-8px)' }}
                                         onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)' }}>
@@ -1022,7 +1027,7 @@ const Home = () => {
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
-                                                        navigate(`/Stm_Quizzes/${test.id}`);
+                                                    navigate(`/Stm_Quizzes/${test.id}`);
                                                 }}
                                             >
                                                 Bắt đầu làm bài
@@ -1214,20 +1219,20 @@ const Home = () => {
                                                 justifyContent: 'center',
                                                 marginRight: '15px'
                                             }}>
-                                                <i className={latestLearningProcess ? 
-                                                    (latestLearningProcess.VocabularyTopicId ? "fas fa-book" : 
-                                                    latestLearningProcess.GrammarTopicId ? "fas fa-pencil-alt" : 
-                                                    "fas fa-file-alt") : "fas fa-book"} 
-                                                   style={{ color: 'white' }}>
+                                                <i className={latestLearningProcess ?
+                                                    (latestLearningProcess.VocabularyTopicId ? "fas fa-book" :
+                                                        latestLearningProcess.GrammarTopicId ? "fas fa-pencil-alt" :
+                                                            "fas fa-file-alt") : "fas fa-book"}
+                                                    style={{ color: 'white' }}>
                                                 </i>
                                             </div>
                                             <div style={{ width: '100%' }}>
                                                 <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '500' }}>
-                                                    {currentTopicName ? currentTopicName : 
-                                                     latestLearningProcess ? 
-                                                        (latestLearningProcess.VocabularyTopicId ? "Tiếp tục học từ vựng" : 
-                                                        latestLearningProcess.GrammarTopicId ? "Tiếp tục học ngữ pháp" : 
-                                                        "Tiếp tục làm bài test") : "Bắt đầu học từ vựng"}
+                                                    {currentTopicName ? currentTopicName :
+                                                        latestLearningProcess ?
+                                                            (latestLearningProcess.VocabularyTopicId ? "Tiếp tục học từ vựng" :
+                                                                latestLearningProcess.GrammarTopicId ? "Tiếp tục học ngữ pháp" :
+                                                                    "Tiếp tục làm bài test") : "Bắt đầu học từ vựng"}
                                                 </h5>
                                                 <div style={{ height: '4px', background: '#e0e0e0', borderRadius: '2px', marginTop: '8px', width: '100%' }}>
                                                     <div style={{ height: '100%', width: latestLearningProcess ? '65%' : '0%', background: '#4527A0', borderRadius: '2px' }}></div>

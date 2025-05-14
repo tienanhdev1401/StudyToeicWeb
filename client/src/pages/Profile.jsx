@@ -372,9 +372,70 @@ const ProfilePage = () => {
         }
     };
 
+    const handleInputChange = (field, value) => {
+        // Kiểm tra nếu là số điện thoại
+        if (field === 'phoneNumber') {
+            // Chỉ cho phép nhập số
+            if (value !== '' && !/^\d+$/.test(value)) {
+                return; // Không cập nhật nếu không phải số
+            }
+            
+            // Giới hạn 10 số
+            if (value.length > 10) {
+                return; // Không cập nhật nếu vượt quá 10 số
+            }
+        }
+        
+        // Kiểm tra nếu là ngày sinh
+        if (field === 'dateOfBirth' && value) {
+            const selectedDate = new Date(value);
+            const today = new Date();
+            
+            // Tính tuổi (phải lớn hơn 7 tuổi)
+            const minAgeDate = new Date();
+            minAgeDate.setFullYear(today.getFullYear() - 7);
+            
+            if (selectedDate > minAgeDate) {
+                alert('Người dùng phải từ 7 tuổi trở lên');
+                return; // Không cập nhật nếu chưa đủ 7 tuổi
+            }
+        }
+        
+        setEditedUser(prev => {
+            if (!prev) return { [field]: value };
+            
+            const updated = {
+                ...prev,
+                [field]: value
+            };
+            return updated;
+        });
+    };
+
     const handleSave = async () => {
         setIsSavingProfile(true);
         try {
+            // Kiểm tra số điện thoại trước khi lưu
+            if (editedUser.phoneNumber && (!/^\d+$/.test(editedUser.phoneNumber) || editedUser.phoneNumber.length !== 10)) {
+                alert('Số điện thoại phải là 10 chữ số');
+                setIsSavingProfile(false);
+                return;
+            }
+            
+            // Kiểm tra ngày sinh trước khi lưu
+            if (editedUser.dateOfBirth) {
+                const selectedDate = new Date(editedUser.dateOfBirth);
+                const today = new Date();
+                const minAgeDate = new Date();
+                minAgeDate.setFullYear(today.getFullYear() - 7);
+                
+                if (selectedDate > minAgeDate) {
+                    alert('Người dùng phải từ 7 tuổi trở lên');
+                    setIsSavingProfile(false);
+                    return;
+                }
+            }
+            
             await userService.updateProfile(editedUser);
             setIsEditing(false);
             await fetchUserProfile();
@@ -391,18 +452,6 @@ const ProfilePage = () => {
         } finally {
             setIsSavingProfile(false);
         }
-    };
-
-    const handleInputChange = (field, value) => {
-        setEditedUser(prev => {
-            if (!prev) return { [field]: value };
-            
-            const updated = {
-                ...prev,
-                [field]: value
-            };
-            return updated;
-        });
     };
 
     const handleGoalEdit = () => {
