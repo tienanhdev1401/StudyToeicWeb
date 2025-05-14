@@ -370,7 +370,6 @@ export class AdminTestController {
       const sheetName = workbook.SheetNames[0];
       const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
 
-      // Xử lý giống như logic importAllQuestions
       // Gom nhóm câu hỏi theo partNumber
       const partMap: { [key: string]: any[] } = {};
       for (const q of data as any[]) {

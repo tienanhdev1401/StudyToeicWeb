@@ -129,38 +129,87 @@ export class VocabularyTopicRepository {
     // Tạo đối tượng datetime hợp lệ (định dạng YYYY-MM-DD HH:MM:SS)
     const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
     
-    // 1. Cập nhật topic trong bảng vocabularytopics
-    const topicResult = await database.query(
-      'UPDATE vocabularytopics SET topicName = ?,  imageURL = ?, updatedAt = ? WHERE id = ?',
-      [topic.topicName,  topic.imageUrl, currentDateTime, topic.id]
-    );  
+    // Bắt đầu transaction
+    try {
+      await database.query('START TRANSACTION');
+      
+      // 1. Cập nhật topic trong bảng vocabularytopics
+      await database.query(
+        'UPDATE vocabularytopics SET topicName = ?, imageURL = ?, updatedAt = ? WHERE id = ?',
+        [topic.topicName, topic.imageUrl, currentDateTime, topic.id]
+      );  
 
-    // 2. Cập nhật từng vocabulary trong bảng vocabularies
-    if (topic.vocabularies && topic.vocabularies.length > 0) {
+      // Lấy danh sách từ vựng hiện có của topic này
+      const existingVocabs = await database.query(
+        'SELECT id, content FROM vocabularies WHERE VocabularyTopicId = ?',
+        [topic.id]
+      );
+      
+      const existingVocabMap = new Map();
+      existingVocabs.forEach((vocab: any) => {
+        existingVocabMap.set(vocab.content.toLowerCase(), vocab.id);
+      });
+
+      // 2. Cập nhật từng vocabulary trong bảng vocabularies
+      if (topic.vocabularies && topic.vocabularies.length > 0) {
         for (const vocab of topic.vocabularies) {
+          if (vocab.id) {
+            // Cập nhật từ vựng đã có
             await database.query(
-                `UPDATE vocabularies  
-                SET content = ?, meaning = ?, synonym = ?, transcribe = ?, urlAudio = ?, urlImage = ? 
-                WHERE id = ?`,
-                [
-                    vocab.content,
-                    vocab.meaning,
-                    vocab.synonym,
-                    vocab.transcribe, 
-                    vocab.urlAudio,
-                    vocab.urlImage,
-                    vocab.id
-                ]
+              `UPDATE vocabularies  
+              SET content = ?, meaning = ?, synonym = ?, transcribe = ?, urlAudio = ?, urlImage = ? 
+              WHERE id = ?`,
+              [
+                vocab.content,
+                vocab.meaning,
+                vocab.synonym,
+                vocab.transcribe, 
+                vocab.urlAudio,
+                vocab.urlImage,
+                vocab.id
+              ]
             );
+          } else {
+            // Kiểm tra từ vựng mới có trùng với từ vựng đã có trong topic không
+            const existingId = existingVocabMap.get(vocab.content.toLowerCase());
+            
+            if (!existingId) {
+              // Thêm từ vựng mới nếu không trùng
+              await database.query(
+                `INSERT INTO vocabularies 
+                (content, meaning, synonym, transcribe, urlAudio, urlImage, VocabularyTopicId) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [
+                  vocab.content,
+                  vocab.meaning,
+                  vocab.synonym,
+                  vocab.transcribe,
+                  vocab.urlAudio,
+                  vocab.urlImage,
+                  topic.id
+                ]
+              );
+            }
+            // Nếu trùng thì bỏ qua, không thêm
+          }
         }
-    }     
-
-    // Trả về topic đã được cập nhật
-    const updatedTopic = await this.findById(topic.id);
-    if (!updatedTopic) {
+      }
+      
+      // Commit transaction
+      await database.query('COMMIT');
+      
+      // Trả về topic đã được cập nhật
+      const updatedTopic = await this.findById(topic.id);
+      if (!updatedTopic) {
         throw new Error('Failed to update vocabulary topic');
+      }
+      return updatedTopic;
+    } catch (error) {
+      // Rollback nếu có lỗi
+      await database.query('ROLLBACK');
+      console.error('Error updating vocabulary topic:', error);
+      throw error;
     }
-    return updatedTopic;
   }
 
   /**

@@ -277,7 +277,7 @@ export class VocabularyTopicController {
 
       // Gọi repository để cập nhật vào database
       const result = await VocabularyTopicRepository.updateVocabularyTopic(updatedTopic);
-
+      console.log(result);
       // Trả về kết quả
       res.status(200).json({
         success: true,
