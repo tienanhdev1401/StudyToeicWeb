@@ -32,7 +32,7 @@ router.post('/:id/parts', AdminTestController.addPartToTest);
 router.get('/collections/all',  AdminTestController.getTestCollections);
 
 // Import all questions
-router.post('/import-questions/:testId', AdminTestController.importAllQuestions);
+// router.post('/import-questions/:testId', AdminTestController.importAllQuestions);
 
 // Import all questions from Excel file (tối ưu)
 router.post('/import-questions-file/:testId', upload.single('file'), AdminTestController.importAllQuestionsFromFile);
