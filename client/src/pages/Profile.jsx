@@ -78,7 +78,7 @@ const ProfilePage = () => {
             // Chỉ cập nhật editedUser khi user thay đổi VÀ không ở chế độ chỉnh sửa
             const userCopy = JSON.parse(JSON.stringify(user));
             
-            // Đảm bảo giới tính được hiển thị đúng
+        
             if (userCopy.gender === null || userCopy.gender === undefined) {
                 userCopy.gender = '';
             }
@@ -89,7 +89,6 @@ const ProfilePage = () => {
             // Lần đầu load trang
             const userCopy = JSON.parse(JSON.stringify(user));
             
-            // Đảm bảo giới tính được hiển thị đúng
             if (userCopy.gender === null || userCopy.gender === undefined) {
                 userCopy.gender = '';
             }

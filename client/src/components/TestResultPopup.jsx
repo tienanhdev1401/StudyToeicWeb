@@ -37,8 +37,6 @@ const TestResultPopup = ({
   if (!isOpen) return null;
 
   const handleViewDetails = () => {
-    // Instead of navigating, just close the popup
-    // The details are already shown on the main page
     onClose();
   };
 
