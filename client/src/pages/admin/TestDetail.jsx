@@ -162,7 +162,7 @@ const TestDetail = () => {
     // Các dòng sau là đáp án
     const options = lines.slice(1).map(line => {
       // Đáp án đúng có &larr; hoặc Đáp án đúng
-      if (line.includes('&larr;') || line.toLowerCase().includes('đáp án đúng')) {
+      if (line.includes('&larr;') || line.toLowerCase().includes('correct answer')) {
         return `<li><span style="color: green; font-weight: bold;">${line}</span></li>`;
       }
       return `<li>${line}</li>`;
@@ -301,7 +301,7 @@ const TestDetail = () => {
     const formattedOptions = options.map(option => {
       const isCorrect = option.letter === correctAnswer;
       if (isCorrect) {
-        return `<li><span style="color: green; font-weight: bold;">(${option.letter}) ${option.text} &larr; Đáp án đúng</span></li>`;
+        return `<li><span style="color: green; font-weight: bold;">(${option.letter}) ${option.text} &larr; Correct Answer</span></li>`;
       }
       return `<li>(${option.letter}) ${option.text}</li>`;
     }).join('\n');
@@ -718,7 +718,7 @@ const TestDetail = () => {
                 accept=".xlsx, .xls, .csv"
               />
               <div style={{ marginTop: 8 }}>
-                <a href="/templates/question_template.xlsx" download style={{ color: '#409efd', textDecoration: 'underline', fontSize: 13 }}>
+                <a href="/templates/part1Question.xlsx" download style={{ color: '#409efd', textDecoration: 'underline', fontSize: 13 }}>
                   <i className="fas fa-download"></i> Download Template
                 </a>
               </div>
@@ -778,18 +778,18 @@ const TestDetail = () => {
     const currentCount = questions.length;
     const maxAllowed = partLimit.maxQuestions;
     if (currentCount >= maxAllowed) {
-      displayErrorMessage(`Part ${activePart.partNumber} đã đủ số câu hỏi tối đa (${maxAllowed}). Không thể import thêm.`);
+      displayErrorMessage(`Part ${activePart.partNumber} has reached the maximum number of questions (${maxAllowed}). Cannot import more.`);
       return;
     }
     // Chỉ lấy số lượng câu hỏi vừa đủ
     const canImport = Math.min(importedQuestions.length, maxAllowed - currentCount);
     if (canImport <= 0) {
-      displayErrorMessage(`Không còn chỗ để import câu hỏi mới cho part này.`);
+      displayErrorMessage(`No space left to import new questions for this part.`);
       return;
     }
     const questionsToImport = importedQuestions.slice(0, canImport);
     if (questionsToImport.length < importedQuestions.length) {
-      displayErrorMessage(`Chỉ import được ${questionsToImport.length} câu hỏi, vì part này chỉ còn trống ${maxAllowed - currentCount} câu.`);
+      displayErrorMessage(`Can only import ${questionsToImport.length} questions, as this part only has ${maxAllowed - currentCount} available slots.`);
     }
 
     // Tìm tất cả các số câu hỏi đã được sử dụng
@@ -821,8 +821,8 @@ const TestDetail = () => {
       
       // Kiểm tra nếu số câu hỏi vượt quá giới hạn cho phép
       if (questionNumber > partLimit.end) {
-        displayErrorMessage(`Chỉ import được ${i} câu hỏi, vì số câu hỏi vượt quá giới hạn cho phép của Part ${activePart.partNumber}`);
-        // Chỉ import số câu hỏi không vượt quá giới hạn
+        displayErrorMessage(`Can only import ${i} questions, as question numbers would exceed the allowed limit for Part ${activePart.partNumber}`);
+        // Only import questions that don't exceed the limit
         questionsToImport.splice(i);
         break;
       }
@@ -843,7 +843,7 @@ const TestDetail = () => {
     
     const updatedQuestions = await questionService.getQuestionsByPartId(activePart.id);
     setQuestions(Array.isArray(updatedQuestions) ? updatedQuestions : []);
-    displaySuccessMessage(`Import thành công ${questionsToImport.length} câu hỏi!`);
+    displaySuccessMessage(`Successfully imported  ${questionsToImport.length} questions!`);
   };
 
   if (loading) {
@@ -1032,7 +1032,7 @@ const TestDetail = () => {
 
                           {question.explainDetail && (
                             <div className="test-detail-question-explanation">
-                              <h4>giải thích đáp án:</h4>
+                              <h4>Explanation of the answer:</h4>
                               <div dangerouslySetInnerHTML={{ __html: question.explainDetail }} />
                             </div>
                           )}
@@ -1041,7 +1041,7 @@ const TestDetail = () => {
                         {question.resource && question.resource.explain_resource && (
                           <div className="test-detail-question-text">
                             <div className="test-detail-question-paragraph">
-                            <p>Dịch và giải thích:</p>
+                            <p>Translation and explanation:</p>
                             <p dangerouslySetInnerHTML={{ __html: question.resource.explain_resource }} />
                           </div>
                           </div>
@@ -1143,7 +1143,6 @@ const TestDetail = () => {
                   name="content"
                   value={newQuestion.content}
                   onChange={handleQuestionChange}
-                  required
                   rows={4}
                   placeholder="Enter the question text here..."
                 />
@@ -1200,8 +1199,7 @@ const TestDetail = () => {
                   id="optionA"
                   name="optionA"
                   value={newQuestion.optionA}
-                  onChange={handleQuestionChange}
-                  required
+                  onChange={handleQuestionChange}   
                   placeholder="Enter option A..."
                 />
               </div>
@@ -1214,7 +1212,7 @@ const TestDetail = () => {
                   name="optionB"
                   value={newQuestion.optionB}
                   onChange={handleQuestionChange}
-                  required
+                  
                   placeholder="Enter option B..."
                 />
               </div>
@@ -1227,7 +1225,7 @@ const TestDetail = () => {
                   name="optionC"
                   value={newQuestion.optionC}
                   onChange={handleQuestionChange}
-                  required
+                  
                   placeholder="Enter option C..."
                 />
               </div>
@@ -1240,7 +1238,7 @@ const TestDetail = () => {
                   name="optionD"
                   value={newQuestion.optionD}
                   onChange={handleQuestionChange}
-                  required
+                  
                   placeholder="Enter option D..."
                 />
               </div>

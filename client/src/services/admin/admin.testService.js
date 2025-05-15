@@ -11,14 +11,14 @@ const testService = {
           
           if (response.data.success) {
             console.log(response.data.data)
-            return response.data.data; // Returns the array of grammar topics
+            return response.data.data; 
           
           } else {
             throw new Error(response.data.message || 'Failed to fetch test');
           }
         } catch (error) {
           console.error('Error fetching tests:', error);
-          throw error; // Re-throw the error for the component to handle
+          throw error; 
         }
       },
 

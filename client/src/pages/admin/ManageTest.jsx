@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/ManageTest.css';
 import SuccessAlert from '../../components/SuccessAlert';
@@ -48,7 +48,7 @@ const ManageTest = () => {
       const data = await testService.getAllTests();
       setTestList(data);
     } catch (err) {
-      setError(err.message || 'Có lỗi xảy ra khi tải dữ liệu');
+      setError(err.message || 'An error occurred while loading data');
     } finally {
       setIsLoading(false);
     }
@@ -521,6 +521,8 @@ const ManageTest = () => {
           testItem={testToEdit}
           isSubmitting={isSubmitting}
           displayErrorMessage={displayErrorMessage}
+          displaySuccessMessage={displaySuccessMessage}
+          testList={testList}
         />
       )}
     </div>
@@ -528,7 +530,7 @@ const ManageTest = () => {
 };
 
 // Test Form Modal Component
-const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem = null, isSubmitting = false, displayErrorMessage }) => {
+const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem = null, isSubmitting = false, displayErrorMessage, displaySuccessMessage, testList }) => {
   const [formData, setFormData] = useState({
     title: '',
     testCollection: ''
@@ -616,7 +618,7 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
         solutionFile: ''
       });
     }
-  }, [isOpen, editMode, testItem, collections]);
+  }, [isOpen, editMode, testItem, collections, testList]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -625,6 +627,11 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
     // Clear error when user types
     if (value.trim()) {
       setErrors({ ...errors, [name]: '' });
+    }
+    
+    // If collection changes, validate title to check for duplicates
+    if (name === 'testCollection' && formData.title.trim()) {
+      validateField('title', formData.title);
     }
   };
 
@@ -639,8 +646,21 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
   const validateField = (fieldName, value) => {
     let errorMessage = '';
     
-    if (fieldName === 'title' && !value.trim()) {
-      errorMessage = 'Title is required';
+    if (fieldName === 'title') {
+      if (!value.trim()) {
+        errorMessage = 'Title is required';
+      } else if (formData.testCollection) {
+        // Check for duplicate test title in the same collection
+        const duplicateTest = testList.find(test => 
+          test.testCollection === formData.testCollection && 
+          test.title.toLowerCase() === value.toLowerCase() &&
+          (!editMode || (editMode && test.id !== testItem.id))
+        );
+        
+        if (duplicateTest) {
+          errorMessage = `A test with title "${value}" already exists in this collection`;
+        }
+      }
     }
     
     if (fieldName === 'testCollection' && !value.trim()) {
@@ -653,9 +673,30 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
 
   const validateForm = () => {
     const newErrors = {
-      title: !formData.title.trim() ? 'Title is required' : '',
-      testCollection: !formData.testCollection.trim() ? 'Collection is required' : ''
+      title: '',
+      testCollection: ''
     };
+    
+    // Check if title is empty
+    if (!formData.title.trim()) {
+      newErrors.title = 'Title is required';
+    } else if (formData.testCollection) {
+      // Check for duplicate test title in the same collection
+      const duplicateTest = testList.find(test => 
+        test.testCollection === formData.testCollection && 
+        test.title.toLowerCase() === formData.title.toLowerCase() &&
+        (!editMode || (editMode && test.id !== testItem?.id))
+      );
+      
+      if (duplicateTest) {
+        newErrors.title = `A test with title "${formData.title}" already exists in this collection`;
+      }
+    }
+    
+    // Check if collection is empty
+    if (!formData.testCollection.trim()) {
+      newErrors.testCollection = 'Collection is required';
+    }
     
     setErrors(newErrors);
     setTouched({
@@ -685,38 +726,35 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
       solutionFile: ''
     };
     
-    // In edit mode, files are optional
-    // if (!editMode) {
-    //   if (!testFile) {
-    //     errors.testFile = 'Test file is required';
-    //   } else if (!testFile.name.endsWith('.xlsx') && !testFile.name.endsWith('.xls')) {
-    //     errors.testFile = 'File must be Excel format (.xlsx or .xls)';
-    //   }
-      
-    //   if (!solutionFile) {
-    //     errors.solutionFile = 'Solution file is required';
-    //   } else if (!solutionFile.name.endsWith('.xlsx') && !solutionFile.name.endsWith('.xls')) {
-    //     errors.solutionFile = 'File must be Excel format (.xlsx or .xls)';
-    //   }
-    // } else {
-    //   // For edit mode, validate only if files are provided
-    //   if (testFile && !testFile.name.endsWith('.xlsx') && !testFile.name.endsWith('.xls')) {
-    //     errors.testFile = 'File must be Excel format (.xlsx or .xls)';
-    //   }
-      
-    //   if (solutionFile && !solutionFile.name.endsWith('.xlsx') && !solutionFile.name.endsWith('.xls')) {
-    //     errors.solutionFile = 'File must be Excel format (.xlsx or .xls)';
-    //   }
-    // }
-    
     setFileErrors(errors);
     return !errors.testFile && !errors.solutionFile;
   };
 
+  // Add a validateExcelFile function
+  const validateExcelFile = (file) => {
+    if (!file) return false;
+    
+    // Check file extension
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
+      displayErrorMessage('Invalid file format. Please upload an Excel file (.xlsx or .xls)');
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleQuestionExcelFileChange = (e) => {
     const file = e.target.files[0];
-    setQuestionExcelFile(file);
-    setExcelImportError(null); // Clear previous errors when selecting a new file
+    if (file) {
+      // Validate file type immediately on selection
+      if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+        displayErrorMessage('Invalid file format. Please upload an Excel file (.xlsx or .xls)');
+        return;
+      }
+      setQuestionExcelFile(file);
+      setExcelImportError(null); // Clear previous errors when selecting a new file
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -724,8 +762,8 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
     if (!validateForm() || !validateFiles()) {
       return;
     }
+    
     try {
-      //setIsSubmitting(true);
       // Prepare data for submission
       const testData = {
         ...formData
@@ -733,57 +771,91 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
       if (editMode && testItem) {
         testData.id = testItem.id;
       }
+      
       // First create or update the test
       const savedTest = await onSubmit(testData, editMode);
+      
+      // Always display success for the test creation/update itself
+      const baseSuccessMessage = editMode ? 'Test information updated successfully!' : 'Test created successfully!';
+      
       // Then upload files if provided
       setIsUploading(true);
       
       // Import all questions if Excel file is provided
       if (questionExcelFile) {
+        // Validate the Excel file format first
+        if (!validateExcelFile(questionExcelFile)) {
+          displaySuccessMessage(baseSuccessMessage + ' However, the Excel file import failed due to invalid format.');
+          setIsUploading(false);
+          return;
+        }
+        
         setIsExcelImporting(true);
         setExcelImportError(null);
         try {
           await testService.importAllQuestionsFile(savedTest.id, questionExcelFile);
           setIsExcelImporting(false);
+          displaySuccessMessage(baseSuccessMessage + ' Questions imported successfully!');
           onClose && onClose();
         } catch (error) {
           console.error(`Error importing questions:`, error);
           setIsExcelImporting(false);
+          
+          // Always show a success message for the test creation/update itself
+          displaySuccessMessage(baseSuccessMessage);
+          
+          let errorMsg = "The test was saved, but importing questions from the Excel file failed. Please check the file format.";
+          
+          // Get specific error message from server response or use default
+          if (error.response?.data?.message) {
+            errorMsg = `The test was saved, but importing questions failed: ${error.response.data.message}`;
+          } else if (error.message && error.message.includes('format')) {
+            errorMsg = "The test was saved, but the Excel file has an invalid format. Please ensure your file matches the required template.";
+          }
+          
+          // Display error notification
+          displayErrorMessage(errorMsg);
+          
           // Handle validation errors from the server
           if (error.response && error.response.data) {
             const responseData = error.response.data;
             console.log("Server response:", responseData);
             
             if (responseData.isFull === true) {
-              // Nếu test đã full, hiển thị thông báo alert và đóng modal
-              displayErrorMessage("Bài test đã đạt đủ 200 câu hỏi theo tiêu chuẩn TOEIC. Không thể import thêm câu hỏi.");
+              // If test is full, close modal after showing alert
               onClose && onClose();
             } else {
-              // Nếu test chưa full, hiển thị lỗi trong form
+              // Show detailed errors in the form
               setExcelImportError({
                 message: responseData.message,
                 errors: responseData.errors || {},
                 isFull: false
               });
+              // Keep test data but show import errors
+              setIsUploading(false);
             }
           } else {
+            // For general errors (network issues, etc.)
             setExcelImportError({
-              message: 'Lỗi khi import câu hỏi. Vui lòng kiểm tra file và thử lại.',
+              message: 'Error importing questions. Please check the file and try again.',
               errors: {},
               isFull: false
             });
+            // Keep test data but show import errors
+            setIsUploading(false);
           }
         }
       } else {
+        // If in edit mode and no Excel file is provided
+        displaySuccessMessage(baseSuccessMessage + (editMode ? '' : ' You can add questions later.'));
         setIsUploading(false);
         onClose && onClose();
       }
     } catch (error) {
       console.error(`Error ${editMode ? 'updating' : 'adding'} test:`, error);
+      displayErrorMessage(error.message || `Error ${editMode ? 'updating' : 'adding'} test. Please try again.`);
       setIsUploading(false);
       setIsExcelImporting(false);
-    } finally {
-      //setIsSubmitting(false);
     }
   };
 
@@ -950,7 +1022,9 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
             </div> */}
             
             <div className="manageTest-form-group">
-              <label htmlFor="questionExcelFile">Import All Questions (Excel)</label>
+              <label htmlFor="questionExcelFile">
+                Import All Questions (Excel)
+              </label>
               <div className="manageTest-file-upload-container">
                 <input
                   type="file"
@@ -970,6 +1044,14 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
                 </button>
                 {questionExcelFile && <span className="manageTest-file-name">{questionExcelFile.name}</span>}
               </div>
+              {!questionExcelFile && (
+                <div className="manageTest-info-message">
+                  <i className="fas fa-info-circle"></i>
+                  {editMode 
+                    ? "Optional: Upload a file to update test questions. Skipping this will keep existing questions."
+                    : "Optional: Upload an Excel file to import questions for this test. You can also add questions later."}
+                </div>
+              )}
               {isExcelImporting && (
                 <div className="manageTest-import-progress">
                   <i className="fas fa-spinner fa-spin"></i> Importing questions from Excel...
@@ -994,12 +1076,12 @@ const TestFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem =
                   <div className="manageTest-error-summary">
                     <i className="fas fa-info-circle"></i> 
                     {excelImportError.isFull 
-                      ? "Bài test này đã đủ 200 câu hỏi theo tiêu chuẩn TOEIC. Vui lòng tạo bài test mới nếu muốn thêm câu hỏi."
-                      : "Bài test này đã gần đủ câu hỏi theo tiêu chuẩn TOEIC. Vui lòng kiểm tra lại số lượng câu hỏi ở mỗi phần."}
+                      ? "This test already has the full 200 questions according to TOEIC standards. Please create a new test if you want to add more questions."
+                      : "This test is almost full of questions according to TOEIC standards. Please check the number of questions in each part."}
                   </div>
                   {excelImportError.isFull && (
                     <div className="manageTest-full-test-badge">
-                      <i className="fas fa-check-circle"></i> Test đã đủ câu hỏi
+                      <i className="fas fa-check-circle"></i> Test has all required questions
                     </div>
                   )}
                 </div>

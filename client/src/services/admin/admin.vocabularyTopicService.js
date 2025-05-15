@@ -87,6 +87,7 @@ const vocabularyTopicService = {
 
     updateVocabularyTopic: async (topicId, topicData) => {
       try { 
+        console.log(topicData);
         const response = await axios.put(`${API_BASE_URL}/admin/vocabulary-topic/${topicId}`, topicData);
         console.log(response.data)
         return response.data;
