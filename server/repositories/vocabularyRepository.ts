@@ -1,5 +1,6 @@
 import database from '../config/db';
 import { Vocabulary } from '../models/Vocabulary';
+import { VocabularyBuilder } from '../builder/VocabularyBuilder';
 
 export class VocabularyRepository {
   /**
@@ -28,16 +29,16 @@ export class VocabularyRepository {
       }
 
       const vocabData = results[0] as any;
-      return new Vocabulary(
-        vocabData.id,
-        vocabData.content,
-        vocabData.meaning,
-        vocabData.synonym ? JSON.parse(vocabData.synonym) : null,
-        vocabData.transcribe,
-        vocabData.urlAudio,
-        vocabData.urlImage,
-        vocabData.VocabularyTopicId
-      );
+      return new VocabularyBuilder()
+        .setId(vocabData.id)
+        .setContent(vocabData.content)
+        .setMeaning(vocabData.meaning)
+        .setSynonym(vocabData.synonym ? JSON.parse(vocabData.synonym) : null)
+        .setTranscribe(vocabData.transcribe)
+        .setUrlAudio(vocabData.urlAudio)
+        .setUrlImage(vocabData.urlImage)
+        .setVocabularyTopicId(vocabData.VocabularyTopicId)
+        .build();
     } catch (error) {
       console.error('Error getting vocabulary by ID:', error);
       throw error;
@@ -61,16 +62,16 @@ export class VocabularyRepository {
         FROM vocabularies`
       );
 
-      return results.map((v: any) => new Vocabulary(
-        v.id,
-        v.content,
-        v.meaning,
-        v.synonym ? JSON.parse(v.synonym) : null,
-        v.transcribe,
-        v.urlAudio,
-        v.urlImage,
-        v.VocabularyTopicId
-      ));
+      return results.map((v: any) => new VocabularyBuilder()
+        .setId(v.id)
+        .setContent(v.content)
+        .setMeaning(v.meaning)
+        .setSynonym(v.synonym ? JSON.parse(v.synonym) : null)
+        .setTranscribe(v.transcribe)
+        .setUrlAudio(v.urlAudio)
+        .setUrlImage(v.urlImage)
+        .setVocabularyTopicId(v.VocabularyTopicId)
+        .build());
     } catch (error) {
       console.error('Error getting all vocabularies:', error);
       throw error;
@@ -96,16 +97,16 @@ export class VocabularyRepository {
         [topicId]
       );
 
-      return results.map((v: any) => new Vocabulary(
-        v.id,
-        v.content,
-        v.meaning,
-        v.synonym ? JSON.parse(v.synonym) : null,
-        v.transcribe,
-        v.urlAudio,
-        v.urlImage,
-        topicId
-      ));
+      return results.map((v: any) => new VocabularyBuilder()
+        .setId(v.id)
+        .setContent(v.content)
+        .setMeaning(v.meaning)
+        .setSynonym(v.synonym ? JSON.parse(v.synonym) : null)
+        .setTranscribe(v.transcribe)
+        .setUrlAudio(v.urlAudio)
+        .setUrlImage(v.urlImage)
+        .setVocabularyTopicId(topicId)
+        .build());
     } catch (error) {
       console.error('Error getting vocabularies by topic ID:', error);
       throw error;

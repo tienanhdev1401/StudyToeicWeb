@@ -21,10 +21,11 @@
   margin-bottom: 20px;
 }
 
-.question-number {
-  font-size: 1.2rem;
-  color: #333;
-}
+ .question-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+  }
 
 .timer {
   background: #f0f0f0;
@@ -34,7 +35,7 @@
 }
 
 .question-text {
-  font-size: 1.1rem;
+  font-size: 2rem;
   margin-bottom: 20px;
   line-height: 1.5;
 }

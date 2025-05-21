@@ -4,6 +4,7 @@ import { Vocabulary } from '../models/Vocabulary';
 import { VocabularyRepository } from './vocabularyRepository';
 import { Exercise } from '../models/Exercise';
 import { ExerciseRepository } from './exerciseRepository';
+import { VocabularyTopicBuilder } from '../builder/VocabularyTopicBuilder';
 
 export class VocabularyTopicRepository {
   /**
@@ -20,7 +21,13 @@ export class VocabularyTopicRepository {
     }
   
     const topicData = results[0] as any;
-    const topic = new VocabularyTopic(topicData.id, topicData.topicName, topicData.imageUrl, [], [], topicData.createdAt, topicData.updatedAt);
+    const topic = new VocabularyTopicBuilder()
+      .setId(topicData.id)
+      .setTopicName(topicData.topicName)
+      .setImageUrl(topicData.imageUrl)
+      .setCreatedAt(topicData.createdAt)
+      .setUpdatedAt(topicData.updatedAt)
+      .build();
   
     // Lấy danh sách vocabularies từ VocabularyRepository
     const vocabularies = await VocabularyRepository.getVocabulariesByTopicId(id);
@@ -38,7 +45,13 @@ export class VocabularyTopicRepository {
 
     // Tạo danh sách VocabularyTopic với vocabularyList rỗng
     const topicList = topics.map((topic: any) => 
-      new VocabularyTopic(topic.id, topic.topicName, topic.imageUrl, [], [], topic.createdAt, topic.updatedAt)
+      new VocabularyTopicBuilder()
+        .setId(topic.id)
+        .setTopicName(topic.topicName)
+        .setImageUrl(topic.imageUrl)
+        .setCreatedAt(topic.createdAt)
+        .setUpdatedAt(topic.updatedAt)
+        .build()
     );
 
     return topicList;

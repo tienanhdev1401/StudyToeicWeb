@@ -2,6 +2,8 @@ import { Resource } from './../models/Resource';
 import { Question } from '../models/Question';
 import { ResourceRepository } from './resourceRepository';
 import db from '../config/db';
+import { QuestionBuilder } from '../builder/QuestionBuilder';
+import { ResourceBuilder } from '../builder/ResourceBuilder';
 
 export class QuestionRepository {
   async findById(id: number): Promise<Question | null> {
@@ -16,24 +18,24 @@ export class QuestionRepository {
 
       const question = questions[0];
       const resource = question.ResourceId ? 
-        new Resource(
-          question.ResourceId,
-          question.explain_resource,
-          question.urlAudio,
-          question.urlImage
-        ) : null;
+        new ResourceBuilder()
+          .setId(question.ResourceId)
+          .setExplainResource(question.explain_resource)
+          .setUrlAudio(question.urlAudio)
+          .setUrlImage(question.urlImage)
+          .build() : null;
 
-      return new Question(
-        question.id,
-        question.content,
-        question.correctAnswer,
-        question.explainDetail,
-        question.optionA,
-        question.optionB,
-        question.optionC,
-        question.optionD,
-        resource
-      );
+      return new QuestionBuilder()
+        .setId(question.id)
+        .setContent(question.content)
+        .setCorrectAnswer(question.correctAnswer)
+        .setExplainDetail(question.explainDetail)
+        .setOptionA(question.optionA)
+        .setOptionB(question.optionB)
+        .setOptionC(question.optionC)
+        .setOptionD(question.optionD)
+        .setResource(resource)
+        .build();
     } catch (error) {
       console.error('QuestionRepository.findById error:', error);
       throw error;
@@ -61,24 +63,24 @@ export class QuestionRepository {
       const questions = results.map(row => {
         // Create resource object if ResourceId exists
         const resource = row.ResourceId ? 
-          new Resource(
-            Number(row.ResourceId),
-            row.explain_resource,
-            row.urlAudio,
-            row.urlImage
-          ) : null;
+          new ResourceBuilder()
+            .setId(Number(row.ResourceId))
+            .setExplainResource(row.explain_resource)
+            .setUrlAudio(row.urlAudio)
+            .setUrlImage(row.urlImage)
+            .build() : null;
           
-        return new Question(
-          Number(row.id),
-          row.content,
-          row.correct_answer,
-          row.explain_detail, 
-          row.option_a,     
-          row.option_b,      
-          row.option_c,     
-          row.option_d,    
-          resource
-        );
+        return new QuestionBuilder()
+          .setId(Number(row.id))
+          .setContent(row.content)
+          .setCorrectAnswer(row.correct_answer)
+          .setExplainDetail(row.explain_detail) 
+          .setOptionA(row.option_a)     
+          .setOptionB(row.option_b)      
+          .setOptionC(row.option_c)     
+          .setOptionD(row.option_d)    
+          .setResource(resource)
+          .build();
       });
   
       return questions;

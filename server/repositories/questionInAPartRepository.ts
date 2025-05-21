@@ -2,6 +2,9 @@ import { QuestionInAPart } from '../models/QuestionInAPart';
 import { Question } from '../models/Question';
 import { Resource } from '../models/Resource';
 import db from '../config/db';
+import { QuestionInAPartBuilder } from '../builder/QuestionInAPartBuilder';
+import { QuestionBuilder } from '../builder/QuestionBuilder';
+import { ResourceBuilder } from '../builder/ResourceBuilder';
 
 export class QuestionInAPartRepository {
   async findByPartId(partId: number): Promise<QuestionInAPart[]> {
@@ -24,33 +27,34 @@ export class QuestionInAPartRepository {
       const questionInAParts = rows.map(row => {
         // Tạo resource object nếu có resource_id
         const resource = row.resource_id ? 
-          new Resource(
-            Number(row.resource_id),
-            row.explain_resource,
-            row.urlAudio,
-            row.urlImage
-          ) : null;
+          new ResourceBuilder()
+            .setId(Number(row.resource_id))
+            .setExplainResource(row.explain_resource)
+            .setUrlAudio(row.urlAudio)
+            .setUrlImage(row.urlImage)
+            .build()
+          : null;
           
         // Tạo question object
-        const question = new Question(
-          Number(row.id),
-          row.content,
-          row.correct_answer,
-          row.explain_detail,
-          row.option_a,
-          row.option_b,
-          row.option_c,
-          row.option_d,
-          resource
-        );
+        const question = new QuestionBuilder()
+          .setId(Number(row.id))
+          .setContent(row.content)
+          .setCorrectAnswer(row.correct_answer)
+          .setExplainDetail(row.explain_detail)
+          .setOptionA(row.option_a)
+          .setOptionB(row.option_b)
+          .setOptionC(row.option_c)
+          .setOptionD(row.option_d)
+          .setResource(resource)
+          .build();
         
         // Tạo và trả về QuestionInAPart object
-        const questionInAPart = new QuestionInAPart(
-          Number(row.PartId),
-          Number(row.QuestionId),
-          Number(row.questionNumber),
-          question
-        );
+        const questionInAPart = new QuestionInAPartBuilder()
+          .setPartId(Number(row.PartId))
+          .setQuestionId(Number(row.QuestionId))
+          .setQuestionNumber(Number(row.questionNumber))
+          .setQuestion(question)
+          .build();
         
         return questionInAPart;
       });
@@ -73,11 +77,11 @@ export class QuestionInAPartRepository {
       if (!questions.length) return null;
 
       const row = questions[0];
-      return new QuestionInAPart(
-        Number(row.PartId),
-        Number(row.QuestionId),
-        Number(row.questionNumber)
-      );
+      return new QuestionInAPartBuilder()
+        .setPartId(Number(row.PartId))
+        .setQuestionId(Number(row.QuestionId))
+        .setQuestionNumber(Number(row.questionNumber))
+        .build();
     } catch (error) {
       console.error('QuestionInAPartRepository.findByPartIdAndQuestionId error:', error);
       throw error;
