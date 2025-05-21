@@ -1,5 +1,6 @@
 import database from '../config/db';
-import { GrammarTopic } from '../models/GrammarTopic';
+import { GrammarTopic} from '../models/GrammarTopic';
+import { GrammarTopicBuilder } from '../builder/GrammarTopicBuilder';
 import { Exercise } from '../models/Exercise';
 import { ExerciseRepository } from './exerciseRepository';
 
@@ -12,7 +13,12 @@ export class GrammarTopicRepository {
       );
       
       return results.map((row: any) => 
-        new GrammarTopic(row.id, row.title, row.content, row.imageUrl)
+        new GrammarTopicBuilder()
+          .setId(row.id)
+          .setTitle(row.title)
+          .setContent(row.content)
+          .setImageUrl(row.imageUrl)
+          .build()
       );
     } catch (error) {
       console.error('Error getting all grammar topics:', error);
@@ -32,7 +38,12 @@ export class GrammarTopicRepository {
       }
 
       const row = results[0];
-      return new GrammarTopic(row.id, row.title, row.content, row.imageUrl);
+      return new GrammarTopicBuilder()
+        .setId(row.id)
+        .setTitle(row.title)
+        .setContent(row.content)
+        .setImageUrl(row.imageUrl)
+        .build();
     } catch (error) {
       console.error(`Error finding grammar topic with ID ${id}:`, error);
       throw error;
@@ -50,7 +61,12 @@ export class GrammarTopicRepository {
         [title, content, imageUrl]
       );
       
-      return new GrammarTopic(result.insertId, title, content, imageUrl);
+      return new GrammarTopicBuilder()
+        .setId(result.insertId)
+        .setTitle(title)
+        .setContent(content)
+        .setImageUrl(imageUrl)
+        .build();
     } catch (error) {
       console.error('Error creating grammar topic:', error);
       throw error;

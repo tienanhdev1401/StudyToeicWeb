@@ -2,6 +2,8 @@ import database from '../config/db';
 import WordNote from '../models/WordNote';
 // Giả sử bạn có một model/bảng Vocabulary và một bảng liên kết
 // import Vocabulary from '../models/Vocabulary';
+import { WordNoteBuilder } from '../builder/WordNoteBuilder';
+import { VocabularyBuilder } from '../builder/VocabularyBuilder';
 
 export class WordNoteRepository {
 
@@ -80,7 +82,11 @@ export class WordNoteRepository {
       }
 
       // 2. Tạo đối tượng WordNote
-      const wordNote = new WordNote(wordNoteRow.id, wordNoteRow.title, wordNoteRow.LearnerId);
+      const wordNote = new WordNoteBuilder()
+        .setId(wordNoteRow.id)
+        .setTitle(wordNoteRow.title)
+        .setLearnerId(wordNoteRow.LearnerId)
+        .build();
 
       // 3. Truy vấn danh sách từ vựng liên kết với WordNote này
       const vocabularyResults = await database.query(
@@ -94,7 +100,17 @@ export class WordNoteRepository {
       // 4. Trả về đối tượng kết hợp
       return {
         ...wordNote, // Trải rộng WordNote để có id, title, LearnerId
-        vocabularies: vocabularyResults || []
+        vocabularies: (vocabularyResults as any[] || []).map((v: any) => new VocabularyBuilder()
+          .setId(v.id)
+          .setContent(v.content)
+          .setMeaning(v.meaning)
+          .setSynonym(v.synonym ? JSON.parse(v.synonym) : null)
+          .setTranscribe(v.transcribe)
+          .setUrlAudio(v.urlAudio)
+          .setUrlImage(v.urlImage)
+          .setVocabularyTopicId(v.VocabularyTopicId) // Giả định trường này có trong kết quả join nếu cần
+          .build()
+        )
       };
     } catch (error) {
       console.error(`Error finding WordNote with ID ${id}`, error);

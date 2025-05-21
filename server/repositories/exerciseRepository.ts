@@ -2,6 +2,9 @@ import database from '../config/db';
 import { Exercise } from '../models/Exercise';
 import { Question } from '../models/Question';
 import { Resource } from '../models/Resource';
+import { QuestionBuilder } from '../builder/QuestionBuilder';
+import { ResourceBuilder } from '../builder/ResourceBuilder';
+import { ExerciseBuilder } from '../builder/ExerciseBuilder';
 
 export class ExerciseRepository {
     static async getAllExercises(): Promise<Exercise[]> {
@@ -12,7 +15,11 @@ export class ExerciseRepository {
         
         // Chỉ tạo đối tượng Exercise với danh sách câu hỏi rỗng
         const exercises = results.map((row: any) => 
-          new Exercise(row.id, row.exerciseName, [])
+          new ExerciseBuilder()
+            .setId(row.id)
+            .setExerciseName(row.exerciseName)
+            .setQuestions([]) // Khởi tạo rỗng
+            .build()
         );
         
         return exercises;
@@ -34,11 +41,11 @@ export class ExerciseRepository {
       }
 
       const questions = await this.getQuestionsForExercise(id);
-      return new Exercise(
-        exerciseResults[0].id, 
-        exerciseResults[0].exerciseName,
-        questions
-      );
+      return new ExerciseBuilder()
+        .setId(exerciseResults[0].id)
+        .setExerciseName(exerciseResults[0].exerciseName)
+        .setQuestions(questions)
+        .build();
     } catch (error) {
       console.error(`Error finding exercise with ID ${id}:`, error);
       throw error;
@@ -52,7 +59,11 @@ export class ExerciseRepository {
         [exerciseName]
       );
       
-      return new Exercise(result.insertId, exerciseName, []);
+      return new ExerciseBuilder()
+        .setId(result.insertId)
+        .setExerciseName(exerciseName)
+        .setQuestions([]) // Khởi tạo rỗng
+        .build();
     } catch (error) {
       console.error('Error creating exercise:', error);
       throw error;
@@ -83,17 +94,17 @@ export class ExerciseRepository {
       
       return await Promise.all(results.map(async (row: any) => {
         const resource = row.ResourceId ? await ResourceRepository.findById(row.ResourceId) : null;
-        return new Question(
-          row.id,
-          row.content,
-          row.correct_answer,
-          row.explain_detail,
-          row.option_a,
-          row.option_b,
-          row.option_c,
-          row.option_d,
-          resource
-        );
+        return new QuestionBuilder()
+          .setId(row.id)
+          .setContent(row.content)
+          .setCorrectAnswer(row.correct_answer)
+          .setExplainDetail(row.explain_detail)
+          .setOptionA(row.option_a)
+          .setOptionB(row.option_b)
+          .setOptionC(row.option_c)
+          .setOptionD(row.option_d)
+          .setResource(resource)
+          .build();
       }));
     } catch (error) {
       console.error(`Error getting questions for exercise ${exerciseId}:`, error);
@@ -111,17 +122,17 @@ export class QuestionRepository {
       
       return await Promise.all(results.map(async (row: any) => {
         const resource = row.ResourceId ? await ResourceRepository.findById(row.ResourceId) : null;
-        return new Question(
-          row.id,
-          row.content,
-          row.correct_answer,
-          row.explain_detail,
-          row.option_a,
-          row.option_b,
-          row.option_c,
-          row.option_d,
-          resource
-        );
+        return new QuestionBuilder()
+          .setId(row.id)
+          .setContent(row.content)
+          .setCorrectAnswer(row.correct_answer)
+          .setExplainDetail(row.explain_detail)
+          .setOptionA(row.option_a)
+          .setOptionB(row.option_b)
+          .setOptionC(row.option_c)
+          .setOptionD(row.option_d)
+          .setResource(resource)
+          .build();
       }));
     } catch (error) {
       console.error('Error getting all questions:', error);
@@ -142,17 +153,17 @@ export class QuestionRepository {
 
       const row = results[0];
       const resource = row.ResourceId ? await ResourceRepository.findById(row.ResourceId) : null;
-      return new Question(
-        row.id,
-        row.content,
-        row.correct_answer,
-        row.explain_detail,
-        row.option_a,
-        row.option_b,
-        row.option_c,
-        row.option_d,
-        resource
-      );
+      return new QuestionBuilder()
+        .setId(row.id)
+        .setContent(row.content)
+        .setCorrectAnswer(row.correct_answer)
+        .setExplainDetail(row.explain_detail)
+        .setOptionA(row.option_a)
+        .setOptionB(row.option_b)
+        .setOptionC(row.option_c)
+        .setOptionD(row.option_d)
+        .setResource(resource)
+        .build();
     } catch (error) {
       console.error(`Error finding question with ID ${id}:`, error);
       throw error;
@@ -176,17 +187,17 @@ export class QuestionRepository {
       );
       
       const resource = resourceId ? await ResourceRepository.findById(resourceId) : null;
-      return new Question(
-        result.insertId,
-        content,
-        correctAnswer,
-        explainDetail,
-        optionA,
-        optionB,
-        optionC,
-        optionD,
-        resource
-      );
+      return new QuestionBuilder()
+        .setId(result.insertId)
+        .setContent(content)
+        .setCorrectAnswer(correctAnswer)
+        .setExplainDetail(explainDetail)
+        .setOptionA(optionA)
+        .setOptionB(optionB)
+        .setOptionC(optionC)
+        .setOptionD(optionD)
+        .setResource(resource)
+        .build();
     } catch (error) {
       console.error('Error creating question:', error);
       throw error;
@@ -207,12 +218,12 @@ export class ResourceRepository {
       }
 
       const row = results[0];
-      return new Resource(
-        row.id,
-        row.explain_resource,
-        row.urlAudio,
-        row.urlImage
-      );
+      return new ResourceBuilder()
+        .setId(row.id)
+        .setExplainResource(row.explain_resource)
+        .setUrlAudio(row.urlAudio)
+        .setUrlImage(row.urlImage)
+        .build();
     } catch (error) {
       console.error(`Error finding resource with ID ${id}:`, error);
       throw error;

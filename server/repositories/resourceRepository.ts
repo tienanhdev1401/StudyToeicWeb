@@ -1,5 +1,6 @@
 import { Resource } from '../models/Resource';
 import db from '../config/db';
+import { ResourceBuilder } from '../builder/ResourceBuilder';
 
 export class ResourceRepository {
   static async findById(id: number): Promise<Resource | null> {
@@ -14,12 +15,12 @@ export class ResourceRepository {
       }
 
       const row = results[0];
-      return new Resource(
-        row.id,
-        row.explain_resource,
-        row.urlAudio,
-        row.urlImage
-      );
+      return new ResourceBuilder()
+        .setId(row.id)
+        .setExplainResource(row.explain_resource)
+        .setUrlAudio(row.urlAudio)
+        .setUrlImage(row.urlImage)
+        .build();
     } catch (error) {
       console.error(`Error finding resource with ID ${id}:`, error);
       throw error;

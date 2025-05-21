@@ -1,6 +1,6 @@
-
 import database from '../config/db';
 import { LearningGoal } from '../models/LearningGoal';
+import { LearningGoalBuilder } from '../builder/LearningGoalBuilder';
 
 export class LearningGoalRepository {
 
@@ -16,7 +16,13 @@ export class LearningGoalRepository {
       }
 
       const row = results[0];
-      return new LearningGoal(row.id, row.duration, row.scoreTarget, row.createdAt, row.learnerId);
+      return new LearningGoalBuilder()
+        .setId(row.id)
+        .setDuration(row.duration)
+        .setScoreTarget(row.scoreTarget)
+        .setCreatedAt(row.createdAt)
+        .setLearnerId(row.learnerId)
+        .build();
     } catch (error) {
       console.error(`Error getting learning goal for learner ${learnerId}:`, error);
       throw error;
@@ -32,13 +38,13 @@ export class LearningGoalRepository {
         [learningGoal.duration, learningGoal.scoreTarget, learningGoal.learnerId]
       );
       
-      return new LearningGoal(
-        result.insertId,
-        learningGoal.duration,
-        learningGoal.scoreTarget,
-        learningGoal.createdAt,
-        learningGoal.learnerId
-      );
+      return new LearningGoalBuilder()
+        .setId(result.insertId)
+        .setDuration(learningGoal.duration)
+        .setScoreTarget(learningGoal.scoreTarget)
+        .setCreatedAt(learningGoal.createdAt)
+        .setLearnerId(learningGoal.learnerId)
+        .build();
     } catch (error) {
       console.error('Error creating learning goal:', error);
       throw error;

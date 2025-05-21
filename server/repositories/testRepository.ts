@@ -4,6 +4,7 @@ import { QuestionInAPart } from '../models/QuestionInAPart';
 import { Question } from '../models/Question';
 import { Resource } from '../models/Resource';
 import db from '../config/db';
+import { TestBuilder } from '../builder/TestBuilder';
 
 export class TestRepository {
   async findById(id: number): Promise<Test | null> {
@@ -16,12 +17,12 @@ export class TestRepository {
       const tests = Array.isArray(rows) ? rows : [rows];
       if (!tests.length) return null;
 
-      const test = new Test(
-        Number(tests[0].id),
-        tests[0].title,
-        tests[0].testCollection,
-        Number(tests[0].duration)
-      );
+      const test = new TestBuilder()
+        .setId(Number(tests[0].id))
+        .setTitle(tests[0].title)
+        .setTestCollection(tests[0].testCollection)
+        .setDuration(Number(tests[0].duration))
+        .build();
       return test;
     } catch (error) {
       console.error('TestRepository.findById error:', error);
@@ -41,12 +42,12 @@ export class TestRepository {
       if (!tests.length) return null;
       
       // Tạo đối tượng test
-      const test = new Test(
-        Number(tests[0].id),
-        tests[0].title,
-        tests[0].testCollection,
-        Number(tests[0].duration)
-      );
+      const test = new TestBuilder()
+        .setId(Number(tests[0].id))
+        .setTitle(tests[0].title)
+        .setTestCollection(tests[0].testCollection)
+        .setDuration(Number(tests[0].duration))
+        .build();
       
       // Lấy parts
       const partsResult = await db.query(
@@ -176,12 +177,14 @@ export class TestRepository {
       if (!rows || !Array.isArray(rows) || !rows.length) return [];
 
       // Map các hàng thành đối tượng Test
-      const testList = rows.map(row => new Test(
-        Number(row.id),
-        row.title,
-        row.testCollection,
-        Number(row.duration)
-      ));
+      const testList = rows.map(row => 
+        new TestBuilder()
+          .setId(Number(row.id))
+          .setTitle(row.title)
+          .setTestCollection(row.testCollection)
+          .setDuration(Number(row.duration))
+          .build()
+      );
       return testList;
     } catch (error) {
       console.error('TestRepository.findAll error:', error);

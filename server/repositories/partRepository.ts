@@ -1,5 +1,6 @@
 import { Part } from '../models/Part';
 import db from '../config/db';
+import { PartBuilder } from '../builder/PartBuilder';
 
 export class PartRepository {
   async findByTestId(testId: number): Promise<Part[]> {
@@ -25,11 +26,13 @@ export class PartRepository {
       }
       
       // Map các hàng thành đối tượng Part
-      const parts = rows.map(row => new Part(
-        Number(row.id),
-        Number(row.partNumber),
-        Number(row.TestId)
-      ));
+      const parts = rows.map(row => 
+        new PartBuilder()
+          .setId(Number(row.id))
+          .setPartNumber(Number(row.partNumber))
+          .setTestId(Number(row.TestId))
+          .build()
+      );
       return parts;
     } catch (error) {
       console.error('PartRepository.findByTestId error:', error);
