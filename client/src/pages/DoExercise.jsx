@@ -623,7 +623,7 @@ const DoExercise = () => {
               <p className="incorrect-feedback">Không chính xác!</p>
             )}
             {currentQuestion.explainDetail && (
-              <p className="explanation">{currentQuestion.explainDetail}</p>
+              <div className="explanation" dangerouslySetInnerHTML={{__html: currentQuestion.explainDetail}}></div>
             )}
           </div>
         )}
