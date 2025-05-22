@@ -1,161 +1,170 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaRedo } from 'react-icons/fa';
 import ExerciseService from '../services/exerciseService';
-import learningProcessService from '../services/learningProcessService';
 import '../styles/DoGrammarExercise.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
 // --- State Design Pattern Implementation ---
 
-// Base State Interface (conceptually)
-// Lớp State cơ bản (khái niệm)
-// class State {
-//   constructor(context) { this.context = context; }
-//   handleSelectAnswer(questionId, optionId) {}
-//   handleNext() {}
-//   handleComplete() {}
-//   handleRestart() {}
-//   // Methods to get state-specific data for rendering, if needed
-//   // Các phương thức để lấy dữ liệu đặc trưng của trạng thái để render UI (nếu cần)
-//   getButtonText() { return '...'; }
-// }
-
-class AnsweringState {
+// Base State Class (acting as conceptual interface)
+// Lớp State cơ sở (đóng vai trò là interface khái niệm)
+class BaseState {
   constructor(context) {
+    if (new.target === BaseState) {
+      throw new TypeError("Cannot construct BaseState instances directly");
+    }
     this.context = context;
   }
 
   handleSelectAnswer(questionId, optionId) {
-    const currentQuestion = this.context.exercise?.questions?.[this.context.currentQuestionIndex];
-    if (!currentQuestion || this.context.selectedAnswers[currentQuestion.id]) {
-      return; // Đã trả lời hoặc không có câu hỏi
-    }
-
-    const isCorrect = currentQuestion.correctAnswer === optionId;
-
-    const newSelectedAnswers = {
-      ...this.context.selectedAnswers,
-      [currentQuestion.id]: {
-        optionId,
-        isCorrect
-      }
-    };
-
-    this.context.selectedAnswers = newSelectedAnswers;
-
-    // Save to localStorage immediately after selecting an answer
-    // Lưu vào localStorage ngay sau khi chọn đáp án
-    localStorage.setItem(`exerciseAnswers_${this.context.exercise.id}`, JSON.stringify({
-      selectedAnswers: newSelectedAnswers,
-      currentQuestionIndex: this.context.currentQuestionIndex // Lưu cả chỉ số câu hỏi hiện tại
-    }));
-
-    // Check if all questions are answered to potentially transition
-    // Kiểm tra xem tất cả câu hỏi đã được trả lời chưa để có khả năng chuyển trạng thái
-    if (Object.keys(this.context.selectedAnswers).length === this.context.exercise.questions.length) {
-      // Transition to CompletedState if all answered? Or wait for complete button?
-      // Chuyển sang CompletedState nếu trả lời hết? Hay chờ nút hoàn thành?
-      // Let's keep the transition on hitting complete button for now.
-      // Tạm thời giữ việc chuyển trạng thái khi nhấn nút hoàn thành.
-    }
-
-    this.context.notifyListeners(); // Thông báo cho component re-render
+    
   }
 
   handleNext() {
-    const currentQuestion = this.context.exercise?.questions?.[this.context.currentQuestionIndex];
-     // Only move if current question is answered and not the last question
-     // Chỉ chuyển tiếp nếu câu hỏi hiện tại đã được trả lời và không phải là câu cuối cùng
-    if (currentQuestion && this.context.selectedAnswers[currentQuestion.id] && this.context.currentQuestionIndex < this.context.exercise.questions.length - 1) {
-      this.context.currentQuestionIndex += 1;
-      this.context.notifyListeners(); // Thông báo cho component re-render
-    }
+    
   }
 
   handleComplete() {
-      // Check if all questions are answered before completing
-      // Kiểm tra xem tất cả câu hỏi đã được trả lời trước khi hoàn thành
-      if (this.context.exercise && Object.keys(this.context.selectedAnswers).length === this.context.exercise.questions.length) {
-           // Calculate score
-           // Tính điểm (logic này đã bị loại bỏ yêu cầu 80% pass)
-
-             this.context.setState(new CompletedState(this.context));
-             // Sau khi chuyển trạng thái thành công, gọi lại complete() để kích hoạt logic trong CompletedState
-             this.context.complete();
-              // Xử lý chuyển trang và xóa localStorage trong CompletedState sau khi chuyển trạng thái
-
-      }
+    
   }
 
   handleRestart() {
-    // Clear localStorage on restart
-    // Xóa localStorage khi làm lại bài
-    localStorage.removeItem(`exerciseAnswers_${this.context.exercise.id}`);
-    this.context.currentQuestionIndex = 0;
-    this.context.selectedAnswers = {};
-    this.context.timeSpent = 0; // Reset timer in context? Or manage outside?
-    // Đặt lại thời gian trong context? Hay quản lý bên ngoài?
-    // Assuming timer is managed by React hook for simplicity, we'll just reset the state here.
-    // Giả định bộ đếm thời gian được quản lý bằng React hook, chúng ta chỉ đặt lại state ở đây.
-    // If timer was in context, restart logic would be here.
-    // Nếu bộ đếm thời gian nằm trong context, logic reset sẽ ở đây.
-
-    this.context.notifyListeners(); // Thông báo cho component re-render
+    
   }
 
-  // Helper for rendering
-  // Hàm hỗ trợ cho việc render UI
-  getButtonText() {
-      const questions = this.context.exercise?.questions || [];
-      const allQuestionsAnswered = Object.keys(this.context.selectedAnswers).length === questions.length;
-      const isLastQuestion = this.context.currentQuestionIndex === questions.length - 1;
+   // Methods to get state-specific data for rendering, if needed
+   // Các phương thức để lấy dữ liệu đặc trưng của trạng thái để render UI (nếu cần)
+   getButtonText() { return '...'; }
 
-      if (isLastQuestion && allQuestionsAnswered) {
-          return 'Hoàn thành';
-      } else if (this.context.selectedAnswers[questions[this.context.currentQuestionIndex]?.id]){
-          return 'Câu tiếp';
-      } else {
-           return '...'; // Button disabled or placeholder
-           // Nút bị vô hiệu hóa hoặc placeholder
-      }
-  }
    // Determine if next button should be disabled
    // Xác định xem nút Tiếp theo có nên bị vô hiệu hóa hay không
+   isNextDisabled() { return true; }
+
+   // Determine if complete button should be disabled
+   // Xác định xem nút Hoàn thành có nên bị vô hiệu hóa hay không
+   isCompleteButtonDisabled() { return true; }
+
+   // Method for navigating to a specific question, default implementation might be here
+   // Phương thức để chuyển đến một câu hỏi cụ thể, triển khai mặc định có thể ở đây
+   goToQuestion(index) {
+   }
+}
+
+
+
+// /** @implements {State} */ // JSDoc @implements no longer strictly needed with base class
+ class AnsweringState extends BaseState {
+   constructor(context) {
+     super(context);
+   }
+
+   handleSelectAnswer(questionId, optionId) {
+     const currentQuestion = this.context.exercise?.questions?.[this.context.currentQuestionIndex];
+     if (!currentQuestion || this.context.selectedAnswers[currentQuestion.id]) {
+       return; // Đã trả lời hoặc không có câu hỏi
+     }
+
+     const isCorrect = currentQuestion.correctAnswer === optionId;
+
+     const newSelectedAnswers = {
+       ...this.context.selectedAnswers,
+       [currentQuestion.id]: {
+         optionId,
+         isCorrect
+       }
+     };
+
+     this.context.selectedAnswers = newSelectedAnswers;
+
+     // Lưu vào localStorage ngay sau khi chọn đáp án
+     localStorage.setItem(`exerciseAnswers_${this.context.exercise.id}`, JSON.stringify({
+       selectedAnswers: newSelectedAnswers,
+       currentQuestionIndex: this.context.currentQuestionIndex // Lưu cả chỉ số câu hỏi hiện tại
+     }));
+
+     this.context.notifyListeners(); // Thông báo cho component re-render
+   }
+
+   handleNext() {
+     // Chỉ chuyển tiếp nếu câu hỏi hiện tại đã được trả lời và không phải là câu cuối cùng
+     const currentQ = this.context.exercise?.questions?.[this.context.currentQuestionIndex];
+     if (currentQ && this.context.selectedAnswers[currentQ.id] && this.context.currentQuestionIndex < this.context.exercise.questions.length - 1) {
+       this.context.currentQuestionIndex += 1;
+       this.context.notifyListeners(); // Thông báo cho component re-render
+     }
+   }
+
+   handleComplete() {
+       // Kiểm tra xem tất cả câu hỏi đã được trả lời trước khi hoàn thành
+       if (this.context.exercise && Object.keys(this.context.selectedAnswers).length === this.context.exercise.questions.length) {
+           // Chuyển sang CompletedState
+           this.context.setState(new CompletedState(this.context));
+           // Sau khi chuyển trạng thái thành công, gọi lại complete() để kích hoạt logic trong CompletedState
+           this.context.complete();
+            // Xử lý chuyển trang và xóa localStorage trong CompletedState sau khi chuyển trạng thái
+       }
+   }
+
+   handleRestart() {
+     // Xóa localStorage khi làm lại bài
+     localStorage.removeItem(`exerciseAnswers_${this.context.exercise.id}`);
+     this.context.currentQuestionIndex = 0;
+     this.context.selectedAnswers = {};
+     this.context.timeSpent = 0; // Đặt lại thời gian trong context
+     this.context.notifyListeners(); // Thông báo cho component re-render
+   }
+
+   // Implement UI specific getters
+   // Triển khai các phương thức Getter đặc trưng cho UI
+   getButtonText() {
+       const questions = this.context.exercise?.questions || [];
+       const allQuestionsAnswered = Object.keys(this.context.selectedAnswers).length === questions.length;
+       const isLastQuestion = this.context.currentQuestionIndex === questions.length - 1;
+
+       if (isLastQuestion && allQuestionsAnswered) {
+           return 'Hoàn thành';
+       } else if (this.context.selectedAnswers[questions[this.context.currentQuestionIndex]?.id]){
+           return 'Câu tiếp';
+       } else {
+            return '...'; // Nút bị vô hiệu hóa hoặc placeholder
+       }
+   }
+
    isNextDisabled() {
        const currentQuestion = this.context.exercise?.questions?.[this.context.currentQuestionIndex];
        return !currentQuestion || !this.context.selectedAnswers[currentQuestion.id];
    }
-   // Determine if complete button should be disabled
-   // Xác định xem nút Hoàn thành có nên bị vô hiệu hóa hay không
+
    isCompleteDisabled() {
         const questions = this.context.exercise?.questions || [];
         const allQuestionsAnswered = Object.keys(this.context.selectedAnswers).length === questions.length;
          return !allQuestionsAnswered;
    }
+
+   goToQuestion(index) {
+        // Optional: Add validation for index
+        if (index >= 0 && index < this.context.exercise.questions.length) {
+           this.context.currentQuestionIndex = index;
+           this.context.notifyListeners();
+        }
+   }
 }
 
-class CompletedState {
-  constructor(context) {
-    this.context = context;
-    console.log('Transitioned to Completed State'); // Chuyển sang trạng thái Hoàn thành
-    // Logic to run upon entering Completed State
-    // Logic chạy khi vào trạng thái Hoàn thành
-    // e.g., Final score calculation, clear localStorage
-    // Ví dụ: Tính điểm cuối cùng, xóa localStorage
+/** @implements {State} */
+ class CompletedState extends BaseState {
+   constructor(context) {
+     super(context);
+     console.log('Transitioned to Completed State'); // Chuyển sang trạng thái Hoàn thành
+     // Logic chạy khi vào trạng thái Hoàn thành (vd: xóa localStorage)
      localStorage.removeItem(`exerciseAnswers_${this.context.exercise.id}`);
-     // Logic cập nhật learning process và hiển thị alert sẽ chuyển vào handleComplete
-
+     // Logic hiển thị alert và cập nhật learning process sẽ chạy trong handleComplete
    }
 
-    handleSelectAnswer(questionId, optionId) { /* No-op in completed state */ } // Không làm gì ở trạng thái hoàn thành
-    handleNext() { /* No-op in completed state */ } // Không làm gì ở trạng thái hoàn thành
-
-    handleComplete() {
-      // Already completed, handle navigation
-      // Đã hoàn thành, xử lý chuyển trang
-      const { topicType, topicId } = this.context; // Lấy topicType/topicId từ context
-      const navigate = this.context.navigate; // Lấy hàm navigate từ context
+   handleComplete() {
+     // Đã hoàn thành, xử lý chuyển trang và hiển thị alert
+     const { topicType, topicId } = this.context; // Lấy topicType/topicId từ context
+     const navigate = this.context.navigate; // Lấy hàm navigate từ context
 
      // Hiển thị alert kết quả khi hoàn thành
      const correctAnswersCount = this.context.getCorrectAnswersCount();
@@ -164,47 +173,50 @@ class CompletedState {
 
       // Cập nhật trạng thái completed nếu có learningProcessId
       const learningProcessId = this.context.learningProcessId; // Giả định learningProcessId được lưu trong context
-       if (learningProcessId) {
-         // Sử dụng async IIFE để await bên trong handleComplete
-         (async () => {
-           try {
-             // Import service inside async block if needed, or pass it to context
-             const learningProcessService = (await import('../services/learningProcessService')).default; // Import động service
-             await learningProcessService.setLearningProcessCompleted(learningProcessId);
-             console.log('Cập nhật trạng thái học tập thành công.');
-           } catch (error) {
-             console.error('Lỗi khi cập nhật trạng thái học tập:', error);
-           }
-         })();
-       }
-
-      // Add a small delay before navigating to allow alert to be seen/dismissed
-      // Thêm một khoảng dừng nhỏ trước khi chuyển trang để alert có thể hiển thị/đóng
-      setTimeout(() => {
-          if (topicType === 'Vocabulary' && topicId) {
-             navigate(`/learn-vocabulary/${topicId}`);
-          } else if (topicType === 'Grammar' && topicId) {
-             navigate(`/learn-grammar/${topicId}`); // Sửa lỗi chính tả 'grammary' thành 'grammar'
-          } else {
-             navigate('/toeic-exercise');
+      if (learningProcessId) {
+        // Sử dụng async IIFE để await bên trong handleComplete
+        (async () => {
+          try {
+            // Import service inside async block if needed, or pass it to context
+            const learningProcessService = (await import('../services/learningProcessService')).default; // Import động service
+            await learningProcessService.setLearningProcessCompleted(learningProcessId);
+            console.log('Cập nhật trạng thái học tập thành công.');
+          } catch (error) {
+            console.error('Lỗi khi cập nhật trạng thái học tập:', error);
           }
-      }, 50); // Khoảng dừng 50ms
+        })();
+      }
+
+     // Thêm một khoảng dừng nhỏ trước khi chuyển trang để alert có thể hiển thị/đóng
+     setTimeout(() => {
+         if (topicType === 'Vocabulary' && topicId) {
+            navigate(`/learn-vocabulary/${topicId}`);
+         } else if (topicType === 'Grammar' && topicId) {
+            navigate(`/learn-grammar/${topicId}`); // Sửa lỗi chính tả 'grammary' thành 'grammar'
+         } else {
+            navigate('/toeic-exercise');
+         }
+     }, 50); // Khoảng dừng 50ms
    }
 
   handleRestart() {
-     // Transition back to AnsweringState
      // Chuyển về trạng thái AnsweringState
      this.context.setState(new AnsweringState(this.context));
-     // Reset exercise data in context
-     // Đặt lại dữ liệu bài tập trong context
-     this.context.currentQuestionIndex = 0;
-     this.context.selectedAnswers = {};
-     this.context.timeSpent = 0;
-     this.context.notifyListeners(); // Thông báo cho component re-render
+     // Reset exercise data in context (logic này nằm trong AnsweringState.handleRestart)
+     // context.currentQuestionIndex = 0;
+     // context.selectedAnswers = {};
+     // context.timeSpent = 0;
+     // context.notifyListeners();
+     // Gọi lại handleRestart() trên trạng thái mới để thực hiện reset
+     this.context.restart();
   }
+
+   // Override UI specific getters for this state
+   // Ghi đè các phương thức Getter đặc trưng cho UI của trạng thái này
    getButtonText() { return 'Quay về chủ đề'; }
-    isNextDisabled() { return true; }
-    isCompleteDisabled() { return false; }
+   isNextDisabled() { return true; }
+   isCompleteDisabled() { return false; }
+   // No need to implement handleSelectAnswer, handleNext, goToQuestion as they are not valid actions in this state
 }
 
 class ExerciseContext {
@@ -223,20 +235,24 @@ class ExerciseContext {
     this.listeners = []; // Dùng để thông báo cho component React
   }
 
+  // Method to change the current state
+  // Phương thức để thay đổi trạng thái hiện tại
   setState(state) {
+    // Optional: Add validation if the new state is a valid State instance
     this.currentState = state;
     this.notifyListeners();
   }
 
-  // Methods called by React Component
-  // Các phương thức được gọi bởi Component React
+  // Methods called by React Component, delegating to the current state
+  // Các phương thức được gọi bởi Component React, ủy quyền cho trạng thái hiện tại
   selectAnswer(questionId, optionId) { this.currentState.handleSelectAnswer(questionId, optionId); }
   nextQuestion() { this.currentState.handleNext(); }
   complete() { this.currentState.handleComplete(); }
   restart() { this.currentState.handleRestart(); }
+  goToQuestion(index) { this.currentState.goToQuestion(index); }
 
-  // Getters for React Component to render UI
-  // Các Getter để Component React lấy dữ liệu render UI
+  // Getters for React Component to render UI (access state data and state-specific UI info)
+  // Các Getter để Component React lấy dữ liệu render UI (truy cập dữ liệu trạng thái và thông tin UI đặc trưng của trạng thái)
   getCurrentQuestion() {
     return this.exercise?.questions?.[this.currentQuestionIndex] || null;
   }
@@ -257,19 +273,16 @@ class ExerciseContext {
   getTotalQuestions() {
      return this.exercise?.questions?.length || 0;
   }
-   // Methods to get state-specific UI info
-   // Các phương thức để lấy thông tin UI đặc trưng của trạng thái
+
+  // State-specific UI info getters (delegate to current state)
+  // Các Getter thông tin UI đặc trưng của trạng thái (ủy quyền cho trạng thái hiện tại)
    getCurrentButtonText() { return this.currentState.getButtonText(); }
    isNextButtonDisabled() { return this.currentState.isNextDisabled(); }
    isCompleteButtonDisabled() { return this.currentState.isCompleteDisabled(); }
-   // Check if current question is answered (for UI feedback)
-   // Kiểm tra xem câu hỏi hiện tại đã được trả lời chưa (cho phản hồi UI)
    isCurrentQuestionAnswered() {
         const currentQuestion = this.getCurrentQuestion();
         return currentQuestion ? !!this.selectedAnswers[currentQuestion.id] : false;
    }
-    // Get the class name for an option (delegated to State or handled here based on context data)
-    // Lấy tên class cho một tùy chọn (ủy quyền cho State hoặc xử lý ở đây dựa trên dữ liệu context)
     getOptionClassName(option) {
         const currentQuestion = this.getCurrentQuestion();
         if (!currentQuestion) return "option-item";
@@ -280,9 +293,9 @@ class ExerciseContext {
 
         let className = "option-item";
 
-        // Only show feedback if the current question has been answered
-        // Chỉ hiển thị phản hồi nếu câu hỏi hiện tại đã được trả lời
-        if (this.isCurrentQuestionAnswered()) {
+        // Only show feedback if the current question has been answered and is in AnsweringState
+        // Chỉ hiển thị phản hồi nếu câu hỏi hiện tại đã trả lời và đang ở trạng thái AnsweringState
+         if (this.currentState instanceof AnsweringState && this.isCurrentQuestionAnswered()) {
           if (isSelected) {
             className += isCorrectOption ? " correct" : " incorrect";
           }
@@ -474,13 +487,6 @@ const DoExercise = () => {
     fetchExercise();
   }, [exerciseId, topicId, topicType, navigate, setTimeSpent, learningProcessId]); // Thêm các dependencies cần thiết
 
-  // isAnswered state is now derived from context/state pattern
-  // State isAnswered giờ được suy ra từ context/state pattern
-  // useEffect(() => {
-  //   setIsAnswered(false);
-  // }, [currentQuestionIndex]); // This useEffect is no longer needed
-  // useEffect này không còn cần thiết
-
   // Event Handlers - Delegate to ExerciseContext
   // Hàm xử lý sự kiện - Ủy quyền cho ExerciseContext
   const handleOptionSelect = (questionId, optionId) => {
@@ -492,16 +498,17 @@ const DoExercise = () => {
   };
 
   const handleComplete = async () => {
-    // Call complete on the context, the state pattern will handle navigation and score check
-    // Gọi complete() trên context, state pattern sẽ xử lý chuyển trang và kiểm tra điểm
-     // Logic cập nhật learning process sẽ được chuyển vào CompletedState.
-    exerciseContextRef.current?.complete();
+     exerciseContextRef.current?.complete();
   };
 
   const handleRestart = () => {
-    exerciseContextRef.current?.restart();
-     // timeSpent reset is handled by the React hook, ensure context is updated too
-     // Việc reset timeSpent được xử lý bằng React hook, đảm bảo context cũng được cập nhật
+     exerciseContextRef.current?.restart();
+  };
+
+  // Handle clicking on question indicator
+  // Xử lý khi click vào chỉ số câu hỏi
+  const handleGoToQuestion = (index) => {
+      exerciseContextRef.current?.goToQuestion(index);
   };
 
   const formatTime = (seconds) => {
@@ -531,7 +538,7 @@ const DoExercise = () => {
   // Passing score logic might live in Context/State, but derived data can be calculated here too
   // Logic tính điểm pass có thể nằm trong Context/State, nhưng dữ liệu suy ra cũng có thể tính ở đây
   const meetsPassingScore = correctAnswersCount >= Math.ceil(questions.length * 0.8);
-  const canComplete = allQuestionsAnswered && meetsPassingScore; // meetsPassingScore ở đây chỉ còn để tính canComplete cho UI, không ảnh hưởng logic hoàn thành
+  const canComplete = allQuestionsAnswered; // Logic hoàn thành chỉ cần trả lời hết câu hỏi
 
   const currentQuestion = context.getCurrentQuestion();
   const currentAnswer = context.getSelectedAnswerForCurrentQuestion();
@@ -607,7 +614,6 @@ const DoExercise = () => {
           ))}
         </div>
         
-        {/* Feedback section - show if current question is answered AND in AnsweringState */}
         {/* Phần phản hồi - hiển thị nếu câu hỏi hiện tại đã trả lời VÀ đang ở trạng thái AnsweringState */}
         {context.currentState instanceof AnsweringState && context.isCurrentQuestionAnswered() && currentAnswer && (
           <div className="feedback">
@@ -623,7 +629,6 @@ const DoExercise = () => {
         )}
         
         <div className="navigation-buttons">
-          {/* Button logic based on state and completion status */}
           {/* Logic hiển thị nút dựa trên trạng thái và tình trạng hoàn thành */}
           {isLastQuestion ? (
              <> {/* Sử dụng Fragment cho nhiều phần tử */}
@@ -676,17 +681,9 @@ const DoExercise = () => {
                 key={q.id}
                 className={indicatorClass}
                 onClick={() => {
-                  // Directly update index in context and notify, or add a method to context?
-                  // Cập nhật trực tiếp chỉ số trong context và thông báo, hay thêm một phương thức vào context?
-                  // Adding a method to context is cleaner with State Pattern
-                  // Thêm một phương thức vào context sẽ gọn gàng hơn với State Pattern
-                  if (exerciseContextRef.current) {
-                      exerciseContextRef.current.currentQuestionIndex = index; // Cập nhật trực tiếp chỉ số
-                  }
-                  exerciseContextRef.current?.notifyListeners(); // Thông báo để re-render
-
-                  // If logic needed before changing question via indicator, add a method like context.goToQuestion(index)
-                  // Nếu cần logic trước khi thay đổi câu hỏi bằng indicator, hãy thêm một phương thức như context.goToQuestion(index)
+                  // Handle clicking indicator - delegate to context
+                  // Xử lý click vào chỉ số câu hỏi - ủy quyền cho context
+                   handleGoToQuestion(index);
                 }}
               >
                 {index + 1}
