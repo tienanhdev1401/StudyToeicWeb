@@ -7,10 +7,20 @@ import path from 'path';
 import dotenv from 'dotenv';
 import compression from 'compression';
 
+// Import Observer pattern
+import { EmailNotificationObserver } from './observers/EmailNotificationObserver';
+import { transporter } from './repositories/admin/admin.LearnerRepository';
+import { testSubject } from './observers/TestSubject';
+
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Khởi tạo và đăng ký Email Observer
+const emailObserver = new EmailNotificationObserver(transporter);
+testSubject.addObserver(emailObserver);
+console.log('Email Observer đã được đăng ký');
 
 // Middleware nén dữ liệu phản hồi để giảm kích thước
 app.use(compression({
