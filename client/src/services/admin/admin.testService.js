@@ -28,7 +28,6 @@ const testService = {
         const response = await axios.get(`${API_BASE_URL}/admin/test/${id}`);
         
         if (response.data && response.data.success !== false) {
-          // If the response has a 'data' property (the standard format from our API), return that
           if (response.data.data) {
             console.log(`Successfully retrieved test data for ID ${id}`);
             return response.data;

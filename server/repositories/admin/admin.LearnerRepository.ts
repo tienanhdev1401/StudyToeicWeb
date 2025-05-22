@@ -1,11 +1,45 @@
 import database from '../../config/db';
 import { User } from '../../models/User';
 import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
+
+
+export const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 export class LearnerRepository {
   /**
    * Tìm người học theo ID
    */
+  
+  static async findAllActiveUsers(): Promise<User[]> {
+    try {
+      const results = await database.query(
+        'SELECT id, emailAddress as email, fullName, role FROM users WHERE status = "ACTIVE" AND role = "user"'
+      );
+      
+      if (!Array.isArray(results) || results.length === 0) {
+        return [];
+      }
+      
+      return results.map((userData: any) => new User({
+        id: userData.id,
+        email: userData.email,
+        password: '', // Không cần mật khẩu cho thông báo
+        fullName: userData.fullName,
+        role: userData.role
+      }));
+    } catch (error) {
+      console.error('Lỗi khi tìm người dùng hoạt động:', error);
+      throw error;
+    }
+  }
+
   static async findById(id: number): Promise<User | null> {
     const results = await database.query(
       `SELECT id, dateOfBirth, emailAddress, fullname, gender,

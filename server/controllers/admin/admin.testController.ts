@@ -95,7 +95,7 @@ export class AdminTestController {
       const newTest = new Test(0, title, testCollection, 120);
       const savedTest = await TestRepository.create(newTest);
       
-      // Define default part numbers
+      // Tạo 7 parts cho test
       const defaultParts = [
         { partNumber: 1 },
         { partNumber: 2 },
@@ -408,7 +408,6 @@ export class AdminTestController {
         emptyPositions.sort((a, b) => a - b);
         
         // Debug: Double-check empty positions again
-        // This is to ensure we're correctly identifying positions 1, 2, etc.
         let verifiedEmptyPositions = [...emptyPositions];
         if (partNumber === "1") {
           console.log("DOUBLE-CHECKING PART 1 EMPTY POSITIONS:");

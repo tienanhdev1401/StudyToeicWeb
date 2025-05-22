@@ -1,6 +1,8 @@
 import { TestCollection } from '../../models/TestCollection';
 import { Test } from '../../models/Test';
 import db from '../../config/db';
+import { testSubject } from '../../observers/TestSubject';
+
 
 export class TestRepository {
   static async findById(id: number): Promise<Test | null> {
@@ -48,7 +50,7 @@ export class TestRepository {
       console.error('TestRepository.findAll error:', error);
       throw error;
     }
-  } 
+  }
   
   static async create(test: Test): Promise<Test> {
     try {
@@ -63,6 +65,9 @@ export class TestRepository {
         test.testCollection,
         test.duration
       );
+      
+      // Thông báo cho các observers về bài test mới
+      await testSubject.notifyObservers(newTest);
       
       return newTest;
     } catch (error) {
