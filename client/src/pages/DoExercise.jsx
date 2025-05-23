@@ -192,7 +192,7 @@ class BaseState {
          if (topicType === 'Vocabulary' && topicId) {
             navigate(`/learn-vocabulary/${topicId}`);
          } else if (topicType === 'Grammar' && topicId) {
-            navigate(`/learn-grammar/${topicId}`); // Sửa lỗi chính tả 'grammary' thành 'grammar'
+            navigate(`/learn-grammary/${topicId}`); // Sửa lỗi chính tả 'grammary' thành 'grammar'
          } else {
             navigate('/toeic-exercise');
          }
