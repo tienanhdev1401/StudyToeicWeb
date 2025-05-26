@@ -23,7 +23,6 @@ export class QuestionController {
       return res.status(500).json({ error: 'Lỗi máy chủ' });
     }
 
-
   }
 
   static async getById(req: Request, res: Response) {
