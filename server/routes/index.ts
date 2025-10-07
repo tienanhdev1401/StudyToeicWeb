@@ -28,6 +28,8 @@ import adminQuestionRoutes from './admin/admin.questionRoutes';
 import adminResourceRoutes from './admin/admin.resourceRoutes';
 import adminRoadmapConfigRoutes from './admin/admin.roadmapConfigRoutes';
 import learningProcessRoutes from './learningProcessRoutes';
+import lessonRoutes from './lessonRoutes';
+import adminLessonRoutes from './admin/admin.lessonRoutes';
 
 function route(app: Application): void {
   app.use('/api/user', userRouter);
@@ -58,6 +60,8 @@ function route(app: Application): void {
   app.use('/api/test', testRoutes);
   app.use('/api/admin/exercise', adminExerciseRoutes);
   app.use('/api/admin/exercise/', adminExerciseQuestionRoutes);
+  app.use('/api/lessons', lessonRoutes);
+  app.use('/api/admin/lessons', adminLessonRoutes);
 
   
   app.use('/api/submissions', submissionRoutes);
