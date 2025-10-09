@@ -92,11 +92,8 @@ const AdminPage = () => {
         <Route path="/exercise/grammars" element={<ManageExerciseGrammar />} />
         <Route path="/exercise/vocabularies" element={<ManageExerciseVocabulary />} />
         <Route path="/question" element={<ManageQuestion />} />
-<<<<<<< HEAD
         <Route path="/lesson" element={<Managelesson />} />
-=======
         <Route path="/blog" element={<ManageBlog />} />
->>>>>>> origin/kimtriv3
       </Routes>
     </AdminLayout>
   );
