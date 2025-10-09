@@ -92,10 +92,10 @@ export class AdminLessonController {
       errors.push('Trường videoUrl là bắt buộc và phải là chuỗi.');
     }
 
-    const durationSec = this.parseOptionalNumber(body.durationSec, 'durationSec', errors);
-    const tags = this.normalizeTags(body.tags);
-    const status = this.normalizeStatus(body.status, errors);
-    const captions = this.normalizeCaptions(body.captions, errors);
+    const durationSec = AdminLessonController.parseOptionalNumber(body.durationSec, 'durationSec', errors);
+    const tags = AdminLessonController.normalizeTags(body.tags);
+    const status = AdminLessonController.normalizeStatus(body.status, errors);
+    const captions = AdminLessonController.normalizeCaptions(body.captions, errors);
 
     if (errors.length) {
       return res.status(400).json({
@@ -108,15 +108,15 @@ export class AdminLessonController {
     const payload: CreateLessonInput = {
       title: body.title.trim(),
       videoUrl: body.videoUrl.trim(),
-      description: this.optionalTrim(body.description),
-      thumbnailUrl: this.optionalTrim(body.thumbnailUrl),
+      description: AdminLessonController.optionalTrim(body.description),
+      thumbnailUrl: AdminLessonController.optionalTrim(body.thumbnailUrl),
       durationSec: durationSec ?? null,
-      topic: this.optionalTrim(body.topic),
+      topic: AdminLessonController.optionalTrim(body.topic),
       status: status ?? 'draft',
-      level: this.optionalTrim(body.level),
-      language: this.optionalTrim(body.language),
+      level: AdminLessonController.optionalTrim(body.level),
+      language: AdminLessonController.optionalTrim(body.language),
       tags,
-      transcriptUrl: this.optionalTrim(body.transcriptUrl),
+      transcriptUrl: AdminLessonController.optionalTrim(body.transcriptUrl),
       captions,
     };
 
@@ -167,49 +167,49 @@ export class AdminLessonController {
       }
 
       if (body.description !== undefined) {
-        payload.description = this.optionalTrim(body.description);
+        payload.description = AdminLessonController.optionalTrim(body.description);
       }
 
       if (body.thumbnailUrl !== undefined) {
-        payload.thumbnailUrl = this.optionalTrim(body.thumbnailUrl);
+        payload.thumbnailUrl = AdminLessonController.optionalTrim(body.thumbnailUrl);
       }
 
       if (body.durationSec !== undefined) {
-        const durationSec = this.parseOptionalNumber(body.durationSec, 'durationSec', errors);
+        const durationSec = AdminLessonController.parseOptionalNumber(body.durationSec, 'durationSec', errors);
         if (durationSec !== undefined) {
           payload.durationSec = durationSec;
         }
       }
 
       if (body.topic !== undefined) {
-        payload.topic = this.optionalTrim(body.topic);
+        payload.topic = AdminLessonController.optionalTrim(body.topic);
       }
 
       if (body.status !== undefined) {
-        const status = this.normalizeStatus(body.status, errors);
+        const status = AdminLessonController.normalizeStatus(body.status, errors);
         if (status) {
           payload.status = status;
         }
       }
 
       if (body.level !== undefined) {
-        payload.level = this.optionalTrim(body.level);
+        payload.level = AdminLessonController.optionalTrim(body.level);
       }
 
       if (body.language !== undefined) {
-        payload.language = this.optionalTrim(body.language);
+        payload.language = AdminLessonController.optionalTrim(body.language);
       }
 
       if (body.tags !== undefined) {
-        payload.tags = this.normalizeTags(body.tags);
+        payload.tags = AdminLessonController.normalizeTags(body.tags);
       }
 
       if (body.transcriptUrl !== undefined) {
-        payload.transcriptUrl = this.optionalTrim(body.transcriptUrl);
+        payload.transcriptUrl = AdminLessonController.optionalTrim(body.transcriptUrl);
       }
 
       if (body.captions !== undefined) {
-        payload.captions = this.normalizeCaptions(body.captions, errors);
+        payload.captions = AdminLessonController.normalizeCaptions(body.captions, errors);
       }
 
       if (errors.length) {
