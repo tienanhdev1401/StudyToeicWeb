@@ -5,11 +5,13 @@ import SuccessAlert from '../../components/SuccessAlert';
 import ErrorAlert from '../../components/ErrorAlert';
 import lessonService from '../../services/admin/admin.lessonService';
 
-const ManageTest = () => {
+const ManageLesson = () => {
   const navigate = useNavigate();
   const [testList, setTestList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  
 
   // Pagination states
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,6 +37,11 @@ const ManageTest = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+
+  const [isCaptionModalOpen, setIsCaptionModalOpen] = useState(false);
+  const [currentCaptions, setCurrentCaptions] = useState([]);
+  const [selectedLessonId, setSelectedLessonId] = useState(null);
 
   // Mẫu dữ liệu lesson tạm thời
 
@@ -72,7 +79,6 @@ const ManageTest = () => {
   const handleAddOrUpdateLesson = async (lessonData, isEdit) => {
     try {
       setIsSubmitting(true);
-      
       let savedLesson;
       
       if (isEdit) {
@@ -84,7 +90,6 @@ const ManageTest = () => {
         );
         displaySuccessMessage('Lesson updated successfully!');
       } else {
-        // Add new lesson using service
         savedLesson = await lessonService.createlesson(lessonData);
         // Update local state after successful API call
         setTestList(prevList => [...prevList, savedLesson]);
@@ -104,6 +109,43 @@ const ManageTest = () => {
       setIsSubmitting(false);
     }
   };
+
+  const handleViewCaptions = async (lessonId) => {
+    try {
+      setSelectedLessonId(lessonId);
+      setIsCaptionModalOpen(true);
+
+      // Gọi API lấy lesson theo ID
+      const response = await lessonService.getlessonById(lessonId);
+
+      // Lấy captions từ response
+      setCurrentCaptions(response.data.captions || []);
+      
+    } catch (error) {
+      console.error("Lỗi khi lấy phụ đề:", error);
+    }
+  };
+
+  const handleSaveCaptions = async () => {
+  try {
+    // Lấy thông tin lesson hiện tại (nếu cần giữ các field khác)
+    const lesson = await lessonService.getlessonById(selectedLessonId);
+
+    // Cập nhật lesson, thêm captions vào object lesson
+    const updatedLesson = {
+      ...lesson,
+      captions: currentCaptions, // gán mảng captions hiện tại
+    };
+
+    await lessonService.updatelesson(selectedLessonId, updatedLesson);
+
+    setIsCaptionModalOpen(false);
+    alert("Lưu phụ đề thành công!");
+  } catch (error) {
+    console.error("Lỗi khi lưu phụ đề:", error);
+    alert("Không thể lưu phụ đề.");
+  }
+};
 
   // Handle delete confirmation
   const handleDeleteConfirm = async () => {
@@ -258,6 +300,7 @@ const ManageTest = () => {
   }
 
   return (
+    
     <div className="manageLesson-container">
       {/* Alerts */}
       <SuccessAlert 
@@ -273,6 +316,176 @@ const ManageTest = () => {
       />
       
       <h1 className="manageLesson-header-title">Manage Lessons</h1>
+
+      {isCaptionModalOpen && (
+  <div className="caption-modal">
+    <div className="caption-modal-content">
+      <h3>Phụ đề của bài học</h3>
+
+      {currentCaptions.length === 0 ? (
+        <p>Chưa có phụ đề nào.</p>
+      ) : (
+        <table className="caption-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Lesson ID</th>
+              <th>Language</th>
+              <th>Start (ms)</th>
+              <th>End (ms)</th>
+              <th>Order</th>
+              <th>Text</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentCaptions.map((cap, idx) => (
+              <tr key={cap.id || cap.tempId}>
+                <td>{cap.id || "-"}</td>
+                <td>{cap.lessonId ?? selectedLessonId}</td>
+
+                {/* Language */}
+                <td>
+                  <input
+                    type="text"
+                    value={cap.language}
+                    placeholder="vi"
+                    onChange={(e) => {
+                      const updated = [...currentCaptions];
+                      updated[idx] = { ...updated[idx], language: e.target.value };
+                      setCurrentCaptions(updated);
+                    }}
+                  />
+                </td>
+
+                {/* Start */}
+                <td>
+                  <input
+                    type="text"
+                    value={cap.startMs}
+                    placeholder="0"
+                    onChange={(e) => {
+                      const updated = [...currentCaptions];
+                      updated[idx] = { ...updated[idx], startMs: e.target.value };
+                      setCurrentCaptions(updated);
+                    }}
+                    onBlur={(e) => {
+                      const val = e.target.value.trim();
+                      const updated = [...currentCaptions];
+                      if (!val || isNaN(Number(val))) {
+                        alert("Start (ms) phải là số và không được để trống!");
+                        updated[idx] = { ...updated[idx], startMs: "" };
+                      }
+                      setCurrentCaptions(updated);
+                    }}
+                  />
+                </td>
+
+                {/* End */}
+                <td>
+                  <input
+                    type="text"
+                    value={cap.endMs}
+                    placeholder="0"
+                    onChange={(e) => {
+                      const updated = [...currentCaptions];
+                      updated[idx] = { ...updated[idx], endMs: e.target.value };
+                      setCurrentCaptions(updated);
+                    }}
+                    onBlur={(e) => {
+                      const val = e.target.value.trim();
+                      const updated = [...currentCaptions];
+                      if (!val || isNaN(Number(val))) {
+                        alert("End (ms) phải là số và không được để trống!");
+                        updated[idx] = { ...updated[idx], endMs: "" };
+                      }
+                      setCurrentCaptions(updated);
+                    }}
+                  />
+                </td>
+
+                {/* Order */}
+                <td>
+                  <input
+                    type="text"
+                    value={cap.orderIndex}
+                    placeholder={idx + 1}
+                    onChange={(e) => {
+                      const updated = [...currentCaptions];
+                      updated[idx] = { ...updated[idx], orderIndex: e.target.value };
+                      setCurrentCaptions(updated);
+                    }}
+                    onBlur={(e) => {
+                      const val = e.target.value.trim();
+                      const updated = [...currentCaptions];
+                      if (!val || isNaN(Number(val))) {
+                        alert("Order phải là số và không được để trống!");
+                        updated[idx] = { ...updated[idx], orderIndex: "" };
+                      }
+                      setCurrentCaptions(updated);
+                    }}
+                  />
+                </td>
+
+                {/* Text */}
+                <td>
+                  <input
+                    type="text"
+                    value={cap.text}
+                    onChange={(e) => {
+                      const updated = [...currentCaptions];
+                      updated[idx] = { ...updated[idx], text: e.target.value };
+                      setCurrentCaptions(updated);
+                    }}
+                  />
+                </td>
+
+                {/* Delete button */}
+                <td>
+                  <button
+                    className="delete-caption-btn"
+                    onClick={() => {
+                      const updated = currentCaptions.filter(
+                        c => !(c.id === cap.id && c.tempId === cap.tempId)
+                      );
+                      setCurrentCaptions(updated);
+                    }}
+                  >
+                    ❌
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <div className="caption-modal-actions">
+        <button onClick={() => setIsCaptionModalOpen(false)}>Đóng</button>
+
+        <button
+          className="add-caption-btn"
+          onClick={() => {
+            const newCaption = {
+              tempId: Date.now(),
+              lessonId: selectedLessonId,
+              language: "",
+              startMs: "",
+              endMs: "",
+              orderIndex: (currentCaptions.length + 1).toString(),
+              text: "",
+            };
+            setCurrentCaptions([...currentCaptions, newCaption]);
+          }}
+        >
+          Thêm phụ đề
+        </button>
+
+        <button onClick={handleSaveCaptions}>Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+)}
       
       <div className="manageLesson-pagination">
         <div className="manageLesson-entries-select">
@@ -420,7 +633,7 @@ const ManageTest = () => {
                 <td>
                   <button 
                     className="manageLesson-view-btn"
-                    onClick={() => navigate(`/admin/lesson/${item.id}`)}
+                    onClick={() => handleViewCaptions(item.id)}
                   >
                     <i className="fa-solid fa-eye"></i>
                   </button>
@@ -458,6 +671,8 @@ const ManageTest = () => {
         </tbody>
         </table>
       </div>
+      
+      
 
       {currentItems.length > 0 && (
         <div className="manageLesson-pagination">
@@ -1000,4 +1215,4 @@ const LessonFormModal = ({ isOpen, onClose, onSubmit, editMode = false, testItem
   );
 };
 
-export default ManageTest;
+export default ManageLesson;

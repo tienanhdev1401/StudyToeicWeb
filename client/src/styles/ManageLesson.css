@@ -1345,6 +1345,188 @@
   font-size: 16px;
 }
 
+/* Modal container */
+.caption-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 10px;
+}
+
+/* Modal container */
+.caption-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 10px;
+}
+
+/* Modal content */
+.caption-modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  width: 750px;
+  max-width: 95%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* Scroll wrapper cho table */
+.caption-table-wrapper {
+  width: 100%;
+  overflow: auto; /* scroll ngang/dọc */
+  max-height: 400px; /* scroll dọc */
+}
+
+/* Table */
+.caption-table {
+  width: 100%;
+  min-width: 700px; /* đảm bảo cột không quá nhỏ */
+  border-collapse: collapse;
+  table-layout: fixed; /* cột đều */
+}
+
+.caption-table th,
+.caption-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+.caption-table th {
+  background-color: #f1f1f1;
+  font-weight: 600;
+}
+
+/* Width từng cột */
+.caption-table th:nth-child(1),
+.caption-table td:nth-child(1) { width: 50px; }   /* ID */
+.caption-table th:nth-child(2),
+.caption-table td:nth-child(2) { width: 80px; }   /* Lesson ID */
+.caption-table th:nth-child(3),
+.caption-table td:nth-child(3) { width: 60px; }   /* Language */
+.caption-table th:nth-child(4),
+.caption-table td:nth-child(4) { width: 70px; }   /* Start */
+.caption-table th:nth-child(5),
+.caption-table td:nth-child(5) { width: 70px; }   /* End */
+.caption-table th:nth-child(6),
+.caption-table td:nth-child(6) { width: 60px; }   /* Order */
+.caption-table th:nth-child(7),
+.caption-table td:nth-child(7) { width: 200px; }  /* Text */
+.caption-table th:nth-child(8),
+.caption-table td:nth-child(8) { width: 80px; }   /* Actions */
+
+/* Input inside table */
+.caption-table input {
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.caption-table input:focus {
+  outline: 2px solid #007bff;
+}
+
+/* Buttons container */
+.caption-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Common button styles */
+.caption-modal-actions button,
+.caption-table button,
+.add-caption-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.caption-modal-actions button {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.caption-modal-actions button:hover {
+  background-color: #0056b3;
+}
+
+.add-caption-btn {
+  background-color: #28a745;
+}
+
+.add-caption-btn:hover {
+  background-color: #1c7430;
+}
+
+.caption-table .delete-caption-btn {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.caption-table .delete-caption-btn:hover {
+  background-color: #a71d2a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .caption-modal-content {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .caption-table th,
+  .caption-table td {
+    font-size: 12px;
+    padding: 6px 4px;
+  }
+
+  .caption-modal-actions button,
+  .add-caption-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+
 /* Column Width Adjustments */
 .manageLesson-table th:nth-child(1), .manageLesson-table td:nth-child(1) { width: 80px; } /* ID */
 .manageLesson-table th:nth-child(2), .manageLesson-table td:nth-child(2) { width: 200px; } /* Title */
