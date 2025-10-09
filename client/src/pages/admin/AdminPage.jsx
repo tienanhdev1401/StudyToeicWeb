@@ -49,7 +49,7 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-const AdminPage = () => {
+const AdminPage = () => { 
   const { user, isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
