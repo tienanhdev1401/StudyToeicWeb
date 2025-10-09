@@ -22,6 +22,7 @@ import ManageExerciseGrammar from './ManageExerciseGrammar';
 import ManageExerciseVocabulary from './ManageExerciseVocabulary';
 import ManageQuestion from './ManageQuestion';
 import Managelesson from './ManageLesson';
+import ManageBlog from './ManageBlog';
 
 // Component để kiểm tra quyền Admin (không phải staff)
 const AdminOnlyRoute = ({ element }) => {
@@ -91,7 +92,11 @@ const AdminPage = () => {
         <Route path="/exercise/grammars" element={<ManageExerciseGrammar />} />
         <Route path="/exercise/vocabularies" element={<ManageExerciseVocabulary />} />
         <Route path="/question" element={<ManageQuestion />} />
+<<<<<<< HEAD
         <Route path="/lesson" element={<Managelesson />} />
+=======
+        <Route path="/blog" element={<ManageBlog />} />
+>>>>>>> origin/kimtriv3
       </Routes>
     </AdminLayout>
   );
