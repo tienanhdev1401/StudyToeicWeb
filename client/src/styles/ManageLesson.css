@@ -199,6 +199,7 @@
   }
   
   /* Table Container with Scroll */
+  
   .manageLesson-table-container {
     width: 100%;
     overflow-x: auto;
@@ -1524,6 +1525,13 @@
     padding: 5px 10px;
     font-size: 12px;
   }
+}
+
+.caption-table-wrapper {
+  max-height: 400px;      /* chiều cao vùng cuộn */
+  overflow-y: auto;       /* bật scroll dọc */
+  border: 1px solid #ddd; /* viền nhẹ */
+  border-radius: 10px;
 }
 
 
