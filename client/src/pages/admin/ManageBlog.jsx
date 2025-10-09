@@ -1,0 +1,1033 @@
+import React, {useState, useEffect} from 'react';
+import  '../../styles/ManageBlog.css';
+import blogService from '../../services/admin/admin.blogService';
+import userService from '../../services/userService';
+import { useNavigate } from 'react-router-dom';
+import { parseDocxToHtml, isValidDocxFile } from '../../utils/wordUtils';
+
+const AddTopicModal = ({isOpen, onClose, onAdd, editMode = false, topicToEdit = null, isSubmitting = false}) => {
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    author: '',
+  });
+  const [isUploading, setIsUploading] = useState(false);
+  const [topicImage, setTopicImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [wordFile, setWordFile] = useState(null);
+  const [errors, setErrors] = useState({
+    title: '',
+    content: '',
+    author: '',
+    topicImage: ''
+  });
+  const [touched, setTouched] = useState({
+    title: false,
+    content: false,
+    author: false,
+    topicImage: false
+  });
+  const [serverError, setServerError] = useState('');
+  // State để lưu danh sách tên topic hiện có
+  const [existingTopicTitles, setExistingTopicTitles] = useState([]);
+  
+  // Tính toán trạng thái loading tổng hợp (từ cả local và parent)
+  const isLoading = isUploading || isSubmitting;
+
+  // Lấy danh sách tiêu đề topic hiện có khi component mount
+  useEffect(() => {
+    const fetchExistingTopics = async () => {
+      try {
+        const data = await blogService.getAllBlogs();
+        // Lọc danh sách các tiêu đề bài viết, bỏ qua tiêu đề của bài viết đang được chỉnh sửa (nếu có)
+        const blogTitles = data
+          .filter(item => !editMode || item.id !== topicToEdit?.id)
+          .map(item => item.title.toLowerCase());
+        setExistingTopicTitles(blogTitles);
+      } catch (error) {
+        console.error('Error fetching topics:', error);
+      }
+    };
+    
+    if (isOpen) {
+      fetchExistingTopics();
+      setServerError(''); // Clear server error when modal opens
+    }
+  }, [isOpen, editMode, topicToEdit]);
+
+  // Khi modal mở và ở chế độ chỉnh sửa, cập nhật formData từ topicToEdit
+  useEffect(() => {
+    if (isOpen && editMode && topicToEdit) {
+      setFormData({
+        title: topicToEdit.title || '',
+        content: topicToEdit.content || '',
+        author: topicToEdit.author || '',
+      });
+      
+      // Nếu có ảnh, hiển thị preview
+      if (topicToEdit.imageUrl) {
+        setImagePreview(topicToEdit.imageUrl);
+      }
+    } else if (isOpen && !editMode) {
+      // Reset form khi mở modal ở chế độ thêm mới
+      setFormData({ 
+        title: '', 
+        content: '',
+        author: '' 
+      });
+      setTopicImage(null);
+      setImagePreview('');
+      setWordFile(null);
+      setErrors({
+        title: '',
+        content: '',
+        topicImage: ''
+      });
+      setTouched({
+        title: false,
+        content: false,
+        topicImage: false
+      });
+      setServerError('');
+    }
+  }, [isOpen, editMode, topicToEdit]);
+
+  if(!isOpen) return null;
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({...formData, [name]: value});
+    
+    // Clear error when user types
+    if (value.trim()) {
+      setErrors({...errors, [name]: ''});
+    }
+    // Clear server error when user makes changes
+    setServerError('');
+  };
+
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched({...touched, [name]: true});
+    
+    // Validate on blur
+    validateField(name, formData[name]);
+  };
+
+  const validateField = (fieldName, value) => {
+    let errorMessage = '';
+    
+    if (fieldName === 'title') {
+      if (!value.trim()) {
+        errorMessage = 'Tiêu đề không được để trống';
+      } else if (existingTopicTitles.includes(value.trim().toLowerCase())) {
+        errorMessage = 'Tiêu đề này đã tồn tại';
+      }
+    }
+    
+    setErrors({...errors, [fieldName]: errorMessage});
+    return !errorMessage;
+  };
+
+  const validateForm = () => {
+    const titleValue = formData.title.trim();
+    const authorValue = formData.author.trim();
+    
+    const newErrors = {
+      title: !titleValue ? 'Tiêu đề không được để trống' : 
+            (existingTopicTitles.includes(titleValue.toLowerCase()) && !editMode ? 'Tiêu đề này đã tồn tại' : ''),
+      author: !authorValue ? 'Tên tác giả không được để trống' : '',
+      // Không yêu cầu hình ảnh mới nếu đang chỉnh sửa và đã có ảnh cũ
+      topicImage: !topicImage && !imagePreview ? 'Hình ảnh không được để trống' : ''
+    };
+    
+    setErrors(newErrors);
+    setTouched({
+      title: true,
+      content: true,
+      topicImage: true
+    });
+    
+    return !Object.values(newErrors).some(error => error);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    
+    if (file) {
+      // Validate file
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!validTypes.includes(file.type)) {
+        alert('Chỉ chấp nhận file JPG, PNG hoặc GIF');
+        return;
+      }
+
+      if (file.size > maxSize) {
+        alert('Kích thước file không được vượt quá 5MB');
+        return;
+      }
+
+      // Create a preview URL for the image
+      const previewUrl = URL.createObjectURL(file);
+      
+      setImagePreview(previewUrl);
+      setTopicImage(file);
+      setErrors({...errors, topicImage: ''});
+    }
+  };
+
+  const handleWordFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Kiểm tra định dạng file
+    if (!isValidDocxFile(file)) {
+      alert('Chỉ chấp nhận file Word (.docx)');
+      return;
+    }
+    
+    setWordFile(file);
+    
+    try {
+      setIsUploading(true); // Thêm loading khi đang xử lý file
+      const result = await parseDocxToHtml(file);
+      if (result.error) {
+        alert(result.error);
+      } else {
+        setFormData(prev => ({ ...prev, content: result.html }));
+        console.log('Đã chuyển đổi file Word thành HTML');
+      }
+    } catch (error) {
+      console.error('Lỗi khi đọc file:', error);
+      alert('Không thể đọc file. Vui lòng kiểm tra định dạng file: ' + error.message);
+    } finally {
+      setIsUploading(false); // Kết thúc loading sau khi xử lý xong
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setServerError(''); // Clear server error on new submission
+
+    if (!validateForm()) {
+      return;
+    }
+    
+    if (isLoading) { // Không cho phép submit nếu đang loading
+      return;
+    }
+
+    try {
+      setIsUploading(true); // Bắt đầu loading khi submit
+      let imageUrl = '';
+      
+      // Nếu có file ảnh mới, upload
+      if (topicImage) {
+        try {
+          // Sử dụng userService để upload ảnh
+          console.log('Uploading image file:', topicImage);
+          imageUrl = await userService.uploadImage(topicImage, 'blogs');
+          console.log('Image uploaded successfully, URL:', imageUrl);
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          setServerError('Lỗi khi tải lên hình ảnh. Vui lòng thử lại.');
+          setIsUploading(false);
+          return;
+        }
+      } else if (editMode && topicToEdit.imageUrl) {
+        // Nếu không có file ảnh mới nhưng đang edit và có URL ảnh cũ
+        imageUrl = topicToEdit.imageUrl;
+        console.log('Using existing image URL:', imageUrl);
+      }
+      
+      const updatedTopic = {
+        title: formData.title,
+        content: formData.content,
+        imageUrl: imageUrl,
+        author: formData.author
+      };
+      
+      console.log('Saving topic with data:', updatedTopic);
+
+      try {
+        await onAdd(updatedTopic, editMode);
+        // Để cho parent component đóng modal
+      } catch (error) {
+        // Handle server-side validation errors
+        setServerError(error.message || 'Đã xảy ra lỗi. Vui lòng thử lại.');
+        return;
+      } finally {
+        setIsUploading(false); // Chỉ kết thúc loading local, parent component sẽ quản lý isSubmitting
+      }
+      
+      // Clean up the preview URL
+      if (imagePreview && topicImage) { // Chỉ xóa URL khi đó là URL tạm
+        URL.revokeObjectURL(imagePreview);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setServerError(error.message || 'Đã xảy ra lỗi. Vui lòng thử lại.');
+      setIsUploading(false);
+    }
+  };
+
+ return (
+    <div className="ManageBlog-modal-overlay">
+      <div className="ManageBlog-modal-content">
+        <div className="ManageBlog-modal-header">
+          <h2>{editMode ? 'Chỉnh sửa bài viết' : 'Thêm bài viết mới'}</h2>
+          <button type="button" className="ManageBlog-close-btn" onClick={onClose} disabled={isLoading}>
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+        <div className="ManageBlog-modal-body">
+          {serverError && (
+            <div className="ManageBlog-error-message">{serverError}</div>
+          )}
+          <form onSubmit={handleSubmit} noValidate>
+            <div className={`ManageBlog-form-group ${errors.title && touched.title ? 'has-error' : ''}`}>
+              <label htmlFor="title">Tiêu đề <span className="ManageBlog-required">*</span></label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+                placeholder="Nhập tiêu đề bài viết"
+                disabled={isLoading}
+              />
+              {errors.title && touched.title && (
+                <div className="ManageBlog-error-message">{errors.title}</div>
+              )}
+            </div>
+
+            <div className={`ManageBlog-form-group ${errors.author && touched.author ? 'has-error' : ''}`}>
+              <label htmlFor="author">Tác giả <span className="ManageBlog-required">*</span></label>
+              <input
+                type="text"
+                id="author"
+                name="author"
+                value={formData.author}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+                placeholder="Nhập tên tác giả"
+                disabled={isLoading}
+              />
+              {errors.author && touched.author && (
+                <div className="ManageBlog-error-message">{errors.author}</div>
+              )}
+            </div>
+            
+            <div className="ManageBlog-form-group">
+              <label htmlFor="content">Nội dung</label>
+              <textarea
+                id="content"
+                name="content"
+                value={formData.content}
+                onChange={handleChange}
+                rows={5}
+                placeholder="Nhập nội dung bài viết hoặc tải lên file Word"
+                disabled={isLoading}
+              ></textarea>
+            </div>
+            
+            <div className="ManageBlog-doc-file-upload">
+              <label htmlFor="wordFile" className="ManageBlog-doc-file-label">
+                <i className="fas fa-file-word"></i> Tải lên file Word
+              </label>
+              <input
+                type="file"
+                id="wordFile"
+                accept=".docx"
+                onChange={handleWordFileChange}
+                style={{ display: 'none' }}
+                disabled={isLoading}
+              />
+              <span className="ManageBlog-doc-file-name">
+                {wordFile ? wordFile.name : "Chưa chọn file nào"}
+              </span>
+            </div>
+            
+            <div className={`ManageBlog-form-group ${errors.topicImage && touched.topicImage ? 'has-error' : ''}`}>
+              <label htmlFor="topicImage">Hình ảnh <span className="ManageBlog-required">*</span></label>
+              <div className="ManageBlog-image-upload-container">
+                <label htmlFor="topicImage" className="ManageBlog-image-file-label">
+                  <i className="fas fa-upload"></i> {editMode ? 'Thay đổi hình ảnh' : 'Chọn hình ảnh'}
+                </label>
+                <input
+                  type="file"
+                  id="topicImage"
+                  name="topicImage"
+                  accept="image/jpeg, image/png, image/gif"
+                  onChange={handleImageChange}
+                  style={{ display: 'none' }}
+                  disabled={isLoading}
+                />
+                <span className="ManageBlog-image-file-name">
+                  {topicImage ? topicImage.name : (imagePreview && editMode ? "Hình ảnh hiện tại" : "Chưa chọn hình ảnh")}
+                </span>
+              </div>
+              {errors.topicImage && touched.topicImage && (
+                <div className="ManageBlog-error-message">{errors.topicImage}</div>
+              )}
+              <div className="ManageBlog-image-preview">
+                {imagePreview && (
+                  <img src={imagePreview} alt="Preview" />
+                )}
+              </div>
+            </div>
+
+            <div className="ManageBlog-modal-footer">
+              <button type="button" className="ManageBlog-cancel-btn" onClick={onClose} disabled={isLoading}>
+                Hủy bỏ
+              </button>
+              <button type="submit" className="ManageBlog-save-btn" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin"></i> 
+                    Đang xử lý...
+                  </>
+                ) : (
+                  editMode ? 'Lưu thay đổi' : 'Thêm chủ đề'
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const ManageBlog = () => {
+  // Thêm styles cho bảng
+  const tableStyles = {
+    table: {
+      tableLayout: 'fixed',
+      width: '100%'
+    },
+    // Column widths
+    idColumn: { width: '8%' },
+    titleColumn: { width: '18%' },
+    contentColumn: { width: '20%' },
+    imageColumn: { width: '10%' },
+    authorColumn: { width: '12%' },
+    dateColumn: { width: '12%' },
+    actionsColumn: { width: '10%' },
+    // Cell styles
+    cell: {
+      padding: '12px 8px',
+      verticalAlign: 'middle'
+    },
+    contentCell: {
+      maxHeight: '2.8em',
+      overflow: 'hidden',
+      display: '-webkit-box',
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: 'vertical',
+      lineHeight: '1.4em'
+    },
+    titleCell: {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
+    },
+    imageCell: {
+      textAlign: 'center'
+    },
+    dateCell: {
+      whiteSpace: 'nowrap',
+      fontSize: '0.9em',
+      color: '#666'
+    },
+    actionsCell: {
+      display: 'flex',
+      gap: '8px',
+      justifyContent: 'center'
+    }
+  };
+  const navigate = useNavigate();
+  const [blogList, setBlogList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  const fetchBlogs = async () => {
+    try {
+      setIsLoading(true);
+      const response = await blogService.getAllBlogs();
+      // Check if response exists and has data property
+      const blogs = response?.data || response || [];
+      
+      // Ensure we're working with an array
+      const blogsArray = Array.isArray(blogs) ? blogs : [];
+      
+      const normalizedData = blogsArray.map(item => ({
+        id: item.id,
+        title: item.title,
+        content: item.content,
+        imageUrl: item.imageUrl,
+        author: item.author,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt
+      }));
+      console.log('Normalized data:', normalizedData); // Debug log
+      setBlogList(normalizedData);
+    } catch (err) {
+      console.error('Error fetching blogs:', err); // Debug log
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [sortField, setSortField] = useState('id');
+  const [sortDirection, setSortDirection] = useState('asc');
+
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  // Modal states
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Edit mode state
+  const [editMode, setEditMode] = useState(false);
+  const [topicToEdit, setTopicToEdit] = useState(null);
+
+  useEffect(() => {
+    fetchBlogTopics();
+  }, []);
+
+  const fetchBlogTopics = async () => {
+    try {
+      setIsLoading(true);
+      const data = await blogService.getAllBlogs();
+      console.log('Blog topics data:', data); // Debug data structure
+
+      // Chuẩn hóa dữ liệu trả về, đảm bảo tất cả đều sử dụng trường imageUrl
+      const normalizedData = data.map(item => {
+        if (item.blog) {
+          // Đảm bảo trường imageUrl tồn tại và được sử dụng
+          if (item.imgUrl && !item.imageUrl) {
+            item.imageUrl = item.imgUrl;
+          }
+        }
+        return item;
+      });
+
+      setBlogList(normalizedData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle adding or updating a topic
+  const handleAddOrUpdateTopic = async (topic, isEdit) => {
+    try {
+      setIsSubmitting(true);
+      if (isEdit) {
+        // Update existing topic
+        await blogService.updateBlog(topicToEdit.id, topic);
+        alert('Cập nhật chủ đề thành công!');
+      } else {
+        // Add new topic
+        await blogService.addBlog(topic);
+        alert('Thêm chủ đề thành công!');
+      }
+      
+      // Refresh the list
+      await fetchBlogs();
+
+      setIsAddModalOpen(false);
+      setEditMode(false);
+      setTopicToEdit(null);
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message || 'Đã xảy ra lỗi. Vui lòng thử lại.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Add entries options
+  const entriesOptions = [5, 10, 25, 50, 100];
+
+  const handleEntriesChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing entries per page
+  };
+
+  // Xử lý tìm kiếm
+  const filteredData = blogList.filter(item =>
+    (item?.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (item?.content || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (item?.id || '').toString().includes(searchTerm)
+  );
+
+  // Sort data
+  const sortedData = [...filteredData].sort((a, b) => {
+    // Lấy giá trị cần so sánh
+    const getSortValue = (item, field) => {
+      return item[field] || '';
+    };
+
+    const valueA = getSortValue(a, sortField);
+    const valueB = getSortValue(b, sortField);
+
+    if (sortDirection === 'asc') {
+      return valueA > valueB ? 1 : -1;
+    } else {
+      return valueA < valueB ? 1 : -1;
+    }
+  });
+
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+  // Reset to page 1 when changing items per page or search term
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [itemsPerPage, searchTerm]);
+
+  // Ensure currentPage doesn't exceed totalPages
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages || 1);
+    }
+  }, [currentPage, totalPages]);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedItems(sortedData.map(item => item.id));
+    } else {
+      setSelectedItems([]);
+    }
+  };
+
+  const handleSelectItem = (id) => {
+    setSelectedItems(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
+  // Prevent sort when clicking checkbox
+  const handleCheckboxClick = (e) => {
+    e.stopPropagation();
+  };
+
+  // Edit mode handler
+  const handleEditClick = (item) => {
+    setTopicToEdit({
+      id: item.id,
+      title: item.title,
+      content: item.content,
+      imageUrl: item.imageUrl,
+      author: item.author
+    });
+    setEditMode(true);
+    setIsAddModalOpen(true);
+  };
+
+  // Delete confirmation modal
+  const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, itemToDelete, selectedItems }) => {
+    if (!isOpen) return null;
+
+    const isMultiDelete = !itemToDelete;
+    const message = isMultiDelete 
+      ? `Bạn có chắc chắn muốn xóa ${selectedItems.length} bài viết đã chọn không?`
+      : `Bạn có chắc chắn muốn xóa bài viết "${itemToDelete.title}" không?`;
+
+    return (
+      <div className="ManageBlog-modal-overlay">
+        <div className="ManageBlog-modal-content">
+          <div className="ManageBlog-modal-header">
+            <h2>Confirm Delete</h2>
+            <button className="ManageBlog-close-btn" onClick={onClose}>
+              <i className="fas fa-times"></i>
+            </button>
+          </div>
+          <div className="ManageBlog-modal-body">
+            <p>{message}</p>
+          </div>
+          <div className="ManageBlog-modal-footer">
+            <button className="ManageBlog-cancel-btn" onClick={onClose}>Cancel</button>
+            <button className="ManageBlog-confirm-delete-btn" onClick={onConfirm}>
+              <i className="fas fa-trash"></i>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Page numbers with dots
+  const getPageNumbers = (currentPage, totalPages) => {
+    const delta = 1; // Số trang hiển thị ở hai bên trang hiện tại
+    const range = [];
+    const rangeWithDots = [];
+
+    // Luôn hiển thị trang đầu
+    range.push(1);
+
+    for (let i = currentPage - delta; i <= currentPage + delta; i++) {
+      if (i > 1 && i < totalPages) {
+        range.push(i);
+      }
+    }
+
+    // Luôn hiển thị trang cuối nếu không phải trang 1
+    if (currentPage < totalPages) {
+      range.push(totalPages);
+    }
+
+    // Thêm dấu ... vào các khoảng trống
+    let prev = 0;
+    for (const i of range) {
+      if (prev + 1 < i) {
+        rangeWithDots.push('...');
+      }
+      rangeWithDots.push(i);
+      prev = i;
+    }
+
+    return rangeWithDots;
+  };
+
+  // Xử lý lỗi hoặc trạng thái loading
+  if (isLoading) {
+    return <div className="ManageBlog-loading">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="ManageBlog-error">Error: {error}</div>;
+  }
+
+  return (
+    <div className="ManageBlog-container">
+      <h1 className="ManageBlog-header-title">Manage Blog Posts</h1>
+      
+      <div className="ManageBlog-pagination">
+        <div className="ManageBlog-entries-select">
+          <p>Hiển thị </p>
+          <select 
+            value={itemsPerPage} 
+            onChange={handleEntriesChange}
+            className="ManageBlog-entries-dropdown"
+          >
+            {entriesOptions.map(option => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <p>mục </p>
+        </div>
+
+        <div className="ManageBlog-action-section">
+          <div className="ManageBlog-search-box">
+            <i className="fas fa-search"></i>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="ManageBlog-search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <button className="ManageBlog-add-btn" onClick={() => setIsAddModalOpen(true)}>
+            <i className="fas fa-plus"></i>
+            Add New
+          </button>
+        </div>
+      </div>
+        
+      {filteredData.length === 0 ? (
+        <div className="ManageBlog-empty-table">
+          <div className="ManageBlog-empty-message">
+            <i className="fas fa-folder-open"></i>
+            <p>No blog post found</p>
+            <button className="ManageBlog-add-btn" onClick={() => setIsAddModalOpen(true)}>
+              <i className="fas fa-plus"></i>
+              Add New
+            </button>
+          </div>
+        </div>
+      ) : (
+        <table className="ManageBlog-table" style={tableStyles.table}>
+          <thead>
+            <tr>
+              <th className="ManageBlog-id-column" style={tableStyles.idColumn}>
+                <div className="ManageBlog-id-header">
+                  <input
+                    type="checkbox"
+                    onChange={handleSelectAll}
+                    checked={selectedItems.length === sortedData.length && sortedData.length > 0}
+                    onClick={handleCheckboxClick}
+                  />
+                  <span onClick={() => handleSort('id')} className="sortable">
+                    ID
+                    <i className={`fas ${sortField === 'id' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+                  </span>
+                </div>
+              </th>
+              <th 
+                onClick={() => handleSort('title')} 
+                className="ManageBlog-title-column sortable"
+                style={tableStyles.titleColumn}
+              >
+                Title
+                <i className={`fas ${sortField === 'title' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              </th>
+              <th 
+                onClick={() => handleSort('content')} 
+                className="ManageBlog-content-column sortable"
+                style={tableStyles.contentColumn}
+              >
+                Content
+                <i className={`fas ${sortField === 'content' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              </th>
+              <th 
+                onClick={() => handleSort('imageUrl')} 
+                className="ManageBlog-image-column sortable"
+                style={tableStyles.imageColumn}
+              >
+                Image
+                <i className={`fas ${sortField === 'imageUrl' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              </th>
+              <th 
+                onClick={() => handleSort('author')} 
+                className="ManageBlog-author-column sortable"
+                style={tableStyles.authorColumn}
+              >
+                Author
+                <i className={`fas ${sortField === 'author' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              </th>
+              <th 
+                onClick={() => handleSort('createdAt')} 
+                className="ManageBlog-created-at-column sortable"
+                style={tableStyles.dateColumn}
+              >
+                Created At
+                <i className={`fas ${sortField === 'createdAt' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              </th>
+              <th 
+                onClick={() => handleSort('updatedAt')} 
+                className="ManageBlog-updated-at-column sortable"
+                style={tableStyles.dateColumn}
+              >
+                Updated At
+                <i className={`fas ${sortField === 'updatedAt' ? (sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} />
+              </th>
+              <th className="ManageBlog-actions-column" style={tableStyles.actionsColumn}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.map((item) => (
+              <tr key={item.id}>
+                <td>
+                  <div className="ManageBlog-id-cell">
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.includes(item.id)}
+                      onChange={() => handleSelectItem(item.id)}
+                    />
+                    <span>{item.id}</span>
+                  </div>
+                </td>
+                <td className="ManageBlog-title">{item.title}</td>
+                <td className="ManageBlog-content">
+                  {item.content ? 
+                    item.content.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...' : 
+                    'No content'}
+                </td>
+                <td className="ManageBlog-image-column">
+                  {item.imageUrl ? (
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.title} 
+                      className="ManageBlog-image" 
+                      onLoad={() => console.log('Image loaded successfully:', item.imageUrl)}
+                      onError={(e) => {
+                        console.error('Failed to load image:', item.imageUrl);
+                        e.target.onerror = null;
+                        e.target.src = "https://via.placeholder.com/50?text=No+Image";
+                      }} 
+                    />
+                  ) : (
+                    <span>No image</span>
+                  )}
+                </td>
+                <td className="ManageBlog-author">{item.author || 'Unknown'}</td>
+                <td className="ManageBlog-created-at">
+                  {item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A'}
+                </td>
+                <td className="ManageBlog-updated-at">
+                  {item.updatedAt ? new Date(item.updatedAt).toLocaleString() : 'N/A'}
+                </td>
+                <td>
+                  <button 
+                    className="ManageBlog-edit-btn"
+                    onClick={() => handleEditClick(item)}
+                  >
+                    <i className="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button 
+                    className="ManageBlog-delete-btn"
+                    onClick={() => {
+                      setItemToDelete(item);
+                      setIsDeleteModalOpen(true);
+                    }}
+                  >
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <div className="ManageBlog-pagination">
+        <span>
+          Display {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} items
+        </span>
+        <div className="ManageBlog-pagination-buttons">
+          <button 
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="ManageBlog-page-btn"
+          >
+            Previous
+          </button>
+          
+          {getPageNumbers(currentPage, totalPages).map((item, index) => (
+            item === '...' ? (
+              <span key={`dots-${index}`} className="ManageBlog-page-dots">...</span>
+            ) : (
+              <button
+                key={item}
+                onClick={() => setCurrentPage(item)}
+                className={`ManageBlog-page-btn ${currentPage === item ? 'active' : ''}`}
+              >
+                {item}
+              </button>
+            )
+          ))}
+
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="ManageBlog-page-btn"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      {selectedItems.length > 0 && (
+        <div className="ManageBlog-table-action-bar">
+          <div className="ManageBlog-action-bar-content">
+            <span>Selected {selectedItems.length} items</span>
+            <button 
+              className="ManageBlog-delete-selected-btn"
+              onClick={() => {
+                setItemToDelete(null); // null indicates multi-delete
+                setIsDeleteModalOpen(true);
+              }}
+            >
+              <i className="fas fa-trash"></i>
+              Delete selected items
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setItemToDelete(null);
+        }}
+        onConfirm={async () => {
+          try {
+            if (itemToDelete) {
+              // Delete a single item
+              await blogService.deleteBlog(itemToDelete.id);
+            } else {
+              // Delete multiple items
+              for (const id of selectedItems) {
+                await blogService.deleteBlog(id);
+              }
+            }
+            
+            // Refresh the list
+            await fetchBlogs();
+            // Reset selected items
+            setSelectedItems([]);
+            
+          } catch (error) {
+            console.error("Error deleting items:", error);
+            alert("Error deleting. Please try again.");
+          }
+          
+          setIsDeleteModalOpen(false);
+          setItemToDelete(null);
+        }}
+        itemToDelete={itemToDelete}
+        selectedItems={selectedItems}
+      />
+
+      {/* Add/Edit modal */}
+      <AddTopicModal
+        isOpen={isAddModalOpen}
+        onClose={() => {
+          if(!isSubmitting) {
+            setIsAddModalOpen(false);
+            setEditMode(false);
+            setTopicToEdit(null);
+          }
+        }}
+        onAdd={handleAddOrUpdateTopic}
+        editMode={editMode}
+        topicToEdit={topicToEdit}
+        isSubmitting={isSubmitting}
+      />
+    </div>
+  );  
+};   
+
+export default ManageBlog;

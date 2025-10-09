@@ -1,0 +1,820 @@
+/* Blog Management styles */
+.ManageBlog-container {
+  padding: 30px;
+  font-family: 'Arial', sans-serif;
+  max-width: 1400px; /* Tăng max-width để bảng có nhiều không gian hơn */
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  font-size: 16px;
+}
+
+/* Table styles */
+.ManageBlog-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  table-layout: fixed; /* Thêm thuộc tính này để cố định kích thước cột */
+}
+
+/* Column width adjustments */
+.ManageBlog-id-column {
+  width: 8%; /* ID ngắn nên chỉ cần khoảng 8% */
+}
+
+.ManageBlog-title-column {
+  width: 18%; /* Title cần không gian vừa phải */
+}
+
+.ManageBlog-content-column {
+  width: 20%; /* Content cần nhiều không gian nhất */
+}
+
+.ManageBlog-image-column {
+  width: 12%; /* Ảnh thumbnail nên chiếm khoảng 12% */
+}
+
+.ManageBlog-author-column {
+  width: 12%; /* Tên tác giả chiếm khoảng 12% */
+}
+
+.ManageBlog-created-at-column,
+.ManageBlog-updated-at-column {
+  width: 12%; /* Ngày tháng cần khoảng 12% */
+}
+
+.ManageBlog-actions-column {
+  width: 10%; /* Actions chỉ cần khoảng 10% */
+}
+
+.ManageBlog-header-title {
+  font-size: 4.75rem;
+  color: #409efd;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+.ManageBlog-topic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ManageBlog-back-btn {
+  background-color: white;
+  border: 1px solid #c7c7c7;
+  padding: 8px 15px;
+  border-radius: 0.5rem;
+  margin-right: 20px;
+  cursor: pointer;
+  display: flex;
+  color: #303133;
+  align-items: center;
+  transition: all 0.2s;
+  font-size: 15px;
+}
+
+.ManageBlog-back-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.ManageBlog-back-btn i {
+  margin-right: 8px;
+}
+
+.ManageBlog-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ManageBlog-pagination span { 
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #9a9a9b;
+}
+
+.ManageBlog-entries-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ManageBlog-entries-select p {
+  margin: 0;
+  color: #9a9a9b;
+  font-size: 1.25rem;
+}
+
+.ManageBlog-entries-dropdown {
+  padding: 6px 10px;
+  border: 1px solid #c7c7c7;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: #303133;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.ManageBlog-entries-dropdown:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.ManageBlog-action-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ManageBlog-search-box {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #c7c7c7;
+  border-radius: 0.5rem;
+  padding: 1px 16px;
+  width: 300px;
+  position: relative;
+}
+
+.ManageBlog-search-box i {
+  color: #9ca3af;
+  font-size: 1.25rem;
+  margin-right: 8px;
+}
+
+.ManageBlog-search-input {
+  flex-grow: 1;
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  color: #1f2937;
+  padding: 8px 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none;
+  font-size: 15px;
+}
+
+.ManageBlog-search-input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.ManageBlog-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  background-color: #4caf50;
+  color: white;
+  border: 1px solid transparent;
+}
+
+.ManageBlog-add-btn:hover {
+  background-color: #3d8940;
+  color: white;
+}
+
+.ManageBlog-add-btn i {
+  font-size: 15px;
+}
+
+.ManageBlog-table {
+  margin-top: 20px;
+  width: 100%;
+  table-layout: fixed;
+  max-width: 1150px;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 80px;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 15px;
+}
+
+.ManageBlog-table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.ManageBlog-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.ManageBlog-table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.ManageBlog-table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+.ManageBlog-table th {
+  padding: 16px;
+  text-align: center;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  color: #344054;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.ManageBlog-table td {
+  padding: 16px;
+  text-align: left;
+  border: 1px solid #e5e7eb !important;
+  background-color: #ffffff !important;
+  font-size: 15px;
+}
+
+.ManageBlog-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.ManageBlog-table th.sortable {
+  cursor: pointer;
+  position: relative;
+  padding-right: 25px;
+}
+
+.ManageBlog-table th.sortable:hover {
+  background-color: #f5f5f5;
+}
+
+.ManageBlog-table th.sortable i {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 15px;
+}
+
+.ManageBlog-table th.sortable:hover i {
+  color: #666;
+}
+
+.ManageBlog-table i.fa-sort-up,
+.ManageBlog-table i.fa-sort-down {
+  color: #333;
+}
+
+.ManageBlog-id-header, 
+.ManageBlog-id-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ManageBlog-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 15px;
+}
+
+.ManageBlog-title {
+  font-weight: 500;
+  color: #333;
+  font-size: 15px;
+}
+
+.ManageBlog-content {
+  max-height: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #666;
+  font-size: 14px;
+}
+
+.ManageBlog-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.ManageBlog-exercise-count-badge {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Column width definitions for the blog table */
+.ManageBlog-id-column {
+  width: 70px;
+}
+
+.ManageBlog-title-column {
+  width: 15%;
+}
+
+.ManageBlog-content-column {
+  width: 45%;
+}
+
+.ManageBlog-image-column {
+  width: 80px;
+  text-align: center;
+}
+
+.ManageBlog-exercise-count-column {
+  width: 10%;
+  text-align: center;
+}
+
+.ManageBlog-actions-column {
+  width: 100px;
+  text-align: center;
+}
+
+.ManageBlog-edit-btn, 
+.ManageBlog-delete-btn {
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px;
+  background-color: transparent;
+  color: #858c97;
+  font-size: 15px;
+}
+
+.ManageBlog-edit-btn:hover {
+  color: black;
+}
+
+.ManageBlog-delete-btn:hover {
+  color: red;
+}
+
+.ManageBlog-pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ManageBlog-page-btn {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  background-color: white;
+  color: #0d6efd;
+  cursor: pointer;
+  min-width: 38px;
+  border-radius: 4px;
+  font-size: 15px;
+}
+
+.ManageBlog-page-btn:hover:not(:disabled) {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  color: #0a58ca;
+}
+
+.ManageBlog-page-btn.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+}
+
+.ManageBlog-page-btn:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.ManageBlog-page-dots {
+  padding: 6px 12px;
+  color: #6c757d;
+  font-weight: bold;
+}
+
+.ManageBlog-table-action-bar {
+  background-color: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 20px;
+  padding: 12px 20px;
+}
+
+.ManageBlog-action-bar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ManageBlog-action-bar-content span {
+  color: #666;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.ManageBlog-delete-selected-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  font-size: 15px;
+}
+
+.ManageBlog-delete-selected-btn:hover {
+  background-color: #c82333;
+}
+
+.ManageBlog-delete-selected-btn i {
+  font-size: 15px;
+}
+
+/* Modal styles for blog management */
+.ManageBlog-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.ManageBlog-modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ManageBlog-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ManageBlog-modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.ManageBlog-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.ManageBlog-modal-body {
+  padding: 24px;
+  color: #4b5563;
+  font-size: 15px;
+  overflow-y: auto;
+  max-height: calc(90vh - 120px); /* Trừ đi chiều cao của header và footer */
+}
+
+.ManageBlog-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background-color: white;
+  position: sticky;
+  bottom: 0;
+}
+
+.ManageBlog-cancel-btn {
+  padding: 8px 16px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  color: #374151;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.ManageBlog-save-btn,
+.ManageBlog-confirm-delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.ManageBlog-save-btn {
+  background-color: #1976d2;
+  color: white;
+}
+
+.ManageBlog-confirm-delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.ManageBlog-cancel-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.ManageBlog-save-btn:hover {
+  background-color: #1565c0;
+}
+
+.ManageBlog-confirm-delete-btn:hover {
+  background-color: #c82333;
+}
+
+/* Form-specific styles for blog management */
+.ManageBlog-form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.ManageBlog-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 16px;
+}
+
+.ManageBlog-required {
+  color: #e53935;
+  margin-left: 2px;
+}
+
+.ManageBlog-form-group input, 
+.ManageBlog-form-group textarea,
+.ManageBlog-form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.ManageBlog-form-group input:focus, 
+.ManageBlog-form-group textarea:focus,
+.ManageBlog-form-group select:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.ManageBlog-form-group.has-error input, 
+.ManageBlog-form-group.has-error textarea,
+.ManageBlog-form-group.has-error select {
+  border-color: #e53935;
+}
+
+.ManageBlog-error-message {
+  color: #e53935;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* File upload for Word documents */
+.ManageBlog-doc-file-upload {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ManageBlog-doc-file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: fit-content;
+  transition: background-color 0.2s;
+}
+
+.ManageBlog-doc-file-label:hover {
+  background-color: #3a7bc8;
+}
+
+.ManageBlog-doc-file-name {
+  font-size: 14px;
+  color: #555;
+  margin-left: 8px;
+}
+
+/* Image upload */
+.ManageBlog-image-upload-container {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.ManageBlog-image-file-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #4a90e2;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.ManageBlog-image-file-label:hover {
+  background-color: #3a7bc8;
+}
+
+.ManageBlog-image-file-label i {
+  margin-right: 5px;
+}
+
+.ManageBlog-image-file-name {
+  margin-left: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.ManageBlog-image-preview {
+  margin-top: 10px;
+  width: 100%;
+  height: 150px;
+  border: 1px dashed #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #f9f9f9;
+}
+
+.ManageBlog-image-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.ManageBlog-empty-table {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.ManageBlog-empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: #666;
+  font-size: 16px;
+}
+
+.ManageBlog-empty-message i {
+  font-size: 3.5rem;
+  color: #d1d1d1;
+}
+
+.ManageBlog-empty-message p {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.ManageBlog-empty-message .ManageBlog-add-btn {
+  max-width: 200px;
+}
+
+/* Loading and error states */
+.ManageBlog-loading,
+.ManageBlog-error {
+  text-align: center;
+  padding: 40px 0;
+  font-size: 20px;
+}
+
+.ManageBlog-loading {
+  color: #4a90e2;
+}
+
+.ManageBlog-error {
+  color: #e53935;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .ManageBlog-container {
+    padding: 15px;
+    font-size: 15px;
+  }
+  
+  .ManageBlog-table {
+    font-size: 14px;
+  }
+  
+  .ManageBlog-table th,
+  .ManageBlog-table td {
+    padding: 10px;
+  }
+  
+  .ManageBlog-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .ManageBlog-search-box {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* Content preview styles */
+.ManageBlog-content-preview {
+  min-height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+}
+
+.ManageBlog-content-html-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ManageBlog-content-html-preview p {
+  margin: 0;
+  font-weight: 500;
+  color: #28a745;
+}
+
+.ManageBlog-content-html-length {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.ManageBlog-no-content {
+  color: #6c757d;
+  font-style: italic;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+}
