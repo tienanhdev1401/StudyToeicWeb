@@ -1,5 +1,6 @@
 import { LearningProcess } from '../models/LearningProcess';
 import db from '../config/db';
+import { LearningProcessBuilder } from '../builder/LearningProcessBuilder';
 
 export class LearningProcessRepository {
     static async getAllLearningProcessByUserId(userId: number): Promise<LearningProcess[]> {
@@ -9,7 +10,19 @@ export class LearningProcessRepository {
                 [userId]
             );
             
-            return result as LearningProcess[];
+            // Map kết quả sang đối tượng LearningProcess bằng Builder
+            return (result as any[]).map(row => 
+              new LearningProcessBuilder()
+                .setId(row.id)
+                .setLearnerId(row.LearnerId)
+                .setGrammarTopicId(row.GrammarTopicId)
+                .setTestId(row.TestId)
+                .setVocabularyTopicId(row.VocabularyTopicId)
+                .setProgressStatus(row.progressStatus)
+                .setCreatedAt(row.createdAt)
+                .setUpdatedAt(row.updatedAt)
+                .build()
+            );
         } catch (error) {
             console.error('Lỗi khi lấy tất cả learning process:', error);
             throw error;
@@ -46,16 +59,16 @@ export class LearningProcessRepository {
             
             // Nếu đã tồn tại, trả về learning process đó
             if (existing) {
-                return new LearningProcess(
-                    Number(existing.id),
-                    existing.LearnerId,
-                    existing.GrammarTopicId,
-                    existing.TestId,
-                    existing.VocabularyTopicId,
-                    existing.progressStatus,
-                    existing.createdAt,
-                    existing.updatedAt
-                );
+                return new LearningProcessBuilder()
+                  .setId(Number(existing.id))
+                  .setLearnerId(existing.LearnerId)
+                  .setGrammarTopicId(existing.GrammarTopicId)
+                  .setTestId(existing.TestId)
+                  .setVocabularyTopicId(existing.VocabularyTopicId)
+                  .setProgressStatus(existing.progressStatus)
+                  .setCreatedAt(existing.createdAt)
+                  .setUpdatedAt(existing.updatedAt)
+                  .build();
             }
 
             // Nếu chưa tồn tại, tạo mới learning process
@@ -80,32 +93,32 @@ export class LearningProcessRepository {
                     throw new Error('Không thể tìm thấy learning process vừa tạo');
                 }
 
-                return new LearningProcess(
-                    Number(createdProcess.id),
-                    createdProcess.LearnerId,
-                    createdProcess.GrammarTopicId,
-                    createdProcess.TestId,
-                    createdProcess.VocabularyTopicId,
-                    createdProcess.progressStatus,
-                    createdProcess.createdAt,
-                    createdProcess.updatedAt
-                );
+                return new LearningProcessBuilder()
+                  .setId(Number(createdProcess.id))
+                  .setLearnerId(createdProcess.LearnerId)
+                  .setGrammarTopicId(createdProcess.GrammarTopicId)
+                  .setTestId(createdProcess.TestId)
+                  .setVocabularyTopicId(createdProcess.VocabularyTopicId)
+                  .setProgressStatus(createdProcess.progressStatus)
+                  .setCreatedAt(createdProcess.createdAt)
+                  .setUpdatedAt(createdProcess.updatedAt)
+                  .build();
             } catch (error: any) {
                 // Nếu bị duplicate key thì select lại process cũ và trả về
                 if (error && error.code === 'ER_DUP_ENTRY') {
                     const [rows2] = await db.query(query, queryParams);
                     const process = Array.isArray(rows2) ? rows2[0] : rows2;
                     if (process) {
-                        return new LearningProcess(
-                            Number(process.id),
-                            process.LearnerId,
-                            process.GrammarTopicId,
-                            process.TestId,
-                            process.VocabularyTopicId,
-                            process.progressStatus,
-                            process.createdAt,
-                            process.updatedAt
-                        );
+                        return new LearningProcessBuilder()
+                          .setId(Number(process.id))
+                          .setLearnerId(process.LearnerId)
+                          .setGrammarTopicId(process.GrammarTopicId)
+                          .setTestId(process.TestId)
+                          .setVocabularyTopicId(process.VocabularyTopicId)
+                          .setProgressStatus(process.progressStatus)
+                          .setCreatedAt(process.createdAt)
+                          .setUpdatedAt(process.updatedAt)
+                          .build();
                     }
                 }
                 throw error;

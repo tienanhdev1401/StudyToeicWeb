@@ -88,6 +88,16 @@ const Header = ({ style, className }) => {
                                                                     }
                                                                 }}>Do Exercise</a>
                                                             </li>
+                                                                                                                        <li>
+                                                                <a href="#" onClick={e => {
+                                                                    e.preventDefault();
+                                                                    if (isLoggedIn) {
+                                                                        navigate('/lessons');
+                                                                    } else {
+                                                                        navigate('/login');
+                                                                    }
+                                                                }}>Lesson</a>
+                                                            </li>
                                                         </ul>
                                                     </li>
                                                     <li><a href="/contact">Contact</a></li>

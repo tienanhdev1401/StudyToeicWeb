@@ -1,5 +1,6 @@
 import database from '../config/db';
 import { Submission } from '../models/Submission';
+import { SubmissionBuilder } from '../builder/SubmissionBuilder';
 
 export class SubmissionRepository {
   async createSubmission(submission: Submission): Promise<number> {
@@ -36,19 +37,19 @@ export class SubmissionRepository {
       }
       
       const row = results[0];
-      return new Submission({
-        id: row.id,
-        tittle: row.tittle,
-        totalscore: row.totalscore,
-        listeningScore: row.listeningScore,
-        readingScore: row.readingScore,
-        completionTime: row.completionTime,
-        userAnswer: row.userAnswer ? JSON.parse(row.userAnswer) : null,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-        LearnerId: row.LearnerId,
-        TestId: row.TestId
-      });
+      return new SubmissionBuilder()
+        .setId(row.id)
+        .setTittle(row.tittle)
+        .setTotalscore(row.totalscore)
+        .setListeningScore(row.listeningScore)
+        .setReadingScore(row.readingScore)
+        .setCompletionTime(row.completionTime)
+        .setUserAnswer(row.userAnswer ? JSON.parse(row.userAnswer) : null)
+        .setCreatedAt(row.createdAt)
+        .setUpdatedAt(row.updatedAt)
+        .setLearnerId(row.LearnerId)
+        .setTestId(row.TestId)
+        .build();
     } catch (error) {
       console.error(`Error getting submission with ID ${id}:`, error);
       throw error;
@@ -62,19 +63,21 @@ export class SubmissionRepository {
         [learnerId]
       );
       
-      return results.map((row: any) => new Submission({
-        id: row.id,
-        tittle: row.tittle,
-        totalscore: row.totalscore,
-        listeningScore: row.listeningScore,
-        readingScore: row.readingScore,
-        completionTime: row.completionTime,
-        userAnswer: row.userAnswer ? JSON.parse(row.userAnswer) : null,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-        LearnerId: row.LearnerId,
-        TestId: row.TestId
-      }));
+      return results.map((row: any) => 
+        new SubmissionBuilder()
+          .setId(row.id)
+          .setTittle(row.tittle)
+          .setTotalscore(row.totalscore)
+          .setListeningScore(row.listeningScore)
+          .setReadingScore(row.readingScore)
+          .setCompletionTime(row.completionTime)
+          .setUserAnswer(row.userAnswer ? JSON.parse(row.userAnswer) : null)
+          .setCreatedAt(row.createdAt)
+          .setUpdatedAt(row.updatedAt)
+          .setLearnerId(row.LearnerId)
+          .setTestId(row.TestId)
+          .build()
+      );
     } catch (error) {
       console.error(`Error getting submissions for learner ${learnerId}:`, error);
       throw error;
@@ -88,19 +91,21 @@ export class SubmissionRepository {
         [testId]
       );
       
-      return results.map((row: any) => new Submission({
-        id: row.id,
-        tittle: row.tittle,
-        totalscore: row.totalscore,
-        listeningScore: row.listeningScore,
-        readingScore: row.readingScore,
-        completionTime: row.completionTime,
-        userAnswer: row.userAnswer ? JSON.parse(row.userAnswer) : null,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-        LearnerId: row.LearnerId,
-        TestId: row.TestId
-      }));
+      return results.map((row: any) => 
+        new SubmissionBuilder()
+          .setId(row.id)
+          .setTittle(row.tittle)
+          .setTotalscore(row.totalscore)
+          .setListeningScore(row.listeningScore)
+          .setReadingScore(row.readingScore)
+          .setCompletionTime(row.completionTime)
+          .setUserAnswer(row.userAnswer ? JSON.parse(row.userAnswer) : null)
+          .setCreatedAt(row.createdAt)
+          .setUpdatedAt(row.updatedAt)
+          .setLearnerId(row.LearnerId)
+          .setTestId(row.TestId)
+          .build()
+      );
     } catch (error) {
       console.error(`Error getting submissions for test ${testId}:`, error);
       throw error;

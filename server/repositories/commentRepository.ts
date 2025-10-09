@@ -1,5 +1,6 @@
 import database from '../config/db';
 import { Comment } from '../models/Comment';
+import { CommentBuilder } from '../builder/CommentBuilder';
 
 export class CommentRepository {
     static async getAllCommentByVocabularyTopicIdWithUser(vocabularyTopicId: number): Promise<any[]> {
@@ -68,15 +69,15 @@ export class CommentRepository {
                 return null;
             }
             const row = results[0];
-            return new Comment(
-                row.id,
-                row.content,
-                row.createdAt,
-                row.updatedAt,
-                row.userId,
-                row.VocabularyTopicId,
-                row.GrammarTopicId
-            );
+            return new CommentBuilder()
+                .setId(row.id)
+                .setContent(row.content)
+                .setCreatedAt(row.createdAt)
+                .setUpdatedAt(row.updatedAt)
+                .setUserId(row.userId)
+                .setVocabularyTopicId(row.VocabularyTopicId)
+                .setGrammarTopicId(row.GrammarTopicId)
+                .build();
         } catch (error) {
             console.error(`Error finding comment with ID ${id}:`, error);
             throw error;
