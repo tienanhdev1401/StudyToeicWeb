@@ -21,6 +21,7 @@ import ManageExerciseQuestion from './ManageExerciseQuestion';
 import ManageExerciseGrammar from './ManageExerciseGrammar';
 import ManageExerciseVocabulary from './ManageExerciseVocabulary';
 import ManageQuestion from './ManageQuestion';
+import Managelesson from './ManageLesson';
 
 // Component để kiểm tra quyền Admin (không phải staff)
 const AdminOnlyRoute = ({ element }) => {
@@ -90,6 +91,7 @@ const AdminPage = () => {
         <Route path="/exercise/grammars" element={<ManageExerciseGrammar />} />
         <Route path="/exercise/vocabularies" element={<ManageExerciseVocabulary />} />
         <Route path="/question" element={<ManageQuestion />} />
+        <Route path="/lesson" element={<Managelesson />} />
       </Routes>
     </AdminLayout>
   );

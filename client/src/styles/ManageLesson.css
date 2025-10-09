@@ -1,4 +1,4 @@
-.manageTest-container {
+.manageLesson-container {
     padding: 30px;
     font-family: 'Arial', sans-serif;
     max-width: 1200px; /* Tăng max-width */
@@ -8,13 +8,13 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   }
   
-    .manageTest-topic-header {
+    .manageLesson-topic-header {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
   }
   
-  .manageTest-back-btn {
+  .manageLesson-back-btn {
     background-color: #f8f9fa;
     border: 1px solid #ced4da;
     padding: 8px 15px;
@@ -27,20 +27,20 @@
     transition: all 0.2s;
   }
   
-  .manageTest-back-btn:hover {
+  .manageLesson-back-btn:hover {
     background-color: #e9ecef;
   }
   
-  .manageTest-back-btn i {
+  .manageLesson-back-btn i {
     margin-right: 5px;
   }
   
-  .manageTest-container h1 {
+  .manageLesson-container h1 {
     margin: 0;
     color: #409efd;
     font-size: 4.75rem;
   }
-  .manageTest-header-title {
+  .manageLesson-header-title {
     margin-top: 10px;
     font-size: 4.75rem;
     color: #409efd;
@@ -48,7 +48,7 @@
     font-weight: 600;
   }
   
-.manageTest-pagination {
+.manageLesson-pagination {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -56,30 +56,30 @@
  
   }
 
-  .manageTest-pagination span {
+  .manageLesson-pagination span {
     font-size: 1.2rem;
     font-weight: 600;
     color: #9a9a9b;
   }
   
-  .manageTest-entries-select {
+  .manageLesson-entries-select {
     display: flex;
     align-items: center;
   }
   
-  .manageTest-entries-select p {
+  .manageLesson-entries-select p {
     margin: 0 5px;
     color: #6c757d;
   }
   
-  .manageTest-entries-dropdown {
+  .manageLesson-entries-dropdown {
     padding: 5px 10px;
     border: 1px solid #ced4da;
     border-radius: 4px;
     background-color: #fff;
   }
   
-  .manageTest-action-section {
+  .manageLesson-action-section {
     display: flex;
     gap: 10px;
   }
@@ -106,7 +106,7 @@
   
   
   
-  .manageTest-search-box {
+  .manageLesson-search-box {
     display: flex;
     align-items: center;
     background-color: white;
@@ -117,7 +117,7 @@
     position: relative;
   }
   
-  .manageTest-search-box i {
+  .manageLesson-search-box i {
     position: static;
     color: #9ca3af;
     font-size: 1.2rem;
@@ -125,7 +125,7 @@
     font-size: 1.75rem;
   }
   
-  .manageTest-search-input {
+  .manageLesson-search-input {
     flex-grow: 1;
     width: 100%;
     background: none;
@@ -139,14 +139,14 @@
     box-shadow: none;
   }
   
-  .manageTest-search-input:focus {
+  .manageLesson-search-input:focus {
     border: none;
     outline: none;
     box-shadow: none;
   }
   
   
-  .manageTest-add-btn, .manageTest-trash-btn {
+  .manageLesson-add-btn, .manageLesson-trash-btn {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -160,69 +160,76 @@
     transition: background-color 0.2s;
   }
   
-  .manageTest-add-btn {
+  .manageLesson-add-btn {
     background-color: #4CAF50;
     border: 1px solid #d1d5db;
     color: rgb(255, 255, 255);
   }
   
-  .manageTest-add-btn:hover {
+  .manageLesson-add-btn:hover {
     background-color: #3d8940;
     color: rgb(255, 255, 255);
   }
   
-  .manageTest-trash-btn {
+  .manageLesson-trash-btn {
     background-color: #a5a7a8 !important;
     color: white !important;
   }
   
-  .manageTest-trash-btn:hover {
+  .manageLesson-trash-btn:hover {
     background-color: #5a6268 !important;
   }
   
-  .manageTest-add-btn i, .manageTest-trash-btn i {
+  .manageLesson-add-btn i, .manageLesson-trash-btn i {
     margin-right: 5px;
   }
   
-  .manageTest-import-btn {
+  .manageLesson-import-btn {
     background-color: #4a90e2;
     color: white;
   }
   
-  .manageTest-import-btn i {
+  .manageLesson-import-btn i {
     margin-right: 5px;
     font-size: 1.25rem;
   } 
   
-  .manageTest-import-btn:hover {
+  .manageLesson-import-btn:hover {
     background-color: #3a7bc8;
   }
   
-  .manageTest-table {
-    margin-top: 20px;
+  /* Table Container with Scroll */
+  .manageLesson-table-container {
     width: 100%;
-    table-layout: fixed;
-    max-width: 1150px;
-    border-collapse: separate;
-    border-spacing: 0;
+    overflow-x: auto;
+    margin-top: 20px;
     margin-bottom: 80px;
-    background-color: white !important;
-    border: 1px solid #e5e7eb;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
+
+  .manageLesson-table {
+    width: 100%;
+    min-width: 1400px;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: white !important;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+  }
   
-  .manageTest-table th, .manageTest-table td {
-    padding: 12px 15px;
+  .manageLesson-table th, .manageLesson-table td {
+    padding: 15px 25px;
     text-align: left;
     border-bottom: 1px solid #e9ecef;
   }
   
-  .manageTest-table thead {
+  .manageLesson-table thead {
     background-color: #f8f9fa;
   }
   
-  .manageTest-table th {
+  .manageLesson-table th {
     padding: 16px;
     text-align: center;
     background-color: white !important;
@@ -231,47 +238,47 @@
     font-weight: 600;
   }
   
-  .manageTest-table td {
+  .manageLesson-table td {
     padding: 16px;
     text-align: left;
     border: 1px solid #e5e7eb;
     background-color: white !important;
   }
   
-  .manageTest-table tbody {
+  .manageLesson-table tbody {
     background-color: #f9fafb;
   }
   
   
   
-  .manageTest-table th.manageTest-sortable {
+  .manageLesson-table th.manageLesson-sortable {
     cursor: pointer;
     user-select: none;
   }
   
-  .manageTest-table th.manageTest-sortable:hover {
+  .manageLesson-table th.manageLesson-sortable:hover {
     background-color: #e9ecef;
   }
   
-  .manageTest-table th.manageTest-sortable i {
+  .manageLesson-table th.manageLesson-sortable i {
     margin-left: 5px;
   }
   
-  .manageTest-id-column {
+  .manageLesson-id-column {
     width: 100px;
   }
   
-  .manageTest-id-header, .manageTest-id-cell {
+  .manageLesson-id-header, .manageLesson-id-cell {
     display: flex;
     align-items: center;
     gap: 10px;
   }
   
-  .manageTest-table tbody tr:hover {
+  .manageLesson-table tbody tr:hover {
     background-color: #f8f9fa;
   }
   
-  .manageTest-view-btn, .manageTest-edit-btn, .manageTest-delete-btn {
+  .manageLesson-view-btn, .manageLesson-edit-btn, .manageLesson-delete-btn {
     padding: 6px 12px;
     border: none;
     cursor: pointer;
@@ -279,30 +286,30 @@
     background-color: transparent;
     color: #858c97;
   }
-  .manageTest-view-btn:hover {
+  .manageLesson-view-btn:hover {
     color: #409efd;
     background-color: transparent;
   }
   
   
-  .manageTest-edit-btn:hover {
+  .manageLesson-edit-btn:hover {
     color: black;
     background-color: transparent;
   }
   
   
   
-  .manageTest-delete-btn:hover {
+  .manageLesson-delete-btn:hover {
     color: red;
     background-color: transparent;
   }
   
-  .manageTest-pagination-buttons {
+  .manageLesson-pagination-buttons {
     display: flex;
     gap: 5px;
   }
   
-  .manageTest-page-btn {
+  .manageLesson-page-btn {
     padding: 6px 14px;
     border: 1px solid #dee2e6;
     background-color: #fff;
@@ -311,28 +318,28 @@
     color: #111827;
   }
 
-  .manageTest-page-btn:hover {
+  .manageLesson-page-btn:hover {
     background-color: #e3effc;
     color: #007bff;
   }
   
-  .manageTest-page-btn:disabled {
+  .manageLesson-page-btn:disabled {
     color: #6c757d;
     cursor: not-allowed;
   }
   
-  .manageTest-page-btn.active {
+  .manageLesson-page-btn.active {
     background-color: #007BFF;
     color: white;
     border-color: #007BFF;
   }
   
-  .manageTest-page-dots {
+  .manageLesson-page-dots {
     padding: 6px 12px;
     color: #6c757d;
   }
   
-  .manageTest-table-action-bar {
+  .manageLesson-table-action-bar {
     background-color: #f8f9fa;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
@@ -340,18 +347,18 @@
     padding: 12px 20px;
   }
   
-  .manageTest-table-action-bar-content {
+  .manageLesson-table-action-bar-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
   
-  .manageTest-table-action-bar-content span {
+  .manageLesson-table-action-bar-content span {
     color: #666;
     font-weight: 500;
   }
   
-  .manageTest-delete-selected-btn {
+  .manageLesson-delete-selected-btn {
     display: flex;
   align-items: center;
   gap: 8px;
@@ -365,17 +372,17 @@
   transition: background-color 0.2s;
   }
   
-  .manageTest-delete-selected-btn:hover {
+  .manageLesson-delete-selected-btn:hover {
     background-color: #c82333;
   }
   
-  .manageTest-delete-selected-btn i {
+  .manageLesson-delete-selected-btn i {
     font-size: 14px;
   }
   
   
   /* Modal styles */
-  .manageTest-modal-overlay {
+  .manageLesson-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -388,7 +395,7 @@
     z-index: 1000;
   }
   
-  .manageTest-modal-content {
+  .manageLesson-modal-content {
     background-color: white;
     border-radius: 8px;
     width: 90%;
@@ -396,7 +403,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
-  .manageTest-modal-header {
+  .manageLesson-modal-header {
     padding: 15px 20px;
     border-bottom: 1px solid #dee2e6;
     display: flex;
@@ -404,12 +411,12 @@
     align-items: center;
   }
   
-  .manageTest-modal-header h2 {
+  .manageLesson-modal-header h2 {
     margin: 0;
     font-size: 1.25rem;
   }
   
-  .manageTest-close-btn {
+  .manageLesson-close-btn {
     background: none;
     border: none;
     font-size: 2rem;
@@ -417,11 +424,11 @@
     color: #6c757d;
   }
   
-  .manageTest-modal-body {
+  .manageLesson-modal-body {
     padding: 20px;
   }
   
-  .manageTest-modal-footer {
+  .manageLesson-modal-footer {
     padding: 15px 20px;
     border-top: 1px solid #dee2e6;
     display: flex;
@@ -429,43 +436,43 @@
     gap: 10px;
   }
   
-  .manageTest-cancel-btn, .manageTest-confirm-delete-btn {
+  .manageLesson-cancel-btn, .manageLesson-confirm-delete-btn {
     padding: 8px 15px;
     border: 1px solid transparent;
     border-radius: 4px;
     cursor: pointer;
   }
   
-  .manageTest-cancel-btn {
+  .manageLesson-cancel-btn {
     background-color: #6c757d;
     color: white;
   }
   
-  .manageTest-cancel-btn:hover {
+  .manageLesson-cancel-btn:hover {
     background-color: #5a6268;
   }
   
-  .manageTest-confirm-delete-btn {
+  .manageLesson-confirm-delete-btn {
     background-color: #dc3545;
     color: white;
     display: flex;
     align-items: center;
   }
   
-  .manageTest-confirm-delete-btn i {
+  .manageLesson-confirm-delete-btn i {
     margin-right: 5px;
   }
   
-  .manageTest-confirm-delete-btn:hover {
+  .manageLesson-confirm-delete-btn:hover {
     background-color: #c82333;
   }
   
   /* Form-specific styles */  
-  .manageTest-form-group {
+  .manageLesson-form-group {
     margin-bottom: 20px;
   }
   
-  .manageTest-form-group label {
+  .manageLesson-form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
@@ -476,7 +483,7 @@
     color: #dc3545;
   }
   
-  .manageTest-form-group input, .manageTest-form-group textarea {
+  .manageLesson-form-group input, .manageLesson-form-group textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ced4da;
@@ -484,16 +491,16 @@
     font-size: 1rem;
   }
   
-  .manageTest-form-group textarea {
+  .manageLesson-form-group textarea {
     min-height: 100px;
     resize: vertical;
   }
   
-  .manageTest-form-group.has-error input, .manageTest-form-group.has-error textarea {
+  .manageLesson-form-group.has-error input, .manageLesson-form-group.has-error textarea {
     border-color: #dc3545;
   }
   
-  .manageTest-error-message {
+  .manageLesson-error-message {
     color: #dc3545;
     font-size: 0.875rem;
     margin-top: 5px;
@@ -501,28 +508,28 @@
   
   /* Word-specific styles */
   
-  .manageTest-empty-table {
+  .manageLesson-empty-table {
     text-align: center;
     padding: 40px 20px !important;
   }
   
-  .manageTest-empty-message {
+  .manageLesson-empty-message {
     display: flex;
     flex-direction: column;
     align-items: center;
     color: #6c757d;
   }
   
-  .manageTest-empty-message i {
+  .manageLesson-empty-message i {
     font-size: 2rem;
     margin-bottom: 10px;
   }
   
-  .manageTest-empty-message p {
+  .manageLesson-empty-message p {
     margin-bottom: 20px;
   }
   
-  .manageTest-empty-message .manageTest-add-btn {
+  .manageLesson-empty-message .manageLesson-add-btn {
     max-width: 200px;
   }
   
@@ -532,7 +539,7 @@
   } 
   
   /* Styles for Vocabulary Add Modal */
-  .manageTest-add-modal-overlay {
+  .manageLesson-add-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -545,7 +552,7 @@
     z-index: 1000;
   }
   
-  .manageTest-add-modal-content {
+  .manageLesson-add-modal-content {
     background-color: #fff;
     border-radius: 8px;
     width: 600px;
@@ -555,7 +562,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   }
   
-  .manageTest-add-modal-header {
+  .manageLesson-add-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -563,14 +570,14 @@
     border-bottom: 1px solid #e5e7eb;
   }
   
-  .manageTest-add-modal-header h2 {
+  .manageLesson-add-modal-header h2 {
     margin: 0;
     font-size: 25px;
     font-weight: 600;
     color: #60a4fd;
   }
   
-  .manageTest-close-btn {
+  .manageLesson-close-btn {
     background: none;
     border: none;
     font-size: 20px;
@@ -579,20 +586,20 @@
     transition: color 0.2s;
   }
   
-  .manageTest-close-btn:hover {
+  .manageLesson-close-btn:hover {
     color: #111827;
   }
   
-  .manageTest-close-btn:disabled {
+  .manageLesson-close-btn:disabled {
     color: #d1d5db;
     cursor: not-allowed;
   }
   
-  .manageTest-add-modal-body {
+  .manageLesson-add-modal-body {
     padding: 20px;
   }
   
-  .manageTest-server-error-message {
+  .manageLesson-server-error-message {
     background-color: #fee2e2;
     color: #b91c1c;
     padding: 12px;
@@ -601,19 +608,19 @@
     font-size: 14px;
   }
   
-  .manageTest-form-group {
+  .manageLesson-form-group {
     margin-bottom: 20px;
   }
   
-  .manageTest-form-group label {
+  .manageLesson-form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
     color: #374151;
   }
   
-  .manageTest-form-group input[type="text"],
-  .manageTest-form-group textarea {
+  .manageLesson-form-group input[type="text"],
+  .manageLesson-form-group textarea {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #d1d5db;
@@ -622,34 +629,34 @@
     transition: border-color 0.2s;
   }
   
-  .manageTest-form-group textarea {
+  .manageLesson-form-group textarea {
     resize: vertical;
     min-height: 80px;
   }
   
-  .manageTest-form-group input[type="text"]:focus,
-  .manageTest-form-group textarea:focus {
+  .manageLesson-form-group input[type="text"]:focus,
+  .manageLesson-form-group textarea:focus {
     border-color: #3b82f6;
     outline: none;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
   }
   
-  .manageTest-form-group.has-error input[type="text"],
-  .manageTest-form-group.has-error textarea {
+  .manageLesson-form-group.has-error input[type="text"],
+  .manageLesson-form-group.has-error textarea {
     border-color: #ef4444;
   }
   
-  .manageTest-input-error {
+  .manageLesson-input-error {
     border-color: #ef4444 !important;
   }
   
-  .manageTest-error-message {
+  .manageLesson-error-message {
     color: #ef4444;
     font-size: 12px;
     margin-top: 5px;
   }
   
-  .manageTest-add-modal-footer {
+  .manageLesson-add-modal-footer {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -657,7 +664,7 @@
     border-top: 1px solid #e5e7eb;
   }
   
-  .manageTest-cancel-btn {
+  .manageLesson-cancel-btn {
     background-color: #f3f4f6;
     color: #374151;
     border: 1px solid #d1d5db;
@@ -668,17 +675,17 @@
     transition: background-color 0.2s;
   }
   
-  .manageTest-cancel-btn:hover {
+  .manageLesson-cancel-btn:hover {
     background-color: #e5e7eb;
   }
   
-  .manageTest-cancel-btn:disabled {
+  .manageLesson-cancel-btn:disabled {
     background-color: #f3f4f6;
     color: #9ca3af;
     cursor: not-allowed;
   }
   
-  .manageTest-submit-btn {
+  .manageLesson-submit-btn {
     background-color: #3b82f6;
     color: white;
     border: none;
@@ -692,11 +699,11 @@
     gap: 8px;
   }
   
-  .manageTest-submit-btn:hover {
+  .manageLesson-submit-btn:hover {
     background-color: #2563eb;
   }
   
-  .manageTest-submit-btn:disabled {
+  .manageLesson-submit-btn:disabled {
     background-color: #93c5fd;
     cursor: not-allowed;
   }
@@ -708,7 +715,7 @@
   
   
   /* Topic select styles */
-  .manageTest-topic-select {
+  .manageLesson-topic-select {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid #d1d5db;
@@ -718,7 +725,7 @@
     transition: border-color 0.2s;
   }
   
-  .manageTest-topic-select:focus {
+  .manageLesson-topic-select:focus {
     border-color: #3b82f6;
     outline: none;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
@@ -726,29 +733,29 @@
   
   /* Responsive styles */
   @media (max-width: 640px) {
-    .manageTest-add-modal-content,
-    .manageTest-import-modal-content {
+    .manageLesson-add-modal-content,
+    .manageLesson-import-modal-content {
       width: 95%;
     }
    
-    .manageTest-add-modal-footer,
-    .manageTest-import-modal-footer {
+    .manageLesson-add-modal-footer,
+    .manageLesson-import-modal-footer {
       flex-direction: column;
     }
     
-    .manageTest-cancel-btn,
-    .manageTest-submit-btn {
+    .manageLesson-cancel-btn,
+    .manageLesson-submit-btn {
       width: 100%;
     }
   }
 
-.manageTest-file-upload-container {
+.manageLesson-file-upload-container {
   display: flex;
   align-items: center;
   position: relative;
 }
 
-.manageTest-file-upload-container input[type="file"] {
+.manageLesson-file-upload-container input[type="file"] {
   position: absolute;
   opacity: 0;
   width: 0;
@@ -756,7 +763,7 @@
   z-index: -1;
 }
 
-.manageTest-file-upload-btn {
+.manageLesson-file-upload-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -771,25 +778,25 @@
   width: 100%;
 }
 
-.manageTest-file-upload-btn:hover:not(:disabled) {
+.manageLesson-file-upload-btn:hover:not(:disabled) {
   background-color: #e5e7eb;
 }
 
-.manageTest-file-upload-btn:disabled {
+.manageLesson-file-upload-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.manageTest-file-upload-btn i {
+.manageLesson-file-upload-btn i {
   font-size: 16px;
   color: #60a4fd;
 }
 
-.manageTest-file-input-error + .manageTest-file-upload-btn {
+.manageLesson-file-input-error + .manageLesson-file-upload-btn {
   border-color: #ef4444;
 }
 
-.manageTest-upload-progress {
+.manageLesson-upload-progress {
   margin-top: 8px;
   height: 6px;
   width: 100%;
@@ -799,13 +806,13 @@
   overflow: hidden;
 }
 
-.manageTest-progress-bar {
+.manageLesson-progress-bar {
   height: 100%;
   background-color: #60a4fd;
   transition: width 0.3s ease;
 }
 
-.manageTest-upload-progress span {
+.manageLesson-upload-progress span {
   position: absolute;
   top: -18px;
   right: 0;
@@ -821,7 +828,7 @@
   font-size: 14px;
 }
 
-.manageTest-info-message {
+.manageLesson-info-message {
   color: #3b82f6;
   font-size: 12px;
   margin-top: 5px;
@@ -862,17 +869,17 @@
 /* Add or update these styles in your ManageTest.css file */
 
 /* File input styling for all file inputs */
-.manageTest-file-upload-container {
+.manageLesson-file-upload-container {
   display: flex;
   align-items: center;
   margin-bottom: 8px;
 }
 
-.manageTest-file-upload-container input[type="file"] {
+.manageLesson-file-upload-container input[type="file"] {
   display: none;
 }
 
-.manageTest-file-upload-btn {
+.manageLesson-file-upload-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -886,17 +893,17 @@
   font-weight: 500;
 }
 
-.manageTest-file-upload-btn:hover {
+.manageLesson-file-upload-btn:hover {
   background-color: #e9e9e9;
 }
 
-.manageTest-file-upload-btn:disabled {
+.manageLesson-file-upload-btn:disabled {
   background-color: #f5f5f5;
   color: #999;
   cursor: not-allowed;
 }
 
-.manageTest-file-name {
+.manageLesson-file-name {
   margin-left: 10px;
   font-size: 14px;
   color: #666;
@@ -907,7 +914,7 @@
   white-space: nowrap;
 }
 
-.manageTest-import-progress {
+.manageLesson-import-progress {
   display: flex;
   align-items: center;
   margin-top: 8px;
@@ -915,12 +922,12 @@
   font-size: 14px;
 }
 
-.manageTest-import-progress i {
+.manageLesson-import-progress i {
   margin-right: 8px;
 }
 
 /* Excel import error styling */
-.manageTest-excel-error {
+.manageLesson-excel-error {
   margin-top: 10px;
   background-color: #fee2e2;
   border: 1px solid #f87171;
@@ -928,35 +935,35 @@
   padding: 12px;
 }
 
-.manageTest-excel-error .manageTest-error-message {
+.manageLesson-excel-error .manageLesson-error-message {
   color: #b91c1c;
   margin-bottom: 8px;
 }
 
-.manageTest-error-message i {
+.manageLesson-error-message i {
   margin-right: 6px;
 }
 
-.manageTest-error-details {
+.manageLesson-error-details {
   background-color: #fef2f2;
   border-radius: 4px;
   padding: 8px 12px;
   margin-top: 8px;
 }
 
-.manageTest-error-details ul {
+.manageLesson-error-details ul {
   margin: 0;
   padding-left: 20px;
 }
 
-.manageTest-error-details li {
+.manageLesson-error-details li {
   color: #991b1b;
   font-size: 13px;
   margin-bottom: 4px;
 }
 
 /* Info box styling */
-.manageTest-info-box {
+.manageLesson-info-box {
   background-color: #e7f3ff;
   border: 1px solid #b6d9ff;
   border-radius: 6px;
@@ -967,25 +974,25 @@
   gap: 10px;
 }
 
-.manageTest-info-box i {
+.manageLesson-info-box i {
   color: #0070f3;
   font-size: 16px;
   margin-top: 2px;
 }
 
-.manageTest-info-box span {
+.manageLesson-info-box span {
   color: #0058b7;
   font-size: 14px;
   line-height: 1.5;
 }
 
-.manageTest-error-details li {
+.manageLesson-error-details li {
   color: #991b1b;
   font-size: 13px;
   margin-bottom: 4px;
 }
 
-.manageTest-error-summary {
+.manageLesson-error-summary {
   margin-top: 12px;
   padding-top: 10px;
   border-top: 1px dashed #f87171;
@@ -998,11 +1005,11 @@
   line-height: 1.5;
 }
 
-.manageTest-error-summary i {
+.manageLesson-error-summary i {
   margin-top: 2px;
 }
 
-.manageTest-full-test-badge {
+.manageLesson-full-test-badge {
   display: inline-flex;
   align-items: center;
   margin-top: 12px;
@@ -1016,11 +1023,11 @@
   box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
 }
 
-.manageTest-full-test-badge i {
+.manageLesson-full-test-badge i {
   font-size: 16px;
 }
 
-.manageTest-full-test-notice {
+.manageLesson-full-test-notice {
   display: flex;
   align-items: flex-start;
   background-color: #ecfdf5;
@@ -1031,27 +1038,27 @@
   gap: 12px;
 }
 
-.manageTest-full-test-notice i {
+.manageLesson-full-test-notice i {
   color: #10b981;
   font-size: 24px;
   margin-top: 4px;
 }
 
-.manageTest-full-test-notice h3 {
+.manageLesson-full-test-notice h3 {
   color: #065f46;
   margin: 0 0 8px 0;
   font-size: 18px;
   font-weight: 600;
 }
 
-.manageTest-full-test-notice p {
+.manageLesson-full-test-notice p {
   color: #047857;
   margin: 0;
   line-height: 1.5;
 }
 
 /* Full Test Alert styles */
-.manageTest-full-alert-overlay {
+.manageLesson-full-alert-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -1065,7 +1072,7 @@
   animation: fadeIn 0.3s ease-out;
 }
 
-.manageTest-full-alert {
+.manageLesson-full-alert {
   background-color: white;
   border-radius: 10px;
   width: 500px;
@@ -1075,7 +1082,7 @@
   animation: slideIn 0.3s ease-out;
 }
 
-.manageTest-full-alert-header {
+.manageLesson-full-alert-header {
   background-color: #10b981;
   color: white;
   padding: 15px 20px;
@@ -1084,13 +1091,13 @@
   align-items: center;
 }
 
-.manageTest-full-alert-header h3 {
+.manageLesson-full-alert-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 500;
 }
 
-.manageTest-full-alert-close {
+.manageLesson-full-alert-close {
   background: none;
   border: none;
   color: white;
@@ -1100,42 +1107,42 @@
   transition: opacity 0.2s;
 }
 
-.manageTest-full-alert-close:hover {
+.manageLesson-full-alert-close:hover {
   opacity: 1;
 }
 
-.manageTest-full-alert-body {
+.manageLesson-full-alert-body {
   padding: 25px;
   display: flex;
   gap: 20px;
 }
 
-.manageTest-full-alert-icon {
+.manageLesson-full-alert-icon {
   font-size: 36px;
   color: #10b981;
   flex-shrink: 0;
 }
 
-.manageTest-full-alert-content h2 {
+.manageLesson-full-alert-content h2 {
   margin: 0 0 15px 0;
   color: #10b981;
   font-size: 22px;
 }
 
-.manageTest-full-alert-content p {
+.manageLesson-full-alert-content p {
   margin: 0 0 10px 0;
   color: #333;
   line-height: 1.6;
 }
 
-.manageTest-full-alert-footer {
+.manageLesson-full-alert-footer {
   padding: 15px 25px;
   display: flex;
   justify-content: flex-end;
   border-top: 1px solid #e5e7eb;
 }
 
-.manageTest-full-alert-button {
+.manageLesson-full-alert-button {
   background-color: #10b981;
   color: white;
   border: none;
@@ -1146,7 +1153,7 @@
   transition: background-color 0.2s;
 }
 
-.manageTest-full-alert-button:hover {
+.manageLesson-full-alert-button:hover {
   background-color: #059669;
 }
 
@@ -1165,3 +1172,188 @@
     opacity: 1;
   }
 }
+
+/* Image Upload Styles */
+.manageLesson-image-input-toggle {
+  display: flex;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.manageLesson-toggle-btn {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.manageLesson-toggle-btn:hover {
+  background-color: #e9ecef;
+}
+
+.manageLesson-toggle-btn.active {
+  background-color: #409efd;
+  color: white;
+}
+
+.manageLesson-toggle-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.manageLesson-file-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.manageLesson-file-upload-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 2px dashed #409efd;
+  border-radius: 6px;
+  background-color: #f8f9ff;
+  color: #409efd;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.manageLesson-file-upload-label:hover {
+  background-color: #e6f2ff;
+  border-color: #2d7ce8;
+}
+
+.manageLesson-file-name {
+  font-size: 14px;
+  color: #28a745;
+  font-weight: 500;
+  padding: 5px 10px;
+  background-color: #d4edda;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.manageLesson-image-preview {
+  position: relative;
+  margin-top: 15px;
+  display: inline-block;
+}
+
+.manageLesson-preview-image {
+  max-width: 200px;
+  max-height: 150px;
+  border-radius: 6px;
+  border: 2px solid #e9ecef;
+  object-fit: cover;
+}
+
+.manageLesson-remove-image {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.manageLesson-remove-image:hover {
+  background-color: #c82333;
+}
+
+.manageLesson-remove-image:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tags Column Styles */
+.manageLesson-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.manageLesson-tag {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Transcript URL Column Styles */
+.manageLesson-transcript-text {
+  font-size: 12px;
+  color: #6c757d;
+  word-break: break-all;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Thumbnail Column Styles */
+.manageLesson-thumbnail {
+  position: relative;
+  width: 60px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.manageLesson-thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.manageLesson-thumbnail-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 16px;
+}
+
+/* Column Width Adjustments */
+.manageLesson-table th:nth-child(1), .manageLesson-table td:nth-child(1) { width: 80px; } /* ID */
+.manageLesson-table th:nth-child(2), .manageLesson-table td:nth-child(2) { width: 200px; } /* Title */
+.manageLesson-table th:nth-child(3), .manageLesson-table td:nth-child(3) { width: 120px; } /* Topic */
+.manageLesson-table th:nth-child(4), .manageLesson-table td:nth-child(4) { width: 120px; } /* Duration */
+.manageLesson-table th:nth-child(5), .manageLesson-table td:nth-child(5) { width: 100px; } /* Status */
+.manageLesson-table th:nth-child(6), .manageLesson-table td:nth-child(6) { width: 100px; } /* Level */
+.manageLesson-table th:nth-child(7), .manageLesson-table td:nth-child(7) { width: 100px; } /* Language */
+.manageLesson-table th:nth-child(8), .manageLesson-table td:nth-child(8) { width: 150px; } /* Tags */
+.manageLesson-table th:nth-child(9), .manageLesson-table td:nth-child(9) { width: 200px; } /* Transcript */
+.manageLesson-table th:nth-child(10), .manageLesson-table td:nth-child(10) { width: 100px; } /* Thumbnail */
+.manageLesson-table th:nth-child(11), .manageLesson-table td:nth-child(11) { width: 120px; } /* Action */

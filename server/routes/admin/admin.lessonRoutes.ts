@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { AdminLessonController } from '../../controllers/admin/admin.lessonController';
-import { checkAuthenticated } from '../../middleware/authMiddleware';
+// import { checkAuthenticated } from '../../middleware/authMiddleware';
 
 const router = Router();
 
