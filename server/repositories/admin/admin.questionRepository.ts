@@ -62,9 +62,6 @@ export class QuestionRepository {
                   // Continue with null resource
                 }
               }
-
-
-              
               return new Question(
                 Number(row.id),
                 row.content,
