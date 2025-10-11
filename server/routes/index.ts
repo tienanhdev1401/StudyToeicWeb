@@ -67,13 +67,9 @@ function route(app: Application): void {
   app.use("/api/lessons", lessonRoutes);
   app.use("/api/admin/lessons", adminLessonRoutes);
   app.use('/api/admin/blog', adminblogRoutes);
-<<<<<<< HEAD
   app.use('/api/blog', blogRoutes);
-=======
   app.use("/api/admin/advertisements", adminAdvertisementRoutes);
   app.use("/api/admin/ad-campaigns", adminAdCampaignRoutes);
->>>>>>> 16b58caf4312e6f20b05a5c530c55705f1e8568e
-
   app.use("/api/submissions", submissionRoutes);
   app.use("/", test);
   app.use("/api/admin/roadmap-config", adminRoadmapConfigRoutes);
