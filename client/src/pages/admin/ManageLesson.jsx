@@ -318,174 +318,177 @@ const ManageLesson = () => {
       <h1 className="manageLesson-header-title">Manage Lessons</h1>
 
       {isCaptionModalOpen && (
-  <div className="caption-modal">
-    <div className="caption-modal-content">
-      <h3>Phụ đề của bài học</h3>
+        <div className="caption-modal">
+          <div className="caption-modal-content">
+            <h3>Phụ đề của bài học</h3>
 
-      {currentCaptions.length === 0 ? (
-        <p>Chưa có phụ đề nào.</p>
-      ) : (
-        <table className="caption-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Lesson ID</th>
-              <th>Language</th>
-              <th>Start (ms)</th>
-              <th>End (ms)</th>
-              <th>Order</th>
-              <th>Text</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentCaptions.map((cap, idx) => (
-              <tr key={cap.id || cap.tempId}>
-                <td>{cap.id || "-"}</td>
-                <td>{cap.lessonId ?? selectedLessonId}</td>
+            {currentCaptions.length === 0 ? (
+              <p>Chưa có phụ đề nào.</p>
+            ) : (
+              <div className="caption-table-wrapper">
+              <table className="caption-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Lesson ID</th>
+                    <th>Language</th>
+                    <th>Start (ms)</th>
+                    <th>End (ms)</th>
+                    <th>Order</th>
+                    <th>Text</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentCaptions.map((cap, idx) => (
+                    <tr key={cap.id || cap.tempId}>
+                      <td>{cap.id || "-"}</td>
+                      <td>{cap.lessonId ?? selectedLessonId}</td>
 
-                {/* Language */}
-                <td>
-                  <input
-                    type="text"
-                    value={cap.language}
-                    placeholder="vi"
-                    onChange={(e) => {
-                      const updated = [...currentCaptions];
-                      updated[idx] = { ...updated[idx], language: e.target.value };
-                      setCurrentCaptions(updated);
-                    }}
-                  />
-                </td>
+                      {/* Language */}
+                      <td>
+                        <input
+                          type="text"
+                          value={cap.language}
+                          placeholder="vi"
+                          onChange={(e) => {
+                            const updated = [...currentCaptions];
+                            updated[idx] = { ...updated[idx], language: e.target.value };
+                            setCurrentCaptions(updated);
+                          }}
+                        />
+                      </td>
 
-                {/* Start */}
-                <td>
-                  <input
-                    type="text"
-                    value={cap.startMs}
-                    placeholder="0"
-                    onChange={(e) => {
-                      const updated = [...currentCaptions];
-                      updated[idx] = { ...updated[idx], startMs: e.target.value };
-                      setCurrentCaptions(updated);
-                    }}
-                    onBlur={(e) => {
-                      const val = e.target.value.trim();
-                      const updated = [...currentCaptions];
-                      if (!val || isNaN(Number(val))) {
-                        alert("Start (ms) phải là số và không được để trống!");
-                        updated[idx] = { ...updated[idx], startMs: "" };
-                      }
-                      setCurrentCaptions(updated);
-                    }}
-                  />
-                </td>
+                      {/* Start */}
+                      <td>
+                        <input
+                          type="text"
+                          value={cap.startMs}
+                          placeholder="0"
+                          onChange={(e) => {
+                            const updated = [...currentCaptions];
+                            updated[idx] = { ...updated[idx], startMs: e.target.value };
+                            setCurrentCaptions(updated);
+                          }}
+                          onBlur={(e) => {
+                            const val = e.target.value.trim();
+                            const updated = [...currentCaptions];
+                            if (!val || isNaN(Number(val))) {
+                              alert("Start (ms) phải là số và không được để trống!");
+                              updated[idx] = { ...updated[idx], startMs: "" };
+                            }
+                            setCurrentCaptions(updated);
+                          }}
+                        />
+                      </td>
 
-                {/* End */}
-                <td>
-                  <input
-                    type="text"
-                    value={cap.endMs}
-                    placeholder="0"
-                    onChange={(e) => {
-                      const updated = [...currentCaptions];
-                      updated[idx] = { ...updated[idx], endMs: e.target.value };
-                      setCurrentCaptions(updated);
-                    }}
-                    onBlur={(e) => {
-                      const val = e.target.value.trim();
-                      const updated = [...currentCaptions];
-                      if (!val || isNaN(Number(val))) {
-                        alert("End (ms) phải là số và không được để trống!");
-                        updated[idx] = { ...updated[idx], endMs: "" };
-                      }
-                      setCurrentCaptions(updated);
-                    }}
-                  />
-                </td>
+                      {/* End */}
+                      <td>
+                        <input
+                          type="text"
+                          value={cap.endMs}
+                          placeholder="0"
+                          onChange={(e) => {
+                            const updated = [...currentCaptions];
+                            updated[idx] = { ...updated[idx], endMs: e.target.value };
+                            setCurrentCaptions(updated);
+                          }}
+                          onBlur={(e) => {
+                            const val = e.target.value.trim();
+                            const updated = [...currentCaptions];
+                            if (!val || isNaN(Number(val))) {
+                              alert("End (ms) phải là số và không được để trống!");
+                              updated[idx] = { ...updated[idx], endMs: "" };
+                            }
+                            setCurrentCaptions(updated);
+                          }}
+                        />
+                      </td>
 
-                {/* Order */}
-                <td>
-                  <input
-                    type="text"
-                    value={cap.orderIndex}
-                    placeholder={idx + 1}
-                    onChange={(e) => {
-                      const updated = [...currentCaptions];
-                      updated[idx] = { ...updated[idx], orderIndex: e.target.value };
-                      setCurrentCaptions(updated);
-                    }}
-                    onBlur={(e) => {
-                      const val = e.target.value.trim();
-                      const updated = [...currentCaptions];
-                      if (!val || isNaN(Number(val))) {
-                        alert("Order phải là số và không được để trống!");
-                        updated[idx] = { ...updated[idx], orderIndex: "" };
-                      }
-                      setCurrentCaptions(updated);
-                    }}
-                  />
-                </td>
+                      {/* Order */}
+                      <td>
+                        <input
+                          type="text"
+                          value={cap.orderIndex}
+                          placeholder={idx + 1}
+                          onChange={(e) => {
+                            const updated = [...currentCaptions];
+                            updated[idx] = { ...updated[idx], orderIndex: e.target.value };
+                            setCurrentCaptions(updated);
+                          }}
+                          onBlur={(e) => {
+                            const val = e.target.value.trim();
+                            const updated = [...currentCaptions];
+                            if (!val || isNaN(Number(val))) {
+                              alert("Order phải là số và không được để trống!");
+                              updated[idx] = { ...updated[idx], orderIndex: "" };
+                            }
+                            setCurrentCaptions(updated);
+                          }}
+                        />
+                      </td>
 
-                {/* Text */}
-                <td>
-                  <input
-                    type="text"
-                    value={cap.text}
-                    onChange={(e) => {
-                      const updated = [...currentCaptions];
-                      updated[idx] = { ...updated[idx], text: e.target.value };
-                      setCurrentCaptions(updated);
-                    }}
-                  />
-                </td>
+                      {/* Text */}
+                      <td>
+                        <input
+                          type="text"
+                          value={cap.text}
+                          onChange={(e) => {
+                            const updated = [...currentCaptions];
+                            updated[idx] = { ...updated[idx], text: e.target.value };
+                            setCurrentCaptions(updated);
+                          }}
+                        />
+                      </td>
 
-                {/* Delete button */}
-                <td>
-                  <button
-                    className="delete-caption-btn"
-                    onClick={() => {
-                      const updated = currentCaptions.filter(
-                        c => !(c.id === cap.id && c.tempId === cap.tempId)
-                      );
-                      setCurrentCaptions(updated);
-                    }}
-                  >
-                    ❌
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      {/* Delete button */}
+                      <td>
+                        <button
+                          className="delete-caption-btn"
+                          onClick={() => {
+                            const updated = currentCaptions.filter(
+                              c => !(c.id === cap.id && c.tempId === cap.tempId)
+                            );
+                            setCurrentCaptions(updated);
+                          }}
+                        >
+                          ❌
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              </div>
+            )}
+            
+
+            <div className="caption-modal-actions">
+              <button onClick={() => setIsCaptionModalOpen(false)}>Đóng</button>
+
+              <button
+                className="add-caption-btn"
+                onClick={() => {
+                  const newCaption = {
+                    tempId: Date.now(),
+                    lessonId: selectedLessonId,
+                    language: "",
+                    startMs: "",
+                    endMs: "",
+                    orderIndex: (currentCaptions.length + 1).toString(),
+                    text: "",
+                  };
+                  setCurrentCaptions([...currentCaptions, newCaption]);
+                }}
+              >
+                Thêm phụ đề
+              </button>
+
+              <button onClick={handleSaveCaptions}>Lưu thay đổi</button>
+            </div>
+          </div>
+        </div>
       )}
-
-      <div className="caption-modal-actions">
-        <button onClick={() => setIsCaptionModalOpen(false)}>Đóng</button>
-
-        <button
-          className="add-caption-btn"
-          onClick={() => {
-            const newCaption = {
-              tempId: Date.now(),
-              lessonId: selectedLessonId,
-              language: "",
-              startMs: "",
-              endMs: "",
-              orderIndex: (currentCaptions.length + 1).toString(),
-              text: "",
-            };
-            setCurrentCaptions([...currentCaptions, newCaption]);
-          }}
-        >
-          Thêm phụ đề
-        </button>
-
-        <button onClick={handleSaveCaptions}>Lưu thay đổi</button>
-      </div>
-    </div>
-  </div>
-)}
       
       <div className="manageLesson-pagination">
         <div className="manageLesson-entries-select">

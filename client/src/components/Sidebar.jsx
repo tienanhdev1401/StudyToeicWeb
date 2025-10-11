@@ -40,7 +40,7 @@ const Sidebar = () => {
   const generateMenuItems = () => {
     const baseMenuItems = [
       { key: 'dashboard', label: 'Dashboard', icon: 'fas fa-th-large', path: '/admin/dashboard' },
-      { key: 'calendar', label: 'Calendar', icon: 'fas fa-calendar', path: '/admin/calendar' },
+      { key: 'marketing', label: 'Marketing Scheduler', icon: 'fas fa-bullhorn', path: '/admin/marketing/scheduler' },
       {
         key: 'content',
         label: 'Content',

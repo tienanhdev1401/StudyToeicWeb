@@ -23,6 +23,7 @@ import ManageExerciseVocabulary from './ManageExerciseVocabulary';
 import ManageQuestion from './ManageQuestion';
 import Managelesson from './ManageLesson';
 import ManageBlog from './ManageBlog';
+import MarketingScheduler from './MarketingScheduler';
 
 // Component để kiểm tra quyền Admin (không phải staff)
 const AdminOnlyRoute = ({ element }) => {
@@ -51,7 +52,7 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-const AdminPage = () => {
+const AdminPage = () => { 
   const { user, isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
@@ -94,6 +95,7 @@ const AdminPage = () => {
         <Route path="/question" element={<ManageQuestion />} />
         <Route path="/lesson" element={<Managelesson />} />
         <Route path="/blog" element={<ManageBlog />} />
+        <Route path="/marketing/scheduler" element={<MarketingScheduler />} />
       </Routes>
     </AdminLayout>
   );
