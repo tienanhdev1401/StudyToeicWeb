@@ -55,6 +55,7 @@ const Header = ({ style, className }) => {
                                                 <ul id="navigation">
                                                  
                                                     <li className="active" ><a href="/">Home</a></li>
+                                                    <li><a href="/blog">Blog</a></li>
                                                     <li><a href="/about">About</a></li>
                                                     <li><a href="#">Study zone</a>
                                                         <ul className="submenu">

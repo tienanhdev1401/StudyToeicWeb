@@ -38,7 +38,7 @@ import TestHistoryDetail from './pages/TestHistoryDetail';
 import ForgetPassword from './pages/ForgetPassword';
 // Gọi hàm này khi ứng dụng khởi động
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import TOEICCalculator from './pages/calculatorScore';
 
 
@@ -55,7 +55,8 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/blog" element={<Blog />} />
-                <Route path="/blog_details" element={<BlogDetails />} />
+                <Route path="/blog/:id" element={<BlogDetails />} />
+                <Route path="/blog_details" element={<Navigate to="/blog" replace />} />
                 <Route path="/courses" element={<Courses />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/login" element={<Login />} />

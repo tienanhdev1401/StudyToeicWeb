@@ -1,470 +1,572 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import LoadingSpinner from '../components/LoadingSpinner';
+import BlogService from '../services/blogService';
+import config from '../services/config';
+
+const resolveImageUrl = (imageUrl) => {
+    if (!imageUrl) {
+        return 'https://images.unsplash.com/photo-1487412912498-0447578fcca8?auto=format&fit=crop&w=1200&q=60';
+    }
+    if (/^https?:\/\//i.test(imageUrl)) {
+        return imageUrl;
+    }
+    const apiBase = config.API_BASE_URL || '';
+    const origin = apiBase.replace(/\/api\/?$/, '/');
+    return `${origin}${imageUrl.replace(/^\/+/, '')}`;
+};
+
+const formatDateParts = (value) => {
+    const date = value ? new Date(value) : null;
+    if (!date || Number.isNaN(date.getTime())) {
+        return { day: '--', month: '--', full: 'Đang cập nhật' };
+    }
+    return {
+        day: date.getDate().toString().padStart(2, '0'),
+        month: date.toLocaleDateString('vi-VN', { month: 'long' }),
+        full: date.toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+        }),
+    };
+};
+
+const sanitizeContent = (content) => {
+    if (!content) return '';
+    return content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+};
 
 const BlogDetails = () => {
-    return (
-        <div>
-            {/*? Preloader Start */}
-            <div id="preloader-active">
-                <div class="preloader d-flex align-items-center justify-content-center">
-                    <div class="preloader-inner position-relative">
-                    <div class="preloader-circle"></div>
-                    <div class="preloader-img pere-text">
-                        <img src="assets/img/logo/loder.png" alt=""/>
-                    </div>
-                </div>
-            </div>
-            </div>
-            {/* Preloader Start */}
-            {/* Header Start */}
-            <Header></Header>
-            {/* Header End */}
-            <main>
-            {/*? slider Area Start*/}
-            <section class="slider-area slider-area2">
-                <div class="slider-active">
-                {/* Single Slider */}
-                <div class="single-slider slider-height2">
-                    <div class="container">
-                    <div class="row">
-                        <div class="col-xl-8 col-lg-11 col-md-12">
-                        <div class="hero__caption hero__caption2">
-                            <h1 data-animation="bounceIn" data-delay="0.2s">Company insights</h1>
-                            {/* breadcrumb Start*/}
-                            <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                                <li class="breadcrumb-item"><a href="#">Blog</a></li> 
-                            </ol>
-                        </nav>
-                        {/* breadcrumb End */}
-                        </div>
-                    </div>
-                </div>
-            </div>          
-            </div>
-            </div>
-            </section>
-            {/*? Blog Area Start */}
-            <section class="blog_area single-post-area section-padding">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 posts-list">
-                        <div class="single-post">
-                        <div class="feature-img">
-                            <img class="img-fluid" src="assets/img/blog/single_blog_1.png" alt=""/>
-                        </div>
-                        <div class="blog_details">
-                            <h2 style={{color: '#2d2d2d'}}>Second divided from form fish beast made every of seas
-                                all gathered us saying he our
-                            </h2>
-                            <ul class="blog-info-link mt-3 mb-4">
-                                <li><a href="#"><i class="fa fa-user"></i> Travel, Lifestyle</a></li>
-                                <li><a href="#"><i class="fa fa-comments"></i> 03 Comments</a></li>
-                            </ul>
-                            <p class="excert">
-                                MCSE boot camps have its supporters and its detractors. Some people do not understand why you
-                                should have to spend money on boot camp when you can get the MCSE study materials yourself at a
-                                fraction of the camp price. However, who has the willpower
-                            </p>
-                            <p>
-                                MCSE boot camps have its supporters and its detractors. Some people do not understand why you
-                                should have to spend money on boot camp when you can get the MCSE study materials yourself at a
-                                fraction of the camp price. However, who has the willpower to actually sit through a
-                                self-imposed MCSE training. who has the willpower to actually
-                            </p>
-                            <div class="quote-wrapper">
-                                <div class="quotes">
-                                    MCSE boot camps have its supporters and its detractors. Some people do not understand why you
-                                    should have to spend money on boot camp when you can get the MCSE study materials yourself at
-                                    a fraction of the camp price. However, who has the willpower to actually sit through a
-                                    self-imposed MCSE training.
-                                </div>
-                            </div>
-                            <p>
-                                MCSE boot camps have its supporters and its detractors. Some people do not understand why you
-                                should have to spend money on boot camp when you can get the MCSE study materials yourself at a
-                                fraction of the camp price. However, who has the willpower
-                            </p>
-                            <p>
-                                MCSE boot camps have its supporters and its detractors. Some people do not understand why you
-                                should have to spend money on boot camp when you can get the MCSE study materials yourself at a
-                                fraction of the camp price. However, who has the willpower to actually sit through a
-                                self-imposed MCSE training. who has the willpower to actually
-                            </p>
-                        </div>
-                        </div>
-                        <div class="navigation-top">
-                        <div class="d-sm-flex justify-content-between text-center">
-                            <p class="like-info"><span class="align-middle"><i class="fa fa-heart"></i></span> Lily and 4
-                            people like this</p>
-                            <div class="col-sm-4 text-center my-2 my-sm-0">
-                                {/* <p class="comment-count"><span class="align-middle"><i class="fa fa-comment"></i></span> 06 Comments</p> */}
-                            </div>
-                            <ul class="social-icons">
-                                <li><a href="https://www.facebook.com/sai4ull"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-                                <li><a href="#"><i class="fab fa-dribbble"></i></a></li>
-                                <li><a href="#"><i class="fab fa-behance"></i></a></li>
-                            </ul>
-                        </div>
-                        <div class="navigation-area">
-                            <div class="row">
-                                <div
-                                class="col-lg-6 col-md-6 col-12 nav-left flex-row d-flex justify-content-start align-items-center">
-                                <div class="thumb">
-                                    <a href="#">
-                                    <img class="img-fluid" src="assets/img/post/preview.png" alt=""/>
-                                    </a>
-                                </div>
-                                <div class="arrow">
-                                    <a href="#">
-                                    <span class="lnr text-white ti-arrow-left"></span>
-                                    </a>
-                                </div>
-                                <div class="detials">
-                                    <p>Prev Post</p>
-                                    <a href="#">
-                                    <h4 style={{color: '#2d2d2d'}}>Space The Final Frontier</h4>
-                                    </a>
-                                </div>
-                            </div>
-                            <div
-                            class="col-lg-6 col-md-6 col-12 nav-right flex-row d-flex justify-content-end align-items-center">
-                            <div class="detials">
-                                <p>Next Post</p>
-                                <a href="#">
-                                    <h4 style={{color: '#2d2d2d'}}>Telescopes 101</h4>
-                                </a>
-                            </div>
-                            <div class="arrow">
-                                <a href="#">
-                                    <span class="lnr text-white ti-arrow-right"></span>
-                                </a>
-                            </div>
-                            <div class="thumb">
-                                <a href="#">
-                                    <img class="img-fluid" src="assets/img/post/next.png" alt=""/>
-                                </a>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="blog-author">
-                    <div class="media align-items-center">
-                        <img src="assets/img/blog/author.png" alt=""/>
-                        <div class="media-body">
-                        <a href="#">
-                            <h4>Harvard milan</h4>
-                        </a>
-                        <p>Second divided from form fish beast made. Every of seas all gathered use saying you're, he
-                        our dominion twon Second divided from</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="comments-area">
-                    <h4>05 Comments</h4>
-                    <div class="comment-list">
-                        <div class="single-comment justify-content-between d-flex">
-                        <div class="user justify-content-between d-flex">
-                            <div class="thumb">
-                                <img src="assets/img/blog/comment_1.png" alt=""/>
-                            </div>
-                            <div class="desc">
-                                <p class="comment">
-                                    Multiply sea night grass fourth day sea lesser rule open subdue female fill which them
-                                    Blessed, give fill lesser bearing multiply sea night grass fourth day sea lesser
-                                </p>
-                                <div class="d-flex justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                    <h5>
-                                        <a href="#">Emilly Blunt</a>
-                                    </h5>
-                                    <p class="date">December 4, 2017 at 3:12 pm </p>
-                                    </div>
-                                    <div class="reply-btn">
-                                    <a href="#" class="btn-reply text-uppercase">reply</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="comment-list">
-                        <div class="single-comment justify-content-between d-flex">
-                        <div class="user justify-content-between d-flex">
-                            <div class="thumb">
-                                <img src="assets/img/blog/comment_2.png" alt=""/>
-                            </div>
-                            <div class="desc">
-                                <p class="comment">
-                                    Multiply sea night grass fourth day sea lesser rule open subdue female fill which them
-                                    Blessed, give fill lesser bearing multiply sea night grass fourth day sea lesser
-                                </p>
-                                <div class="d-flex justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                    <h5>
-                                        <a href="#">Emilly Blunt</a>
-                                    </h5>
-                                    <p class="date">December 4, 2017 at 3:12 pm </p>
-                                    </div>
-                                    <div class="reply-btn">
-                                    <a href="#" class="btn-reply text-uppercase">reply</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="comment-list">
-                        <div class="single-comment justify-content-between d-flex">
-                        <div class="user justify-content-between d-flex">
-                            <div class="thumb">
-                                <img src="assets/img/blog/comment_3.png" alt=""/>
-                            </div>
-                            <div class="desc">
-                                <p class="comment">
-                                    Multiply sea night grass fourth day sea lesser rule open subdue female fill which them
-                                    Blessed, give fill lesser bearing multiply sea night grass fourth day sea lesser
-                                </p>
-                                <div class="d-flex justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                    <h5>
-                                        <a href="#">Emilly Blunt</a>
-                                    </h5>
-                                    <p class="date">December 4, 2017 at 3:12 pm </p>
-                                    </div>
-                                    <div class="reply-btn">
-                                    <a href="#" class="btn-reply text-uppercase">reply</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="comment-form">
-                    <h4>Leave a Reply</h4>
-                    <form class="form-contact comment_form" action="#" id="commentForm">
-                        <div class="row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <textarea class="form-control w-100" name="comment" id="comment" cols="30" rows="9"
-                                placeholder="Write Comment"></textarea>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <input class="form-control" name="name" id="name" type="text" placeholder="Name"/>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <input class="form-control" name="email" id="email" type="email" placeholder="Email"/>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <input class="form-control" name="website" id="website" type="text" placeholder="Website"/>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="form-group">
-                        <button type="submit" class="button button-contactForm btn_1 boxed-btn">Post Comment</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="blog_right_sidebar">
-                    <aside class="single_sidebar_widget search_widget">
-                        <form action="#">
-                        <div class="form-group">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder='Search Keyword'
-                                onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search Keyword'"/>
-                                <div class="input-group-append">
-                                    <button class="btns" type="button"><i class="ti-search"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn"
-                        type="submit">Search</button>
-                        </form>
-                    </aside>
-                    <aside class="single_sidebar_widget post_category_widget">
-                        <h4 class="widget_title" style={{color: '#2d2d2d'}}>Category</h4>
-                        <ul class="list cat-list">
-                        <li>
-                            <a href="#" class="d-flex">
-                                <p>Resaurant food</p>
-                                <p>(37)</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="d-flex">
-                                <p>Travel news</p>
-                                <p>(10)</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="d-flex">
-                                <p>Modern technology</p>
-                                <p>(03)</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="d-flex">
-                                <p>Product</p>
-                                <p>(11)</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="d-flex">
-                                <p>Inspiration</p>
-                                <p>(21)</p>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="d-flex">
-                                <p>Health Care</p>
-                                <p>(21)</p>
-                            </a>
-                        </li>
-                        </ul>
-                    </aside>
-                    <aside class="single_sidebar_widget popular_post_widget">
-                        <h3 class="widget_title" style={{color: '#2d2d2d'}}>Recent Post</h3>
-                        <div class="media post_item">
-                        <img src="assets/img/post/post_1.png" alt="post"/>
-                        <div class="media-body">
-                            <a href="blog_details.html">
-                                <h3 style={{color: '#2d2d2d'}}>From life was you fish...</h3>
-                            </a>
-                            <p>January 12, 2019</p>
-                        </div>
-                        </div>
-                        <div class="media post_item">
-                        <img src="assets/img/post/post_2.png" alt="post"/>
-                        <div class="media-body">
-                            <a href="blog_details.html">
-                                <h3 style={{color: '#2d2d2d'}}>The Amazing Hubble</h3>
-                            </a>
-                            <p>02 Hours ago</p>
-                        </div>
-                        </div>
-                        <div class="media post_item">
-                        <img src="assets/img/post/post_3.png" alt="post"/>
-                        <div class="media-body">
-                            <a href="blog_details.html">
-                                <h3 style={{color: '#2d2d2d'}}>Astronomy Or Astrology</h3>
-                            </a>
-                            <p>03 Hours ago</p>
-                        </div>
-                        </div>
-                        <div class="media post_item">
-                        <img src="assets/img/post/post_4.png" alt="post"/>
-                        <div class="media-body">
-                            <a href="blog_details.html">
-                                <h3 style={{color: '#2d2d2d'}}>Asteroids telescope</h3>
-                            </a>
-                            <p>01 Hours ago</p>
-                        </div>
-                        </div>
-                    </aside>
-                    <aside class="single_sidebar_widget tag_cloud_widget">
-                        <h4 class="widget_title" style={{color: '#2d2d2d'}}>Tag Clouds</h4>
-                        <ul class="list">
-                        <li>
-                            <a href="#">project</a>
-                        </li>
-                        <li>
-                            <a href="#">love</a>
-                        </li>
-                        <li>
-                            <a href="#">technology</a>
-                        </li>
-                        <li>
-                            <a href="#">travel</a>
-                        </li>
-                        <li>
-                            <a href="#">restaurant</a>
-                        </li>
-                        <li>
-                            <a href="#">life style</a>
-                        </li>
-                        <li>
-                            <a href="#">design</a>
-                        </li>
-                        <li>
-                            <a href="#">illustration</a>
-                        </li>
-                        </ul>
-                    </aside>
-                    <aside class="single_sidebar_widget instagram_feeds">
-                        <h4 class="widget_title" style={{color: '#2d2d2d'}}>Instagram Feeds</h4>
-                        <ul class="instagram_row flex-wrap">
-                        <li>
-                            <a href="#">
-                                <img class="img-fluid" src="assets/img/post/post_5.png" alt=""/>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <img class="img-fluid" src="assets/img/post/post_6.png" alt=""/>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <img class="img-fluid" src="assets/img/post/post_7.png" alt=""/>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <img class="img-fluid" src="assets/img/post/post_8.png" alt=""/>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <img class="img-fluid" src="assets/img/post/post_9.png" alt=""/>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <img class="img-fluid" src="assets/img/post/post_10.png" alt=""/>
-                            </a>
-                        </li>
-                        </ul>
-                    </aside>
-                    <aside class="single_sidebar_widget newsletter_widget">
-                        <h4 class="widget_title" style={{color: '#2d2d2d'}}>Newsletter</h4>
-                        <form action="#">
-                        <div class="form-group">
-                            <input type="email" class="form-control" onfocus="this.placeholder = ''"
-                            onblur="this.placeholder = 'Enter email'" placeholder='Enter email' required/>
-                        </div>
-                        <button class="button rounded-0 primary-bg text-white w-100 btn_1 boxed-btn" type="submit">Subscribe</button>
-                        </form>
-                    </aside>
-                </div>
-            </div>
-            </div>
-            </div>
-            </section>
-            {/* Blog Area End */}
-            </main>
-            
-            <Footer></Footer>
-            {/* Scroll Up */}
+    const { id } = useParams();
+    const [blog, setBlog] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [recentBlogs, setRecentBlogs] = useState([]);
 
-            <div id="back-top" >
-            <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
-            </div>
-            
+    useEffect(() => {
+        let ignore = false;
+        const fetchBlogDetail = async () => {
+            try {
+                setLoading(true);
+                const data = await BlogService.getBlogById(id);
+                if (!ignore) {
+                    setBlog(data);
+                    setError(null);
+                }
+            } catch (err) {
+                if (!ignore) {
+                    console.error('Failed to load blog detail:', err);
+                    if (err?.response?.status === 404) {
+                        setError('Bài viết không tồn tại hoặc đã được gỡ.');
+                    } else {
+                        setError('Không thể tải nội dung bài viết. Vui lòng thử lại sau.');
+                    }
+                    setBlog(null);
+                }
+            } finally {
+                if (!ignore) setLoading(false);
+            }
+        };
+        if (id) fetchBlogDetail();
+        return () => { ignore = true; };
+    }, [id]);
+
+    useEffect(() => {
+        let ignore = false;
+        const fetchRecentBlogs = async () => {
+            try {
+                const { data } = await BlogService.getBlogs({ page: 1, limit: 4 });
+                if (!ignore) setRecentBlogs(data);
+            } catch (err) {
+                console.warn('Failed to fetch sidebar blogs:', err);
+            }
+        };
+        fetchRecentBlogs();
+        return () => { ignore = true; };
+    }, []);
+
+    const formattedDate = formatDateParts(blog?.createdAt);
+    const sanitizedContent = useMemo(() => sanitizeContent(blog?.content), [blog?.content]);
+    const relatedBlogs = useMemo(() => {
+        if (!blog) return recentBlogs;
+        return recentBlogs
+    }, [blog, recentBlogs]);
+
+    return (
+        <div style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+            <Header />
+            <main>
+                <section style={{
+                    background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.95), rgba(118, 75, 162, 0.95))',
+                    padding: '100px 0 60px',
+                    color: 'white',
+                    position: 'relative',
+                    overflow: 'hidden'
+                }}>
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundImage: `url(${resolveImageUrl(blog?.imageUrl)})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        opacity: 0.15,
+                        filter: 'blur(8px)'
+                    }} />
+                    <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+                        <div className="row justify-content-center">
+                            <div className="col-lg-10">
+                                <nav aria-label="breadcrumb" style={{paddingTop: '4%', marginBottom: '30px' }}>
+                                    <ol className="breadcrumb" style={{ background: 'transparent', padding: 0 }}>
+                                        <li className="breadcrumb-item">
+                                            <Link to="/" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>
+                                                Trang chủ
+                                            </Link>
+                                        </li>
+                                        <li className="breadcrumb-item">
+                                            <Link to="/blog" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>
+                                                Blog
+                                            </Link>
+                                        </li>
+                                        <li className="breadcrumb-item active" style={{ color: 'white' }}>
+                                            {blog?.title ?? 'Đang tải...'}
+                                        </li>
+                                    </ol>
+                                </nav>
+                                <div style={{ marginBottom: '20px' }}>
+                                    <span style={{
+                                        background: 'rgba(255,255,255,0.25)',
+                                        backdropFilter: 'blur(10px)',
+                                        padding: '8px 20px',
+                                        borderRadius: '25px',
+                                        fontSize: '13px',
+                                        fontWeight: '600',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '1px'
+                                    }}>
+                                        Bài viết nổi bật
+                                    </span>
+                                </div>
+                                <h1 style={{
+                                    fontSize: '5.5rem',
+                                    fontWeight: '800',
+                                    marginBottom: '25px',
+                                    lineHeight: '1.3',
+                                    color: 'white',
+                                    textShadow: '0 2px 10px rgba(39, 37, 37, 0.99)'
+                                }}>
+                                    {blog?.title ?? 'Chi tiết bài viết'}
+                                </h1>
+                                <div style={{
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    gap: '20px',
+                                    marginTop: '30px',
+                                    alignItems: 'center'
+                                }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        background: 'rgba(255,255,255,0.2)',
+                                        backdropFilter: 'blur(10px)',
+                                        padding: '12px 20px',
+                                        borderRadius: '30px'
+                                    }}>
+                                        <i className="fa fa-user" style={{ fontSize: '18px' }} />
+                                        <span style={{ fontWeight: '600' }}>{blog?.author || 'Toeic Now'}</span>
+                                    </div>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        background: 'rgba(255,255,255,0.2)',
+                                        backdropFilter: 'blur(10px)',
+                                        padding: '12px 20px',
+                                        borderRadius: '30px'
+                                    }}>
+                                        <i className="fa fa-calendar" style={{ fontSize: '18px' }} />
+                                        <span style={{ fontWeight: '600' }}>{formattedDate.full}</span>
+                                    </div>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        background: 'rgba(255,255,255,0.2)',
+                                        backdropFilter: 'blur(10px)',
+                                        padding: '12px 20px',
+                                        borderRadius: '30px'
+                                    }}>
+                                        <i className="fa fa-eye" style={{ fontSize: '18px' }} />
+                                        <span style={{ fontWeight: '600' }}>1.2K lượt xem</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section style={{ padding: '60px 0' }}>
+                    <div className="container">
+                        <div className="row g-5">
+                            <div className="col-lg-8">
+                                <article style={{
+                                    background: 'white',
+                                    borderRadius: '20px',
+                                    overflow: 'hidden',
+                                    boxShadow: '0 10px 40px rgba(0,0,0,0.08)'
+                                }}>
+                                    <div style={{
+                                        width: '100%',
+                                        height: '450px',
+                                        overflow: 'hidden',
+                                        position: 'relative'
+                                    }}>
+                                        {blog?.imageUrl ? (
+                                            <img
+                                                src={resolveImageUrl(blog.imageUrl)}
+                                                alt={blog.title}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover'
+                                                }}
+                                                onError={(e) => {
+                                                    e.currentTarget.src = 'https://images.unsplash.com/photo-1487412912498-0447578fcca8?auto=format&fit=crop&w=1200&q=60';
+                                                }}
+                                            />
+                                        ) : (
+                                            <div style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                background: 'linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%)',
+                                                color: '#a0aec0'
+                                            }}>
+                                                Hình ảnh đang cập nhật
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div style={{ padding: '40px' }}>
+                                        {loading ? (
+                                            <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                                                <LoadingSpinner />
+                                            </div>
+                                        ) : error ? (
+                                            <div className="alert alert-danger" role="alert" style={{ borderRadius: '12px' }}>
+                                                {error}
+                                                <div style={{ marginTop: '20px' }}>
+                                                    <Link to="/blog" className="btn btn-primary" style={{
+                                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                                        border: 'none',
+                                                        padding: '12px 30px',
+                                                        borderRadius: '10px',
+                                                        fontWeight: '600'
+                                                    }}>
+                                                        Quay lại danh sách blog
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        ) : !blog ? (
+                                            <div className="alert alert-warning" role="status" style={{ borderRadius: '12px' }}>
+                                                Không tìm thấy dữ liệu bài viết.
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div style={{
+                                                    fontSize: '1.05rem',
+                                                    lineHeight: '1.9',
+                                                    color: '#2d3748',
+                                                    marginBottom: '40px'
+                                                }}
+                                                    dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+                                                />
+                                                <div style={{
+                                                    borderTop: '2px solid #e2e8f0',
+                                                    paddingTop: '30px',
+                                                    marginTop: '40px'
+                                                }}>
+                                                    <p style={{
+                                                        fontSize: '14px',
+                                                        fontWeight: '700',
+                                                        color: '#4a5568',
+                                                        marginBottom: '15px',
+                                                        textTransform: 'uppercase',
+                                                        letterSpacing: '1px'
+                                                    }}>
+                                                        Chia sẻ bài viết
+                                                    </p>
+                                                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                                        <a
+                                                            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{
+                                                                background: '#1877f2',
+                                                                color: 'white',
+                                                                padding: '10px 24px',
+                                                                borderRadius: '8px',
+                                                                textDecoration: 'none',
+                                                                fontSize: '14px',
+                                                                fontWeight: '600',
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                gap: '8px'
+                                                            }}>
+                                                            <i className="fab fa-facebook-f" /> Facebook
+                                                        </a>
+                                                        <a
+                                                            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(blog?.title ?? '')}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{
+                                                                background: '#1da1f2',
+                                                                color: 'white',
+                                                                padding: '10px 24px',
+                                                                borderRadius: '8px',
+                                                                textDecoration: 'none',
+                                                                fontSize: '14px',
+                                                                fontWeight: '600',
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                gap: '8px'
+                                                            }}>
+                                                            <i className="fab fa-twitter" /> Twitter
+                                                        </a>
+                                                        <a
+                                                            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{
+                                                                background: '#0077b5',
+                                                                color: 'white',
+                                                                padding: '10px 24px',
+                                                                borderRadius: '8px',
+                                                                textDecoration: 'none',
+                                                                fontSize: '14px',
+                                                                fontWeight: '600',
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                gap: '8px'
+                                                            }}>
+                                                            <i className="fab fa-linkedin-in" /> LinkedIn
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </article>
+                            </div>
+
+                            <div className="col-lg-4">
+                                <div style={{ position: 'sticky', top: '20px' }}>
+                                    <div style={{
+                                        background: 'white',
+                                        borderRadius: '16px',
+                                        padding: '30px',
+                                        marginBottom: '24px',
+                                        boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+                                    }}>
+                                        <h5 style={{
+                                            fontSize: '1.5rem',
+                                            fontWeight: '700',
+                                            marginBottom: '20px',
+                                            color: '#2d3748'
+                                        }}>
+                                            Tìm kiếm bài viết
+                                        </h5>
+                                        <form onSubmit={(e) => {
+                                            e.preventDefault();
+                                            const formData = new FormData(e.currentTarget);
+                                            const value = (formData.get('keyword') || '').toString().trim();
+                                            if (value) {
+                                                window.location.href = `/blog?search=${encodeURIComponent(value)}`;
+                                            }
+                                        }}>
+                                            <div style={{ position: 'relative' }}>
+                                                <input
+                                                    type="text"
+                                                    name="keyword"
+                                                    className="form-control"
+                                                    placeholder="Nhập từ khóa..."
+                                                    style={{
+                                                        borderRadius: '12px',
+                                                        border: '2px solid #e2e8f0',
+                                                        padding: '12px 50px 12px 20px',
+                                                        fontSize: '15px'
+                                                    }}
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    style={{
+                                                        position: 'absolute',
+                                                        right: '8px',
+                                                        top: '50%',
+                                                        transform: 'translateY(-50%)',
+                                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                                        border: 'none',
+                                                        borderRadius: '8px',
+                                                        width: '25px',
+                                                        height: '25px',
+                                                        color: 'white',
+                                                        cursor: 'pointer'
+                                                    }}>
+                                                    <i className="ti-search" />
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <div style={{
+                                        background: 'white',
+                                        borderRadius: '16px',
+                                        padding: '30px',
+                                        marginBottom: '24px',
+                                        boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+                                    }}>
+                                        <h5 style={{
+                                            fontSize: '1.5rem',
+                                            fontWeight: '700',
+                                            marginBottom: '20px',
+                                            color: '#2d3748'
+                                        }}>
+                                            Bài viết liên quan
+                                        </h5>
+                                        {relatedBlogs.length === 0 ? (
+                                            <p style={{ color: '#a0aec0', margin: 0 }}>Chưa có bài viết liên quan.</p>
+                                        ) : (
+                                            relatedBlogs.map((item) => {
+                                                const format = formatDateParts(item.createdAt);
+                                                return (
+                                                    <div key={item.id} style={{
+                                                        display: 'flex',
+                                                        gap: '15px',
+                                                        marginBottom: '20px',
+                                                        paddingBottom: '20px',
+                                                        borderBottom: '1px solid #e2e8f0'
+                                                    }}>
+                                                        <div style={{
+                                                            width: '80px',
+                                                            height: '80px',
+                                                            borderRadius: '12px',
+                                                            overflow: 'hidden',
+                                                            flexShrink: 0
+                                                        }}>
+                                                            <img
+                                                                src={resolveImageUrl(item.imageUrl)}
+                                                                alt={item.title}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '100%',
+                                                                    objectFit: 'cover'
+                                                                }}
+                                                                onError={(e) => {
+                                                                    e.currentTarget.src = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=60';
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div style={{ flex: 1 }}>
+                                                            <Link to={`/blog/${item.id}`} style={{ textDecoration: 'none' }}>
+                                                                <h6 style={{
+                                                                    fontSize: '14px',
+                                                                    fontWeight: '600',
+                                                                    color: '#2d3748',
+                                                                    marginBottom: '8px',
+                                                                    lineHeight: '1.5'
+                                                                }}>
+                                                                    {item.title}
+                                                                </h6>
+                                                            </Link>
+                                                            <p style={{
+                                                                fontSize: '12px',
+                                                                color: '#a0aec0',
+                                                                margin: 0
+                                                            }}>
+                                                                {format.full}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+
+                                    <div style={{
+                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        borderRadius: '16px',
+                                        padding: '30px',
+                                        color: 'white',
+                                        boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)'
+                                    }}>
+                                        <h5 style={{
+                                            fontSize: '1.5rem',
+                                            fontWeight: '700',
+                                            marginBottom: '15px',
+                                            color: 'white'
+                                        }}>
+                                            Đăng ký nhận tin
+                                        </h5>
+                                        <p style={{
+                                            fontSize: '14px',
+                                            opacity: 0.95,
+                                            marginBottom: '20px',
+                                            lineHeight: '1.6',
+                                            color: 'white'
+                                        }}>
+                                            Nhận thông báo khi có bài học hoặc mẹo luyện thi TOEIC mới nhất.
+                                        </p>
+                                        <form onSubmit={(e) => {
+                                            e.preventDefault();
+                                            alert('Cảm ơn bạn! Chúng tôi sẽ sớm ra mắt bản tin email.');
+                                        }}>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                placeholder="Nhập email của bạn"
+                                                required
+                                                style={{
+                                                    borderRadius: '10px',
+                                                    border: 'none',
+                                                    padding: '12px 20px',
+                                                    marginBottom: '12px',
+                                                    fontSize: '14px'
+                                                }}
+                                            />
+                                            <button
+                                                type="submit"
+                                                style={{
+                                                    width: '100%',
+                                                    background: 'white',
+                                                    color: '#667eea',
+                                                    border: 'none',
+                                                    borderRadius: '10px',
+                                                    padding: '12px',
+                                                    fontWeight: '700',
+                                                    fontSize: '15px',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s'
+                                                }}>
+                                                Đăng ký ngay
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <Footer />
         </div>
     );
-}
+};
 
 export default BlogDetails;

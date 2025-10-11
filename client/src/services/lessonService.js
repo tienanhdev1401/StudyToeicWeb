@@ -25,7 +25,7 @@ const LessonService = {
 
   async getRelatedLessons({ topic, excludeId, limit = 6 }) {
     const lessons = await this.getLessons({ topic, limit });
-    return lessons.filter((lesson) => lesson.id !== Number(excludeId));
+    return lessons.filter((lesson) => lesson.id === Number(excludeId));
   },
 };
 
