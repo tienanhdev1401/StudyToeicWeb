@@ -1,106 +1,306 @@
-.dashboard {
-    padding: 2rem;
-    background-color: #f8fafc;
-    min-height: 100vh;
-    display: grid;
-    gap: 2rem;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .dasboardHeaderTitle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    font-size: 5rem;
-  }
-  
-  /* Trong file Dashboard.module.css */
-
-.filters {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  
-  .radioLabel {
-    padding: 0.5rem 1.5rem;
-    border-radius: 20px;
-    background-color: #e2e8f0;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    display: flex;
-    align-items: center;
-    text-transform: capitalize;
-  }
-  
-  .radioLabel:hover {
-    background-color: #cbd5e1;
-  }
-  
-  .radioLabel.active {
-    background-color: #6366f1;
-    color: white;
-  }
-  
-  .radioInput {
-    opacity: 0;
-    position: absolute;
-    width: 0;
-    height: 0;
-  }
-  
-
-.topCards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  margin-bottom: 2rem;
+.dashboard-adminDashboard {
+  padding: 2rem;
+  background-color: #f8fafc;
 }
 
-.statsCard {
-  background: white;
-  padding: 2rem; /* Tăng padding */
-  border-radius: 12px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-  min-height: 200px; /* Thêm chiều cao tối thiểu */
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.statsCard h3 {
-  color: #64748b;
-  margin-bottom: 0.5rem;
-  font-size: 2rem; /* Tăng kích thước tiêu đề */
-  font-weight: 600;
-}
-
-.statsValue {
+.dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 2rem;
 }
 
-.statsValue span:first-child {
-  font-size: 3rem; /* Tăng kích thước số liệu */
-  font-weight: 700;
+.dashboard-headerTitle {
+  font-size: 6rem; /* Slightly larger for better prominence */
+  font-weight: 600;
+}
+
+.dashboard-dasboardHeaderTitle {
+  font-size: 2.5rem;
+  font-weight: 600;
   color: #1e293b;
 }
 
-.statsValue span:last-child {
-  font-size: 1.5rem; /* Tăng kích thước phần trăm */
+.dashboard-timeFilters {
+  display: flex;
+  gap: 0.75rem;
 }
 
-.targetCard {
+.dashboard-timeFilter {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #e2e8f0;
+  border: none;
+  color: #64748b;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dashboard-timeFilter:hover {
+  background-color: #cbd5e1;
+}
+
+.dashboard-timeFilter.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.dashboard-metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-metricCard {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-metricHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-metricIcon {
+  font-size: 1.5rem;
+  color: #3b82f6;
+}
+
+.dashboard-metricHeader h3 {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.dashboard-metricValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.dashboard-positiveTrend {
+  color: #10b981;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dashboard-negativeTrend {
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dashboard-mainContent {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.dashboard-chartContainer {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  height: 360px; /* Fixed height for consistent chart sizing */
+}
+
+.dashboard-chartContainer h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.dashboard-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dashboard-sidebarSection {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-sidebarSection h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.dashboard-pieChart {
+  position: relative;
+  height: 280px; /* Increase for better readability */
+  width: 100%;
+  margin: 0 auto;
+}
+
+.dashboard-tableContainer {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 1.5rem;
+  grid-column: 1 / -1;
+}
+
+.dashboard-tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dashboard-tableHeader h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dashboard-statsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-statsTable th {
+  text-align: left;
+  padding: 1rem;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.dashboard-statsTable td {
+  padding: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.dashboard-testInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dashboard-testTitle {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.dashboard-categoryBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: #dbeafe;
+  color: #3b82f6;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.dashboard-attemptsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dashboard-attemptsNumber {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dashboard-attemptsTrend {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.dashboard-scoreDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dashboard-totalScore {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dashboard-scoreLabel {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.dashboard-subScores {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.dashboard-scoreWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard-scoreBarContainer {
+  flex: 1;
+  height: 0.5rem;
+  background-color: #e2e8f0;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.dashboard-scoreBar {
+  height: 100%;
+  background-color: #3b82f6;
+  border-radius: 0.25rem;
+  transition: width 0.3s ease;
+}
+
+.dashboard-scorePercentage {
+  font-size: 0.875rem;
+  color: #64748b;
+  min-width: 3.5rem;
+  text-align: right;
+}
+
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #64748b;
+  font-size: 1.125rem;
+}
+
+.dashboard-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #ef4444;
+  font-size: 1.125rem;
+}
+
+.dashboard-targetCard {
   background: white;
   padding: 2rem; /* Tăng padding */
   border-radius: 12px;
@@ -111,43 +311,43 @@
   justify-content: space-between;
 }
 
-.targetHeader h3 {
+.dashboard-targetHeader h3 {
   font-size: 2rem; /* Tăng kích thước tiêu đề */
   font-weight: 600;
   color: #1e293b;
 }
 
-.targetPercentage span:first-child {
+.dashboard-targetPercentage span:first-child {
   font-size: 1.5rem; /* Tăng kích thước phần trăm */
   font-weight: 700;
 }
 
-.progressBar {
+.dashboard-progressBar {
   height: 10px; /* Tăng chiều cao progress bar */
   background: #e2e8f0;
   border-radius: 4px;
   overflow: hidden;
 }
 
-.adminDashboard {
+.dashboard-adminDashboard {
     padding: 2rem;
     background: #f8fafc;
     min-height: 100vh;
   }
   
-  .header {
+  .dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
   }
   
-  .timeFilters {
+  .dashboard-timeFilters {
     display: flex;
     gap: 1rem;
   }
   
-  .timeFilter {
+  .dashboard-timeFilter {
     padding: 0.5rem 1.5rem;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
@@ -157,89 +357,90 @@
     transition: all 0.2s;
   }
   
-  .timeFilter.active {
+  .dashboard-timeFilter.active {
     background: #3B82F6;
     color: white;
     border-color: #3B82F6;
   }
   
-  .metricsGrid {
+  .dashboard-metricsGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     margin-bottom: 2rem;
   }
   
-  .metricCard {
+  .dashboard-metricCard {
     background: white;
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
   
-  .metricHeader {
+  .dashboard-metricHeader {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 1rem;
   }
   
-  .metricIcon {
+  .dashboard-metricIcon {
     font-size: 1.5rem;
     color: #3B82F6;
   }
   
-  .metricValue {
+  .dashboard-metricValue {
     font-size: 1.75rem;
     font-weight: 600;
     color: #1e293b;
   }
   
-  .positiveTrend {
+  .dashboard-positiveTrend {
     color: #10B981;
     font-size: 0.875rem;
     margin-left: 0.5rem;
   }
   
-  .negativeTrend {
+  .dashboard-negativeTrend {
     color: #EF4444;
     font-size: 0.875rem;
     margin-left: 0.5rem;
   }
   
-  .mainContent {
+  .dashboard-mainContent {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 2rem;
   }
   
-  .chartContainer {
+  .dashboard-chartContainer {
     background: white;
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    height: 320px; /* Slightly smaller height on mobile/tablet */
   }
   
-  .sidebar {
+  .dashboard-sidebar {
     display: flex;
     flex-direction: column;
     gap: 2rem;
   }
   
-  .sidebarSection {
+  .dashboard-sidebarSection {
     background: white;
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
   
-  .pieChart {
-    height: 250px;
+  .dashboard-pieChart {
+    height: 240px;
     margin-top: 1rem;
   }
 
   /* Thêm các style cho bảng */
-.tableContainer {
+.dashboard-tableContainer {
   width: 100%;
   background-color: white;
   padding: 2.5rem;
@@ -250,7 +451,7 @@
   grid-column: 1 / -1;
 }
   
-.statsTable {
+.dashboard-statsTable {
   width: 100%;
   min-width: 1000px;
   background-color: white !important;
@@ -262,7 +463,7 @@
   overflow: hidden;
 }
   
-.statsTable th {
+.dashboard-statsTable th {
   text-align: left;
   padding: 1.5rem 2rem;
   background-color: #f8fafc;
@@ -271,17 +472,17 @@
   border: 1px solid #e5e7eb;
 }
   
-.statsTable td {
+.dashboard-statsTable td {
   padding: 1.5rem 2rem;
   background-color: white !important; 
   border: 1px solid #e5e7eb;
 }
   
-.statsTable tr:hover td {
+.dashboard-statsTable tr:hover td {
   background-color: #e1f0ff !important;
 }
   
-.categoryBadge {
+.dashboard-categoryBadge {
   background: #e0f2fe;
   color: #0369a1;
   padding: 0.5rem 2rem;
@@ -289,14 +490,14 @@
   font-size: 1.5rem;
   display: inline-block;
 }
-.scoreWrapper {
+.dashboard-scoreWrapper {
   position: relative;
   display: inline-block;
   padding: 0.5rem 0;
   min-width: 150px;
 }
   
-.scoreBar {
+.dashboard-scoreBar {
   position: absolute;
   left: 0;
   top: 0;
@@ -311,108 +512,108 @@
 
 /* Thêm media query cho mobile */
 @media (max-width: 768px) {
-  .topCards {
+  .dashboard-topCards {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
   
-  .statsCard, .targetCard {
+  .dashboard-statsCard, .dashboard-targetCard {
     padding: 1.5rem;
     min-height: 130px;
   }
   
-  .statsValue span:first-child {
+  .dashboard-statsValue span:first-child {
     font-size: 1.8rem;
   }
 
   
-  .targetCard {
+  .dashboard-argetCard {
     background: white;
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 15px rgba(0,0,0,0.1);
   }
   
-  .targetHeader {
+  .dashboard-targetHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
   }
   
-  .targetPercentage {
+  .dashboard-targetPercentage {
     display: flex;
     gap: 0.5rem;
     align-items: center;
   }
   
-  .progressBar {
+  .dashboard-progressBar {
     height: 8px;
     background: #e2e8f0;
     border-radius: 4px;
     overflow: hidden;
   }
   
-  .progressFill {
+  .dashboard-progressFill {
     height: 100%;
     background: #6366f1;
     transition: width 0.3s ease;
   }
   
-  .chartContainer {
+  .dashboard-chartContainer {
     background: white;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 2px 15px rgba(0,0,0,0.1);
   }
   
-  .additionalInfo {
+  .dashboard-additionalInfo {
     background: white;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 2px 15px rgba(0,0,0,0.1);
   }
   
-  .metricRow {
+  .dashboard-metricRow {
     display: flex;
     justify-content: space-between;
     margin-top: 1.5rem;
   }
   
-  .metricItem {
+  .dashboard-metricItem {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
   
-  .positive {
+  .dashboard-positive {
     color: #10b981;
     font-weight: 500;
   }
   
-  .negative {
+  .dashboard-negative {
     color: #ef4444;
     font-weight: 500;
   }
-  .statsTable {
+  .dashboard-statsTable {
     display: block;
     overflow-x: auto;
   }
   
-  .statsTable th,
-  .statsTable td {
+  .dashboard-statsTable th,
+  .dashboard-statsTable td {
     min-width: 150px;
   }
 }
 
-.tableHeader {
+.dashboard-tableHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
 }
 
-.viewDetailBtn {
+.dashboard-viewDetailBtn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -427,10 +628,10 @@
   transition: background-color 0.2s;
 }
 
-.viewDetailBtn:hover {
+.dashboard-viewDetailBtn:hover {
   background-color: #d1dfff;
 }
 
-.viewDetailBtn i {
+.dashboard-viewDetailBtn i {
   font-size: 1rem;
 }

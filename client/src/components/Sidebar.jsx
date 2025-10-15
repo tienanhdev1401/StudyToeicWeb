@@ -52,6 +52,7 @@ const Sidebar = () => {
           { key: 'test', label: 'Test', path: '/admin/test' },
           { key: 'question', label: 'Question', path: '/admin/question' },
           { key: 'lesson', label: 'Lesson', path: '/admin/lesson' },
+          { key: 'blog', label: 'Blog', path: '/admin/blog' },
         
         ],
       },

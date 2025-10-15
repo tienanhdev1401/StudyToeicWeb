@@ -34,6 +34,7 @@ import adminAdvertisementRoutes from "./admin/admin.advertisementRoutes";
 import adminAdCampaignRoutes from "./admin/admin.adCampaignRoutes";
 import adminblogRoutes from './admin/admin.blogRoutes'
 import blogRoutes from './blogRoutes'
+import adminDashboardRoutes from "./admin/admin.dashboardRoutes";
 
 function route(app: Application): void {
   app.use("/api/user", userRouter);
@@ -70,6 +71,8 @@ function route(app: Application): void {
   app.use('/api/blog', blogRoutes);
   app.use("/api/admin/advertisements", adminAdvertisementRoutes);
   app.use("/api/admin/ad-campaigns", adminAdCampaignRoutes);
+  app.use('/api/admin/dashboard', adminDashboardRoutes);
+
   app.use("/api/submissions", submissionRoutes);
   app.use("/", test);
   app.use("/api/admin/roadmap-config", adminRoadmapConfigRoutes);
