@@ -34,6 +34,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@types/sequelize": "^4.28.20",
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
@@ -45,6 +46,7 @@
     "mysql2": "^3.14.0",
     "react-dom": "^19.0.0",
     "react-scripts": "^5.0.1",
+    "sequelize": "^6.37.7",
     "web-vitals": "^4.2.4"
   }
 }

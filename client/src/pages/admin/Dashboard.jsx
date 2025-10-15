@@ -1,73 +1,91 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
-import { Bar, Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, LineElement, PointElement } from 'chart.js';
+import { Bar, Pie, Line } from 'react-chartjs-2';
 import styles from '../../styles/Dashboard.module.css';
-import { FiUsers, FiBook, FiActivity } from 'react-icons/fi';
+import { FiUsers, FiBook, FiActivity, FiClock } from 'react-icons/fi';
+import axios from 'axios';
+
+// Set default base URL for API calls
+axios.defaults.baseURL = 'http://localhost:5000';
 
 // Đăng ký components Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
   Legend,
   ArcElement
 );
 
-// Dữ liệu mẫu
-const DASHBOARD_DATA = {
-  users: {
-    total: 4567,
-    newThisMonth: 234,
-    active: 3789,
-    chartLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    chartData: [300, 450, 600, 550, 800, 900]
-  },
-  content: {
-    courses: 45,
-    lessons: 678,
-    exams: 2356,
-    completionRate: 78
-  }
-};
-const testData = [
-  {
-    testName: "Ngữ pháp nâng cao",
-    category: "Grammar",
-    attempts: 245,
-    averageScore: 8.2,
-    maxScore: 10 // Thêm trường maxScore
-  },
-  {
-    testName: "TOEIC Full Test 2024",
-    category: "TOEIC", 
-    attempts: 198,
-    averageScore: 785,
-    maxScore: 990
-  },
-  {
-    testName: "TOEIC Listening Practice",
-    category: "TOEIC",
-    attempts: 176,
-    averageScore: 420,
-    maxScore: 495
-  },
-  {
-    testName: "TOEIC Reading Practice",
-    category: "TOEIC",
-    attempts: 152,
-    averageScore: 365,
-    maxScore: 495
-  },
-];
-
 
 
 const AdminDashboard = () => {
   const [timeFilter, setTimeFilter] = useState('month');
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const barChartRef = useRef(null);
   const pieChartRef = useRef(null);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Get the token from localStorage
+        const token = localStorage.getItem('token');
+        
+        const response = await axios.get('/api/admin/dashboard', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        console.log('Dashboard API response:', response.data); // For debugging
+        
+        if (response.data.success) {
+          const data = response.data.data;
+          
+          // Convert single objects to arrays for consistent rendering
+          data.monthlyUserStats = data.monthlyUserStats ? [data.monthlyUserStats] : [];
+          data.monthlyTestStats = data.monthlyTestStats ? [data.monthlyTestStats] : [];
+          data.mostPopularTests = data.mostPopularTests ? [data.mostPopularTests] : [];
+          
+          // Convert string numbers to actual numbers
+          data.completionRate = Number(data.completionRate) || 0;
+          data.averageCompletionTime = Number(data.averageCompletionTime) || 0;
+          data.averageScore = Number(data.averageScore) || 0;
+          
+          // Log the processed data
+          console.log('Processed dashboard data:', data);
+          
+          setDashboardData(data);
+        } else {
+          console.error('API returned error:', response.data.message);
+          throw new Error(response.data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error('Error response:', error.response.data);
+          console.error('Status code:', error.response.status);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error('No response received:', error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error('Error setting up request:', error.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   // Chart options
   const barOptions = {
@@ -88,9 +106,18 @@ const AdminDashboard = () => {
 
   // Cleanup charts
   useEffect(() => {
+    // Store current refs in variables inside the effect
+    const barChart = barChartRef.current;
+    const pieChart = pieChartRef.current;
+    
     return () => {
-      barChartRef.current?.destroy();
-      pieChartRef.current?.destroy();
+      // Use the stored variables in cleanup
+      if (barChart) {
+        barChart.destroy();
+      }
+      if (pieChart) {
+        pieChart.destroy();
+      }
     };
   }, []);
 
@@ -132,114 +159,217 @@ const AdminDashboard = () => {
       </header>
 
       {/* Metrics Grid */}
-      <section className={styles.metricsGrid}>
-        <MetricCard
-          icon={<FiUsers className={styles.metricIcon} />}
-          title="Total Users"
-          value={DASHBOARD_DATA.users.total}
-          trend={12.5}
-        />
-        <MetricCard
-          icon={<FiBook className={styles.metricIcon} />}
-          title="Total Tests"
-          value={DASHBOARD_DATA.content.courses}
-        />
-        <MetricCard
-          icon={<FiActivity className={styles.metricIcon} />}
-          title="Completed Tests"
-          value={`${DASHBOARD_DATA.content.completionRate}%`}
-          trend={2.8}
-        />
-      </section>
+      {loading ? (
+        <div className={styles.loading}>Loading dashboard data...</div>
+      ) : dashboardData ? (
+        <section className={styles.metricsGrid}>
+          <MetricCard
+            icon={<FiUsers className={styles.metricIcon} />}
+            title="Total Users"
+            value={dashboardData.totalUsers}
+            trend={Number(dashboardData.userGrowthRate).toFixed(1)}
+          />
+          <MetricCard
+            icon={<FiBook className={styles.metricIcon} />}
+            title="Active Users"
+            value={dashboardData.activeUsers}
+            trend={(dashboardData.activeUsers / dashboardData.totalUsers * 100).toFixed(1)}
+          />
+          <MetricCard
+            icon={<FiActivity className={styles.metricIcon} />}
+            title="Total Tests"
+            value={dashboardData.totalTests}
+            trend={(dashboardData.totalAttempts / dashboardData.totalTests).toFixed(1)}
+          />
+          <MetricCard
+            icon={<FiClock className={styles.metricIcon} />}
+            title="Average Score"
+            value={`${dashboardData.averageScore}`}
+            trend={((dashboardData.averageScore / 990) * 100).toFixed(1)}
+          />
+        </section>
+      ) : (
+        <div className={styles.error}>Failed to load dashboard data</div>
+      )}
 
       {/* Main Content */}
       <main className={styles.mainContent}>
         {/* User Statistics Chart */}
         <article className={styles.chartContainer}>
-          <h2>User Statistics</h2>
-          <Bar
-            ref={barChartRef}
-            data={{
-              labels: DASHBOARD_DATA.users.chartLabels,
-              datasets: [{
-                label: 'New Users',
-                data: DASHBOARD_DATA.users.chartData,
-                backgroundColor: '#3B82F6',
-                borderRadius: 6
-              }]
-            }}
-            options={barOptions}
-            key={timeFilter}
-          />
+          <h2>User Growth & Activity</h2>
+          {dashboardData && Array.isArray(dashboardData.monthlyUserStats) && dashboardData.monthlyUserStats.length > 0 && (
+            <Bar
+              ref={barChartRef}
+              data={{
+                labels: ['Current Month'],
+                datasets: [
+                  {
+                    label: 'New Users',
+                    data: [Number(dashboardData.newUsersThisMonth)],
+                    backgroundColor: '#3B82F6',
+                    borderRadius: 6
+                  },
+                  {
+                    label: 'Active Users',
+                    data: [Number(dashboardData.activeUsers)],
+                    backgroundColor: '#10B981',
+                    borderRadius: 6
+                  }
+                ]
+              }}
+              options={{
+                ...barOptions,
+                plugins: {
+                  ...barOptions.plugins,
+                  legend: { 
+                    display: true,
+                    position: 'top'
+                  }
+                }
+              }}
+              key={timeFilter}
+            />
+          )}
+        </article>
+
+        {/* Test Performance Chart */}
+        <article className={styles.chartContainer}>
+          <h2>Test Performance Trends</h2>
+          {dashboardData && Array.isArray(dashboardData.monthlyTestStats) && dashboardData.monthlyTestStats.length > 0 && (
+            <Line
+              data={{
+                labels: ['Current Month'],
+                datasets: [
+                  {
+                    label: 'Reading Score',
+                    data: [Number(dashboardData.monthlyTestStats[0]?.avgReadingScore || 0)],
+                    borderColor: '#3B82F6',
+                    backgroundColor: '#3B82F6',
+                    tension: 0.4
+                  },
+                  {
+                    label: 'Listening Score',
+                    data: [Number(dashboardData.monthlyTestStats[0]?.avgListeningScore || 0)],
+                    borderColor: '#10B981',
+                    backgroundColor: '#10B981',
+                    tension: 0.4
+                  }
+                ]
+              }}
+              options={{
+                responsive: true,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    grid: { display: false }
+                  }
+                },
+                plugins: {
+                  legend: {
+                    position: 'top'
+                  }
+                }
+              }}
+            />
+          )}
         </article>
 
         {/* Sidebar Section */}
         <aside className={styles.sidebar}>
           <div className={styles.sidebarSection}>
-            <h3>Learning Distribution</h3>
+            <h3>Test Score Distribution</h3>
             <div className={styles.pieChart}>
-              <Pie
-                ref={pieChartRef}
-                data={{
-                  labels: ['Completed', 'In Progress', 'Not Started'],
-                  datasets: [{
-                    data: [65, 25, 10],
-                    backgroundColor: ['#3B82F6', '#10B981', '#6366F1']
-                  }]
-                }}
-                options={{ 
-                  responsive: true,
-                  plugins: { legend: { position: 'bottom' } }
-                }}
-                key={timeFilter}
-              />
+              {dashboardData && Array.isArray(dashboardData.mostPopularTests) && dashboardData.mostPopularTests.length > 0 && (
+                <Pie
+                  ref={pieChartRef}
+                  data={{
+                    labels: dashboardData.mostPopularTests.map(test => test.title || 'Untitled Test'),
+                    datasets: [{
+                      data: dashboardData.mostPopularTests.map(test => Number(test.averageScore) || 0),
+                      backgroundColor: ['#3B82F6', '#10B981', '#6366F1', '#F59E0B', '#EC4899']
+                    }]
+                  }}
+                  options={{ 
+                    responsive: true,
+                    plugins: { 
+                      legend: { 
+                        position: 'bottom',
+                        display: true
+                      },
+                      tooltip: {
+                        callbacks: {
+                          label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw;
+                            return `${label}: ${value.toFixed(0)}/990`;
+                          }
+                        }
+                      },
+                      title: {
+                        display: true,
+                        text: 'Test Score Distribution'
+                      }
+                    }
+                  }}
+                  key={timeFilter}
+                />
+              )}
             </div>
           </div>
         </aside>
         <div className={styles.tableContainer}>
           <div className={styles.tableHeader}>
-            <h2>Most Completed Tests</h2>
-            <button className={styles.viewDetailBtn}>
-              <i className="fas fa-eye"></i>
-              See All
-            </button>
+            <h2>Most Popular Tests</h2>
           </div>
           <table className={styles.statsTable}>
             <thead>
               <tr>
                 <th>Test Name</th>
-                <th>Category</th>
-                <th>Number of Attempts</th>
+                <th>Attempts</th>
                 <th>Average Score</th>
+                <th>Performance</th>
               </tr>
             </thead>
             <tbody>
-              {testData.map((test, index) => (
-                <tr key={index}>
-                  <td>{test.testName}</td>
+              {dashboardData?.mostPopularTests?.map((test) => (
+                <tr key={test.testId}>
                   <td>
-                    <span className={styles.categoryBadge}>
-                      {test.category}
-                    </span>
+                    <div className={styles.testInfo}>
+                      <span className={styles.testTitle}>{test.title || 'Unnamed Test'}</span>
+                      <span className={styles.categoryBadge}>TOEIC</span>
+                    </div>
                   </td>
-                  <td>{test.attempts.toLocaleString()}</td>
+                  <td>
+                    <div className={styles.attemptsInfo}>
+                      <span className={styles.attemptsNumber}>{Number(test.attempts).toLocaleString()}</span>
+                      <span className={styles.attemptsTrend}>
+                        {((Number(test.attempts) / dashboardData.totalAttempts) * 100).toFixed(1)}% of total
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className={styles.scoreDetails}>
+                      <div className={styles.totalScore}>
+                        <span>{Number(test.averageScore).toFixed(0)}</span>
+                        <span className={styles.scoreLabel}>/990</span>
+                      </div>
+                      <div className={styles.subScores}>
+                        <span>L: {Number(test.avgListeningScore).toFixed(0)}/495</span>
+                        <span>R: {Number(test.avgReadingScore).toFixed(0)}/495</span>
+                      </div>
+                    </div>
+                  </td>
                   <td>
                     <div className={styles.scoreWrapper}>
-                      {test.category === 'TOEIC' ? (
-                        <>
-                          {test.averageScore}/{test.maxScore}
-                          <div className={styles.scoreBar} 
-                            style={{ width: `${(test.averageScore/test.maxScore)*100}%` }}>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          {test.averageScore}/10
-                          <div className={styles.scoreBar} 
-                            style={{ width: `${test.averageScore * 10}%` }}>
-                          </div>
-                        </>
-                      )}
+                      <div className={styles.scoreBarContainer}>
+                        <div className={styles.scoreBar} 
+                          style={{ width: `${(Number(test.averageScore)/990)*100}%` }}>
+                        </div>
+                        <div className={styles.scoreBarBackground}></div>
+                      </div>
+                      <div className={styles.scorePercentage}>
+                        {((Number(test.averageScore)/990)*100).toFixed(1)}%
+                      </div>
                     </div>
                   </td>
                 </tr>

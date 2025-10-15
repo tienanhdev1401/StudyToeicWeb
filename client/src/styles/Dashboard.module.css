@@ -1,103 +1,297 @@
-.dashboard {
-    padding: 2rem;
-    background-color: #f8fafc;
-    min-height: 100vh;
-    display: grid;
-    gap: 2rem;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .dasboardHeaderTitle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    font-size: 5rem;
-  }
-  
-  /* Trong file Dashboard.module.css */
-
-.filters {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  
-  .radioLabel {
-    padding: 0.5rem 1.5rem;
-    border-radius: 20px;
-    background-color: #e2e8f0;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    display: flex;
-    align-items: center;
-    text-transform: capitalize;
-  }
-  
-  .radioLabel:hover {
-    background-color: #cbd5e1;
-  }
-  
-  .radioLabel.active {
-    background-color: #6366f1;
-    color: white;
-  }
-  
-  .radioInput {
-    opacity: 0;
-    position: absolute;
-    width: 0;
-    height: 0;
-  }
-  
-
-.topCards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  margin-bottom: 2rem;
+.adminDashboard {
+  padding: 2rem;
+  background-color: #f8fafc;
 }
 
-.statsCard {
-  background: white;
-  padding: 2rem; /* Tăng padding */
-  border-radius: 12px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-  min-height: 200px; /* Thêm chiều cao tối thiểu */
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.statsCard h3 {
-  color: #64748b;
-  margin-bottom: 0.5rem;
-  font-size: 2rem; /* Tăng kích thước tiêu đề */
-  font-weight: 600;
-}
-
-.statsValue {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 2rem;
 }
 
-.statsValue span:first-child {
-  font-size: 3rem; /* Tăng kích thước số liệu */
-  font-weight: 700;
+.dasboardHeaderTitle {
+  font-size: 2.5rem;
+  font-weight: 600;
   color: #1e293b;
 }
 
-.statsValue span:last-child {
-  font-size: 1.5rem; /* Tăng kích thước phần trăm */
+.timeFilters {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.timeFilter {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #e2e8f0;
+  border: none;
+  color: #64748b;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.timeFilter:hover {
+  background-color: #cbd5e1;
+}
+
+.timeFilter.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metricCard {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.metricIcon {
+  font-size: 1.5rem;
+  color: #3b82f6;
+}
+
+.metricHeader h3 {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.metricValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.positiveTrend {
+  color: #10b981;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.negativeTrend {
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.chartContainer {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.chartContainer h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebarSection {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarSection h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.pieChart {
+  position: relative;
+  height: 150px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.tableContainer {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 1.5rem;
+  grid-column: 1 / -1;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.tableHeader h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.statsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.statsTable th {
+  text-align: left;
+  padding: 1rem;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.statsTable td {
+  padding: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.testInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.testTitle {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.categoryBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: #dbeafe;
+  color: #3b82f6;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.attemptsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.attemptsNumber {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.attemptsTrend {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.scoreDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.totalScore {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.scoreLabel {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.subScores {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.scoreWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.scoreBarContainer {
+  flex: 1;
+  height: 0.5rem;
+  background-color: #e2e8f0;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.scoreBar {
+  height: 100%;
+  background-color: #3b82f6;
+  border-radius: 0.25rem;
+  transition: width 0.3s ease;
+}
+
+.scorePercentage {
+  font-size: 0.875rem;
+  color: #64748b;
+  min-width: 3.5rem;
+  text-align: right;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #64748b;
+  font-size: 1.125rem;
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #ef4444;
+  font-size: 1.125rem;
 }
 
 .targetCard {

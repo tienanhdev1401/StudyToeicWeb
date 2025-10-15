@@ -33,6 +33,8 @@ import adminLessonRoutes from "./admin/admin.lessonRoutes";
 import adminAdvertisementRoutes from "./admin/admin.advertisementRoutes";
 import adminAdCampaignRoutes from "./admin/admin.adCampaignRoutes";
 import adminblogRoutes from './admin/admin.blogRoutes'
+import adminDashboardRoutes from "./admin/admin.dashboardRoutes";
+
 function route(app: Application): void {
   app.use("/api/user", userRouter);
   app.use("/api/auth", authRouter);
@@ -67,6 +69,7 @@ function route(app: Application): void {
   app.use('/api/admin/blog', adminblogRoutes);
   app.use("/api/admin/advertisements", adminAdvertisementRoutes);
   app.use("/api/admin/ad-campaigns", adminAdCampaignRoutes);
+  app.use('/api/admin/dashboard', adminDashboardRoutes);
 
   app.use("/api/submissions", submissionRoutes);
   app.use("/", test);
