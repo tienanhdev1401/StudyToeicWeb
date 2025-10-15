@@ -90,18 +90,27 @@ const AdminDashboard = () => {
   // Chart options
   const barOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { display: false },
+      legend: { display: false,
+        labels: { font: { size: 12 } }
+      },
       tooltip: {
         backgroundColor: '#1E293B',
         titleColor: '#F8FAFC',
-        bodyColor: '#F8FAFC'
+        bodyColor: '#F8FAFC',
+        titleFont: { size: 12 },
+        bodyFont: { size: 12 }
+      },
+      title: {
+        display: false,
       }
     },
     scales: {
-      y: { beginAtZero: true, grid: { display: false } },
-      x: { grid: { display: false } }
-    }
+      y: { beginAtZero: true, grid: { display: false }, ticks: { font: { size: 11 } } },
+      x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+    },
+    layout: { padding: { top: 8, right: 8, bottom: 8, left: 8 } }
   };
 
   // Cleanup charts
@@ -122,15 +131,15 @@ const AdminDashboard = () => {
   }, []);
 
   const MetricCard = ({ icon, title, value, trend }) => (
-    <div className={styles.metricCard}>
-      <div className={styles.metricHeader}>
+    <div className={styles['dashboard-metricCard']}>
+      <div className={styles['dashboard-metricHeader']}>
         {icon}
         <h3>{title}</h3>
       </div>
-      <div className={styles.metricValue}>
+      <div className={styles['dashboard-metricValue']}>
         {typeof value === 'number' ? value.toLocaleString() : value}
         {trend && (
-          <span className={trend > 0 ? styles.positiveTrend : styles.negativeTrend}>
+          <span className={trend > 0 ? styles['dashboard-positiveTrend'] : styles['dashboard-negativeTrend']}>
             {trend > 0 ? '+' : ''}{trend}%
           </span>
         )}
@@ -139,16 +148,16 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className={styles.adminDashboard}>
-      {/* Header Section */}
-      <header className={styles.header}>
-        <h1 className={styles.dasboardHeaderTitle}>Course Admin Dashboard</h1>
-        <div className={styles.timeFilters}>
+    <div className={styles['dashboard-adminDashboard']}>
+      {/* Header Section */}  
+      <header className={styles['dashboard-header']}>
+        <h1 className={styles['dashboard-headerTitle']}>Course Admin Dashboard</h1>
+        <div className={styles['dashboard-timeFilters']}>
           {['Day', 'Week', 'Month', 'Year'].map((filter) => (
             <button
               key={filter}
-              className={`${styles.timeFilter} ${
-                timeFilter === filter.toLowerCase() && styles.active
+              className={`${styles['dashboard-timeFilter']} ${
+                timeFilter === filter.toLowerCase() && styles['dashboard-active']
               }`}
               onClick={() => setTimeFilter(filter.toLowerCase())}
             >
@@ -160,42 +169,42 @@ const AdminDashboard = () => {
 
       {/* Metrics Grid */}
       {loading ? (
-        <div className={styles.loading}>Loading dashboard data...</div>
+        <div className={styles['dashboard-loading']}>Loading dashboard data...</div>
       ) : dashboardData ? (
-        <section className={styles.metricsGrid}>
+        <section className={styles['dashboard-metricsGrid']}>
           <MetricCard
-            icon={<FiUsers className={styles.metricIcon} />}
+            icon={<FiUsers className={styles['dashboard-metricIcon']} />}
             title="Total Users"
             value={dashboardData.totalUsers}
             trend={Number(dashboardData.userGrowthRate).toFixed(1)}
           />
           <MetricCard
-            icon={<FiBook className={styles.metricIcon} />}
+            icon={<FiBook className={styles['dashboard-metricIcon']} />}
             title="Active Users"
             value={dashboardData.activeUsers}
             trend={(dashboardData.activeUsers / dashboardData.totalUsers * 100).toFixed(1)}
           />
           <MetricCard
-            icon={<FiActivity className={styles.metricIcon} />}
+            icon={<FiActivity className={styles['dashboard-metricIcon']} />}
             title="Total Tests"
             value={dashboardData.totalTests}
             trend={(dashboardData.totalAttempts / dashboardData.totalTests).toFixed(1)}
           />
           <MetricCard
-            icon={<FiClock className={styles.metricIcon} />}
+            icon={<FiClock className={styles['dashboard-metricIcon']} />}
             title="Average Score"
             value={`${dashboardData.averageScore}`}
             trend={((dashboardData.averageScore / 990) * 100).toFixed(1)}
           />
         </section>
       ) : (
-        <div className={styles.error}>Failed to load dashboard data</div>
+        <div className={styles['dashboard-error']}>Failed to load dashboard data</div>
       )}
 
       {/* Main Content */}
-      <main className={styles.mainContent}>
+      <main className={styles['dashboard-mainContent']}>
         {/* User Statistics Chart */}
-        <article className={styles.chartContainer}>
+        <article className={styles['dashboard-chartContainer']}>
           <h2>User Growth & Activity</h2>
           {dashboardData && Array.isArray(dashboardData.monthlyUserStats) && dashboardData.monthlyUserStats.length > 0 && (
             <Bar
@@ -233,7 +242,7 @@ const AdminDashboard = () => {
         </article>
 
         {/* Test Performance Chart */}
-        <article className={styles.chartContainer}>
+        <article className={styles['dashboard-chartContainer']}>
           <h2>Test Performance Trends</h2>
           {dashboardData && Array.isArray(dashboardData.monthlyTestStats) && dashboardData.monthlyTestStats.length > 0 && (
             <Line
@@ -258,27 +267,38 @@ const AdminDashboard = () => {
               }}
               options={{
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                   y: {
                     beginAtZero: true,
-                    grid: { display: false }
+                    grid: { display: false },
+                    ticks: { font: { size: 11 } }
+                  },
+                  x: {
+                    ticks: { font: { size: 11 } }
                   }
                 },
                 plugins: {
                   legend: {
-                    position: 'top'
+                    position: 'top',
+                    labels: { font: { size: 12 } }
+                  },
+                  tooltip: {
+                    titleFont: { size: 12 },
+                    bodyFont: { size: 12 }
                   }
-                }
+                },
+                elements: { point: { radius: 3 } }
               }}
             />
           )}
         </article>
 
         {/* Sidebar Section */}
-        <aside className={styles.sidebar}>
-          <div className={styles.sidebarSection}>
+        <aside className={styles['dashboard-sidebar']}>
+          <div className={styles['dashboard-sidebarSection']}>
             <h3>Test Score Distribution</h3>
-            <div className={styles.pieChart}>
+            <div className={styles['dashboard-pieChart']}>
               {dashboardData && Array.isArray(dashboardData.mostPopularTests) && dashboardData.mostPopularTests.length > 0 && (
                 <Pie
                   ref={pieChartRef}
@@ -291,12 +311,16 @@ const AdminDashboard = () => {
                   }}
                   options={{ 
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { 
                       legend: { 
                         position: 'bottom',
-                        display: true
+                        display: true,
+                        labels: { font: { size: 12 } }
                       },
                       tooltip: {
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 },
                         callbacks: {
                           label: function(context) {
                             const label = context.label || '';
@@ -307,7 +331,8 @@ const AdminDashboard = () => {
                       },
                       title: {
                         display: true,
-                        text: 'Test Score Distribution'
+                        text: 'Test Score Distribution',
+                        font: { size: 14 }
                       }
                     }
                   }}
@@ -317,11 +342,11 @@ const AdminDashboard = () => {
             </div>
           </div>
         </aside>
-        <div className={styles.tableContainer}>
-          <div className={styles.tableHeader}>
+        <div className={styles['dashboard-tableContainer']}>
+          <div className={styles['dashboard-tableHeader']}>
             <h2>Most Popular Tests</h2>
           </div>
-          <table className={styles.statsTable}>
+          <table className={styles['dashboard-statsTable']}>
             <thead>
               <tr>
                 <th>Test Name</th>
@@ -334,40 +359,40 @@ const AdminDashboard = () => {
               {dashboardData?.mostPopularTests?.map((test) => (
                 <tr key={test.testId}>
                   <td>
-                    <div className={styles.testInfo}>
-                      <span className={styles.testTitle}>{test.title || 'Unnamed Test'}</span>
-                      <span className={styles.categoryBadge}>TOEIC</span>
+                    <div className={styles['dashboard-testInfo']}>
+                      <span className={styles['dashboard-testTitle']}>{test.title || 'Unnamed Test'}</span>
+                      <span className={styles['dashboard-categoryBadge']}>TOEIC</span>
                     </div>
                   </td>
                   <td>
-                    <div className={styles.attemptsInfo}>
-                      <span className={styles.attemptsNumber}>{Number(test.attempts).toLocaleString()}</span>
-                      <span className={styles.attemptsTrend}>
+                    <div className={styles['dashboard-attemptsInfo']}>
+                      <span className={styles['dashboard-attemptsNumber']}>{Number(test.attempts).toLocaleString()}</span>
+                      <span className={styles['dashboard-attemptsTrend']}>
                         {((Number(test.attempts) / dashboardData.totalAttempts) * 100).toFixed(1)}% of total
                       </span>
                     </div>
                   </td>
                   <td>
-                    <div className={styles.scoreDetails}>
-                      <div className={styles.totalScore}>
+                    <div className={styles['dashboard-scoreDetails']}>
+                      <div className={styles['dashboard-totalScore']}>
                         <span>{Number(test.averageScore).toFixed(0)}</span>
-                        <span className={styles.scoreLabel}>/990</span>
+                        <span className={styles['dashboard-scoreLabel']}>/990</span>
                       </div>
-                      <div className={styles.subScores}>
+                      <div className={styles['dashboard-subScores']}>
                         <span>L: {Number(test.avgListeningScore).toFixed(0)}/495</span>
                         <span>R: {Number(test.avgReadingScore).toFixed(0)}/495</span>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <div className={styles.scoreWrapper}>
-                      <div className={styles.scoreBarContainer}>
-                        <div className={styles.scoreBar} 
+                    <div className={styles['dashboard-scoreWrapper']}>
+                      <div className={styles['dashboard-scoreBarContainer']}>
+                        <div className={styles['dashboard-scoreBar']} 
                           style={{ width: `${(Number(test.averageScore)/990)*100}%` }}>
                         </div>
-                        <div className={styles.scoreBarBackground}></div>
+                        <div className={styles['dashboard-scoreBarBackground']}></div>
                       </div>
-                      <div className={styles.scorePercentage}>
+                      <div className={styles['dashboard-scorePercentage']}>
                         {((Number(test.averageScore)/990)*100).toFixed(1)}%
                       </div>
                     </div>
